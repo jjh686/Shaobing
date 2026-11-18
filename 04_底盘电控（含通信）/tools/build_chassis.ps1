@@ -8,6 +8,13 @@
 #  2. The project path contains non-ASCII (Chinese) characters, which MSYS2 ld mangles
 #     when the command line is passed through a Ninja response file. The sources are
 #     therefore referenced through an ASCII junction under %LOCALAPPDATA%.
+#
+# Usage:
+#   powershell -ExecutionPolicy Bypass -File tools\build_chassis.ps1          (incremental)
+#   powershell -ExecutionPolicy Bypass -File tools\build_chassis.ps1 -Clean   (full rebuild)
+param(
+    [switch]$Clean
+)
 $ErrorActionPreference = "Stop"
 
 $root        = Split-Path -Parent $PSScriptRoot
@@ -74,6 +81,10 @@ $build = Join-Path $junctionDir "build\chassis-win"
 
 # Drop a cache that was generated with another generator or another configure path.
 $cache = Join-Path $build "CMakeCache.txt"
+if ($Clean -and (Test-Path $build)) {
+    Write-Host "clean: removing $build"
+    Remove-Item $build -Recurse -Force
+}
 if (Test-Path $cache) {
     $cacheDir = (Select-String -Path $cache -Pattern "^CMAKE_CACHEFILE_DIR:INTERNAL=(.+)$" -Encoding utf8 |
         Select-Object -First 1).Matches.Groups[1].Value
