@@ -1,0 +1,1028 @@
+ARM GAS  /tmp/cceDefkn.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"bsp_dwt.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.DWT_CNT_Update,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	DWT_CNT_Update:
+  26              	.LFB247:
+  27              		.file 1 "bsp/dwt/bsp_dwt.c"
+   1:bsp/dwt/bsp_dwt.c **** /**
+   2:bsp/dwt/bsp_dwt.c ****  ******************************************************************************
+   3:bsp/dwt/bsp_dwt.c ****  * @file	bsp_dwt.c
+   4:bsp/dwt/bsp_dwt.c ****  * @author  Wang Hongxi
+   5:bsp/dwt/bsp_dwt.c ****  * @author modified by Neo with annotation
+   6:bsp/dwt/bsp_dwt.c ****  * @version V1.1.0
+   7:bsp/dwt/bsp_dwt.c ****  * @date    2022/3/8
+   8:bsp/dwt/bsp_dwt.c ****  * @brief
+   9:bsp/dwt/bsp_dwt.c ****  */
+  10:bsp/dwt/bsp_dwt.c **** 
+  11:bsp/dwt/bsp_dwt.c **** #include "bsp_dwt.h"
+  12:bsp/dwt/bsp_dwt.c **** #include "cmsis_os.h"
+  13:bsp/dwt/bsp_dwt.c **** 
+  14:bsp/dwt/bsp_dwt.c **** static DWT_Time_t SysTime;
+  15:bsp/dwt/bsp_dwt.c **** static uint32_t CPU_FREQ_Hz, CPU_FREQ_Hz_ms, CPU_FREQ_Hz_us;
+  16:bsp/dwt/bsp_dwt.c **** static uint32_t CYCCNT_RountCount;
+  17:bsp/dwt/bsp_dwt.c **** static uint32_t CYCCNT_LAST;
+  18:bsp/dwt/bsp_dwt.c **** static uint64_t CYCCNT64;
+  19:bsp/dwt/bsp_dwt.c **** 
+  20:bsp/dwt/bsp_dwt.c **** /**
+  21:bsp/dwt/bsp_dwt.c ****  * @brief 私有函数,用于检查DWT CYCCNT寄存器是否溢出,并更新CYCCNT_RountCount
+  22:bsp/dwt/bsp_dwt.c ****  * @attention 此函数假设两次调用之间的时间间隔不超过一次溢出
+  23:bsp/dwt/bsp_dwt.c ****  *
+  24:bsp/dwt/bsp_dwt.c ****  * @todo 更好的方案是为dwt的时间更新单独设置一个任务?
+  25:bsp/dwt/bsp_dwt.c ****  *       不过,使用dwt的初衷是定时不被中断/任务等因素影响,因此该实现仍然
+  26:bsp/dwt/bsp_dwt.c ****  *
+  27:bsp/dwt/bsp_dwt.c ****  */
+  28:bsp/dwt/bsp_dwt.c **** static void DWT_CNT_Update(void)
+  29:bsp/dwt/bsp_dwt.c **** {
+  28              		.loc 1 29 1 view -0
+  29              		.cfi_startproc
+ARM GAS  /tmp/cceDefkn.s 			page 2
+
+
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  30:bsp/dwt/bsp_dwt.c ****     static volatile uint8_t bit_locker = 0;
+  33              		.loc 1 30 5 view .LVU1
+  31:bsp/dwt/bsp_dwt.c ****     if (!bit_locker)
+  34              		.loc 1 31 5 view .LVU2
+  35              		.loc 1 31 9 is_stmt 0 view .LVU3
+  36 0000 0E4B     		ldr	r3, .L8
+  37 0002 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  38              		.loc 1 31 8 view .LVU4
+  39 0004 C3B9     		cbnz	r3, .L5
+  29:bsp/dwt/bsp_dwt.c ****     static volatile uint8_t bit_locker = 0;
+  40              		.loc 1 29 1 view .LVU5
+  41 0006 82B0     		sub	sp, sp, #8
+  42              	.LCFI0:
+  43              		.cfi_def_cfa_offset 8
+  44              	.LBB2:
+  32:bsp/dwt/bsp_dwt.c ****     {
+  33:bsp/dwt/bsp_dwt.c ****         bit_locker = 1;
+  45              		.loc 1 33 9 is_stmt 1 view .LVU6
+  46              		.loc 1 33 20 is_stmt 0 view .LVU7
+  47 0008 0C4B     		ldr	r3, .L8
+  48 000a 0122     		movs	r2, #1
+  49 000c 1A70     		strb	r2, [r3]
+  34:bsp/dwt/bsp_dwt.c ****         volatile uint32_t cnt_now = DWT->CYCCNT;
+  50              		.loc 1 34 9 is_stmt 1 view .LVU8
+  51              		.loc 1 34 40 is_stmt 0 view .LVU9
+  52 000e 0C4B     		ldr	r3, .L8+4
+  53 0010 5B68     		ldr	r3, [r3, #4]
+  54              		.loc 1 34 27 view .LVU10
+  55 0012 0193     		str	r3, [sp, #4]
+  35:bsp/dwt/bsp_dwt.c ****         if (cnt_now < CYCCNT_LAST)
+  56              		.loc 1 35 9 is_stmt 1 view .LVU11
+  57              		.loc 1 35 21 is_stmt 0 view .LVU12
+  58 0014 019A     		ldr	r2, [sp, #4]
+  59 0016 0B4B     		ldr	r3, .L8+8
+  60 0018 1B68     		ldr	r3, [r3]
+  61              		.loc 1 35 12 view .LVU13
+  62 001a 9A42     		cmp	r2, r3
+  63 001c 03D2     		bcs	.L3
+  36:bsp/dwt/bsp_dwt.c ****             CYCCNT_RountCount++;
+  64              		.loc 1 36 13 is_stmt 1 view .LVU14
+  65              		.loc 1 36 30 is_stmt 0 view .LVU15
+  66 001e 0A4A     		ldr	r2, .L8+12
+  67 0020 1368     		ldr	r3, [r2]
+  68 0022 0133     		adds	r3, r3, #1
+  69 0024 1360     		str	r3, [r2]
+  70              	.L3:
+  37:bsp/dwt/bsp_dwt.c **** 
+  38:bsp/dwt/bsp_dwt.c ****         CYCCNT_LAST = DWT->CYCCNT;
+  71              		.loc 1 38 9 is_stmt 1 view .LVU16
+  72              		.loc 1 38 26 is_stmt 0 view .LVU17
+  73 0026 064B     		ldr	r3, .L8+4
+  74 0028 5A68     		ldr	r2, [r3, #4]
+  75              		.loc 1 38 21 view .LVU18
+  76 002a 064B     		ldr	r3, .L8+8
+ARM GAS  /tmp/cceDefkn.s 			page 3
+
+
+  77 002c 1A60     		str	r2, [r3]
+  39:bsp/dwt/bsp_dwt.c ****         bit_locker = 0;
+  78              		.loc 1 39 9 is_stmt 1 view .LVU19
+  79              		.loc 1 39 20 is_stmt 0 view .LVU20
+  80 002e 034B     		ldr	r3, .L8
+  81 0030 0022     		movs	r2, #0
+  82 0032 1A70     		strb	r2, [r3]
+  83              	.LBE2:
+  40:bsp/dwt/bsp_dwt.c ****     }
+  41:bsp/dwt/bsp_dwt.c **** }
+  84              		.loc 1 41 1 view .LVU21
+  85 0034 02B0     		add	sp, sp, #8
+  86              	.LCFI1:
+  87              		.cfi_def_cfa_offset 0
+  88              		@ sp needed
+  89 0036 7047     		bx	lr
+  90              	.L5:
+  91 0038 7047     		bx	lr
+  92              	.L9:
+  93 003a 00BF     		.align	2
+  94              	.L8:
+  95 003c 00000000 		.word	.LANCHOR0
+  96 0040 001000E0 		.word	-536866816
+  97 0044 00000000 		.word	.LANCHOR1
+  98 0048 00000000 		.word	.LANCHOR2
+  99              		.cfi_endproc
+ 100              	.LFE247:
+ 102              		.section	.text.DWT_Init,"ax",%progbits
+ 103              		.align	1
+ 104              		.global	DWT_Init
+ 105              		.syntax unified
+ 106              		.thumb
+ 107              		.thumb_func
+ 108              		.fpu fpv4-sp-d16
+ 110              	DWT_Init:
+ 111              	.LVL0:
+ 112              	.LFB248:
+  42:bsp/dwt/bsp_dwt.c **** 
+  43:bsp/dwt/bsp_dwt.c **** void DWT_Init(uint32_t CPU_Freq_mHz)
+  44:bsp/dwt/bsp_dwt.c **** {
+ 113              		.loc 1 44 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              		.loc 1 44 1 is_stmt 0 view .LVU23
+ 118 0000 08B5     		push	{r3, lr}
+ 119              	.LCFI2:
+ 120              		.cfi_def_cfa_offset 8
+ 121              		.cfi_offset 3, -8
+ 122              		.cfi_offset 14, -4
+  45:bsp/dwt/bsp_dwt.c ****     /* 使能DWT外设 */
+  46:bsp/dwt/bsp_dwt.c ****     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+ 123              		.loc 1 46 5 is_stmt 1 view .LVU24
+ 124              		.loc 1 46 22 is_stmt 0 view .LVU25
+ 125 0002 124A     		ldr	r2, .L12
+ 126 0004 D2F8FC30 		ldr	r3, [r2, #252]
+ 127 0008 43F08073 		orr	r3, r3, #16777216
+ARM GAS  /tmp/cceDefkn.s 			page 4
+
+
+ 128 000c C2F8FC30 		str	r3, [r2, #252]
+  47:bsp/dwt/bsp_dwt.c **** 
+  48:bsp/dwt/bsp_dwt.c ****     /* DWT CYCCNT寄存器计数清0 */
+  49:bsp/dwt/bsp_dwt.c ****     DWT->CYCCNT = (uint32_t)0u;
+ 129              		.loc 1 49 5 is_stmt 1 view .LVU26
+ 130              		.loc 1 49 17 is_stmt 0 view .LVU27
+ 131 0010 0F4B     		ldr	r3, .L12+4
+ 132 0012 0021     		movs	r1, #0
+ 133 0014 5960     		str	r1, [r3, #4]
+  50:bsp/dwt/bsp_dwt.c **** 
+  51:bsp/dwt/bsp_dwt.c ****     /* 使能Cortex-M DWT CYCCNT寄存器 */
+  52:bsp/dwt/bsp_dwt.c ****     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+ 134              		.loc 1 52 5 is_stmt 1 view .LVU28
+ 135              		.loc 1 52 15 is_stmt 0 view .LVU29
+ 136 0016 1A68     		ldr	r2, [r3]
+ 137 0018 42F00102 		orr	r2, r2, #1
+ 138 001c 1A60     		str	r2, [r3]
+  53:bsp/dwt/bsp_dwt.c **** 
+  54:bsp/dwt/bsp_dwt.c ****     CPU_FREQ_Hz = CPU_Freq_mHz * 1000000;
+ 139              		.loc 1 54 5 is_stmt 1 view .LVU30
+ 140              		.loc 1 54 32 is_stmt 0 view .LVU31
+ 141 001e 0D4B     		ldr	r3, .L12+8
+ 142 0020 03FB00F0 		mul	r0, r3, r0
+ 143              	.LVL1:
+ 144              		.loc 1 54 17 view .LVU32
+ 145 0024 0C4B     		ldr	r3, .L12+12
+ 146 0026 1860     		str	r0, [r3]
+  55:bsp/dwt/bsp_dwt.c ****     CPU_FREQ_Hz_ms = CPU_FREQ_Hz / 1000;
+ 147              		.loc 1 55 5 is_stmt 1 view .LVU33
+ 148              		.loc 1 55 34 is_stmt 0 view .LVU34
+ 149 0028 0C4B     		ldr	r3, .L12+16
+ 150 002a A3FB0023 		umull	r2, r3, r3, r0
+ 151 002e 9B09     		lsrs	r3, r3, #6
+ 152              		.loc 1 55 20 view .LVU35
+ 153 0030 0B4A     		ldr	r2, .L12+20
+ 154 0032 1360     		str	r3, [r2]
+  56:bsp/dwt/bsp_dwt.c ****     CPU_FREQ_Hz_us = CPU_FREQ_Hz / 1000000;
+ 155              		.loc 1 56 5 is_stmt 1 view .LVU36
+ 156              		.loc 1 56 34 is_stmt 0 view .LVU37
+ 157 0034 0B4B     		ldr	r3, .L12+24
+ 158 0036 A3FB0030 		umull	r3, r0, r3, r0
+ 159 003a 800C     		lsrs	r0, r0, #18
+ 160              		.loc 1 56 20 view .LVU38
+ 161 003c 0A4B     		ldr	r3, .L12+28
+ 162 003e 1860     		str	r0, [r3]
+  57:bsp/dwt/bsp_dwt.c ****     CYCCNT_RountCount = 0;
+ 163              		.loc 1 57 5 is_stmt 1 view .LVU39
+ 164              		.loc 1 57 23 is_stmt 0 view .LVU40
+ 165 0040 0A4B     		ldr	r3, .L12+32
+ 166 0042 1960     		str	r1, [r3]
+  58:bsp/dwt/bsp_dwt.c **** 
+  59:bsp/dwt/bsp_dwt.c ****     DWT_CNT_Update();
+ 167              		.loc 1 59 5 is_stmt 1 view .LVU41
+ 168 0044 FFF7FEFF 		bl	DWT_CNT_Update
+ 169              	.LVL2:
+  60:bsp/dwt/bsp_dwt.c **** }
+ 170              		.loc 1 60 1 is_stmt 0 view .LVU42
+ARM GAS  /tmp/cceDefkn.s 			page 5
+
+
+ 171 0048 08BD     		pop	{r3, pc}
+ 172              	.L13:
+ 173 004a 00BF     		.align	2
+ 174              	.L12:
+ 175 004c 00ED00E0 		.word	-536810240
+ 176 0050 001000E0 		.word	-536866816
+ 177 0054 40420F00 		.word	1000000
+ 178 0058 00000000 		.word	.LANCHOR3
+ 179 005c D34D6210 		.word	274877907
+ 180 0060 00000000 		.word	.LANCHOR4
+ 181 0064 83DE1B43 		.word	1125899907
+ 182 0068 00000000 		.word	.LANCHOR5
+ 183 006c 00000000 		.word	.LANCHOR2
+ 184              		.cfi_endproc
+ 185              	.LFE248:
+ 187              		.section	.text.DWT_GetDeltaT,"ax",%progbits
+ 188              		.align	1
+ 189              		.global	DWT_GetDeltaT
+ 190              		.syntax unified
+ 191              		.thumb
+ 192              		.thumb_func
+ 193              		.fpu fpv4-sp-d16
+ 195              	DWT_GetDeltaT:
+ 196              	.LVL3:
+ 197              	.LFB249:
+  61:bsp/dwt/bsp_dwt.c **** 
+  62:bsp/dwt/bsp_dwt.c **** float DWT_GetDeltaT(uint32_t *cnt_last)
+  63:bsp/dwt/bsp_dwt.c **** {
+ 198              		.loc 1 63 1 is_stmt 1 view -0
+ 199              		.cfi_startproc
+ 200              		@ args = 0, pretend = 0, frame = 8
+ 201              		@ frame_needed = 0, uses_anonymous_args = 0
+ 202              		.loc 1 63 1 is_stmt 0 view .LVU44
+ 203 0000 00B5     		push	{lr}
+ 204              	.LCFI3:
+ 205              		.cfi_def_cfa_offset 4
+ 206              		.cfi_offset 14, -4
+ 207 0002 2DED028B 		vpush.64	{d8}
+ 208              	.LCFI4:
+ 209              		.cfi_def_cfa_offset 12
+ 210              		.cfi_offset 80, -12
+ 211              		.cfi_offset 81, -8
+ 212 0006 83B0     		sub	sp, sp, #12
+ 213              	.LCFI5:
+ 214              		.cfi_def_cfa_offset 24
+  64:bsp/dwt/bsp_dwt.c ****     volatile uint32_t cnt_now = DWT->CYCCNT;
+ 215              		.loc 1 64 5 is_stmt 1 view .LVU45
+ 216              		.loc 1 64 36 is_stmt 0 view .LVU46
+ 217 0008 0D4B     		ldr	r3, .L16
+ 218 000a 5B68     		ldr	r3, [r3, #4]
+ 219              		.loc 1 64 23 view .LVU47
+ 220 000c 0193     		str	r3, [sp, #4]
+  65:bsp/dwt/bsp_dwt.c ****     float dt = ((uint32_t)(cnt_now - *cnt_last)) / ((float)(CPU_FREQ_Hz));
+ 221              		.loc 1 65 5 is_stmt 1 view .LVU48
+ 222              		.loc 1 65 17 is_stmt 0 view .LVU49
+ 223 000e 019B     		ldr	r3, [sp, #4]
+ 224              		.loc 1 65 38 view .LVU50
+ARM GAS  /tmp/cceDefkn.s 			page 6
+
+
+ 225 0010 0268     		ldr	r2, [r0]
+ 226              		.loc 1 65 17 view .LVU51
+ 227 0012 9B1A     		subs	r3, r3, r2
+ 228              		.loc 1 65 50 view .LVU52
+ 229 0014 07EE903A 		vmov	s15, r3	@ int
+ 230 0018 F8EE677A 		vcvt.f32.u32	s15, s15
+ 231              		.loc 1 65 53 view .LVU53
+ 232 001c 094B     		ldr	r3, .L16+4
+ 233 001e 93ED007A 		vldr.32	s14, [r3]	@ int
+ 234 0022 B8EE477A 		vcvt.f32.u32	s14, s14
+ 235              		.loc 1 65 11 view .LVU54
+ 236 0026 87EE878A 		vdiv.f32	s16, s15, s14
+ 237              	.LVL4:
+  66:bsp/dwt/bsp_dwt.c ****     *cnt_last = cnt_now;
+ 238              		.loc 1 66 5 is_stmt 1 view .LVU55
+ 239              		.loc 1 66 15 is_stmt 0 view .LVU56
+ 240 002a 019B     		ldr	r3, [sp, #4]
+ 241 002c 0360     		str	r3, [r0]
+  67:bsp/dwt/bsp_dwt.c **** 
+  68:bsp/dwt/bsp_dwt.c ****     DWT_CNT_Update();
+ 242              		.loc 1 68 5 is_stmt 1 view .LVU57
+ 243 002e FFF7FEFF 		bl	DWT_CNT_Update
+ 244              	.LVL5:
+  69:bsp/dwt/bsp_dwt.c **** 
+  70:bsp/dwt/bsp_dwt.c ****     return dt;
+ 245              		.loc 1 70 5 view .LVU58
+  71:bsp/dwt/bsp_dwt.c **** }
+ 246              		.loc 1 71 1 is_stmt 0 view .LVU59
+ 247 0032 B0EE480A 		vmov.f32	s0, s16
+ 248 0036 03B0     		add	sp, sp, #12
+ 249              	.LCFI6:
+ 250              		.cfi_def_cfa_offset 12
+ 251              		@ sp needed
+ 252 0038 BDEC028B 		vldm	sp!, {d8}
+ 253              	.LCFI7:
+ 254              		.cfi_restore 80
+ 255              		.cfi_restore 81
+ 256              		.cfi_def_cfa_offset 4
+ 257              	.LVL6:
+ 258              		.loc 1 71 1 view .LVU60
+ 259 003c 5DF804FB 		ldr	pc, [sp], #4
+ 260              	.L17:
+ 261              		.align	2
+ 262              	.L16:
+ 263 0040 001000E0 		.word	-536866816
+ 264 0044 00000000 		.word	.LANCHOR3
+ 265              		.cfi_endproc
+ 266              	.LFE249:
+ 268              		.global	__aeabi_ui2d
+ 269              		.global	__aeabi_ddiv
+ 270              		.section	.text.DWT_GetDeltaT64,"ax",%progbits
+ 271              		.align	1
+ 272              		.global	DWT_GetDeltaT64
+ 273              		.syntax unified
+ 274              		.thumb
+ 275              		.thumb_func
+ 276              		.fpu fpv4-sp-d16
+ARM GAS  /tmp/cceDefkn.s 			page 7
+
+
+ 278              	DWT_GetDeltaT64:
+ 279              	.LVL7:
+ 280              	.LFB250:
+  72:bsp/dwt/bsp_dwt.c **** 
+  73:bsp/dwt/bsp_dwt.c **** double DWT_GetDeltaT64(uint32_t *cnt_last)
+  74:bsp/dwt/bsp_dwt.c **** {
+ 281              		.loc 1 74 1 is_stmt 1 view -0
+ 282              		.cfi_startproc
+ 283              		@ args = 0, pretend = 0, frame = 8
+ 284              		@ frame_needed = 0, uses_anonymous_args = 0
+ 285              		.loc 1 74 1 is_stmt 0 view .LVU62
+ 286 0000 D0B5     		push	{r4, r6, r7, lr}
+ 287              	.LCFI8:
+ 288              		.cfi_def_cfa_offset 16
+ 289              		.cfi_offset 4, -16
+ 290              		.cfi_offset 6, -12
+ 291              		.cfi_offset 7, -8
+ 292              		.cfi_offset 14, -4
+ 293 0002 2DED028B 		vpush.64	{d8}
+ 294              	.LCFI9:
+ 295              		.cfi_def_cfa_offset 24
+ 296              		.cfi_offset 80, -24
+ 297              		.cfi_offset 81, -20
+ 298 0006 82B0     		sub	sp, sp, #8
+ 299              	.LCFI10:
+ 300              		.cfi_def_cfa_offset 32
+ 301 0008 0446     		mov	r4, r0
+  75:bsp/dwt/bsp_dwt.c ****     volatile uint32_t cnt_now = DWT->CYCCNT;
+ 302              		.loc 1 75 5 is_stmt 1 view .LVU63
+ 303              		.loc 1 75 36 is_stmt 0 view .LVU64
+ 304 000a 114B     		ldr	r3, .L20
+ 305 000c 5B68     		ldr	r3, [r3, #4]
+ 306              		.loc 1 75 23 view .LVU65
+ 307 000e 0193     		str	r3, [sp, #4]
+  76:bsp/dwt/bsp_dwt.c ****     double dt = ((uint32_t)(cnt_now - *cnt_last)) / ((double)(CPU_FREQ_Hz));
+ 308              		.loc 1 76 5 is_stmt 1 view .LVU66
+ 309              		.loc 1 76 18 is_stmt 0 view .LVU67
+ 310 0010 0198     		ldr	r0, [sp, #4]
+ 311              	.LVL8:
+ 312              		.loc 1 76 39 view .LVU68
+ 313 0012 2368     		ldr	r3, [r4]
+ 314              		.loc 1 76 51 view .LVU69
+ 315 0014 C01A     		subs	r0, r0, r3
+ 316 0016 FFF7FEFF 		bl	__aeabi_ui2d
+ 317              	.LVL9:
+ 318 001a 0646     		mov	r6, r0
+ 319 001c 0F46     		mov	r7, r1
+ 320              		.loc 1 76 54 view .LVU70
+ 321 001e 0D4B     		ldr	r3, .L20+4
+ 322 0020 1868     		ldr	r0, [r3]
+ 323 0022 FFF7FEFF 		bl	__aeabi_ui2d
+ 324              	.LVL10:
+ 325 0026 0246     		mov	r2, r0
+ 326 0028 0B46     		mov	r3, r1
+ 327              		.loc 1 76 12 view .LVU71
+ 328 002a 3046     		mov	r0, r6
+ 329 002c 3946     		mov	r1, r7
+ARM GAS  /tmp/cceDefkn.s 			page 8
+
+
+ 330 002e FFF7FEFF 		bl	__aeabi_ddiv
+ 331              	.LVL11:
+ 332 0032 41EC180B 		vmov	d8, r0, r1
+ 333              	.LVL12:
+  77:bsp/dwt/bsp_dwt.c ****     *cnt_last = cnt_now;
+ 334              		.loc 1 77 5 is_stmt 1 view .LVU72
+ 335              		.loc 1 77 15 is_stmt 0 view .LVU73
+ 336 0036 019B     		ldr	r3, [sp, #4]
+ 337 0038 2360     		str	r3, [r4]
+  78:bsp/dwt/bsp_dwt.c **** 
+  79:bsp/dwt/bsp_dwt.c ****     DWT_CNT_Update();
+ 338              		.loc 1 79 5 is_stmt 1 view .LVU74
+ 339 003a FFF7FEFF 		bl	DWT_CNT_Update
+ 340              	.LVL13:
+  80:bsp/dwt/bsp_dwt.c **** 
+  81:bsp/dwt/bsp_dwt.c ****     return dt;
+ 341              		.loc 1 81 5 view .LVU75
+  82:bsp/dwt/bsp_dwt.c **** }
+ 342              		.loc 1 82 1 is_stmt 0 view .LVU76
+ 343 003e B0EE480A 		vmov.f32	s0, s16
+ 344 0042 F0EE680A 		vmov.f32	s1, s17
+ 345 0046 02B0     		add	sp, sp, #8
+ 346              	.LCFI11:
+ 347              		.cfi_def_cfa_offset 24
+ 348              		@ sp needed
+ 349 0048 BDEC028B 		vldm	sp!, {d8}
+ 350              	.LCFI12:
+ 351              		.cfi_restore 80
+ 352              		.cfi_restore 81
+ 353              		.cfi_def_cfa_offset 16
+ 354              	.LVL14:
+ 355              		.loc 1 82 1 view .LVU77
+ 356 004c D0BD     		pop	{r4, r6, r7, pc}
+ 357              	.LVL15:
+ 358              	.L21:
+ 359              		.loc 1 82 1 view .LVU78
+ 360 004e 00BF     		.align	2
+ 361              	.L20:
+ 362 0050 001000E0 		.word	-536866816
+ 363 0054 00000000 		.word	.LANCHOR3
+ 364              		.cfi_endproc
+ 365              	.LFE250:
+ 367              		.global	__aeabi_uldivmod
+ 368              		.section	.text.DWT_SysTimeUpdate,"ax",%progbits
+ 369              		.align	1
+ 370              		.global	DWT_SysTimeUpdate
+ 371              		.syntax unified
+ 372              		.thumb
+ 373              		.thumb_func
+ 374              		.fpu fpv4-sp-d16
+ 376              	DWT_SysTimeUpdate:
+ 377              	.LFB251:
+  83:bsp/dwt/bsp_dwt.c **** 
+  84:bsp/dwt/bsp_dwt.c **** void DWT_SysTimeUpdate(void)
+  85:bsp/dwt/bsp_dwt.c **** {
+ 378              		.loc 1 85 1 is_stmt 1 view -0
+ 379              		.cfi_startproc
+ARM GAS  /tmp/cceDefkn.s 			page 9
+
+
+ 380              		@ args = 0, pretend = 0, frame = 8
+ 381              		@ frame_needed = 0, uses_anonymous_args = 0
+ 382 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 383              	.LCFI13:
+ 384              		.cfi_def_cfa_offset 24
+ 385              		.cfi_offset 4, -24
+ 386              		.cfi_offset 5, -20
+ 387              		.cfi_offset 6, -16
+ 388              		.cfi_offset 7, -12
+ 389              		.cfi_offset 8, -8
+ 390              		.cfi_offset 14, -4
+ 391 0004 82B0     		sub	sp, sp, #8
+ 392              	.LCFI14:
+ 393              		.cfi_def_cfa_offset 32
+  86:bsp/dwt/bsp_dwt.c ****     volatile uint32_t cnt_now = DWT->CYCCNT;
+ 394              		.loc 1 86 5 view .LVU80
+ 395              		.loc 1 86 36 is_stmt 0 view .LVU81
+ 396 0006 274B     		ldr	r3, .L24
+ 397 0008 5B68     		ldr	r3, [r3, #4]
+ 398              		.loc 1 86 23 view .LVU82
+ 399 000a 0193     		str	r3, [sp, #4]
+  87:bsp/dwt/bsp_dwt.c ****     static uint64_t CNT_TEMP1, CNT_TEMP2, CNT_TEMP3;
+ 400              		.loc 1 87 5 is_stmt 1 view .LVU83
+  88:bsp/dwt/bsp_dwt.c **** 
+  89:bsp/dwt/bsp_dwt.c ****     DWT_CNT_Update();
+ 401              		.loc 1 89 5 view .LVU84
+ 402 000c FFF7FEFF 		bl	DWT_CNT_Update
+ 403              	.LVL16:
+  90:bsp/dwt/bsp_dwt.c **** 
+  91:bsp/dwt/bsp_dwt.c ****     CYCCNT64 = (uint64_t)CYCCNT_RountCount * (uint64_t)UINT32_MAX + (uint64_t)cnt_now;
+ 404              		.loc 1 91 5 view .LVU85
+ 405              		.loc 1 91 16 is_stmt 0 view .LVU86
+ 406 0010 254B     		ldr	r3, .L24+4
+ 407 0012 1C68     		ldr	r4, [r3]
+ 408 0014 0026     		movs	r6, #0
+ 409              		.loc 1 91 44 view .LVU87
+ 410 0016 6508     		lsrs	r5, r4, #1
+ 411 0018 E307     		lsls	r3, r4, #31
+ 412 001a 1B1B     		subs	r3, r3, r4
+ 413 001c 65F10005 		sbc	r5, r5, #0
+ 414 0020 DB18     		adds	r3, r3, r3
+ 415 0022 6D41     		adcs	r5, r5, r5
+ 416 0024 1C19     		adds	r4, r3, r4
+ 417 0026 45F10005 		adc	r5, r5, #0
+ 418              		.loc 1 91 69 view .LVU88
+ 419 002a 019B     		ldr	r3, [sp, #4]
+ 420              		.loc 1 91 67 view .LVU89
+ 421 002c E418     		adds	r4, r4, r3
+ 422 002e 45F10007 		adc	r7, r5, #0
+ 423              		.loc 1 91 14 view .LVU90
+ 424 0032 1E4B     		ldr	r3, .L24+8
+ 425 0034 1C60     		str	r4, [r3]
+ 426 0036 5F60     		str	r7, [r3, #4]
+  92:bsp/dwt/bsp_dwt.c ****     CNT_TEMP1 = CYCCNT64 / CPU_FREQ_Hz;
+ 427              		.loc 1 92 5 is_stmt 1 view .LVU91
+ 428              		.loc 1 92 26 is_stmt 0 view .LVU92
+ 429 0038 1D4B     		ldr	r3, .L24+12
+ARM GAS  /tmp/cceDefkn.s 			page 10
+
+
+ 430 003a 1D68     		ldr	r5, [r3]
+ 431 003c 2A46     		mov	r2, r5
+ 432 003e 3346     		mov	r3, r6
+ 433 0040 2046     		mov	r0, r4
+ 434 0042 3946     		mov	r1, r7
+ 435 0044 FFF7FEFF 		bl	__aeabi_uldivmod
+ 436              	.LVL17:
+ 437              		.loc 1 92 15 view .LVU93
+ 438 0048 1A4A     		ldr	r2, .L24+16
+ 439 004a 1060     		str	r0, [r2]
+ 440 004c 5160     		str	r1, [r2, #4]
+  93:bsp/dwt/bsp_dwt.c ****     CNT_TEMP2 = CYCCNT64 - CNT_TEMP1 * CPU_FREQ_Hz;
+ 441              		.loc 1 93 5 is_stmt 1 view .LVU94
+ 442              		.loc 1 93 38 is_stmt 0 view .LVU95
+ 443 004e A5FB0032 		umull	r3, r2, r5, r0
+ 444 0052 05FB0125 		mla	r5, r5, r1, r2
+ 445              		.loc 1 93 26 view .LVU96
+ 446 0056 E41A     		subs	r4, r4, r3
+ 447 0058 67EB0505 		sbc	r5, r7, r5
+ 448              		.loc 1 93 15 view .LVU97
+ 449 005c 164B     		ldr	r3, .L24+20
+ 450 005e 1C60     		str	r4, [r3]
+ 451 0060 5D60     		str	r5, [r3, #4]
+  94:bsp/dwt/bsp_dwt.c ****     SysTime.s = CNT_TEMP1;
+ 452              		.loc 1 94 5 is_stmt 1 view .LVU98
+ 453              		.loc 1 94 15 is_stmt 0 view .LVU99
+ 454 0062 DFF86480 		ldr	r8, .L24+36
+ 455 0066 C8F80000 		str	r0, [r8]
+  95:bsp/dwt/bsp_dwt.c ****     SysTime.ms = CNT_TEMP2 / CPU_FREQ_Hz_ms;
+ 456              		.loc 1 95 5 is_stmt 1 view .LVU100
+ 457              		.loc 1 95 28 is_stmt 0 view .LVU101
+ 458 006a 144B     		ldr	r3, .L24+24
+ 459 006c 1F68     		ldr	r7, [r3]
+ 460 006e 3A46     		mov	r2, r7
+ 461 0070 3346     		mov	r3, r6
+ 462 0072 2046     		mov	r0, r4
+ 463 0074 2946     		mov	r1, r5
+ 464 0076 FFF7FEFF 		bl	__aeabi_uldivmod
+ 465              	.LVL18:
+ 466              		.loc 1 95 16 view .LVU102
+ 467 007a 80B2     		uxth	r0, r0
+ 468 007c A8F80400 		strh	r0, [r8, #4]	@ movhi
+  96:bsp/dwt/bsp_dwt.c ****     CNT_TEMP3 = CNT_TEMP2 - SysTime.ms * CPU_FREQ_Hz_ms;
+ 469              		.loc 1 96 5 is_stmt 1 view .LVU103
+ 470              		.loc 1 96 40 is_stmt 0 view .LVU104
+ 471 0080 07FB00F0 		mul	r0, r7, r0
+ 472              		.loc 1 96 27 view .LVU105
+ 473 0084 201A     		subs	r0, r4, r0
+ 474 0086 65F10001 		sbc	r1, r5, #0
+ 475              		.loc 1 96 15 view .LVU106
+ 476 008a 0D4B     		ldr	r3, .L24+28
+ 477 008c 1860     		str	r0, [r3]
+ 478 008e 5960     		str	r1, [r3, #4]
+  97:bsp/dwt/bsp_dwt.c ****     SysTime.us = CNT_TEMP3 / CPU_FREQ_Hz_us;
+ 479              		.loc 1 97 5 is_stmt 1 view .LVU107
+ 480              		.loc 1 97 28 is_stmt 0 view .LVU108
+ 481 0090 0C4B     		ldr	r3, .L24+32
+ARM GAS  /tmp/cceDefkn.s 			page 11
+
+
+ 482 0092 1A68     		ldr	r2, [r3]
+ 483 0094 3346     		mov	r3, r6
+ 484 0096 FFF7FEFF 		bl	__aeabi_uldivmod
+ 485              	.LVL19:
+ 486              		.loc 1 97 16 view .LVU109
+ 487 009a A8F80600 		strh	r0, [r8, #6]	@ movhi
+  98:bsp/dwt/bsp_dwt.c **** }
+ 488              		.loc 1 98 1 view .LVU110
+ 489 009e 02B0     		add	sp, sp, #8
+ 490              	.LCFI15:
+ 491              		.cfi_def_cfa_offset 24
+ 492              		@ sp needed
+ 493 00a0 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 494              	.L25:
+ 495              		.align	2
+ 496              	.L24:
+ 497 00a4 001000E0 		.word	-536866816
+ 498 00a8 00000000 		.word	.LANCHOR2
+ 499 00ac 00000000 		.word	.LANCHOR6
+ 500 00b0 00000000 		.word	.LANCHOR3
+ 501 00b4 00000000 		.word	.LANCHOR7
+ 502 00b8 00000000 		.word	.LANCHOR8
+ 503 00bc 00000000 		.word	.LANCHOR4
+ 504 00c0 00000000 		.word	.LANCHOR10
+ 505 00c4 00000000 		.word	.LANCHOR5
+ 506 00c8 00000000 		.word	.LANCHOR9
+ 507              		.cfi_endproc
+ 508              	.LFE251:
+ 510              		.section	.text.DWT_GetTimeline_s,"ax",%progbits
+ 511              		.align	1
+ 512              		.global	DWT_GetTimeline_s
+ 513              		.syntax unified
+ 514              		.thumb
+ 515              		.thumb_func
+ 516              		.fpu fpv4-sp-d16
+ 518              	DWT_GetTimeline_s:
+ 519              	.LFB252:
+  99:bsp/dwt/bsp_dwt.c **** 
+ 100:bsp/dwt/bsp_dwt.c **** float DWT_GetTimeline_s(void)
+ 101:bsp/dwt/bsp_dwt.c **** {
+ 520              		.loc 1 101 1 is_stmt 1 view -0
+ 521              		.cfi_startproc
+ 522              		@ args = 0, pretend = 0, frame = 0
+ 523              		@ frame_needed = 0, uses_anonymous_args = 0
+ 524 0000 08B5     		push	{r3, lr}
+ 525              	.LCFI16:
+ 526              		.cfi_def_cfa_offset 8
+ 527              		.cfi_offset 3, -8
+ 528              		.cfi_offset 14, -4
+ 102:bsp/dwt/bsp_dwt.c ****     DWT_SysTimeUpdate();
+ 529              		.loc 1 102 5 view .LVU112
+ 530 0002 FFF7FEFF 		bl	DWT_SysTimeUpdate
+ 531              	.LVL20:
+ 103:bsp/dwt/bsp_dwt.c **** 
+ 104:bsp/dwt/bsp_dwt.c ****     float DWT_Timelinef32 = SysTime.s + SysTime.ms * 0.001f + SysTime.us * 0.000001f;
+ 532              		.loc 1 104 5 view .LVU113
+ 533              		.loc 1 104 36 is_stmt 0 view .LVU114
+ARM GAS  /tmp/cceDefkn.s 			page 12
+
+
+ 534 0006 0E4B     		ldr	r3, .L28
+ 535              		.loc 1 104 48 view .LVU115
+ 536 0008 9A88     		ldrh	r2, [r3, #4]
+ 537 000a 00EE102A 		vmov	s0, r2	@ int
+ 538              		.loc 1 104 52 view .LVU116
+ 539 000e B8EEC00A 		vcvt.f32.s32	s0, s0
+ 540 0012 DFED0C7A 		vldr.32	s15, .L28+4
+ 541 0016 60EE277A 		vmul.f32	s15, s0, s15
+ 542              		.loc 1 104 39 view .LVU117
+ 543 001a 93ED007A 		vldr.32	s14, [r3]	@ int
+ 544 001e B8EE470A 		vcvt.f32.u32	s0, s14
+ 545 0022 30EE270A 		vadd.f32	s0, s0, s15
+ 546              		.loc 1 104 70 view .LVU118
+ 547 0026 DB88     		ldrh	r3, [r3, #6]
+ 548 0028 07EE903A 		vmov	s15, r3	@ int
+ 549              		.loc 1 104 74 view .LVU119
+ 550 002c F8EEE77A 		vcvt.f32.s32	s15, s15
+ 551 0030 9FED057A 		vldr.32	s14, .L28+8
+ 552 0034 67EE877A 		vmul.f32	s15, s15, s14
+ 553              	.LVL21:
+ 105:bsp/dwt/bsp_dwt.c **** 
+ 106:bsp/dwt/bsp_dwt.c ****     return DWT_Timelinef32;
+ 554              		.loc 1 106 5 is_stmt 1 view .LVU120
+ 107:bsp/dwt/bsp_dwt.c **** }
+ 555              		.loc 1 107 1 is_stmt 0 view .LVU121
+ 556 0038 30EE270A 		vadd.f32	s0, s0, s15
+ 557              	.LVL22:
+ 558              		.loc 1 107 1 view .LVU122
+ 559 003c 08BD     		pop	{r3, pc}
+ 560              	.L29:
+ 561 003e 00BF     		.align	2
+ 562              	.L28:
+ 563 0040 00000000 		.word	.LANCHOR9
+ 564 0044 6F12833A 		.word	981668463
+ 565 0048 BD378635 		.word	897988541
+ 566              		.cfi_endproc
+ 567              	.LFE252:
+ 569              		.section	.text.DWT_GetTimeline_ms,"ax",%progbits
+ 570              		.align	1
+ 571              		.global	DWT_GetTimeline_ms
+ 572              		.syntax unified
+ 573              		.thumb
+ 574              		.thumb_func
+ 575              		.fpu fpv4-sp-d16
+ 577              	DWT_GetTimeline_ms:
+ 578              	.LFB253:
+ 108:bsp/dwt/bsp_dwt.c **** 
+ 109:bsp/dwt/bsp_dwt.c **** float DWT_GetTimeline_ms(void)
+ 110:bsp/dwt/bsp_dwt.c **** {
+ 579              		.loc 1 110 1 is_stmt 1 view -0
+ 580              		.cfi_startproc
+ 581              		@ args = 0, pretend = 0, frame = 0
+ 582              		@ frame_needed = 0, uses_anonymous_args = 0
+ 583 0000 08B5     		push	{r3, lr}
+ 584              	.LCFI17:
+ 585              		.cfi_def_cfa_offset 8
+ 586              		.cfi_offset 3, -8
+ARM GAS  /tmp/cceDefkn.s 			page 13
+
+
+ 587              		.cfi_offset 14, -4
+ 111:bsp/dwt/bsp_dwt.c ****     DWT_SysTimeUpdate();
+ 588              		.loc 1 111 5 view .LVU124
+ 589 0002 FFF7FEFF 		bl	DWT_SysTimeUpdate
+ 590              	.LVL23:
+ 112:bsp/dwt/bsp_dwt.c **** 
+ 113:bsp/dwt/bsp_dwt.c ****     float DWT_Timelinef32 = SysTime.s * 1000 + SysTime.ms + SysTime.us * 0.001f;
+ 591              		.loc 1 113 5 view .LVU125
+ 592              		.loc 1 113 36 is_stmt 0 view .LVU126
+ 593 0006 0B4A     		ldr	r2, .L32
+ 594 0008 1168     		ldr	r1, [r2]
+ 595              		.loc 1 113 55 view .LVU127
+ 596 000a 9388     		ldrh	r3, [r2, #4]
+ 597              		.loc 1 113 46 view .LVU128
+ 598 000c 4FF47A70 		mov	r0, #1000
+ 599 0010 00FB0133 		mla	r3, r0, r1, r3
+ 600 0014 00EE103A 		vmov	s0, r3	@ int
+ 601              		.loc 1 113 59 view .LVU129
+ 602 0018 B8EE400A 		vcvt.f32.u32	s0, s0
+ 603              		.loc 1 113 68 view .LVU130
+ 604 001c D388     		ldrh	r3, [r2, #6]
+ 605 001e 07EE903A 		vmov	s15, r3	@ int
+ 606              		.loc 1 113 72 view .LVU131
+ 607 0022 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 608 0026 9FED047A 		vldr.32	s14, .L32+4
+ 609 002a 67EE877A 		vmul.f32	s15, s15, s14
+ 610              	.LVL24:
+ 114:bsp/dwt/bsp_dwt.c **** 
+ 115:bsp/dwt/bsp_dwt.c ****     return DWT_Timelinef32;
+ 611              		.loc 1 115 5 is_stmt 1 view .LVU132
+ 116:bsp/dwt/bsp_dwt.c **** }
+ 612              		.loc 1 116 1 is_stmt 0 view .LVU133
+ 613 002e 30EE270A 		vadd.f32	s0, s0, s15
+ 614              	.LVL25:
+ 615              		.loc 1 116 1 view .LVU134
+ 616 0032 08BD     		pop	{r3, pc}
+ 617              	.L33:
+ 618              		.align	2
+ 619              	.L32:
+ 620 0034 00000000 		.word	.LANCHOR9
+ 621 0038 6F12833A 		.word	981668463
+ 622              		.cfi_endproc
+ 623              	.LFE253:
+ 625              		.section	.text.DWT_GetTimeline_us,"ax",%progbits
+ 626              		.align	1
+ 627              		.global	DWT_GetTimeline_us
+ 628              		.syntax unified
+ 629              		.thumb
+ 630              		.thumb_func
+ 631              		.fpu fpv4-sp-d16
+ 633              	DWT_GetTimeline_us:
+ 634              	.LFB254:
+ 117:bsp/dwt/bsp_dwt.c **** 
+ 118:bsp/dwt/bsp_dwt.c **** uint64_t DWT_GetTimeline_us(void)
+ 119:bsp/dwt/bsp_dwt.c **** {
+ 635              		.loc 1 119 1 is_stmt 1 view -0
+ 636              		.cfi_startproc
+ARM GAS  /tmp/cceDefkn.s 			page 14
+
+
+ 637              		@ args = 0, pretend = 0, frame = 0
+ 638              		@ frame_needed = 0, uses_anonymous_args = 0
+ 639 0000 08B5     		push	{r3, lr}
+ 640              	.LCFI18:
+ 641              		.cfi_def_cfa_offset 8
+ 642              		.cfi_offset 3, -8
+ 643              		.cfi_offset 14, -4
+ 120:bsp/dwt/bsp_dwt.c ****     DWT_SysTimeUpdate();
+ 644              		.loc 1 120 5 view .LVU136
+ 645 0002 FFF7FEFF 		bl	DWT_SysTimeUpdate
+ 646              	.LVL26:
+ 121:bsp/dwt/bsp_dwt.c **** 
+ 122:bsp/dwt/bsp_dwt.c ****     uint64_t DWT_Timelinef32 = SysTime.s * 1000000 + SysTime.ms * 1000 + SysTime.us;
+ 647              		.loc 1 122 5 view .LVU137
+ 648              		.loc 1 122 39 is_stmt 0 view .LVU138
+ 649 0006 074A     		ldr	r2, .L36
+ 650 0008 1068     		ldr	r0, [r2]
+ 651              		.loc 1 122 61 view .LVU139
+ 652 000a 9388     		ldrh	r3, [r2, #4]
+ 653              		.loc 1 122 65 view .LVU140
+ 654 000c 4FF47A71 		mov	r1, #1000
+ 655 0010 01FB03F3 		mul	r3, r1, r3
+ 656              		.loc 1 122 52 view .LVU141
+ 657 0014 0449     		ldr	r1, .L36+4
+ 658 0016 01FB0033 		mla	r3, r1, r0, r3
+ 659              		.loc 1 122 81 view .LVU142
+ 660 001a D088     		ldrh	r0, [r2, #6]
+ 661              	.LVL27:
+ 123:bsp/dwt/bsp_dwt.c **** 
+ 124:bsp/dwt/bsp_dwt.c ****     return DWT_Timelinef32;
+ 662              		.loc 1 124 5 is_stmt 1 view .LVU143
+ 125:bsp/dwt/bsp_dwt.c **** }
+ 663              		.loc 1 125 1 is_stmt 0 view .LVU144
+ 664 001c 1844     		add	r0, r0, r3
+ 665              	.LVL28:
+ 666              		.loc 1 125 1 view .LVU145
+ 667 001e 0021     		movs	r1, #0
+ 668 0020 08BD     		pop	{r3, pc}
+ 669              	.L37:
+ 670 0022 00BF     		.align	2
+ 671              	.L36:
+ 672 0024 00000000 		.word	.LANCHOR9
+ 673 0028 40420F00 		.word	1000000
+ 674              		.cfi_endproc
+ 675              	.LFE254:
+ 677              		.section	.text.DWT_Delay,"ax",%progbits
+ 678              		.align	1
+ 679              		.global	DWT_Delay
+ 680              		.syntax unified
+ 681              		.thumb
+ 682              		.thumb_func
+ 683              		.fpu fpv4-sp-d16
+ 685              	DWT_Delay:
+ 686              	.LVL29:
+ 687              	.LFB255:
+ 126:bsp/dwt/bsp_dwt.c **** 
+ 127:bsp/dwt/bsp_dwt.c **** void DWT_Delay(float Delay)
+ARM GAS  /tmp/cceDefkn.s 			page 15
+
+
+ 128:bsp/dwt/bsp_dwt.c **** {
+ 688              		.loc 1 128 1 is_stmt 1 view -0
+ 689              		.cfi_startproc
+ 690              		@ args = 0, pretend = 0, frame = 0
+ 691              		@ frame_needed = 0, uses_anonymous_args = 0
+ 692              		@ link register save eliminated.
+ 129:bsp/dwt/bsp_dwt.c ****     uint32_t tickstart = DWT->CYCCNT;
+ 693              		.loc 1 129 5 view .LVU147
+ 694              		.loc 1 129 14 is_stmt 0 view .LVU148
+ 695 0000 0A4B     		ldr	r3, .L40
+ 696 0002 5A68     		ldr	r2, [r3, #4]
+ 697              	.LVL30:
+ 130:bsp/dwt/bsp_dwt.c ****     float wait = Delay;
+ 698              		.loc 1 130 5 is_stmt 1 view .LVU149
+ 131:bsp/dwt/bsp_dwt.c **** 
+ 132:bsp/dwt/bsp_dwt.c ****     while ((DWT->CYCCNT - tickstart) < wait * (float)CPU_FREQ_Hz)
+ 699              		.loc 1 132 5 view .LVU150
+ 700              	.L39:
+ 133:bsp/dwt/bsp_dwt.c ****         ;
+ 701              		.loc 1 133 9 discriminator 1 view .LVU151
+ 132:bsp/dwt/bsp_dwt.c ****         ;
+ 702              		.loc 1 132 11 discriminator 1 view .LVU152
+ 132:bsp/dwt/bsp_dwt.c ****         ;
+ 703              		.loc 1 132 16 is_stmt 0 discriminator 1 view .LVU153
+ 704 0004 094B     		ldr	r3, .L40
+ 705 0006 5B68     		ldr	r3, [r3, #4]
+ 132:bsp/dwt/bsp_dwt.c ****         ;
+ 706              		.loc 1 132 25 discriminator 1 view .LVU154
+ 707 0008 9B1A     		subs	r3, r3, r2
+ 132:bsp/dwt/bsp_dwt.c ****         ;
+ 708              		.loc 1 132 38 discriminator 1 view .LVU155
+ 709 000a 07EE903A 		vmov	s15, r3	@ int
+ 710 000e B8EE677A 		vcvt.f32.u32	s14, s15
+ 132:bsp/dwt/bsp_dwt.c ****         ;
+ 711              		.loc 1 132 47 discriminator 1 view .LVU156
+ 712 0012 074B     		ldr	r3, .L40+4
+ 713 0014 D3ED007A 		vldr.32	s15, [r3]	@ int
+ 714 0018 F8EE677A 		vcvt.f32.u32	s15, s15
+ 132:bsp/dwt/bsp_dwt.c ****         ;
+ 715              		.loc 1 132 45 discriminator 1 view .LVU157
+ 716 001c 67EE807A 		vmul.f32	s15, s15, s0
+ 132:bsp/dwt/bsp_dwt.c ****         ;
+ 717              		.loc 1 132 11 discriminator 1 view .LVU158
+ 718 0020 B4EEE77A 		vcmpe.f32	s14, s15
+ 719 0024 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 720 0028 ECD4     		bmi	.L39
+ 134:bsp/dwt/bsp_dwt.c **** }
+ 721              		.loc 1 134 1 view .LVU159
+ 722 002a 7047     		bx	lr
+ 723              	.L41:
+ 724              		.align	2
+ 725              	.L40:
+ 726 002c 001000E0 		.word	-536866816
+ 727 0030 00000000 		.word	.LANCHOR3
+ 728              		.cfi_endproc
+ 729              	.LFE255:
+ 731              		.section	.bss.CNT_TEMP1.2,"aw",%nobits
+ARM GAS  /tmp/cceDefkn.s 			page 16
+
+
+ 732              		.align	3
+ 733              		.set	.LANCHOR7,. + 0
+ 736              	CNT_TEMP1.2:
+ 737 0000 00000000 		.space	8
+ 737      00000000 
+ 738              		.section	.bss.CNT_TEMP2.1,"aw",%nobits
+ 739              		.align	3
+ 740              		.set	.LANCHOR8,. + 0
+ 743              	CNT_TEMP2.1:
+ 744 0000 00000000 		.space	8
+ 744      00000000 
+ 745              		.section	.bss.CNT_TEMP3.0,"aw",%nobits
+ 746              		.align	3
+ 747              		.set	.LANCHOR10,. + 0
+ 750              	CNT_TEMP3.0:
+ 751 0000 00000000 		.space	8
+ 751      00000000 
+ 752              		.section	.bss.CPU_FREQ_Hz,"aw",%nobits
+ 753              		.align	2
+ 754              		.set	.LANCHOR3,. + 0
+ 757              	CPU_FREQ_Hz:
+ 758 0000 00000000 		.space	4
+ 759              		.section	.bss.CPU_FREQ_Hz_ms,"aw",%nobits
+ 760              		.align	2
+ 761              		.set	.LANCHOR4,. + 0
+ 764              	CPU_FREQ_Hz_ms:
+ 765 0000 00000000 		.space	4
+ 766              		.section	.bss.CPU_FREQ_Hz_us,"aw",%nobits
+ 767              		.align	2
+ 768              		.set	.LANCHOR5,. + 0
+ 771              	CPU_FREQ_Hz_us:
+ 772 0000 00000000 		.space	4
+ 773              		.section	.bss.CYCCNT64,"aw",%nobits
+ 774              		.align	3
+ 775              		.set	.LANCHOR6,. + 0
+ 778              	CYCCNT64:
+ 779 0000 00000000 		.space	8
+ 779      00000000 
+ 780              		.section	.bss.CYCCNT_LAST,"aw",%nobits
+ 781              		.align	2
+ 782              		.set	.LANCHOR1,. + 0
+ 785              	CYCCNT_LAST:
+ 786 0000 00000000 		.space	4
+ 787              		.section	.bss.CYCCNT_RountCount,"aw",%nobits
+ 788              		.align	2
+ 789              		.set	.LANCHOR2,. + 0
+ 792              	CYCCNT_RountCount:
+ 793 0000 00000000 		.space	4
+ 794              		.section	.bss.SysTime,"aw",%nobits
+ 795              		.align	2
+ 796              		.set	.LANCHOR9,. + 0
+ 799              	SysTime:
+ 800 0000 00000000 		.space	8
+ 800      00000000 
+ 801              		.section	.bss.bit_locker.3,"aw",%nobits
+ 802              		.set	.LANCHOR0,. + 0
+ 805              	bit_locker.3:
+ARM GAS  /tmp/cceDefkn.s 			page 17
+
+
+ 806 0000 00       		.space	1
+ 807              		.text
+ 808              	.Letext0:
+ 809              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 810              		.file 3 "Drivers/CMSIS/Include/core_cm4.h"
+ 811              		.file 4 "bsp/dwt/bsp_dwt.h"
+ARM GAS  /tmp/cceDefkn.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 bsp_dwt.c
+     /tmp/cceDefkn.s:18     .text.DWT_CNT_Update:0000000000000000 $t
+     /tmp/cceDefkn.s:25     .text.DWT_CNT_Update:0000000000000000 DWT_CNT_Update
+     /tmp/cceDefkn.s:95     .text.DWT_CNT_Update:000000000000003c $d
+     /tmp/cceDefkn.s:103    .text.DWT_Init:0000000000000000 $t
+     /tmp/cceDefkn.s:110    .text.DWT_Init:0000000000000000 DWT_Init
+     /tmp/cceDefkn.s:175    .text.DWT_Init:000000000000004c $d
+     /tmp/cceDefkn.s:188    .text.DWT_GetDeltaT:0000000000000000 $t
+     /tmp/cceDefkn.s:195    .text.DWT_GetDeltaT:0000000000000000 DWT_GetDeltaT
+     /tmp/cceDefkn.s:263    .text.DWT_GetDeltaT:0000000000000040 $d
+     /tmp/cceDefkn.s:271    .text.DWT_GetDeltaT64:0000000000000000 $t
+     /tmp/cceDefkn.s:278    .text.DWT_GetDeltaT64:0000000000000000 DWT_GetDeltaT64
+     /tmp/cceDefkn.s:362    .text.DWT_GetDeltaT64:0000000000000050 $d
+     /tmp/cceDefkn.s:369    .text.DWT_SysTimeUpdate:0000000000000000 $t
+     /tmp/cceDefkn.s:376    .text.DWT_SysTimeUpdate:0000000000000000 DWT_SysTimeUpdate
+     /tmp/cceDefkn.s:497    .text.DWT_SysTimeUpdate:00000000000000a4 $d
+     /tmp/cceDefkn.s:511    .text.DWT_GetTimeline_s:0000000000000000 $t
+     /tmp/cceDefkn.s:518    .text.DWT_GetTimeline_s:0000000000000000 DWT_GetTimeline_s
+     /tmp/cceDefkn.s:563    .text.DWT_GetTimeline_s:0000000000000040 $d
+     /tmp/cceDefkn.s:570    .text.DWT_GetTimeline_ms:0000000000000000 $t
+     /tmp/cceDefkn.s:577    .text.DWT_GetTimeline_ms:0000000000000000 DWT_GetTimeline_ms
+     /tmp/cceDefkn.s:620    .text.DWT_GetTimeline_ms:0000000000000034 $d
+     /tmp/cceDefkn.s:626    .text.DWT_GetTimeline_us:0000000000000000 $t
+     /tmp/cceDefkn.s:633    .text.DWT_GetTimeline_us:0000000000000000 DWT_GetTimeline_us
+     /tmp/cceDefkn.s:672    .text.DWT_GetTimeline_us:0000000000000024 $d
+     /tmp/cceDefkn.s:678    .text.DWT_Delay:0000000000000000 $t
+     /tmp/cceDefkn.s:685    .text.DWT_Delay:0000000000000000 DWT_Delay
+     /tmp/cceDefkn.s:726    .text.DWT_Delay:000000000000002c $d
+     /tmp/cceDefkn.s:732    .bss.CNT_TEMP1.2:0000000000000000 $d
+     /tmp/cceDefkn.s:736    .bss.CNT_TEMP1.2:0000000000000000 CNT_TEMP1.2
+     /tmp/cceDefkn.s:739    .bss.CNT_TEMP2.1:0000000000000000 $d
+     /tmp/cceDefkn.s:743    .bss.CNT_TEMP2.1:0000000000000000 CNT_TEMP2.1
+     /tmp/cceDefkn.s:746    .bss.CNT_TEMP3.0:0000000000000000 $d
+     /tmp/cceDefkn.s:750    .bss.CNT_TEMP3.0:0000000000000000 CNT_TEMP3.0
+     /tmp/cceDefkn.s:753    .bss.CPU_FREQ_Hz:0000000000000000 $d
+     /tmp/cceDefkn.s:757    .bss.CPU_FREQ_Hz:0000000000000000 CPU_FREQ_Hz
+     /tmp/cceDefkn.s:760    .bss.CPU_FREQ_Hz_ms:0000000000000000 $d
+     /tmp/cceDefkn.s:764    .bss.CPU_FREQ_Hz_ms:0000000000000000 CPU_FREQ_Hz_ms
+     /tmp/cceDefkn.s:767    .bss.CPU_FREQ_Hz_us:0000000000000000 $d
+     /tmp/cceDefkn.s:771    .bss.CPU_FREQ_Hz_us:0000000000000000 CPU_FREQ_Hz_us
+     /tmp/cceDefkn.s:774    .bss.CYCCNT64:0000000000000000 $d
+     /tmp/cceDefkn.s:778    .bss.CYCCNT64:0000000000000000 CYCCNT64
+     /tmp/cceDefkn.s:781    .bss.CYCCNT_LAST:0000000000000000 $d
+     /tmp/cceDefkn.s:785    .bss.CYCCNT_LAST:0000000000000000 CYCCNT_LAST
+     /tmp/cceDefkn.s:788    .bss.CYCCNT_RountCount:0000000000000000 $d
+     /tmp/cceDefkn.s:792    .bss.CYCCNT_RountCount:0000000000000000 CYCCNT_RountCount
+     /tmp/cceDefkn.s:795    .bss.SysTime:0000000000000000 $d
+     /tmp/cceDefkn.s:799    .bss.SysTime:0000000000000000 SysTime
+     /tmp/cceDefkn.s:805    .bss.bit_locker.3:0000000000000000 bit_locker.3
+     /tmp/cceDefkn.s:806    .bss.bit_locker.3:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_ui2d
+__aeabi_ddiv
+__aeabi_uldivmod

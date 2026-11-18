@@ -1,0 +1,3467 @@
+ARM GAS  /tmp/cc4u8TDW.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"BMI088driver.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.BMI088_read_muli_reg,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	BMI088_read_muli_reg:
+  26              	.LVL0:
+  27              	.LFB250:
+  28              		.file 1 "modules/imu/BMI088driver.c"
+   1:modules/imu/BMI088driver.c **** #include "BMI088driver.h"
+   2:modules/imu/BMI088driver.c **** #include "BMI088reg.h"
+   3:modules/imu/BMI088driver.c **** #include "BMI088Middleware.h"
+   4:modules/imu/BMI088driver.c **** #include "bsp_dwt.h"
+   5:modules/imu/BMI088driver.c **** #include "bsp_log.h"
+   6:modules/imu/BMI088driver.c **** #include <math.h>
+   7:modules/imu/BMI088driver.c **** 
+   8:modules/imu/BMI088driver.c **** #pragma message "this is a legacy support. test the new BMI088 module as soon as possible."
+   9:modules/imu/BMI088driver.c **** 
+  10:modules/imu/BMI088driver.c **** float BMI088_ACCEL_SEN = BMI088_ACCEL_6G_SEN;
+  11:modules/imu/BMI088driver.c **** float BMI088_GYRO_SEN = BMI088_GYRO_2000_SEN;
+  12:modules/imu/BMI088driver.c **** 
+  13:modules/imu/BMI088driver.c **** static uint8_t res = 0;
+  14:modules/imu/BMI088driver.c **** static uint8_t write_reg_num = 0;
+  15:modules/imu/BMI088driver.c **** static uint8_t error = BMI088_NO_ERROR;
+  16:modules/imu/BMI088driver.c **** float gyroDiff[3], gNormDiff;
+  17:modules/imu/BMI088driver.c **** 
+  18:modules/imu/BMI088driver.c **** uint8_t caliOffset = 1;
+  19:modules/imu/BMI088driver.c **** int16_t caliCount = 0;
+  20:modules/imu/BMI088driver.c **** 
+  21:modules/imu/BMI088driver.c **** IMU_Data_t BMI088;
+  22:modules/imu/BMI088driver.c **** 
+  23:modules/imu/BMI088driver.c **** #if defined(BMI088_USE_SPI)
+  24:modules/imu/BMI088driver.c **** 
+  25:modules/imu/BMI088driver.c **** #define BMI088_accel_write_single_reg(reg, data) \
+  26:modules/imu/BMI088driver.c ****     {                                            \
+  27:modules/imu/BMI088driver.c ****         BMI088_ACCEL_NS_L();                     \
+  28:modules/imu/BMI088driver.c ****         BMI088_write_single_reg((reg), (data));  \
+  29:modules/imu/BMI088driver.c ****         BMI088_ACCEL_NS_H();                     \
+  30:modules/imu/BMI088driver.c ****     }
+ARM GAS  /tmp/cc4u8TDW.s 			page 2
+
+
+  31:modules/imu/BMI088driver.c **** #define BMI088_accel_read_single_reg(reg, data) \
+  32:modules/imu/BMI088driver.c ****     {                                           \
+  33:modules/imu/BMI088driver.c ****         BMI088_ACCEL_NS_L();                    \
+  34:modules/imu/BMI088driver.c ****         BMI088_read_write_byte((reg) | 0x80);   \
+  35:modules/imu/BMI088driver.c ****         BMI088_read_write_byte(0x55);           \
+  36:modules/imu/BMI088driver.c ****         (data) = BMI088_read_write_byte(0x55);  \
+  37:modules/imu/BMI088driver.c ****         BMI088_ACCEL_NS_H();                    \
+  38:modules/imu/BMI088driver.c ****     }
+  39:modules/imu/BMI088driver.c **** #define BMI088_accel_read_muli_reg(reg, data, len) \
+  40:modules/imu/BMI088driver.c ****     {                                              \
+  41:modules/imu/BMI088driver.c ****         BMI088_ACCEL_NS_L();                       \
+  42:modules/imu/BMI088driver.c ****         BMI088_read_write_byte((reg) | 0x80);      \
+  43:modules/imu/BMI088driver.c ****         BMI088_read_muli_reg(reg, data, len);      \
+  44:modules/imu/BMI088driver.c ****         BMI088_ACCEL_NS_H();                       \
+  45:modules/imu/BMI088driver.c ****     }
+  46:modules/imu/BMI088driver.c **** 
+  47:modules/imu/BMI088driver.c **** #define BMI088_gyro_write_single_reg(reg, data) \
+  48:modules/imu/BMI088driver.c ****     {                                           \
+  49:modules/imu/BMI088driver.c ****         BMI088_GYRO_NS_L();                     \
+  50:modules/imu/BMI088driver.c ****         BMI088_write_single_reg((reg), (data)); \
+  51:modules/imu/BMI088driver.c ****         BMI088_GYRO_NS_H();                     \
+  52:modules/imu/BMI088driver.c ****     }
+  53:modules/imu/BMI088driver.c **** #define BMI088_gyro_read_single_reg(reg, data)  \
+  54:modules/imu/BMI088driver.c ****     {                                           \
+  55:modules/imu/BMI088driver.c ****         BMI088_GYRO_NS_L();                     \
+  56:modules/imu/BMI088driver.c ****         BMI088_read_single_reg((reg), &(data)); \
+  57:modules/imu/BMI088driver.c ****         BMI088_GYRO_NS_H();                     \
+  58:modules/imu/BMI088driver.c ****     }
+  59:modules/imu/BMI088driver.c **** #define BMI088_gyro_read_muli_reg(reg, data, len)   \
+  60:modules/imu/BMI088driver.c ****     {                                               \
+  61:modules/imu/BMI088driver.c ****         BMI088_GYRO_NS_L();                         \
+  62:modules/imu/BMI088driver.c ****         BMI088_read_muli_reg((reg), (data), (len)); \
+  63:modules/imu/BMI088driver.c ****         BMI088_GYRO_NS_H();                         \
+  64:modules/imu/BMI088driver.c ****     }
+  65:modules/imu/BMI088driver.c **** 
+  66:modules/imu/BMI088driver.c **** static void BMI088_write_single_reg(uint8_t reg, uint8_t data);
+  67:modules/imu/BMI088driver.c **** static void BMI088_read_single_reg(uint8_t reg, uint8_t *return_data);
+  68:modules/imu/BMI088driver.c **** static void BMI088_read_muli_reg(uint8_t reg, uint8_t *buf, uint8_t len);
+  69:modules/imu/BMI088driver.c **** 
+  70:modules/imu/BMI088driver.c **** #elif defined(BMI088_USE_IIC)
+  71:modules/imu/BMI088driver.c **** #endif
+  72:modules/imu/BMI088driver.c **** 
+  73:modules/imu/BMI088driver.c **** static uint8_t BMI088_Accel_Init_Table[BMI088_WRITE_ACCEL_REG_NUM][3] =
+  74:modules/imu/BMI088driver.c ****     {
+  75:modules/imu/BMI088driver.c ****         {BMI088_ACC_PWR_CTRL, BMI088_ACC_ENABLE_ACC_ON, BMI088_ACC_PWR_CTRL_ERROR},
+  76:modules/imu/BMI088driver.c ****         {BMI088_ACC_PWR_CONF, BMI088_ACC_PWR_ACTIVE_MODE, BMI088_ACC_PWR_CONF_ERROR},
+  77:modules/imu/BMI088driver.c ****         {BMI088_ACC_CONF, BMI088_ACC_NORMAL | BMI088_ACC_800_HZ | BMI088_ACC_CONF_MUST_Set, BMI088_
+  78:modules/imu/BMI088driver.c ****         {BMI088_ACC_RANGE, BMI088_ACC_RANGE_6G, BMI088_ACC_RANGE_ERROR},
+  79:modules/imu/BMI088driver.c ****         {BMI088_INT1_IO_CTRL, BMI088_ACC_INT1_IO_ENABLE | BMI088_ACC_INT1_GPIO_PP | BMI088_ACC_INT1
+  80:modules/imu/BMI088driver.c ****         {BMI088_INT_MAP_DATA, BMI088_ACC_INT1_DRDY_INTERRUPT, BMI088_INT_MAP_DATA_ERROR}
+  81:modules/imu/BMI088driver.c **** 
+  82:modules/imu/BMI088driver.c **** };
+  83:modules/imu/BMI088driver.c **** 
+  84:modules/imu/BMI088driver.c **** static uint8_t BMI088_Gyro_Init_Table[BMI088_WRITE_GYRO_REG_NUM][3] =
+  85:modules/imu/BMI088driver.c ****     {
+  86:modules/imu/BMI088driver.c ****         {BMI088_GYRO_RANGE, BMI088_GYRO_2000, BMI088_GYRO_RANGE_ERROR},
+  87:modules/imu/BMI088driver.c ****         {BMI088_GYRO_BANDWIDTH, BMI088_GYRO_2000_230_HZ | BMI088_GYRO_BANDWIDTH_MUST_Set, BMI088_GY
+ARM GAS  /tmp/cc4u8TDW.s 			page 3
+
+
+  88:modules/imu/BMI088driver.c ****         {BMI088_GYRO_LPM1, BMI088_GYRO_NORMAL_MODE, BMI088_GYRO_LPM1_ERROR},
+  89:modules/imu/BMI088driver.c ****         {BMI088_GYRO_CTRL, BMI088_DRDY_ON, BMI088_GYRO_CTRL_ERROR},
+  90:modules/imu/BMI088driver.c ****         {BMI088_GYRO_INT3_INT4_IO_CONF, BMI088_GYRO_INT3_GPIO_PP | BMI088_GYRO_INT3_GPIO_LOW, BMI08
+  91:modules/imu/BMI088driver.c ****         {BMI088_GYRO_INT3_INT4_IO_MAP, BMI088_GYRO_DRDY_IO_INT3, BMI088_GYRO_INT3_INT4_IO_MAP_ERROR
+  92:modules/imu/BMI088driver.c **** 
+  93:modules/imu/BMI088driver.c **** };
+  94:modules/imu/BMI088driver.c **** 
+  95:modules/imu/BMI088driver.c **** static void Calibrate_MPU_Offset(IMU_Data_t *bmi088);
+  96:modules/imu/BMI088driver.c **** 
+  97:modules/imu/BMI088driver.c **** uint8_t BMI088Init(SPI_HandleTypeDef *bmi088_SPI, uint8_t calibrate)
+  98:modules/imu/BMI088driver.c **** {
+  99:modules/imu/BMI088driver.c ****     BMI088_SPI = bmi088_SPI;
+ 100:modules/imu/BMI088driver.c ****     error = BMI088_NO_ERROR;
+ 101:modules/imu/BMI088driver.c **** 
+ 102:modules/imu/BMI088driver.c ****     error |= bmi088_accel_init();
+ 103:modules/imu/BMI088driver.c ****     error |= bmi088_gyro_init();
+ 104:modules/imu/BMI088driver.c ****     if (calibrate)
+ 105:modules/imu/BMI088driver.c ****         Calibrate_MPU_Offset(&BMI088);
+ 106:modules/imu/BMI088driver.c ****     else
+ 107:modules/imu/BMI088driver.c ****     {
+ 108:modules/imu/BMI088driver.c ****         BMI088.GyroOffset[0] = GxOFFSET;
+ 109:modules/imu/BMI088driver.c ****         BMI088.GyroOffset[1] = GyOFFSET;
+ 110:modules/imu/BMI088driver.c ****         BMI088.GyroOffset[2] = GzOFFSET;
+ 111:modules/imu/BMI088driver.c ****         BMI088.gNorm = gNORM;
+ 112:modules/imu/BMI088driver.c ****         BMI088.AccelScale = 9.81f / BMI088.gNorm;
+ 113:modules/imu/BMI088driver.c ****         BMI088.TempWhenCali = 40;
+ 114:modules/imu/BMI088driver.c ****     }
+ 115:modules/imu/BMI088driver.c **** 
+ 116:modules/imu/BMI088driver.c ****     return error;
+ 117:modules/imu/BMI088driver.c **** }
+ 118:modules/imu/BMI088driver.c **** 
+ 119:modules/imu/BMI088driver.c **** void Calibrate_MPU_Offset(IMU_Data_t *bmi088)
+ 120:modules/imu/BMI088driver.c **** {
+ 121:modules/imu/BMI088driver.c ****     static float startTime;
+ 122:modules/imu/BMI088driver.c ****     static uint16_t CaliTimes = 6000;
+ 123:modules/imu/BMI088driver.c ****     uint8_t buf[8] = {0, 0, 0, 0, 0, 0};
+ 124:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 125:modules/imu/BMI088driver.c ****     float gyroMax[3], gyroMin[3];
+ 126:modules/imu/BMI088driver.c ****     float gNormTemp = 0.0f, gNormMax = 0.0f, gNormMin = 0.0f;
+ 127:modules/imu/BMI088driver.c **** 
+ 128:modules/imu/BMI088driver.c ****     startTime = DWT_GetTimeline_s();
+ 129:modules/imu/BMI088driver.c ****     do
+ 130:modules/imu/BMI088driver.c ****     {
+ 131:modules/imu/BMI088driver.c ****         if (DWT_GetTimeline_s() - startTime > 12)
+ 132:modules/imu/BMI088driver.c ****         {
+ 133:modules/imu/BMI088driver.c ****             // ��????
+ 134:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[0] = GxOFFSET;
+ 135:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[1] = GyOFFSET;
+ 136:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[2] = GzOFFSET;
+ 137:modules/imu/BMI088driver.c ****             bmi088->gNorm = gNORM;
+ 138:modules/imu/BMI088driver.c ****             bmi088->TempWhenCali = 40;
+ 139:modules/imu/BMI088driver.c ****             LOGERROR("[BMI088] Calibrate Failed! Use offline params");
+ 140:modules/imu/BMI088driver.c ****             break;
+ 141:modules/imu/BMI088driver.c ****         }
+ 142:modules/imu/BMI088driver.c **** 
+ 143:modules/imu/BMI088driver.c ****         DWT_Delay(0.005);
+ 144:modules/imu/BMI088driver.c ****         bmi088->gNorm = 0;
+ARM GAS  /tmp/cc4u8TDW.s 			page 4
+
+
+ 145:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[0] = 0;
+ 146:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[1] = 0;
+ 147:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[2] = 0;
+ 148:modules/imu/BMI088driver.c **** 
+ 149:modules/imu/BMI088driver.c ****         for (uint16_t i = 0; i < CaliTimes; ++i)
+ 150:modules/imu/BMI088driver.c ****         {
+ 151:modules/imu/BMI088driver.c ****             BMI088_accel_read_muli_reg(BMI088_ACCEL_XOUT_L, buf, 6);
+ 152:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[1]) << 8) | buf[0];
+ 153:modules/imu/BMI088driver.c ****             bmi088->Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 154:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 155:modules/imu/BMI088driver.c ****             bmi088->Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 156:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 157:modules/imu/BMI088driver.c ****             bmi088->Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 158:modules/imu/BMI088driver.c ****             gNormTemp = sqrtf(bmi088->Accel[0] * bmi088->Accel[0] +
+ 159:modules/imu/BMI088driver.c ****                               bmi088->Accel[1] * bmi088->Accel[1] +
+ 160:modules/imu/BMI088driver.c ****                               bmi088->Accel[2] * bmi088->Accel[2]);
+ 161:modules/imu/BMI088driver.c ****             bmi088->gNorm += gNormTemp;
+ 162:modules/imu/BMI088driver.c **** 
+ 163:modules/imu/BMI088driver.c ****             BMI088_gyro_read_muli_reg(BMI088_GYRO_CHIP_ID, buf, 8);
+ 164:modules/imu/BMI088driver.c ****             if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
+ 165:modules/imu/BMI088driver.c ****             {
+ 166:modules/imu/BMI088driver.c ****                 bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 167:modules/imu/BMI088driver.c ****                 bmi088->Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 168:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[0] += bmi088->Gyro[0];
+ 169:modules/imu/BMI088driver.c ****                 bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 170:modules/imu/BMI088driver.c ****                 bmi088->Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 171:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[1] += bmi088->Gyro[1];
+ 172:modules/imu/BMI088driver.c ****                 bmi088_raw_temp = (int16_t)((buf[7]) << 8) | buf[6];
+ 173:modules/imu/BMI088driver.c ****                 bmi088->Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 174:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[2] += bmi088->Gyro[2];
+ 175:modules/imu/BMI088driver.c ****             }
+ 176:modules/imu/BMI088driver.c **** 
+ 177:modules/imu/BMI088driver.c ****             if (i == 0)
+ 178:modules/imu/BMI088driver.c ****             {
+ 179:modules/imu/BMI088driver.c ****                 gNormMax = gNormTemp;
+ 180:modules/imu/BMI088driver.c ****                 gNormMin = gNormTemp;
+ 181:modules/imu/BMI088driver.c ****                 for (uint8_t j = 0; j < 3; ++j)
+ 182:modules/imu/BMI088driver.c ****                 {
+ 183:modules/imu/BMI088driver.c ****                     gyroMax[j] = bmi088->Gyro[j];
+ 184:modules/imu/BMI088driver.c ****                     gyroMin[j] = bmi088->Gyro[j];
+ 185:modules/imu/BMI088driver.c ****                 }
+ 186:modules/imu/BMI088driver.c ****             }
+ 187:modules/imu/BMI088driver.c ****             else
+ 188:modules/imu/BMI088driver.c ****             {
+ 189:modules/imu/BMI088driver.c ****                 if (gNormTemp > gNormMax)
+ 190:modules/imu/BMI088driver.c ****                     gNormMax = gNormTemp;
+ 191:modules/imu/BMI088driver.c ****                 if (gNormTemp < gNormMin)
+ 192:modules/imu/BMI088driver.c ****                     gNormMin = gNormTemp;
+ 193:modules/imu/BMI088driver.c ****                 for (uint8_t j = 0; j < 3; ++j)
+ 194:modules/imu/BMI088driver.c ****                 {
+ 195:modules/imu/BMI088driver.c ****                     if (bmi088->Gyro[j] > gyroMax[j])
+ 196:modules/imu/BMI088driver.c ****                         gyroMax[j] = bmi088->Gyro[j];
+ 197:modules/imu/BMI088driver.c ****                     if (bmi088->Gyro[j] < gyroMin[j])
+ 198:modules/imu/BMI088driver.c ****                         gyroMin[j] = bmi088->Gyro[j];
+ 199:modules/imu/BMI088driver.c ****                 }
+ 200:modules/imu/BMI088driver.c ****             }
+ 201:modules/imu/BMI088driver.c **** 
+ARM GAS  /tmp/cc4u8TDW.s 			page 5
+
+
+ 202:modules/imu/BMI088driver.c ****             gNormDiff = gNormMax - gNormMin;
+ 203:modules/imu/BMI088driver.c ****             for (uint8_t j = 0; j < 3; ++j)
+ 204:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 205:modules/imu/BMI088driver.c ****             if (gNormDiff > 0.5f ||
+ 206:modules/imu/BMI088driver.c ****                 gyroDiff[0] > 0.15f ||
+ 207:modules/imu/BMI088driver.c ****                 gyroDiff[1] > 0.15f ||
+ 208:modules/imu/BMI088driver.c ****                 gyroDiff[2] > 0.15f)
+ 209:modules/imu/BMI088driver.c ****             {
+ 210:modules/imu/BMI088driver.c ****                 LOGWARNING("[bmi088] calibration was interrupted\n");
+ 211:modules/imu/BMI088driver.c ****                 break;
+ 212:modules/imu/BMI088driver.c ****             }
+ 213:modules/imu/BMI088driver.c **** 
+ 214:modules/imu/BMI088driver.c ****             DWT_Delay(0.0005);
+ 215:modules/imu/BMI088driver.c ****         }
+ 216:modules/imu/BMI088driver.c **** 
+ 217:modules/imu/BMI088driver.c ****         bmi088->gNorm /= (float)CaliTimes;
+ 218:modules/imu/BMI088driver.c ****         for (uint8_t i = 0; i < 3; ++i)
+ 219:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 220:modules/imu/BMI088driver.c **** 
+ 221:modules/imu/BMI088driver.c ****         BMI088_accel_read_muli_reg(BMI088_TEMP_M, buf, 2);
+ 222:modules/imu/BMI088driver.c ****         bmi088_raw_temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5));
+ 223:modules/imu/BMI088driver.c ****         if (bmi088_raw_temp > 1023)
+ 224:modules/imu/BMI088driver.c ****             bmi088_raw_temp -= 2048;
+ 225:modules/imu/BMI088driver.c ****         bmi088->TempWhenCali = bmi088_raw_temp * BMI088_TEMP_FACTOR + BMI088_TEMP_OFFSET;
+ 226:modules/imu/BMI088driver.c **** 
+ 227:modules/imu/BMI088driver.c ****         caliCount++;
+ 228:modules/imu/BMI088driver.c ****     } while (gNormDiff > 0.5f ||
+ 229:modules/imu/BMI088driver.c ****              fabsf(bmi088->gNorm - 9.8f) > 0.5f ||
+ 230:modules/imu/BMI088driver.c ****              gyroDiff[0] > 0.15f ||
+ 231:modules/imu/BMI088driver.c ****              gyroDiff[1] > 0.15f ||
+ 232:modules/imu/BMI088driver.c ****              gyroDiff[2] > 0.15f ||
+ 233:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[0]) > 0.01f ||
+ 234:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[1]) > 0.01f ||
+ 235:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[2]) > 0.01f);
+ 236:modules/imu/BMI088driver.c **** 
+ 237:modules/imu/BMI088driver.c ****     bmi088->AccelScale = 9.81f / bmi088->gNorm;
+ 238:modules/imu/BMI088driver.c **** }
+ 239:modules/imu/BMI088driver.c **** 
+ 240:modules/imu/BMI088driver.c **** uint8_t bmi088_accel_init(void)
+ 241:modules/imu/BMI088driver.c **** {
+ 242:modules/imu/BMI088driver.c ****     // check commiunication
+ 243:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, res);
+ 244:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 245:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, res);
+ 246:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 247:modules/imu/BMI088driver.c ****     // accel software reset
+ 248:modules/imu/BMI088driver.c ****     BMI088_accel_write_single_reg(BMI088_ACC_SOFTRESET, BMI088_ACC_SOFTRESET_VALUE);
+ 249:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 250:modules/imu/BMI088driver.c ****     DWT_Delay(0.08);
+ 251:modules/imu/BMI088driver.c ****     // check commiunication is normal after reset
+ 252:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, res);
+ 253:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 254:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, res);
+ 255:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 256:modules/imu/BMI088driver.c **** 
+ 257:modules/imu/BMI088driver.c ****     // check the "who am I"
+ 258:modules/imu/BMI088driver.c ****     if (res != BMI088_ACC_CHIP_ID_VALUE)
+ARM GAS  /tmp/cc4u8TDW.s 			page 6
+
+
+ 259:modules/imu/BMI088driver.c ****     {
+ 260:modules/imu/BMI088driver.c ****         LOGERROR("[bmi088] Can not read bmi088 acc chip id");
+ 261:modules/imu/BMI088driver.c ****         return BMI088_NO_SENSOR;
+ 262:modules/imu/BMI088driver.c ****     }
+ 263:modules/imu/BMI088driver.c **** 
+ 264:modules/imu/BMI088driver.c ****     // set accel sonsor config and check
+ 265:modules/imu/BMI088driver.c ****     for (write_reg_num = 0; write_reg_num < BMI088_WRITE_ACCEL_REG_NUM; write_reg_num++)
+ 266:modules/imu/BMI088driver.c ****     {
+ 267:modules/imu/BMI088driver.c **** 
+ 268:modules/imu/BMI088driver.c ****         BMI088_accel_write_single_reg(BMI088_Accel_Init_Table[write_reg_num][0], BMI088_Accel_Init_
+ 269:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 270:modules/imu/BMI088driver.c **** 
+ 271:modules/imu/BMI088driver.c ****         BMI088_accel_read_single_reg(BMI088_Accel_Init_Table[write_reg_num][0], res);
+ 272:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 273:modules/imu/BMI088driver.c **** 
+ 274:modules/imu/BMI088driver.c ****         if (res != BMI088_Accel_Init_Table[write_reg_num][1])
+ 275:modules/imu/BMI088driver.c ****         {
+ 276:modules/imu/BMI088driver.c ****             // write_reg_num--;
+ 277:modules/imu/BMI088driver.c ****             // return BMI088_Accel_Init_Table[write_reg_num][2];
+ 278:modules/imu/BMI088driver.c ****             error |= BMI088_Accel_Init_Table[write_reg_num][2];
+ 279:modules/imu/BMI088driver.c ****         }
+ 280:modules/imu/BMI088driver.c ****     }
+ 281:modules/imu/BMI088driver.c ****     return BMI088_NO_ERROR;
+ 282:modules/imu/BMI088driver.c **** }
+ 283:modules/imu/BMI088driver.c **** 
+ 284:modules/imu/BMI088driver.c **** uint8_t bmi088_gyro_init(void)
+ 285:modules/imu/BMI088driver.c **** {
+ 286:modules/imu/BMI088driver.c ****     // check commiunication
+ 287:modules/imu/BMI088driver.c ****     BMI088_gyro_read_single_reg(BMI088_GYRO_CHIP_ID, res);
+ 288:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 289:modules/imu/BMI088driver.c ****     BMI088_gyro_read_single_reg(BMI088_GYRO_CHIP_ID, res);
+ 290:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 291:modules/imu/BMI088driver.c **** 
+ 292:modules/imu/BMI088driver.c ****     // reset the gyro sensor
+ 293:modules/imu/BMI088driver.c ****     BMI088_gyro_write_single_reg(BMI088_GYRO_SOFTRESET, BMI088_GYRO_SOFTRESET_VALUE);
+ 294:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 295:modules/imu/BMI088driver.c ****     DWT_Delay(0.08);
+ 296:modules/imu/BMI088driver.c ****     // check commiunication is normal after reset
+ 297:modules/imu/BMI088driver.c ****     BMI088_gyro_read_single_reg(BMI088_GYRO_CHIP_ID, res);
+ 298:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 299:modules/imu/BMI088driver.c ****     BMI088_gyro_read_single_reg(BMI088_GYRO_CHIP_ID, res);
+ 300:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 301:modules/imu/BMI088driver.c **** 
+ 302:modules/imu/BMI088driver.c ****     // check the "who am I"
+ 303:modules/imu/BMI088driver.c ****     if (res != BMI088_GYRO_CHIP_ID_VALUE)
+ 304:modules/imu/BMI088driver.c ****     {
+ 305:modules/imu/BMI088driver.c ****         LOGERROR("[bmi088] Can not read bmi088 gyro chip id");
+ 306:modules/imu/BMI088driver.c ****         return BMI088_NO_SENSOR;
+ 307:modules/imu/BMI088driver.c ****     }
+ 308:modules/imu/BMI088driver.c **** 
+ 309:modules/imu/BMI088driver.c ****     // set gyro sonsor config and check
+ 310:modules/imu/BMI088driver.c ****     for (write_reg_num = 0; write_reg_num < BMI088_WRITE_GYRO_REG_NUM; write_reg_num++)
+ 311:modules/imu/BMI088driver.c ****     {
+ 312:modules/imu/BMI088driver.c **** 
+ 313:modules/imu/BMI088driver.c ****         BMI088_gyro_write_single_reg(BMI088_Gyro_Init_Table[write_reg_num][0], BMI088_Gyro_Init_Tab
+ 314:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 315:modules/imu/BMI088driver.c **** 
+ARM GAS  /tmp/cc4u8TDW.s 			page 7
+
+
+ 316:modules/imu/BMI088driver.c ****         BMI088_gyro_read_single_reg(BMI088_Gyro_Init_Table[write_reg_num][0], res);
+ 317:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 318:modules/imu/BMI088driver.c **** 
+ 319:modules/imu/BMI088driver.c ****         if (res != BMI088_Gyro_Init_Table[write_reg_num][1])
+ 320:modules/imu/BMI088driver.c ****         {
+ 321:modules/imu/BMI088driver.c ****             write_reg_num--;
+ 322:modules/imu/BMI088driver.c ****             // return BMI088_Gyro_Init_Table[write_reg_num][2];
+ 323:modules/imu/BMI088driver.c ****             error |= BMI088_Accel_Init_Table[write_reg_num][2];
+ 324:modules/imu/BMI088driver.c ****         }
+ 325:modules/imu/BMI088driver.c ****     }
+ 326:modules/imu/BMI088driver.c **** 
+ 327:modules/imu/BMI088driver.c ****     return BMI088_NO_ERROR;
+ 328:modules/imu/BMI088driver.c **** }
+ 329:modules/imu/BMI088driver.c **** 
+ 330:modules/imu/BMI088driver.c **** void BMI088_Read(IMU_Data_t *bmi088)
+ 331:modules/imu/BMI088driver.c **** {
+ 332:modules/imu/BMI088driver.c **** /* [USB_SP 修改 01 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 333:modules/imu/BMI088driver.c ****     (void)BMI088_ReadChecked(bmi088);
+ 334:modules/imu/BMI088driver.c **** }
+ 335:modules/imu/BMI088driver.c **** 
+ 336:modules/imu/BMI088driver.c **** uint8_t BMI088_ReadChecked(IMU_Data_t *bmi088)
+ 337:modules/imu/BMI088driver.c **** {
+ 338:modules/imu/BMI088driver.c ****     if (!bmi088) return 0;
+ 339:modules/imu/BMI088driver.c ****     IMU_Data_t next = *bmi088;
+ 340:modules/imu/BMI088driver.c ****     uint8_t buf[8] = {0};
+ 341:modules/imu/BMI088driver.c ****     uint8_t accel_id = 0;
+ 342:modules/imu/BMI088driver.c ****     BMI088_BeginRead();
+ 343:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, accel_id);
+ 344:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || accel_id != BMI088_ACC_CHIP_ID_VALUE) return 0;
+ 345:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 346:modules/imu/BMI088driver.c **** /* [USB_SP 修改 01 结束] */
+ 347:modules/imu/BMI088driver.c **** 
+ 348:modules/imu/BMI088driver.c ****     BMI088_accel_read_muli_reg(BMI088_ACCEL_XOUT_L, buf, 6);
+ 349:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 350:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK()) return 0;
+ 351:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 结束] */
+ 352:modules/imu/BMI088driver.c **** 
+ 353:modules/imu/BMI088driver.c ****     bmi088_raw_temp = (int16_t)((buf[1]) << 8) | buf[0];
+ 354:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 355:modules/imu/BMI088driver.c ****     next.Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN * next.AccelScale;
+ 356:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 结束] */
+ 357:modules/imu/BMI088driver.c ****     bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 358:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 359:modules/imu/BMI088driver.c ****     next.Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN * next.AccelScale;
+ 360:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 结束] */
+ 361:modules/imu/BMI088driver.c ****     bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 362:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 363:modules/imu/BMI088driver.c ****     next.Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN * next.AccelScale;
+ 364:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 结束] */
+ 365:modules/imu/BMI088driver.c **** 
+ 366:modules/imu/BMI088driver.c ****     BMI088_gyro_read_muli_reg(BMI088_GYRO_CHIP_ID, buf, 8);
+ 367:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 368:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || buf[0] != BMI088_GYRO_CHIP_ID_VALUE) return 0;
+ 369:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 结束] */
+ 370:modules/imu/BMI088driver.c ****     if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
+ 371:modules/imu/BMI088driver.c ****     {
+ 372:modules/imu/BMI088driver.c ****         if (caliOffset)
+ARM GAS  /tmp/cc4u8TDW.s 			page 8
+
+
+ 373:modules/imu/BMI088driver.c ****         {
+ 374:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 375:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 376:modules/imu/BMI088driver.c ****             next.Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN - next.GyroOffset[0];
+ 377:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 结束] */
+ 378:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 379:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 380:modules/imu/BMI088driver.c ****             next.Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN - next.GyroOffset[1];
+ 381:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 结束] */
+ 382:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[7]) << 8) | buf[6];
+ 383:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 384:modules/imu/BMI088driver.c ****             next.Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN - next.GyroOffset[2];
+ 385:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 结束] */
+ 386:modules/imu/BMI088driver.c ****         }
+ 387:modules/imu/BMI088driver.c ****         else
+ 388:modules/imu/BMI088driver.c ****         {
+ 389:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 390:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 391:modules/imu/BMI088driver.c ****             next.Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 392:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 结束] */
+ 393:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 394:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 395:modules/imu/BMI088driver.c ****             next.Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 396:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 结束] */
+ 397:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[7]) << 8) | buf[6];
+ 398:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 399:modules/imu/BMI088driver.c ****             next.Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 400:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 结束] */
+ 401:modules/imu/BMI088driver.c ****         }
+ 402:modules/imu/BMI088driver.c ****     }
+ 403:modules/imu/BMI088driver.c ****     BMI088_accel_read_muli_reg(BMI088_TEMP_M, buf, 2);
+ 404:modules/imu/BMI088driver.c **** 
+ 405:modules/imu/BMI088driver.c ****     bmi088_raw_temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5));
+ 406:modules/imu/BMI088driver.c **** 
+ 407:modules/imu/BMI088driver.c ****     if (bmi088_raw_temp > 1023)
+ 408:modules/imu/BMI088driver.c ****     {
+ 409:modules/imu/BMI088driver.c ****         bmi088_raw_temp -= 2048;
+ 410:modules/imu/BMI088driver.c ****     }
+ 411:modules/imu/BMI088driver.c **** 
+ 412:modules/imu/BMI088driver.c **** /* [USB_SP 修改 13 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 413:modules/imu/BMI088driver.c ****     next.Temperature = bmi088_raw_temp * BMI088_TEMP_FACTOR + BMI088_TEMP_OFFSET;
+ 414:modules/imu/BMI088driver.c **** 
+ 415:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK()) return 0;
+ 416:modules/imu/BMI088driver.c ****     *bmi088 = next;
+ 417:modules/imu/BMI088driver.c ****     return 1;
+ 418:modules/imu/BMI088driver.c **** /* [USB_SP 修改 13 结束] */
+ 419:modules/imu/BMI088driver.c **** }
+ 420:modules/imu/BMI088driver.c **** 
+ 421:modules/imu/BMI088driver.c **** #if defined(BMI088_USE_SPI)
+ 422:modules/imu/BMI088driver.c **** 
+ 423:modules/imu/BMI088driver.c **** static void BMI088_write_single_reg(uint8_t reg, uint8_t data)
+ 424:modules/imu/BMI088driver.c **** {
+ 425:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(reg);
+ 426:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(data);
+ 427:modules/imu/BMI088driver.c **** }
+ 428:modules/imu/BMI088driver.c **** 
+ 429:modules/imu/BMI088driver.c **** static void BMI088_read_single_reg(uint8_t reg, uint8_t *return_data)
+ARM GAS  /tmp/cc4u8TDW.s 			page 9
+
+
+ 430:modules/imu/BMI088driver.c **** {
+ 431:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(reg | 0x80);
+ 432:modules/imu/BMI088driver.c ****     *return_data = BMI088_read_write_byte(0x55);
+ 433:modules/imu/BMI088driver.c **** }
+ 434:modules/imu/BMI088driver.c **** 
+ 435:modules/imu/BMI088driver.c **** static void BMI088_read_muli_reg(uint8_t reg, uint8_t *buf, uint8_t len)
+ 436:modules/imu/BMI088driver.c **** {
+  29              		.loc 1 436 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 436 1 is_stmt 0 view .LVU1
+  34 0000 38B5     		push	{r3, r4, r5, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 16
+  37              		.cfi_offset 3, -16
+  38              		.cfi_offset 4, -12
+  39              		.cfi_offset 5, -8
+  40              		.cfi_offset 14, -4
+  41 0002 0D46     		mov	r5, r1
+  42 0004 1446     		mov	r4, r2
+ 437:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(reg | 0x80);
+  43              		.loc 1 437 5 is_stmt 1 view .LVU2
+  44 0006 40F08000 		orr	r0, r0, #128
+  45              	.LVL1:
+  46              		.loc 1 437 5 is_stmt 0 view .LVU3
+  47 000a FFF7FEFF 		bl	BMI088_read_write_byte
+  48              	.LVL2:
+ 438:modules/imu/BMI088driver.c **** 
+ 439:modules/imu/BMI088driver.c ****     while (len != 0)
+  49              		.loc 1 439 5 is_stmt 1 view .LVU4
+  50              		.loc 1 439 11 is_stmt 0 view .LVU5
+  51 000e 06E0     		b	.L2
+  52              	.LVL3:
+  53              	.L3:
+ 440:modules/imu/BMI088driver.c ****     {
+ 441:modules/imu/BMI088driver.c ****         *buf = BMI088_read_write_byte(0x55);
+  54              		.loc 1 441 9 is_stmt 1 view .LVU6
+  55              		.loc 1 441 16 is_stmt 0 view .LVU7
+  56 0010 5520     		movs	r0, #85
+  57 0012 FFF7FEFF 		bl	BMI088_read_write_byte
+  58              	.LVL4:
+  59              		.loc 1 441 14 view .LVU8
+  60 0016 05F8010B 		strb	r0, [r5], #1
+  61              	.LVL5:
+ 442:modules/imu/BMI088driver.c ****         buf++;
+  62              		.loc 1 442 9 is_stmt 1 view .LVU9
+ 443:modules/imu/BMI088driver.c ****         len--;
+  63              		.loc 1 443 9 view .LVU10
+  64              		.loc 1 443 12 is_stmt 0 view .LVU11
+  65 001a 013C     		subs	r4, r4, #1
+  66              	.LVL6:
+  67              		.loc 1 443 12 view .LVU12
+  68 001c E4B2     		uxtb	r4, r4
+  69              	.LVL7:
+  70              	.L2:
+ 439:modules/imu/BMI088driver.c ****     {
+ARM GAS  /tmp/cc4u8TDW.s 			page 10
+
+
+  71              		.loc 1 439 11 is_stmt 1 view .LVU13
+  72 001e 002C     		cmp	r4, #0
+  73 0020 F6D1     		bne	.L3
+ 444:modules/imu/BMI088driver.c ****     }
+ 445:modules/imu/BMI088driver.c **** }
+  74              		.loc 1 445 1 is_stmt 0 view .LVU14
+  75 0022 38BD     		pop	{r3, r4, r5, pc}
+  76              		.loc 1 445 1 view .LVU15
+  77              		.cfi_endproc
+  78              	.LFE250:
+  80              		.section	.text.BMI088_write_single_reg,"ax",%progbits
+  81              		.align	1
+  82              		.syntax unified
+  83              		.thumb
+  84              		.thumb_func
+  85              		.fpu fpv4-sp-d16
+  87              	BMI088_write_single_reg:
+  88              	.LVL8:
+  89              	.LFB248:
+ 424:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(reg);
+  90              		.loc 1 424 1 is_stmt 1 view -0
+  91              		.cfi_startproc
+  92              		@ args = 0, pretend = 0, frame = 0
+  93              		@ frame_needed = 0, uses_anonymous_args = 0
+ 424:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(reg);
+  94              		.loc 1 424 1 is_stmt 0 view .LVU17
+  95 0000 10B5     		push	{r4, lr}
+  96              	.LCFI1:
+  97              		.cfi_def_cfa_offset 8
+  98              		.cfi_offset 4, -8
+  99              		.cfi_offset 14, -4
+ 100 0002 0C46     		mov	r4, r1
+ 425:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(data);
+ 101              		.loc 1 425 5 is_stmt 1 view .LVU18
+ 102 0004 FFF7FEFF 		bl	BMI088_read_write_byte
+ 103              	.LVL9:
+ 426:modules/imu/BMI088driver.c **** }
+ 104              		.loc 1 426 5 view .LVU19
+ 105 0008 2046     		mov	r0, r4
+ 106 000a FFF7FEFF 		bl	BMI088_read_write_byte
+ 107              	.LVL10:
+ 427:modules/imu/BMI088driver.c **** 
+ 108              		.loc 1 427 1 is_stmt 0 view .LVU20
+ 109 000e 10BD     		pop	{r4, pc}
+ 110              		.cfi_endproc
+ 111              	.LFE248:
+ 113              		.section	.text.BMI088_read_single_reg,"ax",%progbits
+ 114              		.align	1
+ 115              		.syntax unified
+ 116              		.thumb
+ 117              		.thumb_func
+ 118              		.fpu fpv4-sp-d16
+ 120              	BMI088_read_single_reg:
+ 121              	.LVL11:
+ 122              	.LFB249:
+ 430:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(reg | 0x80);
+ 123              		.loc 1 430 1 is_stmt 1 view -0
+ARM GAS  /tmp/cc4u8TDW.s 			page 11
+
+
+ 124              		.cfi_startproc
+ 125              		@ args = 0, pretend = 0, frame = 0
+ 126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 430:modules/imu/BMI088driver.c ****     BMI088_read_write_byte(reg | 0x80);
+ 127              		.loc 1 430 1 is_stmt 0 view .LVU22
+ 128 0000 10B5     		push	{r4, lr}
+ 129              	.LCFI2:
+ 130              		.cfi_def_cfa_offset 8
+ 131              		.cfi_offset 4, -8
+ 132              		.cfi_offset 14, -4
+ 133 0002 0C46     		mov	r4, r1
+ 431:modules/imu/BMI088driver.c ****     *return_data = BMI088_read_write_byte(0x55);
+ 134              		.loc 1 431 5 is_stmt 1 view .LVU23
+ 135 0004 40F08000 		orr	r0, r0, #128
+ 136              	.LVL12:
+ 431:modules/imu/BMI088driver.c ****     *return_data = BMI088_read_write_byte(0x55);
+ 137              		.loc 1 431 5 is_stmt 0 view .LVU24
+ 138 0008 FFF7FEFF 		bl	BMI088_read_write_byte
+ 139              	.LVL13:
+ 432:modules/imu/BMI088driver.c **** }
+ 140              		.loc 1 432 5 is_stmt 1 view .LVU25
+ 432:modules/imu/BMI088driver.c **** }
+ 141              		.loc 1 432 20 is_stmt 0 view .LVU26
+ 142 000c 5520     		movs	r0, #85
+ 143 000e FFF7FEFF 		bl	BMI088_read_write_byte
+ 144              	.LVL14:
+ 432:modules/imu/BMI088driver.c **** }
+ 145              		.loc 1 432 18 view .LVU27
+ 146 0012 2070     		strb	r0, [r4]
+ 433:modules/imu/BMI088driver.c **** 
+ 147              		.loc 1 433 1 view .LVU28
+ 148 0014 10BD     		pop	{r4, pc}
+ 433:modules/imu/BMI088driver.c **** 
+ 149              		.loc 1 433 1 view .LVU29
+ 150              		.cfi_endproc
+ 151              	.LFE249:
+ 153              		.section	.text.Calibrate_MPU_Offset,"ax",%progbits
+ 154              		.align	1
+ 155              		.syntax unified
+ 156              		.thumb
+ 157              		.thumb_func
+ 158              		.fpu fpv4-sp-d16
+ 160              	Calibrate_MPU_Offset:
+ 161              	.LVL15:
+ 162              	.LFB243:
+ 120:modules/imu/BMI088driver.c ****     static float startTime;
+ 163              		.loc 1 120 1 is_stmt 1 view -0
+ 164              		.cfi_startproc
+ 165              		@ args = 0, pretend = 0, frame = 32
+ 166              		@ frame_needed = 0, uses_anonymous_args = 0
+ 120:modules/imu/BMI088driver.c ****     static float startTime;
+ 167              		.loc 1 120 1 is_stmt 0 view .LVU31
+ 168 0000 30B5     		push	{r4, r5, lr}
+ 169              	.LCFI3:
+ 170              		.cfi_def_cfa_offset 12
+ 171              		.cfi_offset 4, -12
+ 172              		.cfi_offset 5, -8
+ARM GAS  /tmp/cc4u8TDW.s 			page 12
+
+
+ 173              		.cfi_offset 14, -4
+ 174 0002 2DED048B 		vpush.64	{d8, d9}
+ 175              	.LCFI4:
+ 176              		.cfi_def_cfa_offset 28
+ 177              		.cfi_offset 80, -28
+ 178              		.cfi_offset 81, -24
+ 179              		.cfi_offset 82, -20
+ 180              		.cfi_offset 83, -16
+ 181 0006 89B0     		sub	sp, sp, #36
+ 182              	.LCFI5:
+ 183              		.cfi_def_cfa_offset 64
+ 184 0008 0446     		mov	r4, r0
+ 121:modules/imu/BMI088driver.c ****     static uint16_t CaliTimes = 6000;
+ 185              		.loc 1 121 5 is_stmt 1 view .LVU32
+ 122:modules/imu/BMI088driver.c ****     uint8_t buf[8] = {0, 0, 0, 0, 0, 0};
+ 186              		.loc 1 122 5 view .LVU33
+ 123:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 187              		.loc 1 123 5 view .LVU34
+ 123:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 188              		.loc 1 123 13 is_stmt 0 view .LVU35
+ 189 000a C74B     		ldr	r3, .L49
+ 190 000c 93E80300 		ldm	r3, {r0, r1}
+ 191              	.LVL16:
+ 123:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 192              		.loc 1 123 13 view .LVU36
+ 193 0010 0690     		str	r0, [sp, #24]
+ 194 0012 ADF81C10 		strh	r1, [sp, #28]	@ movhi
+ 195 0016 090C     		lsrs	r1, r1, #16
+ 196 0018 8DF81E10 		strb	r1, [sp, #30]
+ 197 001c 0023     		movs	r3, #0
+ 198 001e 8DF81F30 		strb	r3, [sp, #31]
+ 124:modules/imu/BMI088driver.c ****     float gyroMax[3], gyroMin[3];
+ 199              		.loc 1 124 5 is_stmt 1 view .LVU37
+ 125:modules/imu/BMI088driver.c ****     float gNormTemp = 0.0f, gNormMax = 0.0f, gNormMin = 0.0f;
+ 200              		.loc 1 125 5 view .LVU38
+ 126:modules/imu/BMI088driver.c **** 
+ 201              		.loc 1 126 5 view .LVU39
+ 202              	.LVL17:
+ 128:modules/imu/BMI088driver.c ****     do
+ 203              		.loc 1 128 5 view .LVU40
+ 128:modules/imu/BMI088driver.c ****     do
+ 204              		.loc 1 128 17 is_stmt 0 view .LVU41
+ 205 0022 FFF7FEFF 		bl	DWT_GetTimeline_s
+ 206              	.LVL18:
+ 128:modules/imu/BMI088driver.c ****     do
+ 207              		.loc 1 128 15 view .LVU42
+ 208 0026 C14B     		ldr	r3, .L49+4
+ 209 0028 83ED000A 		vstr.32	s0, [r3]
+ 126:modules/imu/BMI088driver.c **** 
+ 210              		.loc 1 126 46 view .LVU43
+ 211 002c 9FEDC08A 		vldr.32	s16, .L49+8
+ 126:modules/imu/BMI088driver.c **** 
+ 212              		.loc 1 126 29 view .LVU44
+ 213 0030 F0EE488A 		vmov.f32	s17, s16
+ 214              	.LVL19:
+ 215              	.L34:
+ 129:modules/imu/BMI088driver.c ****     {
+ARM GAS  /tmp/cc4u8TDW.s 			page 13
+
+
+ 216              		.loc 1 129 5 is_stmt 1 view .LVU45
+ 131:modules/imu/BMI088driver.c ****         {
+ 217              		.loc 1 131 9 view .LVU46
+ 131:modules/imu/BMI088driver.c ****         {
+ 218              		.loc 1 131 13 is_stmt 0 view .LVU47
+ 219 0034 FFF7FEFF 		bl	DWT_GetTimeline_s
+ 220              	.LVL20:
+ 131:modules/imu/BMI088driver.c ****         {
+ 221              		.loc 1 131 33 view .LVU48
+ 222 0038 BC4B     		ldr	r3, .L49+4
+ 223 003a D3ED007A 		vldr.32	s15, [r3]
+ 224 003e 30EE670A 		vsub.f32	s0, s0, s15
+ 131:modules/imu/BMI088driver.c ****         {
+ 225              		.loc 1 131 12 view .LVU49
+ 226 0042 F2EE087A 		vmov.f32	s15, #1.2e+1
+ 227 0046 B4EEE70A 		vcmpe.f32	s0, s15
+ 228 004a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 229 004e 0CDC     		bgt	.L44
+ 143:modules/imu/BMI088driver.c ****         bmi088->gNorm = 0;
+ 230              		.loc 1 143 9 is_stmt 1 view .LVU50
+ 231 0050 9FEDB80A 		vldr.32	s0, .L49+12
+ 232 0054 FFF7FEFF 		bl	DWT_Delay
+ 233              	.LVL21:
+ 144:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[0] = 0;
+ 234              		.loc 1 144 9 view .LVU51
+ 144:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[0] = 0;
+ 235              		.loc 1 144 23 is_stmt 0 view .LVU52
+ 236 0058 0023     		movs	r3, #0
+ 237 005a 2363     		str	r3, [r4, #48]	@ float
+ 145:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[1] = 0;
+ 238              		.loc 1 145 9 is_stmt 1 view .LVU53
+ 145:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[1] = 0;
+ 239              		.loc 1 145 31 is_stmt 0 view .LVU54
+ 240 005c 6362     		str	r3, [r4, #36]	@ float
+ 146:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[2] = 0;
+ 241              		.loc 1 146 9 is_stmt 1 view .LVU55
+ 146:modules/imu/BMI088driver.c ****         bmi088->GyroOffset[2] = 0;
+ 242              		.loc 1 146 31 is_stmt 0 view .LVU56
+ 243 005e A362     		str	r3, [r4, #40]	@ float
+ 147:modules/imu/BMI088driver.c **** 
+ 244              		.loc 1 147 9 is_stmt 1 view .LVU57
+ 147:modules/imu/BMI088driver.c **** 
+ 245              		.loc 1 147 31 is_stmt 0 view .LVU58
+ 246 0060 E362     		str	r3, [r4, #44]	@ float
+ 149:modules/imu/BMI088driver.c ****         {
+ 247              		.loc 1 149 9 is_stmt 1 view .LVU59
+ 248              	.LBB2:
+ 149:modules/imu/BMI088driver.c ****         {
+ 249              		.loc 1 149 14 view .LVU60
+ 250              	.LVL22:
+ 149:modules/imu/BMI088driver.c ****         {
+ 251              		.loc 1 149 9 is_stmt 0 view .LVU61
+ 252 0062 B0EE689A 		vmov.f32	s18, s17
+ 149:modules/imu/BMI088driver.c ****         {
+ 253              		.loc 1 149 23 view .LVU62
+ 254 0066 0025     		movs	r5, #0
+ 149:modules/imu/BMI088driver.c ****         {
+ARM GAS  /tmp/cc4u8TDW.s 			page 14
+
+
+ 255              		.loc 1 149 9 view .LVU63
+ 256 0068 DAE0     		b	.L13
+ 257              	.LVL23:
+ 258              	.L44:
+ 149:modules/imu/BMI088driver.c ****         {
+ 259              		.loc 1 149 9 view .LVU64
+ 260              	.LBE2:
+ 134:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[1] = GyOFFSET;
+ 261              		.loc 1 134 13 is_stmt 1 view .LVU65
+ 134:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[1] = GyOFFSET;
+ 262              		.loc 1 134 35 is_stmt 0 view .LVU66
+ 263 006a B34B     		ldr	r3, .L49+16
+ 264 006c 6362     		str	r3, [r4, #36]	@ float
+ 135:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[2] = GzOFFSET;
+ 265              		.loc 1 135 13 is_stmt 1 view .LVU67
+ 135:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[2] = GzOFFSET;
+ 266              		.loc 1 135 35 is_stmt 0 view .LVU68
+ 267 006e B34B     		ldr	r3, .L49+20
+ 268 0070 A362     		str	r3, [r4, #40]	@ float
+ 136:modules/imu/BMI088driver.c ****             bmi088->gNorm = gNORM;
+ 269              		.loc 1 136 13 is_stmt 1 view .LVU69
+ 136:modules/imu/BMI088driver.c ****             bmi088->gNorm = gNORM;
+ 270              		.loc 1 136 35 is_stmt 0 view .LVU70
+ 271 0072 E362     		str	r3, [r4, #44]	@ float
+ 137:modules/imu/BMI088driver.c ****             bmi088->TempWhenCali = 40;
+ 272              		.loc 1 137 13 is_stmt 1 view .LVU71
+ 137:modules/imu/BMI088driver.c ****             bmi088->TempWhenCali = 40;
+ 273              		.loc 1 137 27 is_stmt 0 view .LVU72
+ 274 0074 B24B     		ldr	r3, .L49+24
+ 275 0076 2363     		str	r3, [r4, #48]	@ float
+ 138:modules/imu/BMI088driver.c ****             LOGERROR("[BMI088] Calibrate Failed! Use offline params");
+ 276              		.loc 1 138 13 is_stmt 1 view .LVU73
+ 138:modules/imu/BMI088driver.c ****             LOGERROR("[BMI088] Calibrate Failed! Use offline params");
+ 277              		.loc 1 138 34 is_stmt 0 view .LVU74
+ 278 0078 B24B     		ldr	r3, .L49+28
+ 279 007a A361     		str	r3, [r4, #24]	@ float
+ 139:modules/imu/BMI088driver.c ****             break;
+ 280              		.loc 1 139 70 is_stmt 1 view .LVU75
+ 140:modules/imu/BMI088driver.c ****         }
+ 281              		.loc 1 140 13 view .LVU76
+ 282              	.L12:
+ 237:modules/imu/BMI088driver.c **** }
+ 283              		.loc 1 237 5 view .LVU77
+ 237:modules/imu/BMI088driver.c **** }
+ 284              		.loc 1 237 40 is_stmt 0 view .LVU78
+ 285 007c 94ED0C7A 		vldr.32	s14, [r4, #48]
+ 237:modules/imu/BMI088driver.c **** }
+ 286              		.loc 1 237 32 view .LVU79
+ 287 0080 DFEDB16A 		vldr.32	s13, .L49+32
+ 288 0084 C6EE877A 		vdiv.f32	s15, s13, s14
+ 237:modules/imu/BMI088driver.c **** }
+ 289              		.loc 1 237 24 view .LVU80
+ 290 0088 C4ED087A 		vstr.32	s15, [r4, #32]
+ 238:modules/imu/BMI088driver.c **** 
+ 291              		.loc 1 238 1 view .LVU81
+ 292 008c 09B0     		add	sp, sp, #36
+ 293              	.LCFI6:
+ARM GAS  /tmp/cc4u8TDW.s 			page 15
+
+
+ 294              		.cfi_remember_state
+ 295              		.cfi_def_cfa_offset 28
+ 296              		@ sp needed
+ 297 008e BDEC048B 		vldm	sp!, {d8-d9}
+ 298              	.LCFI7:
+ 299              		.cfi_restore 82
+ 300              		.cfi_restore 83
+ 301              		.cfi_restore 80
+ 302              		.cfi_restore 81
+ 303              		.cfi_def_cfa_offset 12
+ 304              	.LVL24:
+ 238:modules/imu/BMI088driver.c **** 
+ 305              		.loc 1 238 1 view .LVU82
+ 306 0092 30BD     		pop	{r4, r5, pc}
+ 307              	.LVL25:
+ 308              	.L48:
+ 309              	.LCFI8:
+ 310              		.cfi_restore_state
+ 311              	.LBB8:
+ 166:modules/imu/BMI088driver.c ****                 bmi088->Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 312              		.loc 1 166 17 is_stmt 1 view .LVU83
+ 166:modules/imu/BMI088driver.c ****                 bmi088->Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 313              		.loc 1 166 49 is_stmt 0 view .LVU84
+ 314 0094 9DF81B30 		ldrb	r3, [sp, #27]	@ zero_extendqisi2
+ 166:modules/imu/BMI088driver.c ****                 bmi088->Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 315              		.loc 1 166 54 view .LVU85
+ 316 0098 1B02     		lsls	r3, r3, #8
+ 166:modules/imu/BMI088driver.c ****                 bmi088->Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 317              		.loc 1 166 35 view .LVU86
+ 318 009a 1BB2     		sxth	r3, r3
+ 166:modules/imu/BMI088driver.c ****                 bmi088->Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 319              		.loc 1 166 65 view .LVU87
+ 320 009c 9DF81A20 		ldrb	r2, [sp, #26]	@ zero_extendqisi2
+ 166:modules/imu/BMI088driver.c ****                 bmi088->Gyro[0] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 321              		.loc 1 166 33 view .LVU88
+ 322 00a0 1343     		orrs	r3, r3, r2
+ 323 00a2 07EE103A 		vmov	s14, r3	@ int
+ 324              	.LVL26:
+ 167:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[0] += bmi088->Gyro[0];
+ 325              		.loc 1 167 17 is_stmt 1 view .LVU89
+ 167:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[0] += bmi088->Gyro[0];
+ 326              		.loc 1 167 51 is_stmt 0 view .LVU90
+ 327 00a6 A94B     		ldr	r3, .L49+36
+ 328 00a8 D3ED006A 		vldr.32	s13, [r3]
+ 329 00ac B8EEC77A 		vcvt.f32.s32	s14, s14
+ 330              	.LVL27:
+ 167:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[0] += bmi088->Gyro[0];
+ 331              		.loc 1 167 51 view .LVU91
+ 332 00b0 27EE267A 		vmul.f32	s14, s14, s13
+ 167:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[0] += bmi088->Gyro[0];
+ 333              		.loc 1 167 33 view .LVU92
+ 334 00b4 84ED037A 		vstr.32	s14, [r4, #12]
+ 168:modules/imu/BMI088driver.c ****                 bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 335              		.loc 1 168 17 is_stmt 1 view .LVU93
+ 168:modules/imu/BMI088driver.c ****                 bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 336              		.loc 1 168 39 is_stmt 0 view .LVU94
+ 337 00b8 D4ED097A 		vldr.32	s15, [r4, #36]
+ARM GAS  /tmp/cc4u8TDW.s 			page 16
+
+
+ 338 00bc 37EE877A 		vadd.f32	s14, s15, s14
+ 339 00c0 84ED097A 		vstr.32	s14, [r4, #36]
+ 169:modules/imu/BMI088driver.c ****                 bmi088->Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 340              		.loc 1 169 17 is_stmt 1 view .LVU95
+ 169:modules/imu/BMI088driver.c ****                 bmi088->Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 341              		.loc 1 169 49 is_stmt 0 view .LVU96
+ 342 00c4 9DF81D30 		ldrb	r3, [sp, #29]	@ zero_extendqisi2
+ 169:modules/imu/BMI088driver.c ****                 bmi088->Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 343              		.loc 1 169 54 view .LVU97
+ 344 00c8 1B02     		lsls	r3, r3, #8
+ 169:modules/imu/BMI088driver.c ****                 bmi088->Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 345              		.loc 1 169 35 view .LVU98
+ 346 00ca 1BB2     		sxth	r3, r3
+ 169:modules/imu/BMI088driver.c ****                 bmi088->Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 347              		.loc 1 169 65 view .LVU99
+ 348 00cc 9DF81C20 		ldrb	r2, [sp, #28]	@ zero_extendqisi2
+ 349              	.LVL28:
+ 169:modules/imu/BMI088driver.c ****                 bmi088->Gyro[1] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 350              		.loc 1 169 33 view .LVU100
+ 351 00d0 1343     		orrs	r3, r3, r2
+ 352 00d2 07EE103A 		vmov	s14, r3	@ int
+ 353              	.LVL29:
+ 170:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[1] += bmi088->Gyro[1];
+ 354              		.loc 1 170 17 is_stmt 1 view .LVU101
+ 170:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[1] += bmi088->Gyro[1];
+ 355              		.loc 1 170 51 is_stmt 0 view .LVU102
+ 356 00d6 B8EEC77A 		vcvt.f32.s32	s14, s14
+ 357              	.LVL30:
+ 170:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[1] += bmi088->Gyro[1];
+ 358              		.loc 1 170 51 view .LVU103
+ 359 00da 27EE267A 		vmul.f32	s14, s14, s13
+ 170:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[1] += bmi088->Gyro[1];
+ 360              		.loc 1 170 33 view .LVU104
+ 361 00de 84ED047A 		vstr.32	s14, [r4, #16]
+ 171:modules/imu/BMI088driver.c ****                 bmi088_raw_temp = (int16_t)((buf[7]) << 8) | buf[6];
+ 362              		.loc 1 171 17 is_stmt 1 view .LVU105
+ 171:modules/imu/BMI088driver.c ****                 bmi088_raw_temp = (int16_t)((buf[7]) << 8) | buf[6];
+ 363              		.loc 1 171 39 is_stmt 0 view .LVU106
+ 364 00e2 D4ED0A7A 		vldr.32	s15, [r4, #40]
+ 365 00e6 37EE877A 		vadd.f32	s14, s15, s14
+ 366 00ea 84ED0A7A 		vstr.32	s14, [r4, #40]
+ 172:modules/imu/BMI088driver.c ****                 bmi088->Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 367              		.loc 1 172 17 is_stmt 1 view .LVU107
+ 172:modules/imu/BMI088driver.c ****                 bmi088->Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 368              		.loc 1 172 49 is_stmt 0 view .LVU108
+ 369 00ee 9DF81F30 		ldrb	r3, [sp, #31]	@ zero_extendqisi2
+ 370              	.LVL31:
+ 172:modules/imu/BMI088driver.c ****                 bmi088->Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 371              		.loc 1 172 54 view .LVU109
+ 372 00f2 1B02     		lsls	r3, r3, #8
+ 172:modules/imu/BMI088driver.c ****                 bmi088->Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 373              		.loc 1 172 35 view .LVU110
+ 374 00f4 1BB2     		sxth	r3, r3
+ 172:modules/imu/BMI088driver.c ****                 bmi088->Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 375              		.loc 1 172 65 view .LVU111
+ 376 00f6 9DF81E20 		ldrb	r2, [sp, #30]	@ zero_extendqisi2
+ 377              	.LVL32:
+ARM GAS  /tmp/cc4u8TDW.s 			page 17
+
+
+ 172:modules/imu/BMI088driver.c ****                 bmi088->Gyro[2] = bmi088_raw_temp * BMI088_GYRO_SEN;
+ 378              		.loc 1 172 33 view .LVU112
+ 379 00fa 1343     		orrs	r3, r3, r2
+ 380 00fc 07EE903A 		vmov	s15, r3	@ int
+ 381              	.LVL33:
+ 173:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[2] += bmi088->Gyro[2];
+ 382              		.loc 1 173 17 is_stmt 1 view .LVU113
+ 173:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[2] += bmi088->Gyro[2];
+ 383              		.loc 1 173 51 is_stmt 0 view .LVU114
+ 384 0100 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 385              	.LVL34:
+ 173:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[2] += bmi088->Gyro[2];
+ 386              		.loc 1 173 51 view .LVU115
+ 387 0104 67EEA67A 		vmul.f32	s15, s15, s13
+ 173:modules/imu/BMI088driver.c ****                 bmi088->GyroOffset[2] += bmi088->Gyro[2];
+ 388              		.loc 1 173 33 view .LVU116
+ 389 0108 C4ED057A 		vstr.32	s15, [r4, #20]
+ 174:modules/imu/BMI088driver.c ****             }
+ 390              		.loc 1 174 17 is_stmt 1 view .LVU117
+ 174:modules/imu/BMI088driver.c ****             }
+ 391              		.loc 1 174 39 is_stmt 0 view .LVU118
+ 392 010c 94ED0B7A 		vldr.32	s14, [r4, #44]
+ 393 0110 77EE277A 		vadd.f32	s15, s14, s15
+ 394 0114 C4ED0B7A 		vstr.32	s15, [r4, #44]
+ 395 0118 E6E0     		b	.L14
+ 396              	.LVL35:
+ 397              	.L35:
+ 398              	.LBB3:
+ 181:modules/imu/BMI088driver.c ****                 {
+ 399              		.loc 1 181 30 view .LVU119
+ 400 011a 0023     		movs	r3, #0
+ 401              	.LVL36:
+ 402              	.L15:
+ 181:modules/imu/BMI088driver.c ****                 {
+ 403              		.loc 1 181 37 is_stmt 1 discriminator 1 view .LVU120
+ 181:modules/imu/BMI088driver.c ****                 {
+ 404              		.loc 1 181 17 is_stmt 0 discriminator 1 view .LVU121
+ 405 011c 022B     		cmp	r3, #2
+ 406 011e 0DD8     		bhi	.L45
+ 183:modules/imu/BMI088driver.c ****                     gyroMin[j] = bmi088->Gyro[j];
+ 407              		.loc 1 183 21 is_stmt 1 discriminator 3 view .LVU122
+ 183:modules/imu/BMI088driver.c ****                     gyroMin[j] = bmi088->Gyro[j];
+ 408              		.loc 1 183 46 is_stmt 0 discriminator 3 view .LVU123
+ 409 0120 9A1C     		adds	r2, r3, #2
+ 410 0122 04EB8202 		add	r2, r4, r2, lsl #2
+ 411 0126 5168     		ldr	r1, [r2, #4]	@ float
+ 183:modules/imu/BMI088driver.c ****                     gyroMin[j] = bmi088->Gyro[j];
+ 412              		.loc 1 183 32 discriminator 3 view .LVU124
+ 413 0128 08AA     		add	r2, sp, #32
+ 414 012a 02EB8302 		add	r2, r2, r3, lsl #2
+ 415 012e 42F8141C 		str	r1, [r2, #-20]	@ float
+ 184:modules/imu/BMI088driver.c ****                 }
+ 416              		.loc 1 184 21 is_stmt 1 discriminator 3 view .LVU125
+ 184:modules/imu/BMI088driver.c ****                 }
+ 417              		.loc 1 184 32 is_stmt 0 discriminator 3 view .LVU126
+ 418 0132 42F8201C 		str	r1, [r2, #-32]	@ float
+ 181:modules/imu/BMI088driver.c ****                 {
+ARM GAS  /tmp/cc4u8TDW.s 			page 18
+
+
+ 419              		.loc 1 181 44 is_stmt 1 discriminator 3 view .LVU127
+ 420 0136 0133     		adds	r3, r3, #1
+ 421              	.LVL37:
+ 181:modules/imu/BMI088driver.c ****                 {
+ 422              		.loc 1 181 44 is_stmt 0 discriminator 3 view .LVU128
+ 423 0138 DBB2     		uxtb	r3, r3
+ 424              	.LVL38:
+ 181:modules/imu/BMI088driver.c ****                 {
+ 425              		.loc 1 181 44 discriminator 3 view .LVU129
+ 426 013a EFE7     		b	.L15
+ 427              	.L45:
+ 181:modules/imu/BMI088driver.c ****                 {
+ 428              		.loc 1 181 44 discriminator 3 view .LVU130
+ 429              	.LBE3:
+ 180:modules/imu/BMI088driver.c ****                 for (uint8_t j = 0; j < 3; ++j)
+ 430              		.loc 1 180 26 view .LVU131
+ 431 013c B0EE688A 		vmov.f32	s16, s17
+ 432              	.LVL39:
+ 433              	.L18:
+ 202:modules/imu/BMI088driver.c ****             for (uint8_t j = 0; j < 3; ++j)
+ 434              		.loc 1 202 13 is_stmt 1 view .LVU132
+ 202:modules/imu/BMI088driver.c ****             for (uint8_t j = 0; j < 3; ++j)
+ 435              		.loc 1 202 34 is_stmt 0 view .LVU133
+ 436 0140 78EEC86A 		vsub.f32	s13, s17, s16
+ 202:modules/imu/BMI088driver.c ****             for (uint8_t j = 0; j < 3; ++j)
+ 437              		.loc 1 202 23 view .LVU134
+ 438 0144 824B     		ldr	r3, .L49+40
+ 439 0146 C3ED006A 		vstr.32	s13, [r3]
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 440              		.loc 1 203 13 is_stmt 1 view .LVU135
+ 441              	.LBB4:
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 442              		.loc 1 203 18 view .LVU136
+ 443              	.LVL40:
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 444              		.loc 1 203 26 is_stmt 0 view .LVU137
+ 445 014a 0023     		movs	r3, #0
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 446              		.loc 1 203 13 view .LVU138
+ 447 014c 3BE0     		b	.L27
+ 448              	.LVL41:
+ 449              	.L24:
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 450              		.loc 1 203 13 view .LVU139
+ 451              	.LBE4:
+ 452              	.LBB5:
+ 193:modules/imu/BMI088driver.c ****                 {
+ 453              		.loc 1 193 44 is_stmt 1 discriminator 2 view .LVU140
+ 454 014e 0133     		adds	r3, r3, #1
+ 455              	.LVL42:
+ 193:modules/imu/BMI088driver.c ****                 {
+ 456              		.loc 1 193 44 is_stmt 0 discriminator 2 view .LVU141
+ 457 0150 DBB2     		uxtb	r3, r3
+ 458              	.LVL43:
+ 459              	.L21:
+ 193:modules/imu/BMI088driver.c ****                 {
+ 460              		.loc 1 193 37 is_stmt 1 discriminator 1 view .LVU142
+ARM GAS  /tmp/cc4u8TDW.s 			page 19
+
+
+ 193:modules/imu/BMI088driver.c ****                 {
+ 461              		.loc 1 193 17 is_stmt 0 discriminator 1 view .LVU143
+ 462 0152 022B     		cmp	r3, #2
+ 463 0154 24D8     		bhi	.L46
+ 195:modules/imu/BMI088driver.c ****                         gyroMax[j] = bmi088->Gyro[j];
+ 464              		.loc 1 195 21 is_stmt 1 view .LVU144
+ 195:modules/imu/BMI088driver.c ****                         gyroMax[j] = bmi088->Gyro[j];
+ 465              		.loc 1 195 37 is_stmt 0 view .LVU145
+ 466 0156 1946     		mov	r1, r3
+ 467 0158 9A1C     		adds	r2, r3, #2
+ 468 015a 04EB8202 		add	r2, r4, r2, lsl #2
+ 469 015e D2ED017A 		vldr.32	s15, [r2, #4]
+ 195:modules/imu/BMI088driver.c ****                         gyroMax[j] = bmi088->Gyro[j];
+ 470              		.loc 1 195 50 view .LVU146
+ 471 0162 08AA     		add	r2, sp, #32
+ 472 0164 02EB8302 		add	r2, r2, r3, lsl #2
+ 473 0168 12ED057A 		vldr.32	s14, [r2, #-20]
+ 195:modules/imu/BMI088driver.c ****                         gyroMax[j] = bmi088->Gyro[j];
+ 474              		.loc 1 195 24 view .LVU147
+ 475 016c F4EEC77A 		vcmpe.f32	s15, s14
+ 476 0170 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 477 0174 04DD     		ble	.L22
+ 196:modules/imu/BMI088driver.c ****                     if (bmi088->Gyro[j] < gyroMin[j])
+ 478              		.loc 1 196 25 is_stmt 1 view .LVU148
+ 196:modules/imu/BMI088driver.c ****                     if (bmi088->Gyro[j] < gyroMin[j])
+ 479              		.loc 1 196 36 is_stmt 0 view .LVU149
+ 480 0176 08AA     		add	r2, sp, #32
+ 481 0178 02EB8302 		add	r2, r2, r3, lsl #2
+ 482 017c 42ED057A 		vstr.32	s15, [r2, #-20]
+ 483              	.L22:
+ 197:modules/imu/BMI088driver.c ****                         gyroMin[j] = bmi088->Gyro[j];
+ 484              		.loc 1 197 21 is_stmt 1 view .LVU150
+ 197:modules/imu/BMI088driver.c ****                         gyroMin[j] = bmi088->Gyro[j];
+ 485              		.loc 1 197 50 is_stmt 0 view .LVU151
+ 486 0180 08AA     		add	r2, sp, #32
+ 487 0182 02EB8102 		add	r2, r2, r1, lsl #2
+ 488 0186 12ED087A 		vldr.32	s14, [r2, #-32]
+ 197:modules/imu/BMI088driver.c ****                         gyroMin[j] = bmi088->Gyro[j];
+ 489              		.loc 1 197 24 view .LVU152
+ 490 018a F4EEC77A 		vcmpe.f32	s15, s14
+ 491 018e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 492 0192 DCD5     		bpl	.L24
+ 198:modules/imu/BMI088driver.c ****                 }
+ 493              		.loc 1 198 25 is_stmt 1 view .LVU153
+ 198:modules/imu/BMI088driver.c ****                 }
+ 494              		.loc 1 198 36 is_stmt 0 view .LVU154
+ 495 0194 08AA     		add	r2, sp, #32
+ 496 0196 02EB8101 		add	r1, r2, r1, lsl #2
+ 497 019a 41ED087A 		vstr.32	s15, [r1, #-32]
+ 498 019e D6E7     		b	.L24
+ 499              	.L46:
+ 198:modules/imu/BMI088driver.c ****                 }
+ 500              		.loc 1 198 36 view .LVU155
+ 501 01a0 F0EE498A 		vmov.f32	s17, s18
+ 502              	.LVL44:
+ 198:modules/imu/BMI088driver.c ****                 }
+ 503              		.loc 1 198 36 view .LVU156
+ARM GAS  /tmp/cc4u8TDW.s 			page 20
+
+
+ 504 01a4 CCE7     		b	.L18
+ 505              	.LVL45:
+ 506              	.L28:
+ 198:modules/imu/BMI088driver.c ****                 }
+ 507              		.loc 1 198 36 view .LVU157
+ 508              	.LBE5:
+ 509              	.LBB6:
+ 204:modules/imu/BMI088driver.c ****             if (gNormDiff > 0.5f ||
+ 510              		.loc 1 204 17 is_stmt 1 discriminator 3 view .LVU158
+ 204:modules/imu/BMI088driver.c ****             if (gNormDiff > 0.5f ||
+ 511              		.loc 1 204 38 is_stmt 0 discriminator 3 view .LVU159
+ 512 01a6 08AA     		add	r2, sp, #32
+ 513 01a8 02EB8302 		add	r2, r2, r3, lsl #2
+ 514 01ac 52ED057A 		vldr.32	s15, [r2, #-20]
+ 204:modules/imu/BMI088driver.c ****             if (gNormDiff > 0.5f ||
+ 515              		.loc 1 204 51 discriminator 3 view .LVU160
+ 516 01b0 12ED087A 		vldr.32	s14, [r2, #-32]
+ 204:modules/imu/BMI088driver.c ****             if (gNormDiff > 0.5f ||
+ 517              		.loc 1 204 42 discriminator 3 view .LVU161
+ 518 01b4 77EEC77A 		vsub.f32	s15, s15, s14
+ 204:modules/imu/BMI088driver.c ****             if (gNormDiff > 0.5f ||
+ 519              		.loc 1 204 29 discriminator 3 view .LVU162
+ 520 01b8 664A     		ldr	r2, .L49+44
+ 521 01ba 02EB8302 		add	r2, r2, r3, lsl #2
+ 522 01be C2ED007A 		vstr.32	s15, [r2]
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 523              		.loc 1 203 40 is_stmt 1 discriminator 3 view .LVU163
+ 524 01c2 0133     		adds	r3, r3, #1
+ 525              	.LVL46:
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 526              		.loc 1 203 40 is_stmt 0 discriminator 3 view .LVU164
+ 527 01c4 DBB2     		uxtb	r3, r3
+ 528              	.LVL47:
+ 529              	.L27:
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 530              		.loc 1 203 33 is_stmt 1 discriminator 1 view .LVU165
+ 203:modules/imu/BMI088driver.c ****                 gyroDiff[j] = gyroMax[j] - gyroMin[j];
+ 531              		.loc 1 203 13 is_stmt 0 discriminator 1 view .LVU166
+ 532 01c6 022B     		cmp	r3, #2
+ 533 01c8 EDD9     		bls	.L28
+ 534              	.LBE6:
+ 205:modules/imu/BMI088driver.c ****                 gyroDiff[0] > 0.15f ||
+ 535              		.loc 1 205 13 is_stmt 1 view .LVU167
+ 205:modules/imu/BMI088driver.c ****                 gyroDiff[0] > 0.15f ||
+ 536              		.loc 1 205 16 is_stmt 0 view .LVU168
+ 537 01ca F6EE007A 		vmov.f32	s15, #5.0e-1
+ 538 01ce F4EEE76A 		vcmpe.f32	s13, s15
+ 539 01d2 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 540 01d6 00F39C80 		bgt	.L29
+ 206:modules/imu/BMI088driver.c ****                 gyroDiff[1] > 0.15f ||
+ 541              		.loc 1 206 25 discriminator 1 view .LVU169
+ 542 01da 5E4B     		ldr	r3, .L49+44
+ 543              	.LVL48:
+ 206:modules/imu/BMI088driver.c ****                 gyroDiff[1] > 0.15f ||
+ 544              		.loc 1 206 25 discriminator 1 view .LVU170
+ 545 01dc 93ED007A 		vldr.32	s14, [r3]
+ 205:modules/imu/BMI088driver.c ****                 gyroDiff[0] > 0.15f ||
+ARM GAS  /tmp/cc4u8TDW.s 			page 21
+
+
+ 546              		.loc 1 205 34 discriminator 1 view .LVU171
+ 547 01e0 DFED5D7A 		vldr.32	s15, .L49+48
+ 548 01e4 B4EEE77A 		vcmpe.f32	s14, s15
+ 549 01e8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 550 01ec 00F39180 		bgt	.L29
+ 207:modules/imu/BMI088driver.c ****                 gyroDiff[2] > 0.15f)
+ 551              		.loc 1 207 25 view .LVU172
+ 552 01f0 93ED017A 		vldr.32	s14, [r3, #4]
+ 206:modules/imu/BMI088driver.c ****                 gyroDiff[1] > 0.15f ||
+ 553              		.loc 1 206 37 view .LVU173
+ 554 01f4 B4EEE77A 		vcmpe.f32	s14, s15
+ 555 01f8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 556 01fc 00F38980 		bgt	.L29
+ 208:modules/imu/BMI088driver.c ****             {
+ 557              		.loc 1 208 25 view .LVU174
+ 558 0200 93ED027A 		vldr.32	s14, [r3, #8]
+ 207:modules/imu/BMI088driver.c ****                 gyroDiff[2] > 0.15f)
+ 559              		.loc 1 207 37 view .LVU175
+ 560 0204 B4EEE77A 		vcmpe.f32	s14, s15
+ 561 0208 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 562 020c 00F38180 		bgt	.L29
+ 214:modules/imu/BMI088driver.c ****         }
+ 563              		.loc 1 214 13 is_stmt 1 discriminator 2 view .LVU176
+ 564 0210 9FED520A 		vldr.32	s0, .L49+52
+ 565 0214 FFF7FEFF 		bl	DWT_Delay
+ 566              	.LVL49:
+ 149:modules/imu/BMI088driver.c ****         {
+ 567              		.loc 1 149 45 discriminator 2 view .LVU177
+ 568 0218 0135     		adds	r5, r5, #1
+ 569              	.LVL50:
+ 149:modules/imu/BMI088driver.c ****         {
+ 570              		.loc 1 149 45 is_stmt 0 discriminator 2 view .LVU178
+ 571 021a ADB2     		uxth	r5, r5
+ 572              	.LVL51:
+ 149:modules/imu/BMI088driver.c ****         {
+ 573              		.loc 1 149 45 discriminator 2 view .LVU179
+ 574 021c B0EE689A 		vmov.f32	s18, s17
+ 575              	.LVL52:
+ 576              	.L13:
+ 149:modules/imu/BMI088driver.c ****         {
+ 577              		.loc 1 149 30 is_stmt 1 discriminator 1 view .LVU180
+ 149:modules/imu/BMI088driver.c ****         {
+ 578              		.loc 1 149 9 is_stmt 0 discriminator 1 view .LVU181
+ 579 0220 41F26F73 		movw	r3, #5999
+ 580 0224 9D42     		cmp	r5, r3
+ 581 0226 72D8     		bhi	.L47
+ 151:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[1]) << 8) | buf[0];
+ 582              		.loc 1 151 13 is_stmt 1 view .LVU182
+ 583 0228 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 584              	.LVL53:
+ 151:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[1]) << 8) | buf[0];
+ 585              		.loc 1 151 13 view .LVU183
+ 586 022c 9220     		movs	r0, #146
+ 587 022e FFF7FEFF 		bl	BMI088_read_write_byte
+ 588              	.LVL54:
+ 151:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[1]) << 8) | buf[0];
+ 589              		.loc 1 151 13 view .LVU184
+ARM GAS  /tmp/cc4u8TDW.s 			page 22
+
+
+ 590 0232 0622     		movs	r2, #6
+ 591 0234 06A9     		add	r1, sp, #24
+ 592 0236 1220     		movs	r0, #18
+ 593 0238 FFF7FEFF 		bl	BMI088_read_muli_reg
+ 594              	.LVL55:
+ 151:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[1]) << 8) | buf[0];
+ 595              		.loc 1 151 13 view .LVU185
+ 596 023c FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 597              	.LVL56:
+ 151:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[1]) << 8) | buf[0];
+ 598              		.loc 1 151 68 view .LVU186
+ 152:modules/imu/BMI088driver.c ****             bmi088->Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 599              		.loc 1 152 13 view .LVU187
+ 152:modules/imu/BMI088driver.c ****             bmi088->Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 600              		.loc 1 152 45 is_stmt 0 view .LVU188
+ 601 0240 9DF81930 		ldrb	r3, [sp, #25]	@ zero_extendqisi2
+ 152:modules/imu/BMI088driver.c ****             bmi088->Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 602              		.loc 1 152 50 view .LVU189
+ 603 0244 1B02     		lsls	r3, r3, #8
+ 152:modules/imu/BMI088driver.c ****             bmi088->Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 604              		.loc 1 152 31 view .LVU190
+ 605 0246 1BB2     		sxth	r3, r3
+ 152:modules/imu/BMI088driver.c ****             bmi088->Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 606              		.loc 1 152 61 view .LVU191
+ 607 0248 9DF81820 		ldrb	r2, [sp, #24]	@ zero_extendqisi2
+ 152:modules/imu/BMI088driver.c ****             bmi088->Accel[0] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 608              		.loc 1 152 29 view .LVU192
+ 609 024c 1343     		orrs	r3, r3, r2
+ 610 024e 00EE103A 		vmov	s0, r3	@ int
+ 611              	.LVL57:
+ 153:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 612              		.loc 1 153 13 is_stmt 1 view .LVU193
+ 153:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 613              		.loc 1 153 48 is_stmt 0 view .LVU194
+ 614 0252 B8EEC00A 		vcvt.f32.s32	s0, s0
+ 615              	.LVL58:
+ 153:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 616              		.loc 1 153 48 view .LVU195
+ 617 0256 424A     		ldr	r2, .L49+56
+ 618 0258 D2ED007A 		vldr.32	s15, [r2]
+ 619 025c 20EE270A 		vmul.f32	s0, s0, s15
+ 153:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[3]) << 8) | buf[2];
+ 620              		.loc 1 153 30 view .LVU196
+ 621 0260 84ED000A 		vstr.32	s0, [r4]
+ 154:modules/imu/BMI088driver.c ****             bmi088->Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 622              		.loc 1 154 13 is_stmt 1 view .LVU197
+ 154:modules/imu/BMI088driver.c ****             bmi088->Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 623              		.loc 1 154 45 is_stmt 0 view .LVU198
+ 624 0264 9DF81B30 		ldrb	r3, [sp, #27]	@ zero_extendqisi2
+ 625              	.LVL59:
+ 154:modules/imu/BMI088driver.c ****             bmi088->Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 626              		.loc 1 154 50 view .LVU199
+ 627 0268 1B02     		lsls	r3, r3, #8
+ 154:modules/imu/BMI088driver.c ****             bmi088->Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 628              		.loc 1 154 31 view .LVU200
+ 629 026a 1BB2     		sxth	r3, r3
+ 154:modules/imu/BMI088driver.c ****             bmi088->Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ARM GAS  /tmp/cc4u8TDW.s 			page 23
+
+
+ 630              		.loc 1 154 61 view .LVU201
+ 631 026c 9DF81A10 		ldrb	r1, [sp, #26]	@ zero_extendqisi2
+ 154:modules/imu/BMI088driver.c ****             bmi088->Accel[1] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 632              		.loc 1 154 29 view .LVU202
+ 633 0270 0B43     		orrs	r3, r3, r1
+ 634 0272 07EE103A 		vmov	s14, r3	@ int
+ 635              	.LVL60:
+ 155:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 636              		.loc 1 155 13 is_stmt 1 view .LVU203
+ 155:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 637              		.loc 1 155 48 is_stmt 0 view .LVU204
+ 638 0276 D2ED006A 		vldr.32	s13, [r2]
+ 639 027a B8EEC77A 		vcvt.f32.s32	s14, s14
+ 640              	.LVL61:
+ 155:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 641              		.loc 1 155 48 view .LVU205
+ 642 027e 27EE267A 		vmul.f32	s14, s14, s13
+ 155:modules/imu/BMI088driver.c ****             bmi088_raw_temp = (int16_t)((buf[5]) << 8) | buf[4];
+ 643              		.loc 1 155 30 view .LVU206
+ 644 0282 84ED017A 		vstr.32	s14, [r4, #4]
+ 156:modules/imu/BMI088driver.c ****             bmi088->Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 645              		.loc 1 156 13 is_stmt 1 view .LVU207
+ 156:modules/imu/BMI088driver.c ****             bmi088->Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 646              		.loc 1 156 45 is_stmt 0 view .LVU208
+ 647 0286 9DF81D30 		ldrb	r3, [sp, #29]	@ zero_extendqisi2
+ 648              	.LVL62:
+ 156:modules/imu/BMI088driver.c ****             bmi088->Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 649              		.loc 1 156 50 view .LVU209
+ 650 028a 1B02     		lsls	r3, r3, #8
+ 156:modules/imu/BMI088driver.c ****             bmi088->Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 651              		.loc 1 156 31 view .LVU210
+ 652 028c 1BB2     		sxth	r3, r3
+ 156:modules/imu/BMI088driver.c ****             bmi088->Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 653              		.loc 1 156 61 view .LVU211
+ 654 028e 9DF81C20 		ldrb	r2, [sp, #28]	@ zero_extendqisi2
+ 156:modules/imu/BMI088driver.c ****             bmi088->Accel[2] = bmi088_raw_temp * BMI088_ACCEL_SEN;
+ 655              		.loc 1 156 29 view .LVU212
+ 656 0292 1343     		orrs	r3, r3, r2
+ 657 0294 07EE903A 		vmov	s15, r3	@ int
+ 658              	.LVL63:
+ 157:modules/imu/BMI088driver.c ****             gNormTemp = sqrtf(bmi088->Accel[0] * bmi088->Accel[0] +
+ 659              		.loc 1 157 13 is_stmt 1 view .LVU213
+ 157:modules/imu/BMI088driver.c ****             gNormTemp = sqrtf(bmi088->Accel[0] * bmi088->Accel[0] +
+ 660              		.loc 1 157 48 is_stmt 0 view .LVU214
+ 661 0298 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 662              	.LVL64:
+ 157:modules/imu/BMI088driver.c ****             gNormTemp = sqrtf(bmi088->Accel[0] * bmi088->Accel[0] +
+ 663              		.loc 1 157 48 view .LVU215
+ 664 029c 67EEA67A 		vmul.f32	s15, s15, s13
+ 157:modules/imu/BMI088driver.c ****             gNormTemp = sqrtf(bmi088->Accel[0] * bmi088->Accel[0] +
+ 665              		.loc 1 157 30 view .LVU216
+ 666 02a0 C4ED027A 		vstr.32	s15, [r4, #8]
+ 158:modules/imu/BMI088driver.c ****                               bmi088->Accel[1] * bmi088->Accel[1] +
+ 667              		.loc 1 158 13 is_stmt 1 view .LVU217
+ 158:modules/imu/BMI088driver.c ****                               bmi088->Accel[1] * bmi088->Accel[1] +
+ 668              		.loc 1 158 48 is_stmt 0 view .LVU218
+ 669 02a4 20EE000A 		vmul.f32	s0, s0, s0
+ARM GAS  /tmp/cc4u8TDW.s 			page 24
+
+
+ 159:modules/imu/BMI088driver.c ****                               bmi088->Accel[2] * bmi088->Accel[2]);
+ 670              		.loc 1 159 48 view .LVU219
+ 671 02a8 27EE077A 		vmul.f32	s14, s14, s14
+ 158:modules/imu/BMI088driver.c ****                               bmi088->Accel[1] * bmi088->Accel[1] +
+ 672              		.loc 1 158 67 view .LVU220
+ 673 02ac 30EE070A 		vadd.f32	s0, s0, s14
+ 160:modules/imu/BMI088driver.c ****             bmi088->gNorm += gNormTemp;
+ 674              		.loc 1 160 48 view .LVU221
+ 675 02b0 67EEA77A 		vmul.f32	s15, s15, s15
+ 158:modules/imu/BMI088driver.c ****                               bmi088->Accel[1] * bmi088->Accel[1] +
+ 676              		.loc 1 158 25 view .LVU222
+ 677 02b4 30EE270A 		vadd.f32	s0, s0, s15
+ 678 02b8 FFF7FEFF 		bl	sqrtf
+ 679              	.LVL65:
+ 158:modules/imu/BMI088driver.c ****                               bmi088->Accel[1] * bmi088->Accel[1] +
+ 680              		.loc 1 158 25 view .LVU223
+ 681 02bc F0EE408A 		vmov.f32	s17, s0
+ 682              	.LVL66:
+ 161:modules/imu/BMI088driver.c **** 
+ 683              		.loc 1 161 13 is_stmt 1 view .LVU224
+ 161:modules/imu/BMI088driver.c **** 
+ 684              		.loc 1 161 27 is_stmt 0 view .LVU225
+ 685 02c0 D4ED0C7A 		vldr.32	s15, [r4, #48]
+ 686 02c4 77EE807A 		vadd.f32	s15, s15, s0
+ 687 02c8 C4ED0C7A 		vstr.32	s15, [r4, #48]
+ 163:modules/imu/BMI088driver.c ****             if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
+ 688              		.loc 1 163 13 is_stmt 1 view .LVU226
+ 689 02cc FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 690              	.LVL67:
+ 163:modules/imu/BMI088driver.c ****             if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
+ 691              		.loc 1 163 13 view .LVU227
+ 692 02d0 0822     		movs	r2, #8
+ 693 02d2 06A9     		add	r1, sp, #24
+ 694 02d4 0020     		movs	r0, #0
+ 695 02d6 FFF7FEFF 		bl	BMI088_read_muli_reg
+ 696              	.LVL68:
+ 163:modules/imu/BMI088driver.c ****             if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
+ 697              		.loc 1 163 13 view .LVU228
+ 698 02da FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 699              	.LVL69:
+ 163:modules/imu/BMI088driver.c ****             if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
+ 700              		.loc 1 163 67 view .LVU229
+ 164:modules/imu/BMI088driver.c ****             {
+ 701              		.loc 1 164 13 view .LVU230
+ 164:modules/imu/BMI088driver.c ****             {
+ 702              		.loc 1 164 20 is_stmt 0 view .LVU231
+ 703 02de 9DF81830 		ldrb	r3, [sp, #24]	@ zero_extendqisi2
+ 164:modules/imu/BMI088driver.c ****             {
+ 704              		.loc 1 164 16 view .LVU232
+ 705 02e2 0F2B     		cmp	r3, #15
+ 706 02e4 3FF4D6AE 		beq	.L48
+ 707              	.L14:
+ 177:modules/imu/BMI088driver.c ****             {
+ 708              		.loc 1 177 13 is_stmt 1 view .LVU233
+ 177:modules/imu/BMI088driver.c ****             {
+ 709              		.loc 1 177 16 is_stmt 0 view .LVU234
+ 710 02e8 002D     		cmp	r5, #0
+ARM GAS  /tmp/cc4u8TDW.s 			page 25
+
+
+ 711 02ea 3FF416AF 		beq	.L35
+ 189:modules/imu/BMI088driver.c ****                     gNormMax = gNormTemp;
+ 712              		.loc 1 189 17 is_stmt 1 view .LVU235
+ 189:modules/imu/BMI088driver.c ****                     gNormMax = gNormTemp;
+ 713              		.loc 1 189 20 is_stmt 0 view .LVU236
+ 714 02ee B4EEE89A 		vcmpe.f32	s18, s17
+ 715 02f2 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 716 02f6 01D5     		bpl	.L19
+ 190:modules/imu/BMI088driver.c ****                 if (gNormTemp < gNormMin)
+ 717              		.loc 1 190 30 view .LVU237
+ 718 02f8 B0EE689A 		vmov.f32	s18, s17
+ 719              	.LVL70:
+ 720              	.L19:
+ 191:modules/imu/BMI088driver.c ****                     gNormMin = gNormTemp;
+ 721              		.loc 1 191 17 is_stmt 1 view .LVU238
+ 191:modules/imu/BMI088driver.c ****                     gNormMin = gNormTemp;
+ 722              		.loc 1 191 20 is_stmt 0 view .LVU239
+ 723 02fc B4EEE88A 		vcmpe.f32	s16, s17
+ 724 0300 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 725 0304 01DD     		ble	.L20
+ 192:modules/imu/BMI088driver.c ****                 for (uint8_t j = 0; j < 3; ++j)
+ 726              		.loc 1 192 30 view .LVU240
+ 727 0306 B0EE688A 		vmov.f32	s16, s17
+ 728              	.LVL71:
+ 729              	.L20:
+ 193:modules/imu/BMI088driver.c ****                 {
+ 730              		.loc 1 193 17 is_stmt 1 view .LVU241
+ 731              	.LBB7:
+ 193:modules/imu/BMI088driver.c ****                 {
+ 732              		.loc 1 193 22 view .LVU242
+ 193:modules/imu/BMI088driver.c ****                 {
+ 733              		.loc 1 193 30 is_stmt 0 view .LVU243
+ 734 030a 0023     		movs	r3, #0
+ 193:modules/imu/BMI088driver.c ****                 {
+ 735              		.loc 1 193 17 view .LVU244
+ 736 030c 21E7     		b	.L21
+ 737              	.LVL72:
+ 738              	.L47:
+ 193:modules/imu/BMI088driver.c ****                 {
+ 739              		.loc 1 193 17 view .LVU245
+ 740              	.LBE7:
+ 741 030e F0EE498A 		vmov.f32	s17, s18
+ 742              	.LVL73:
+ 743              	.L29:
+ 193:modules/imu/BMI088driver.c ****                 {
+ 744              		.loc 1 193 17 view .LVU246
+ 745              	.LBE8:
+ 217:modules/imu/BMI088driver.c ****         for (uint8_t i = 0; i < 3; ++i)
+ 746              		.loc 1 217 9 is_stmt 1 view .LVU247
+ 217:modules/imu/BMI088driver.c ****         for (uint8_t i = 0; i < 3; ++i)
+ 747              		.loc 1 217 23 is_stmt 0 view .LVU248
+ 748 0312 D4ED0C6A 		vldr.32	s13, [r4, #48]
+ 749 0316 9FED137A 		vldr.32	s14, .L49+60
+ 750 031a C6EE877A 		vdiv.f32	s15, s13, s14
+ 751 031e C4ED0C7A 		vstr.32	s15, [r4, #48]
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 752              		.loc 1 218 9 is_stmt 1 view .LVU249
+ARM GAS  /tmp/cc4u8TDW.s 			page 26
+
+
+ 753              	.LBB9:
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 754              		.loc 1 218 14 view .LVU250
+ 755              	.LVL74:
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 756              		.loc 1 218 22 is_stmt 0 view .LVU251
+ 757 0322 0023     		movs	r3, #0
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 758              		.loc 1 218 9 view .LVU252
+ 759 0324 2EE0     		b	.L31
+ 760              	.L50:
+ 761 0326 00BF     		.align	2
+ 762              	.L49:
+ 763 0328 00000000 		.word	.LANCHOR0
+ 764 032c 00000000 		.word	.LANCHOR1
+ 765 0330 00000000 		.word	0
+ 766 0334 0AD7A33B 		.word	1000593162
+ 767 0338 AC38223B 		.word	992098476
+ 768 033c B016CE39 		.word	969807536
+ 769 0340 3F161B41 		.word	1092294207
+ 770 0344 00002042 		.word	1109393408
+ 771 0348 C3F51C41 		.word	1092416963
+ 772 034c 00000000 		.word	.LANCHOR3
+ 773 0350 00000000 		.word	.LANCHOR4
+ 774 0354 00000000 		.word	.LANCHOR5
+ 775 0358 9A99193E 		.word	1041865114
+ 776 035c 6F12033A 		.word	973279855
+ 777 0360 00000000 		.word	.LANCHOR2
+ 778 0364 0080BB45 		.word	1169915904
+ 779              	.LVL75:
+ 780              	.L32:
+ 219:modules/imu/BMI088driver.c **** 
+ 781              		.loc 1 219 13 is_stmt 1 discriminator 3 view .LVU253
+ 219:modules/imu/BMI088driver.c **** 
+ 782              		.loc 1 219 35 is_stmt 0 discriminator 3 view .LVU254
+ 783 0368 03F10802 		add	r2, r3, #8
+ 784 036c 04EB8202 		add	r2, r4, r2, lsl #2
+ 785 0370 D2ED016A 		vldr.32	s13, [r2, #4]
+ 786 0374 1FED057A 		vldr.32	s14, .L49+60
+ 787 0378 C6EE877A 		vdiv.f32	s15, s13, s14
+ 788 037c C2ED017A 		vstr.32	s15, [r2, #4]
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 789              		.loc 1 218 36 is_stmt 1 discriminator 3 view .LVU255
+ 790 0380 0133     		adds	r3, r3, #1
+ 791              	.LVL76:
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 792              		.loc 1 218 36 is_stmt 0 discriminator 3 view .LVU256
+ 793 0382 DBB2     		uxtb	r3, r3
+ 794              	.LVL77:
+ 795              	.L31:
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 796              		.loc 1 218 29 is_stmt 1 discriminator 1 view .LVU257
+ 218:modules/imu/BMI088driver.c ****             bmi088->GyroOffset[i] /= (float)CaliTimes;
+ 797              		.loc 1 218 9 is_stmt 0 discriminator 1 view .LVU258
+ 798 0384 022B     		cmp	r3, #2
+ 799 0386 EFD9     		bls	.L32
+ 800              	.LBE9:
+ARM GAS  /tmp/cc4u8TDW.s 			page 27
+
+
+ 221:modules/imu/BMI088driver.c ****         bmi088_raw_temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5));
+ 801              		.loc 1 221 9 is_stmt 1 view .LVU259
+ 802 0388 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 803              	.LVL78:
+ 221:modules/imu/BMI088driver.c ****         bmi088_raw_temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5));
+ 804              		.loc 1 221 9 view .LVU260
+ 805 038c A220     		movs	r0, #162
+ 806 038e FFF7FEFF 		bl	BMI088_read_write_byte
+ 807              	.LVL79:
+ 221:modules/imu/BMI088driver.c ****         bmi088_raw_temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5));
+ 808              		.loc 1 221 9 view .LVU261
+ 809 0392 0222     		movs	r2, #2
+ 810 0394 06A9     		add	r1, sp, #24
+ 811 0396 2220     		movs	r0, #34
+ 812 0398 FFF7FEFF 		bl	BMI088_read_muli_reg
+ 813              	.LVL80:
+ 221:modules/imu/BMI088driver.c ****         bmi088_raw_temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5));
+ 814              		.loc 1 221 9 view .LVU262
+ 815 039c FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 816              	.LVL81:
+ 221:modules/imu/BMI088driver.c ****         bmi088_raw_temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5));
+ 817              		.loc 1 221 58 view .LVU263
+ 222:modules/imu/BMI088driver.c ****         if (bmi088_raw_temp > 1023)
+ 818              		.loc 1 222 9 view .LVU264
+ 222:modules/imu/BMI088driver.c ****         if (bmi088_raw_temp > 1023)
+ 819              		.loc 1 222 41 is_stmt 0 view .LVU265
+ 820 03a0 9DF81820 		ldrb	r2, [sp, #24]	@ zero_extendqisi2
+ 222:modules/imu/BMI088driver.c ****         if (bmi088_raw_temp > 1023)
+ 821              		.loc 1 222 57 view .LVU266
+ 822 03a4 9DF81930 		ldrb	r3, [sp, #25]	@ zero_extendqisi2
+ 222:modules/imu/BMI088driver.c ****         if (bmi088_raw_temp > 1023)
+ 823              		.loc 1 222 27 view .LVU267
+ 824 03a8 5B09     		lsrs	r3, r3, #5
+ 222:modules/imu/BMI088driver.c ****         if (bmi088_raw_temp > 1023)
+ 825              		.loc 1 222 25 view .LVU268
+ 826 03aa 43EAC203 		orr	r3, r3, r2, lsl #3
+ 827              	.LVL82:
+ 223:modules/imu/BMI088driver.c ****             bmi088_raw_temp -= 2048;
+ 828              		.loc 1 223 9 is_stmt 1 view .LVU269
+ 223:modules/imu/BMI088driver.c ****             bmi088_raw_temp -= 2048;
+ 829              		.loc 1 223 12 is_stmt 0 view .LVU270
+ 830 03ae B3F5806F 		cmp	r3, #1024
+ 831 03b2 01DB     		blt	.L33
+ 224:modules/imu/BMI088driver.c ****         bmi088->TempWhenCali = bmi088_raw_temp * BMI088_TEMP_FACTOR + BMI088_TEMP_OFFSET;
+ 832              		.loc 1 224 13 is_stmt 1 view .LVU271
+ 224:modules/imu/BMI088driver.c ****         bmi088->TempWhenCali = bmi088_raw_temp * BMI088_TEMP_FACTOR + BMI088_TEMP_OFFSET;
+ 833              		.loc 1 224 29 is_stmt 0 view .LVU272
+ 834 03b4 A3F50063 		sub	r3, r3, #2048
+ 835              	.LVL83:
+ 836              	.L33:
+ 225:modules/imu/BMI088driver.c **** 
+ 837              		.loc 1 225 9 is_stmt 1 view .LVU273
+ 225:modules/imu/BMI088driver.c **** 
+ 838              		.loc 1 225 48 is_stmt 0 view .LVU274
+ 839 03b8 07EE903A 		vmov	s15, r3	@ int
+ 840 03bc F8EEE77A 		vcvt.f32.s32	s15, s15
+ 841 03c0 B4EE007A 		vmov.f32	s14, #1.25e-1
+ARM GAS  /tmp/cc4u8TDW.s 			page 28
+
+
+ 842 03c4 67EE877A 		vmul.f32	s15, s15, s14
+ 225:modules/imu/BMI088driver.c **** 
+ 843              		.loc 1 225 69 view .LVU275
+ 844 03c8 B3EE077A 		vmov.f32	s14, #2.3e+1
+ 845 03cc 77EE877A 		vadd.f32	s15, s15, s14
+ 225:modules/imu/BMI088driver.c **** 
+ 846              		.loc 1 225 30 view .LVU276
+ 847 03d0 C4ED067A 		vstr.32	s15, [r4, #24]
+ 227:modules/imu/BMI088driver.c ****     } while (gNormDiff > 0.5f ||
+ 848              		.loc 1 227 9 is_stmt 1 view .LVU277
+ 227:modules/imu/BMI088driver.c ****     } while (gNormDiff > 0.5f ||
+ 849              		.loc 1 227 18 is_stmt 0 view .LVU278
+ 850 03d4 2D4A     		ldr	r2, .L51
+ 851 03d6 1388     		ldrh	r3, [r2]
+ 852              	.LVL84:
+ 227:modules/imu/BMI088driver.c ****     } while (gNormDiff > 0.5f ||
+ 853              		.loc 1 227 18 view .LVU279
+ 854 03d8 0133     		adds	r3, r3, #1
+ 855 03da 1380     		strh	r3, [r2]	@ movhi
+ 228:modules/imu/BMI088driver.c ****              fabsf(bmi088->gNorm - 9.8f) > 0.5f ||
+ 856              		.loc 1 228 13 is_stmt 1 view .LVU280
+ 228:modules/imu/BMI088driver.c ****              fabsf(bmi088->gNorm - 9.8f) > 0.5f ||
+ 857              		.loc 1 228 24 is_stmt 0 view .LVU281
+ 858 03dc 2C4B     		ldr	r3, .L51+4
+ 859 03de 93ED007A 		vldr.32	s14, [r3]
+ 235:modules/imu/BMI088driver.c **** 
+ 860              		.loc 1 235 14 view .LVU282
+ 861 03e2 F6EE007A 		vmov.f32	s15, #5.0e-1
+ 862 03e6 B4EEE77A 		vcmpe.f32	s14, s15
+ 863 03ea F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 864 03ee 3FF721AE 		bgt	.L34
+ 229:modules/imu/BMI088driver.c ****              gyroDiff[0] > 0.15f ||
+ 865              		.loc 1 229 26 view .LVU283
+ 866 03f2 D4ED0C7A 		vldr.32	s15, [r4, #48]
+ 229:modules/imu/BMI088driver.c ****              gyroDiff[0] > 0.15f ||
+ 867              		.loc 1 229 34 view .LVU284
+ 868 03f6 9FED277A 		vldr.32	s14, .L51+8
+ 869 03fa 77EEC77A 		vsub.f32	s15, s15, s14
+ 229:modules/imu/BMI088driver.c ****              gyroDiff[0] > 0.15f ||
+ 870              		.loc 1 229 14 view .LVU285
+ 871 03fe F0EEE77A 		vabs.f32	s15, s15
+ 228:modules/imu/BMI088driver.c ****              fabsf(bmi088->gNorm - 9.8f) > 0.5f ||
+ 872              		.loc 1 228 31 view .LVU286
+ 873 0402 B6EE007A 		vmov.f32	s14, #5.0e-1
+ 874 0406 F4EEC77A 		vcmpe.f32	s15, s14
+ 875 040a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 876 040e 3FF711AE 		bgt	.L34
+ 230:modules/imu/BMI088driver.c ****              gyroDiff[1] > 0.15f ||
+ 877              		.loc 1 230 22 view .LVU287
+ 878 0412 214B     		ldr	r3, .L51+12
+ 879 0414 93ED007A 		vldr.32	s14, [r3]
+ 229:modules/imu/BMI088driver.c ****              gyroDiff[0] > 0.15f ||
+ 880              		.loc 1 229 49 view .LVU288
+ 881 0418 DFED207A 		vldr.32	s15, .L51+16
+ 882 041c B4EEE77A 		vcmpe.f32	s14, s15
+ 883 0420 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 884 0424 3FF706AE 		bgt	.L34
+ARM GAS  /tmp/cc4u8TDW.s 			page 29
+
+
+ 231:modules/imu/BMI088driver.c ****              gyroDiff[2] > 0.15f ||
+ 885              		.loc 1 231 22 view .LVU289
+ 886 0428 93ED017A 		vldr.32	s14, [r3, #4]
+ 230:modules/imu/BMI088driver.c ****              gyroDiff[1] > 0.15f ||
+ 887              		.loc 1 230 34 view .LVU290
+ 888 042c B4EEE77A 		vcmpe.f32	s14, s15
+ 889 0430 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 890 0434 3FF7FEAD 		bgt	.L34
+ 232:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[0]) > 0.01f ||
+ 891              		.loc 1 232 22 view .LVU291
+ 892 0438 93ED027A 		vldr.32	s14, [r3, #8]
+ 231:modules/imu/BMI088driver.c ****              gyroDiff[2] > 0.15f ||
+ 893              		.loc 1 231 34 view .LVU292
+ 894 043c B4EEE77A 		vcmpe.f32	s14, s15
+ 895 0440 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 896 0444 3FF7F6AD 		bgt	.L34
+ 233:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[1]) > 0.01f ||
+ 897              		.loc 1 233 38 view .LVU293
+ 898 0448 D4ED097A 		vldr.32	s15, [r4, #36]
+ 233:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[1]) > 0.01f ||
+ 899              		.loc 1 233 14 view .LVU294
+ 900 044c F0EEE77A 		vabs.f32	s15, s15
+ 232:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[0]) > 0.01f ||
+ 901              		.loc 1 232 34 view .LVU295
+ 902 0450 9FED137A 		vldr.32	s14, .L51+20
+ 903 0454 F4EEC77A 		vcmpe.f32	s15, s14
+ 904 0458 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 905 045c 3FF7EAAD 		bgt	.L34
+ 234:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[2]) > 0.01f);
+ 906              		.loc 1 234 38 view .LVU296
+ 907 0460 D4ED0A7A 		vldr.32	s15, [r4, #40]
+ 234:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[2]) > 0.01f);
+ 908              		.loc 1 234 14 view .LVU297
+ 909 0464 F0EEE77A 		vabs.f32	s15, s15
+ 233:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[1]) > 0.01f ||
+ 910              		.loc 1 233 51 view .LVU298
+ 911 0468 F4EEC77A 		vcmpe.f32	s15, s14
+ 912 046c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 913 0470 3FF7E0AD 		bgt	.L34
+ 235:modules/imu/BMI088driver.c **** 
+ 914              		.loc 1 235 38 view .LVU299
+ 915 0474 D4ED0B7A 		vldr.32	s15, [r4, #44]
+ 235:modules/imu/BMI088driver.c **** 
+ 916              		.loc 1 235 14 view .LVU300
+ 917 0478 F0EEE77A 		vabs.f32	s15, s15
+ 234:modules/imu/BMI088driver.c ****              fabsf(bmi088->GyroOffset[2]) > 0.01f);
+ 918              		.loc 1 234 51 view .LVU301
+ 919 047c F4EEC77A 		vcmpe.f32	s15, s14
+ 920 0480 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 921 0484 3FF7D6AD 		bgt	.L34
+ 922 0488 F8E5     		b	.L12
+ 923              	.L52:
+ 924 048a 00BF     		.align	2
+ 925              	.L51:
+ 926 048c 00000000 		.word	.LANCHOR6
+ 927 0490 00000000 		.word	.LANCHOR4
+ 928 0494 CDCC1C41 		.word	1092406477
+ARM GAS  /tmp/cc4u8TDW.s 			page 30
+
+
+ 929 0498 00000000 		.word	.LANCHOR5
+ 930 049c 9A99193E 		.word	1041865114
+ 931 04a0 0AD7233C 		.word	1008981770
+ 932              		.cfi_endproc
+ 933              	.LFE243:
+ 935              		.section	.text.bmi088_accel_init,"ax",%progbits
+ 936              		.align	1
+ 937              		.global	bmi088_accel_init
+ 938              		.syntax unified
+ 939              		.thumb
+ 940              		.thumb_func
+ 941              		.fpu fpv4-sp-d16
+ 943              	bmi088_accel_init:
+ 944              	.LFB244:
+ 241:modules/imu/BMI088driver.c ****     // check commiunication
+ 945              		.loc 1 241 1 is_stmt 1 view -0
+ 946              		.cfi_startproc
+ 947              		@ args = 0, pretend = 0, frame = 0
+ 948              		@ frame_needed = 0, uses_anonymous_args = 0
+ 949 0000 70B5     		push	{r4, r5, r6, lr}
+ 950              	.LCFI9:
+ 951              		.cfi_def_cfa_offset 16
+ 952              		.cfi_offset 4, -16
+ 953              		.cfi_offset 5, -12
+ 954              		.cfi_offset 6, -8
+ 955              		.cfi_offset 14, -4
+ 956 0002 2DED028B 		vpush.64	{d8}
+ 957              	.LCFI10:
+ 958              		.cfi_def_cfa_offset 24
+ 959              		.cfi_offset 80, -24
+ 960              		.cfi_offset 81, -20
+ 243:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 961              		.loc 1 243 5 view .LVU303
+ 962 0006 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 963              	.LVL85:
+ 243:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 964              		.loc 1 243 5 view .LVU304
+ 965 000a 8020     		movs	r0, #128
+ 966 000c FFF7FEFF 		bl	BMI088_read_write_byte
+ 967              	.LVL86:
+ 243:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 968              		.loc 1 243 5 view .LVU305
+ 969 0010 5520     		movs	r0, #85
+ 970 0012 FFF7FEFF 		bl	BMI088_read_write_byte
+ 971              	.LVL87:
+ 243:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 972              		.loc 1 243 5 view .LVU306
+ 973 0016 5520     		movs	r0, #85
+ 974 0018 FFF7FEFF 		bl	BMI088_read_write_byte
+ 975              	.LVL88:
+ 976 001c 4C4C     		ldr	r4, .L61
+ 977 001e 2070     		strb	r0, [r4]
+ 243:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 978              		.loc 1 243 5 view .LVU307
+ 979 0020 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 980              	.LVL89:
+ 243:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ARM GAS  /tmp/cc4u8TDW.s 			page 31
+
+
+ 981              		.loc 1 243 58 view .LVU308
+ 244:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, res);
+ 982              		.loc 1 244 5 view .LVU309
+ 983 0024 9FED4B8A 		vldr.32	s16, .L61+4
+ 984 0028 B0EE480A 		vmov.f32	s0, s16
+ 985 002c FFF7FEFF 		bl	DWT_Delay
+ 986              	.LVL90:
+ 245:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 987              		.loc 1 245 5 view .LVU310
+ 988 0030 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 989              	.LVL91:
+ 245:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 990              		.loc 1 245 5 view .LVU311
+ 991 0034 8020     		movs	r0, #128
+ 992 0036 FFF7FEFF 		bl	BMI088_read_write_byte
+ 993              	.LVL92:
+ 245:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 994              		.loc 1 245 5 view .LVU312
+ 995 003a 5520     		movs	r0, #85
+ 996 003c FFF7FEFF 		bl	BMI088_read_write_byte
+ 997              	.LVL93:
+ 245:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 998              		.loc 1 245 5 view .LVU313
+ 999 0040 5520     		movs	r0, #85
+ 1000 0042 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1001              	.LVL94:
+ 1002 0046 2070     		strb	r0, [r4]
+ 245:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1003              		.loc 1 245 5 view .LVU314
+ 1004 0048 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1005              	.LVL95:
+ 245:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1006              		.loc 1 245 58 view .LVU315
+ 246:modules/imu/BMI088driver.c ****     // accel software reset
+ 1007              		.loc 1 246 5 view .LVU316
+ 1008 004c B0EE480A 		vmov.f32	s0, s16
+ 1009 0050 FFF7FEFF 		bl	DWT_Delay
+ 1010              	.LVL96:
+ 248:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1011              		.loc 1 248 5 view .LVU317
+ 1012 0054 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1013              	.LVL97:
+ 248:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1014              		.loc 1 248 5 view .LVU318
+ 1015 0058 B621     		movs	r1, #182
+ 1016 005a 7E20     		movs	r0, #126
+ 1017 005c FFF7FEFF 		bl	BMI088_write_single_reg
+ 1018              	.LVL98:
+ 248:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1019              		.loc 1 248 5 view .LVU319
+ 1020 0060 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1021              	.LVL99:
+ 248:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1022              		.loc 1 248 84 view .LVU320
+ 250:modules/imu/BMI088driver.c ****     // check commiunication is normal after reset
+ 1023              		.loc 1 250 5 view .LVU321
+ 1024 0064 9FED3C0A 		vldr.32	s0, .L61+8
+ARM GAS  /tmp/cc4u8TDW.s 			page 32
+
+
+ 1025 0068 FFF7FEFF 		bl	DWT_Delay
+ 1026              	.LVL100:
+ 252:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1027              		.loc 1 252 5 view .LVU322
+ 1028 006c FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1029              	.LVL101:
+ 252:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1030              		.loc 1 252 5 view .LVU323
+ 1031 0070 8020     		movs	r0, #128
+ 1032 0072 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1033              	.LVL102:
+ 252:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1034              		.loc 1 252 5 view .LVU324
+ 1035 0076 5520     		movs	r0, #85
+ 1036 0078 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1037              	.LVL103:
+ 252:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1038              		.loc 1 252 5 view .LVU325
+ 1039 007c 5520     		movs	r0, #85
+ 1040 007e FFF7FEFF 		bl	BMI088_read_write_byte
+ 1041              	.LVL104:
+ 1042 0082 2070     		strb	r0, [r4]
+ 252:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1043              		.loc 1 252 5 view .LVU326
+ 1044 0084 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1045              	.LVL105:
+ 252:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1046              		.loc 1 252 58 view .LVU327
+ 253:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, res);
+ 1047              		.loc 1 253 5 view .LVU328
+ 1048 0088 B0EE480A 		vmov.f32	s0, s16
+ 1049 008c FFF7FEFF 		bl	DWT_Delay
+ 1050              	.LVL106:
+ 254:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1051              		.loc 1 254 5 view .LVU329
+ 1052 0090 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1053              	.LVL107:
+ 254:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1054              		.loc 1 254 5 view .LVU330
+ 1055 0094 8020     		movs	r0, #128
+ 1056 0096 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1057              	.LVL108:
+ 254:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1058              		.loc 1 254 5 view .LVU331
+ 1059 009a 5520     		movs	r0, #85
+ 1060 009c FFF7FEFF 		bl	BMI088_read_write_byte
+ 1061              	.LVL109:
+ 254:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1062              		.loc 1 254 5 view .LVU332
+ 1063 00a0 5520     		movs	r0, #85
+ 1064 00a2 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1065              	.LVL110:
+ 1066 00a6 2070     		strb	r0, [r4]
+ 254:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1067              		.loc 1 254 5 view .LVU333
+ 1068 00a8 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1069              	.LVL111:
+ARM GAS  /tmp/cc4u8TDW.s 			page 33
+
+
+ 254:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1070              		.loc 1 254 58 view .LVU334
+ 255:modules/imu/BMI088driver.c **** 
+ 1071              		.loc 1 255 5 view .LVU335
+ 1072 00ac B0EE480A 		vmov.f32	s0, s16
+ 1073 00b0 FFF7FEFF 		bl	DWT_Delay
+ 1074              	.LVL112:
+ 258:modules/imu/BMI088driver.c ****     {
+ 1075              		.loc 1 258 5 view .LVU336
+ 258:modules/imu/BMI088driver.c ****     {
+ 1076              		.loc 1 258 13 is_stmt 0 view .LVU337
+ 1077 00b4 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 258:modules/imu/BMI088driver.c ****     {
+ 1078              		.loc 1 258 8 view .LVU338
+ 1079 00b6 1E2B     		cmp	r3, #30
+ 1080 00b8 48D1     		bne	.L58
+ 265:modules/imu/BMI088driver.c ****     {
+ 1081              		.loc 1 265 5 is_stmt 1 view .LVU339
+ 265:modules/imu/BMI088driver.c ****     {
+ 1082              		.loc 1 265 24 is_stmt 0 view .LVU340
+ 1083 00ba 284B     		ldr	r3, .L61+12
+ 1084 00bc 0022     		movs	r2, #0
+ 1085 00be 1A70     		strb	r2, [r3]
+ 265:modules/imu/BMI088driver.c ****     {
+ 1086              		.loc 1 265 5 view .LVU341
+ 1087 00c0 02E0     		b	.L55
+ 1088              	.L56:
+ 265:modules/imu/BMI088driver.c ****     {
+ 1089              		.loc 1 265 73 is_stmt 1 discriminator 2 view .LVU342
+ 265:modules/imu/BMI088driver.c ****     {
+ 1090              		.loc 1 265 86 is_stmt 0 discriminator 2 view .LVU343
+ 1091 00c2 0133     		adds	r3, r3, #1
+ 1092 00c4 254A     		ldr	r2, .L61+12
+ 1093 00c6 1370     		strb	r3, [r2]
+ 1094              	.L55:
+ 265:modules/imu/BMI088driver.c ****     {
+ 1095              		.loc 1 265 29 is_stmt 1 discriminator 1 view .LVU344
+ 265:modules/imu/BMI088driver.c ****     {
+ 1096              		.loc 1 265 43 is_stmt 0 discriminator 1 view .LVU345
+ 1097 00c8 244B     		ldr	r3, .L61+12
+ 1098 00ca 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 265:modules/imu/BMI088driver.c ****     {
+ 1099              		.loc 1 265 5 discriminator 1 view .LVU346
+ 1100 00cc 052B     		cmp	r3, #5
+ 1101 00ce 39D8     		bhi	.L60
+ 268:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1102              		.loc 1 268 9 is_stmt 1 view .LVU347
+ 1103 00d0 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1104              	.LVL113:
+ 268:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1105              		.loc 1 268 9 view .LVU348
+ 1106 00d4 214D     		ldr	r5, .L61+12
+ 1107 00d6 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 1108 00d8 214C     		ldr	r4, .L61+16
+ 1109 00da 03EB4303 		add	r3, r3, r3, lsl #1
+ 1110 00de E218     		adds	r2, r4, r3
+ 1111 00e0 5178     		ldrb	r1, [r2, #1]	@ zero_extendqisi2
+ARM GAS  /tmp/cc4u8TDW.s 			page 34
+
+
+ 1112 00e2 E05C     		ldrb	r0, [r4, r3]	@ zero_extendqisi2
+ 1113 00e4 FFF7FEFF 		bl	BMI088_write_single_reg
+ 1114              	.LVL114:
+ 268:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1115              		.loc 1 268 9 view .LVU349
+ 1116 00e8 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1117              	.LVL115:
+ 268:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1118              		.loc 1 268 124 view .LVU350
+ 269:modules/imu/BMI088driver.c **** 
+ 1119              		.loc 1 269 9 view .LVU351
+ 1120 00ec 9FED198A 		vldr.32	s16, .L61+4
+ 1121 00f0 B0EE480A 		vmov.f32	s0, s16
+ 1122 00f4 FFF7FEFF 		bl	DWT_Delay
+ 1123              	.LVL116:
+ 271:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1124              		.loc 1 271 9 view .LVU352
+ 1125 00f8 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1126              	.LVL117:
+ 271:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1127              		.loc 1 271 9 view .LVU353
+ 1128 00fc 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 1129 00fe 03EB4303 		add	r3, r3, r3, lsl #1
+ 1130 0102 E05C     		ldrb	r0, [r4, r3]	@ zero_extendqisi2
+ 1131 0104 40F08000 		orr	r0, r0, #128
+ 1132 0108 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1133              	.LVL118:
+ 271:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1134              		.loc 1 271 9 view .LVU354
+ 1135 010c 5520     		movs	r0, #85
+ 1136 010e FFF7FEFF 		bl	BMI088_read_write_byte
+ 1137              	.LVL119:
+ 271:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1138              		.loc 1 271 9 view .LVU355
+ 1139 0112 5520     		movs	r0, #85
+ 1140 0114 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1141              	.LVL120:
+ 1142 0118 0D4E     		ldr	r6, .L61
+ 1143 011a 3070     		strb	r0, [r6]
+ 271:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1144              		.loc 1 271 9 view .LVU356
+ 1145 011c FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1146              	.LVL121:
+ 271:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1147              		.loc 1 271 85 view .LVU357
+ 272:modules/imu/BMI088driver.c **** 
+ 1148              		.loc 1 272 9 view .LVU358
+ 1149 0120 B0EE480A 		vmov.f32	s0, s16
+ 1150 0124 FFF7FEFF 		bl	DWT_Delay
+ 1151              	.LVL122:
+ 274:modules/imu/BMI088driver.c ****         {
+ 1152              		.loc 1 274 9 view .LVU359
+ 274:modules/imu/BMI088driver.c ****         {
+ 1153              		.loc 1 274 58 is_stmt 0 view .LVU360
+ 1154 0128 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 1155 012a 03EB4302 		add	r2, r3, r3, lsl #1
+ 1156 012e 1444     		add	r4, r4, r2
+ARM GAS  /tmp/cc4u8TDW.s 			page 35
+
+
+ 1157 0130 6178     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ 274:modules/imu/BMI088driver.c ****         {
+ 1158              		.loc 1 274 17 view .LVU361
+ 1159 0132 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
+ 274:modules/imu/BMI088driver.c ****         {
+ 1160              		.loc 1 274 12 view .LVU362
+ 1161 0134 9142     		cmp	r1, r2
+ 1162 0136 C4D0     		beq	.L56
+ 278:modules/imu/BMI088driver.c ****         }
+ 1163              		.loc 1 278 13 is_stmt 1 view .LVU363
+ 278:modules/imu/BMI088driver.c ****         }
+ 1164              		.loc 1 278 60 is_stmt 0 view .LVU364
+ 1165 0138 A278     		ldrb	r2, [r4, #2]	@ zero_extendqisi2
+ 278:modules/imu/BMI088driver.c ****         }
+ 1166              		.loc 1 278 19 view .LVU365
+ 1167 013a 0A49     		ldr	r1, .L61+20
+ 1168 013c 0878     		ldrb	r0, [r1]	@ zero_extendqisi2
+ 1169 013e 0243     		orrs	r2, r2, r0
+ 1170 0140 0A70     		strb	r2, [r1]
+ 1171 0142 BEE7     		b	.L56
+ 1172              	.L60:
+ 281:modules/imu/BMI088driver.c **** }
+ 1173              		.loc 1 281 12 view .LVU366
+ 1174 0144 0020     		movs	r0, #0
+ 1175              	.L54:
+ 282:modules/imu/BMI088driver.c **** 
+ 1176              		.loc 1 282 1 view .LVU367
+ 1177 0146 BDEC028B 		vldm	sp!, {d8}
+ 1178              	.LCFI11:
+ 1179              		.cfi_remember_state
+ 1180              		.cfi_restore 80
+ 1181              		.cfi_restore 81
+ 1182              		.cfi_def_cfa_offset 16
+ 1183 014a 70BD     		pop	{r4, r5, r6, pc}
+ 1184              	.L58:
+ 1185              	.LCFI12:
+ 1186              		.cfi_restore_state
+ 261:modules/imu/BMI088driver.c ****     }
+ 1187              		.loc 1 261 16 view .LVU368
+ 1188 014c FF20     		movs	r0, #255
+ 1189 014e FAE7     		b	.L54
+ 1190              	.L62:
+ 1191              		.align	2
+ 1192              	.L61:
+ 1193 0150 00000000 		.word	.LANCHOR7
+ 1194 0154 6F12833A 		.word	981668463
+ 1195 0158 0AD7A33D 		.word	1034147594
+ 1196 015c 00000000 		.word	.LANCHOR8
+ 1197 0160 00000000 		.word	.LANCHOR9
+ 1198 0164 00000000 		.word	.LANCHOR10
+ 1199              		.cfi_endproc
+ 1200              	.LFE244:
+ 1202              		.section	.text.bmi088_gyro_init,"ax",%progbits
+ 1203              		.align	1
+ 1204              		.global	bmi088_gyro_init
+ 1205              		.syntax unified
+ 1206              		.thumb
+ARM GAS  /tmp/cc4u8TDW.s 			page 36
+
+
+ 1207              		.thumb_func
+ 1208              		.fpu fpv4-sp-d16
+ 1210              	bmi088_gyro_init:
+ 1211              	.LFB245:
+ 285:modules/imu/BMI088driver.c ****     // check commiunication
+ 1212              		.loc 1 285 1 is_stmt 1 view -0
+ 1213              		.cfi_startproc
+ 1214              		@ args = 0, pretend = 0, frame = 0
+ 1215              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1216 0000 70B5     		push	{r4, r5, r6, lr}
+ 1217              	.LCFI13:
+ 1218              		.cfi_def_cfa_offset 16
+ 1219              		.cfi_offset 4, -16
+ 1220              		.cfi_offset 5, -12
+ 1221              		.cfi_offset 6, -8
+ 1222              		.cfi_offset 14, -4
+ 1223 0002 2DED028B 		vpush.64	{d8}
+ 1224              	.LCFI14:
+ 1225              		.cfi_def_cfa_offset 24
+ 1226              		.cfi_offset 80, -24
+ 1227              		.cfi_offset 81, -20
+ 287:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1228              		.loc 1 287 5 view .LVU370
+ 1229 0006 FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1230              	.LVL123:
+ 287:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1231              		.loc 1 287 5 view .LVU371
+ 1232 000a 454C     		ldr	r4, .L71
+ 1233 000c 2146     		mov	r1, r4
+ 1234 000e 0020     		movs	r0, #0
+ 1235 0010 FFF7FEFF 		bl	BMI088_read_single_reg
+ 1236              	.LVL124:
+ 287:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1237              		.loc 1 287 5 view .LVU372
+ 1238 0014 FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 1239              	.LVL125:
+ 287:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1240              		.loc 1 287 58 view .LVU373
+ 288:modules/imu/BMI088driver.c ****     BMI088_gyro_read_single_reg(BMI088_GYRO_CHIP_ID, res);
+ 1241              		.loc 1 288 5 view .LVU374
+ 1242 0018 9FED428A 		vldr.32	s16, .L71+4
+ 1243 001c B0EE480A 		vmov.f32	s0, s16
+ 1244 0020 FFF7FEFF 		bl	DWT_Delay
+ 1245              	.LVL126:
+ 289:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1246              		.loc 1 289 5 view .LVU375
+ 1247 0024 FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1248              	.LVL127:
+ 289:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1249              		.loc 1 289 5 view .LVU376
+ 1250 0028 2146     		mov	r1, r4
+ 1251 002a 0020     		movs	r0, #0
+ 1252 002c FFF7FEFF 		bl	BMI088_read_single_reg
+ 1253              	.LVL128:
+ 289:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1254              		.loc 1 289 5 view .LVU377
+ 1255 0030 FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ARM GAS  /tmp/cc4u8TDW.s 			page 37
+
+
+ 1256              	.LVL129:
+ 289:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1257              		.loc 1 289 58 view .LVU378
+ 290:modules/imu/BMI088driver.c **** 
+ 1258              		.loc 1 290 5 view .LVU379
+ 1259 0034 B0EE480A 		vmov.f32	s0, s16
+ 1260 0038 FFF7FEFF 		bl	DWT_Delay
+ 1261              	.LVL130:
+ 293:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1262              		.loc 1 293 5 view .LVU380
+ 1263 003c FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1264              	.LVL131:
+ 293:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1265              		.loc 1 293 5 view .LVU381
+ 1266 0040 B621     		movs	r1, #182
+ 1267 0042 1420     		movs	r0, #20
+ 1268 0044 FFF7FEFF 		bl	BMI088_write_single_reg
+ 1269              	.LVL132:
+ 293:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1270              		.loc 1 293 5 view .LVU382
+ 1271 0048 FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 1272              	.LVL133:
+ 293:modules/imu/BMI088driver.c ****     // HAL_Delay(BMI088_LONG_DELAY_TIME);
+ 1273              		.loc 1 293 85 view .LVU383
+ 295:modules/imu/BMI088driver.c ****     // check commiunication is normal after reset
+ 1274              		.loc 1 295 5 view .LVU384
+ 1275 004c 9FED360A 		vldr.32	s0, .L71+8
+ 1276 0050 FFF7FEFF 		bl	DWT_Delay
+ 1277              	.LVL134:
+ 297:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1278              		.loc 1 297 5 view .LVU385
+ 1279 0054 FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1280              	.LVL135:
+ 297:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1281              		.loc 1 297 5 view .LVU386
+ 1282 0058 2146     		mov	r1, r4
+ 1283 005a 0020     		movs	r0, #0
+ 1284 005c FFF7FEFF 		bl	BMI088_read_single_reg
+ 1285              	.LVL136:
+ 297:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1286              		.loc 1 297 5 view .LVU387
+ 1287 0060 FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 1288              	.LVL137:
+ 297:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1289              		.loc 1 297 58 view .LVU388
+ 298:modules/imu/BMI088driver.c ****     BMI088_gyro_read_single_reg(BMI088_GYRO_CHIP_ID, res);
+ 1290              		.loc 1 298 5 view .LVU389
+ 1291 0064 B0EE480A 		vmov.f32	s0, s16
+ 1292 0068 FFF7FEFF 		bl	DWT_Delay
+ 1293              	.LVL138:
+ 299:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1294              		.loc 1 299 5 view .LVU390
+ 1295 006c FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1296              	.LVL139:
+ 299:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1297              		.loc 1 299 5 view .LVU391
+ 1298 0070 2146     		mov	r1, r4
+ARM GAS  /tmp/cc4u8TDW.s 			page 38
+
+
+ 1299 0072 0020     		movs	r0, #0
+ 1300 0074 FFF7FEFF 		bl	BMI088_read_single_reg
+ 1301              	.LVL140:
+ 299:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1302              		.loc 1 299 5 view .LVU392
+ 1303 0078 FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 1304              	.LVL141:
+ 299:modules/imu/BMI088driver.c ****     DWT_Delay(0.001);
+ 1305              		.loc 1 299 58 view .LVU393
+ 300:modules/imu/BMI088driver.c **** 
+ 1306              		.loc 1 300 5 view .LVU394
+ 1307 007c B0EE480A 		vmov.f32	s0, s16
+ 1308 0080 FFF7FEFF 		bl	DWT_Delay
+ 1309              	.LVL142:
+ 303:modules/imu/BMI088driver.c ****     {
+ 1310              		.loc 1 303 5 view .LVU395
+ 303:modules/imu/BMI088driver.c ****     {
+ 1311              		.loc 1 303 13 is_stmt 0 view .LVU396
+ 1312 0084 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 303:modules/imu/BMI088driver.c ****     {
+ 1313              		.loc 1 303 8 view .LVU397
+ 1314 0086 0F2B     		cmp	r3, #15
+ 1315 0088 48D1     		bne	.L68
+ 310:modules/imu/BMI088driver.c ****     {
+ 1316              		.loc 1 310 5 is_stmt 1 view .LVU398
+ 310:modules/imu/BMI088driver.c ****     {
+ 1317              		.loc 1 310 24 is_stmt 0 view .LVU399
+ 1318 008a 284B     		ldr	r3, .L71+12
+ 1319 008c 0022     		movs	r2, #0
+ 1320 008e 1A70     		strb	r2, [r3]
+ 310:modules/imu/BMI088driver.c ****     {
+ 1321              		.loc 1 310 5 view .LVU400
+ 1322 0090 03E0     		b	.L65
+ 1323              	.L66:
+ 310:modules/imu/BMI088driver.c ****     {
+ 1324              		.loc 1 310 72 is_stmt 1 discriminator 2 view .LVU401
+ 310:modules/imu/BMI088driver.c ****     {
+ 1325              		.loc 1 310 85 is_stmt 0 discriminator 2 view .LVU402
+ 1326 0092 264A     		ldr	r2, .L71+12
+ 1327 0094 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 1328 0096 0133     		adds	r3, r3, #1
+ 1329 0098 1370     		strb	r3, [r2]
+ 1330              	.L65:
+ 310:modules/imu/BMI088driver.c ****     {
+ 1331              		.loc 1 310 29 is_stmt 1 discriminator 1 view .LVU403
+ 310:modules/imu/BMI088driver.c ****     {
+ 1332              		.loc 1 310 43 is_stmt 0 discriminator 1 view .LVU404
+ 1333 009a 244B     		ldr	r3, .L71+12
+ 1334 009c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 310:modules/imu/BMI088driver.c ****     {
+ 1335              		.loc 1 310 5 discriminator 1 view .LVU405
+ 1336 009e 052B     		cmp	r3, #5
+ 1337 00a0 38D8     		bhi	.L70
+ 313:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1338              		.loc 1 313 9 is_stmt 1 view .LVU406
+ 1339 00a2 FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1340              	.LVL143:
+ARM GAS  /tmp/cc4u8TDW.s 			page 39
+
+
+ 313:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1341              		.loc 1 313 9 view .LVU407
+ 1342 00a6 214D     		ldr	r5, .L71+12
+ 1343 00a8 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 1344 00aa 214C     		ldr	r4, .L71+16
+ 1345 00ac 03EB4303 		add	r3, r3, r3, lsl #1
+ 1346 00b0 E218     		adds	r2, r4, r3
+ 1347 00b2 5178     		ldrb	r1, [r2, #1]	@ zero_extendqisi2
+ 1348 00b4 E05C     		ldrb	r0, [r4, r3]	@ zero_extendqisi2
+ 1349 00b6 FFF7FEFF 		bl	BMI088_write_single_reg
+ 1350              	.LVL144:
+ 313:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1351              		.loc 1 313 9 view .LVU408
+ 1352 00ba FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 1353              	.LVL145:
+ 313:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1354              		.loc 1 313 121 view .LVU409
+ 314:modules/imu/BMI088driver.c **** 
+ 1355              		.loc 1 314 9 view .LVU410
+ 1356 00be 9FED198A 		vldr.32	s16, .L71+4
+ 1357 00c2 B0EE480A 		vmov.f32	s0, s16
+ 1358 00c6 FFF7FEFF 		bl	DWT_Delay
+ 1359              	.LVL146:
+ 316:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1360              		.loc 1 316 9 view .LVU411
+ 1361 00ca FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1362              	.LVL147:
+ 316:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1363              		.loc 1 316 9 view .LVU412
+ 1364 00ce 144E     		ldr	r6, .L71
+ 1365 00d0 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 1366 00d2 03EB4303 		add	r3, r3, r3, lsl #1
+ 1367 00d6 3146     		mov	r1, r6
+ 1368 00d8 E05C     		ldrb	r0, [r4, r3]	@ zero_extendqisi2
+ 1369 00da FFF7FEFF 		bl	BMI088_read_single_reg
+ 1370              	.LVL148:
+ 316:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1371              		.loc 1 316 9 view .LVU413
+ 1372 00de FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 1373              	.LVL149:
+ 316:modules/imu/BMI088driver.c ****         DWT_Delay(0.001);
+ 1374              		.loc 1 316 83 view .LVU414
+ 317:modules/imu/BMI088driver.c **** 
+ 1375              		.loc 1 317 9 view .LVU415
+ 1376 00e2 B0EE480A 		vmov.f32	s0, s16
+ 1377 00e6 FFF7FEFF 		bl	DWT_Delay
+ 1378              	.LVL150:
+ 319:modules/imu/BMI088driver.c ****         {
+ 1379              		.loc 1 319 9 view .LVU416
+ 319:modules/imu/BMI088driver.c ****         {
+ 1380              		.loc 1 319 57 is_stmt 0 view .LVU417
+ 1381 00ea 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 1382 00ec 03EB4302 		add	r2, r3, r3, lsl #1
+ 1383 00f0 1444     		add	r4, r4, r2
+ 1384 00f2 6178     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ 319:modules/imu/BMI088driver.c ****         {
+ 1385              		.loc 1 319 17 view .LVU418
+ARM GAS  /tmp/cc4u8TDW.s 			page 40
+
+
+ 1386 00f4 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
+ 319:modules/imu/BMI088driver.c ****         {
+ 1387              		.loc 1 319 12 view .LVU419
+ 1388 00f6 9142     		cmp	r1, r2
+ 1389 00f8 CBD0     		beq	.L66
+ 321:modules/imu/BMI088driver.c ****             // return BMI088_Gyro_Init_Table[write_reg_num][2];
+ 1390              		.loc 1 321 13 is_stmt 1 view .LVU420
+ 321:modules/imu/BMI088driver.c ****             // return BMI088_Gyro_Init_Table[write_reg_num][2];
+ 1391              		.loc 1 321 26 is_stmt 0 view .LVU421
+ 1392 00fa 013B     		subs	r3, r3, #1
+ 1393 00fc DBB2     		uxtb	r3, r3
+ 1394 00fe 2B70     		strb	r3, [r5]
+ 323:modules/imu/BMI088driver.c ****         }
+ 1395              		.loc 1 323 13 is_stmt 1 view .LVU422
+ 323:modules/imu/BMI088driver.c ****         }
+ 1396              		.loc 1 323 60 is_stmt 0 view .LVU423
+ 1397 0100 03EB4303 		add	r3, r3, r3, lsl #1
+ 1398 0104 0B4A     		ldr	r2, .L71+20
+ 1399 0106 1344     		add	r3, r3, r2
+ 1400 0108 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 323:modules/imu/BMI088driver.c ****         }
+ 1401              		.loc 1 323 19 view .LVU424
+ 1402 010a 0B4A     		ldr	r2, .L71+24
+ 1403 010c 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 1404 010e 0B43     		orrs	r3, r3, r1
+ 1405 0110 1370     		strb	r3, [r2]
+ 1406 0112 BEE7     		b	.L66
+ 1407              	.L70:
+ 327:modules/imu/BMI088driver.c **** }
+ 1408              		.loc 1 327 12 view .LVU425
+ 1409 0114 0020     		movs	r0, #0
+ 1410              	.L64:
+ 328:modules/imu/BMI088driver.c **** 
+ 1411              		.loc 1 328 1 view .LVU426
+ 1412 0116 BDEC028B 		vldm	sp!, {d8}
+ 1413              	.LCFI15:
+ 1414              		.cfi_remember_state
+ 1415              		.cfi_restore 80
+ 1416              		.cfi_restore 81
+ 1417              		.cfi_def_cfa_offset 16
+ 1418 011a 70BD     		pop	{r4, r5, r6, pc}
+ 1419              	.L68:
+ 1420              	.LCFI16:
+ 1421              		.cfi_restore_state
+ 306:modules/imu/BMI088driver.c ****     }
+ 1422              		.loc 1 306 16 view .LVU427
+ 1423 011c FF20     		movs	r0, #255
+ 1424 011e FAE7     		b	.L64
+ 1425              	.L72:
+ 1426              		.align	2
+ 1427              	.L71:
+ 1428 0120 00000000 		.word	.LANCHOR7
+ 1429 0124 6F12833A 		.word	981668463
+ 1430 0128 0AD7A33D 		.word	1034147594
+ 1431 012c 00000000 		.word	.LANCHOR8
+ 1432 0130 00000000 		.word	.LANCHOR11
+ 1433 0134 00000000 		.word	.LANCHOR9
+ARM GAS  /tmp/cc4u8TDW.s 			page 41
+
+
+ 1434 0138 00000000 		.word	.LANCHOR10
+ 1435              		.cfi_endproc
+ 1436              	.LFE245:
+ 1438              		.section	.text.BMI088Init,"ax",%progbits
+ 1439              		.align	1
+ 1440              		.global	BMI088Init
+ 1441              		.syntax unified
+ 1442              		.thumb
+ 1443              		.thumb_func
+ 1444              		.fpu fpv4-sp-d16
+ 1446              	BMI088Init:
+ 1447              	.LVL151:
+ 1448              	.LFB242:
+  98:modules/imu/BMI088driver.c ****     BMI088_SPI = bmi088_SPI;
+ 1449              		.loc 1 98 1 is_stmt 1 view -0
+ 1450              		.cfi_startproc
+ 1451              		@ args = 0, pretend = 0, frame = 0
+ 1452              		@ frame_needed = 0, uses_anonymous_args = 0
+  98:modules/imu/BMI088driver.c ****     BMI088_SPI = bmi088_SPI;
+ 1453              		.loc 1 98 1 is_stmt 0 view .LVU429
+ 1454 0000 38B5     		push	{r3, r4, r5, lr}
+ 1455              	.LCFI17:
+ 1456              		.cfi_def_cfa_offset 16
+ 1457              		.cfi_offset 3, -16
+ 1458              		.cfi_offset 4, -12
+ 1459              		.cfi_offset 5, -8
+ 1460              		.cfi_offset 14, -4
+ 1461 0002 0D46     		mov	r5, r1
+  99:modules/imu/BMI088driver.c ****     error = BMI088_NO_ERROR;
+ 1462              		.loc 1 99 5 is_stmt 1 view .LVU430
+  99:modules/imu/BMI088driver.c ****     error = BMI088_NO_ERROR;
+ 1463              		.loc 1 99 16 is_stmt 0 view .LVU431
+ 1464 0004 114B     		ldr	r3, .L78
+ 1465 0006 1860     		str	r0, [r3]
+ 100:modules/imu/BMI088driver.c **** 
+ 1466              		.loc 1 100 5 is_stmt 1 view .LVU432
+ 100:modules/imu/BMI088driver.c **** 
+ 1467              		.loc 1 100 11 is_stmt 0 view .LVU433
+ 1468 0008 114C     		ldr	r4, .L78+4
+ 1469 000a 0023     		movs	r3, #0
+ 1470 000c 2370     		strb	r3, [r4]
+ 102:modules/imu/BMI088driver.c ****     error |= bmi088_gyro_init();
+ 1471              		.loc 1 102 5 is_stmt 1 view .LVU434
+ 102:modules/imu/BMI088driver.c ****     error |= bmi088_gyro_init();
+ 1472              		.loc 1 102 14 is_stmt 0 view .LVU435
+ 1473 000e FFF7FEFF 		bl	bmi088_accel_init
+ 1474              	.LVL152:
+ 102:modules/imu/BMI088driver.c ****     error |= bmi088_gyro_init();
+ 1475              		.loc 1 102 11 view .LVU436
+ 1476 0012 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 1477 0014 1843     		orrs	r0, r0, r3
+ 1478 0016 2070     		strb	r0, [r4]
+ 103:modules/imu/BMI088driver.c ****     if (calibrate)
+ 1479              		.loc 1 103 5 is_stmt 1 view .LVU437
+ 103:modules/imu/BMI088driver.c ****     if (calibrate)
+ 1480              		.loc 1 103 14 is_stmt 0 view .LVU438
+ 1481 0018 FFF7FEFF 		bl	bmi088_gyro_init
+ARM GAS  /tmp/cc4u8TDW.s 			page 42
+
+
+ 1482              	.LVL153:
+ 103:modules/imu/BMI088driver.c ****     if (calibrate)
+ 1483              		.loc 1 103 11 view .LVU439
+ 1484 001c 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 1485 001e 1843     		orrs	r0, r0, r3
+ 1486 0020 2070     		strb	r0, [r4]
+ 104:modules/imu/BMI088driver.c ****         Calibrate_MPU_Offset(&BMI088);
+ 1487              		.loc 1 104 5 is_stmt 1 view .LVU440
+ 104:modules/imu/BMI088driver.c ****         Calibrate_MPU_Offset(&BMI088);
+ 1488              		.loc 1 104 8 is_stmt 0 view .LVU441
+ 1489 0022 75B9     		cbnz	r5, .L77
+ 108:modules/imu/BMI088driver.c ****         BMI088.GyroOffset[1] = GyOFFSET;
+ 1490              		.loc 1 108 9 is_stmt 1 view .LVU442
+ 108:modules/imu/BMI088driver.c ****         BMI088.GyroOffset[1] = GyOFFSET;
+ 1491              		.loc 1 108 30 is_stmt 0 view .LVU443
+ 1492 0024 0B4B     		ldr	r3, .L78+8
+ 1493 0026 0C4A     		ldr	r2, .L78+12
+ 1494 0028 5A62     		str	r2, [r3, #36]	@ float
+ 109:modules/imu/BMI088driver.c ****         BMI088.GyroOffset[2] = GzOFFSET;
+ 1495              		.loc 1 109 9 is_stmt 1 view .LVU444
+ 109:modules/imu/BMI088driver.c ****         BMI088.GyroOffset[2] = GzOFFSET;
+ 1496              		.loc 1 109 30 is_stmt 0 view .LVU445
+ 1497 002a 0C4A     		ldr	r2, .L78+16
+ 1498 002c 9A62     		str	r2, [r3, #40]	@ float
+ 110:modules/imu/BMI088driver.c ****         BMI088.gNorm = gNORM;
+ 1499              		.loc 1 110 9 is_stmt 1 view .LVU446
+ 110:modules/imu/BMI088driver.c ****         BMI088.gNorm = gNORM;
+ 1500              		.loc 1 110 30 is_stmt 0 view .LVU447
+ 1501 002e DA62     		str	r2, [r3, #44]	@ float
+ 111:modules/imu/BMI088driver.c ****         BMI088.AccelScale = 9.81f / BMI088.gNorm;
+ 1502              		.loc 1 111 9 is_stmt 1 view .LVU448
+ 111:modules/imu/BMI088driver.c ****         BMI088.AccelScale = 9.81f / BMI088.gNorm;
+ 1503              		.loc 1 111 22 is_stmt 0 view .LVU449
+ 1504 0030 0B4A     		ldr	r2, .L78+20
+ 1505 0032 1A63     		str	r2, [r3, #48]	@ float
+ 112:modules/imu/BMI088driver.c ****         BMI088.TempWhenCali = 40;
+ 1506              		.loc 1 112 9 is_stmt 1 view .LVU450
+ 112:modules/imu/BMI088driver.c ****         BMI088.TempWhenCali = 40;
+ 1507              		.loc 1 112 27 is_stmt 0 view .LVU451
+ 1508 0034 0B4A     		ldr	r2, .L78+24
+ 1509 0036 1A62     		str	r2, [r3, #32]	@ float
+ 113:modules/imu/BMI088driver.c ****     }
+ 1510              		.loc 1 113 9 is_stmt 1 view .LVU452
+ 113:modules/imu/BMI088driver.c ****     }
+ 1511              		.loc 1 113 29 is_stmt 0 view .LVU453
+ 1512 0038 0B4A     		ldr	r2, .L78+28
+ 1513 003a 9A61     		str	r2, [r3, #24]	@ float
+ 1514              	.L75:
+ 116:modules/imu/BMI088driver.c **** }
+ 1515              		.loc 1 116 5 is_stmt 1 view .LVU454
+ 117:modules/imu/BMI088driver.c **** 
+ 1516              		.loc 1 117 1 is_stmt 0 view .LVU455
+ 1517 003c 044B     		ldr	r3, .L78+4
+ 1518 003e 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 1519 0040 38BD     		pop	{r3, r4, r5, pc}
+ 1520              	.L77:
+ 105:modules/imu/BMI088driver.c ****     else
+ARM GAS  /tmp/cc4u8TDW.s 			page 43
+
+
+ 1521              		.loc 1 105 9 is_stmt 1 view .LVU456
+ 1522 0042 0448     		ldr	r0, .L78+8
+ 1523 0044 FFF7FEFF 		bl	Calibrate_MPU_Offset
+ 1524              	.LVL154:
+ 1525 0048 F8E7     		b	.L75
+ 1526              	.L79:
+ 1527 004a 00BF     		.align	2
+ 1528              	.L78:
+ 1529 004c 00000000 		.word	BMI088_SPI
+ 1530 0050 00000000 		.word	.LANCHOR10
+ 1531 0054 00000000 		.word	.LANCHOR12
+ 1532 0058 AC38223B 		.word	992098476
+ 1533 005c B016CE39 		.word	969807536
+ 1534 0060 3F161B41 		.word	1092294207
+ 1535 0064 C48B813F 		.word	1065454532
+ 1536 0068 00002042 		.word	1109393408
+ 1537              		.cfi_endproc
+ 1538              	.LFE242:
+ 1540              		.section	.text.BMI088_ReadChecked,"ax",%progbits
+ 1541              		.align	1
+ 1542              		.global	BMI088_ReadChecked
+ 1543              		.syntax unified
+ 1544              		.thumb
+ 1545              		.thumb_func
+ 1546              		.fpu fpv4-sp-d16
+ 1548              	BMI088_ReadChecked:
+ 1549              	.LVL155:
+ 1550              	.LFB247:
+ 337:modules/imu/BMI088driver.c ****     if (!bmi088) return 0;
+ 1551              		.loc 1 337 1 view -0
+ 1552              		.cfi_startproc
+ 1553              		@ args = 0, pretend = 0, frame = 64
+ 1554              		@ frame_needed = 0, uses_anonymous_args = 0
+ 338:modules/imu/BMI088driver.c ****     IMU_Data_t next = *bmi088;
+ 1555              		.loc 1 338 5 view .LVU458
+ 338:modules/imu/BMI088driver.c ****     IMU_Data_t next = *bmi088;
+ 1556              		.loc 1 338 8 is_stmt 0 view .LVU459
+ 1557 0000 0028     		cmp	r0, #0
+ 1558 0002 00F03781 		beq	.L85
+ 337:modules/imu/BMI088driver.c ****     if (!bmi088) return 0;
+ 1559              		.loc 1 337 1 view .LVU460
+ 1560 0006 30B5     		push	{r4, r5, lr}
+ 1561              	.LCFI18:
+ 1562              		.cfi_def_cfa_offset 12
+ 1563              		.cfi_offset 4, -12
+ 1564              		.cfi_offset 5, -8
+ 1565              		.cfi_offset 14, -4
+ 1566 0008 91B0     		sub	sp, sp, #68
+ 1567              	.LCFI19:
+ 1568              		.cfi_def_cfa_offset 80
+ 1569 000a 0546     		mov	r5, r0
+ 339:modules/imu/BMI088driver.c ****     uint8_t buf[8] = {0};
+ 1570              		.loc 1 339 5 is_stmt 1 view .LVU461
+ 339:modules/imu/BMI088driver.c ****     uint8_t buf[8] = {0};
+ 1571              		.loc 1 339 16 is_stmt 0 view .LVU462
+ 1572 000c 0DF10C0C 		add	ip, sp, #12
+ 1573 0010 8646     		mov	lr, r0
+ARM GAS  /tmp/cc4u8TDW.s 			page 44
+
+
+ 1574 0012 BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 1575              	.LVL156:
+ 339:modules/imu/BMI088driver.c ****     uint8_t buf[8] = {0};
+ 1576              		.loc 1 339 16 view .LVU463
+ 1577 0016 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1578 001a BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 1579 001e ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1580 0022 BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 1581 0026 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1582 002a DEF80030 		ldr	r3, [lr]
+ 1583 002e CCF80030 		str	r3, [ip]
+ 340:modules/imu/BMI088driver.c ****     uint8_t accel_id = 0;
+ 1584              		.loc 1 340 5 is_stmt 1 view .LVU464
+ 340:modules/imu/BMI088driver.c ****     uint8_t accel_id = 0;
+ 1585              		.loc 1 340 13 is_stmt 0 view .LVU465
+ 1586 0032 0023     		movs	r3, #0
+ 1587 0034 0193     		str	r3, [sp, #4]
+ 1588 0036 0293     		str	r3, [sp, #8]
+ 341:modules/imu/BMI088driver.c ****     BMI088_BeginRead();
+ 1589              		.loc 1 341 5 is_stmt 1 view .LVU466
+ 1590              	.LVL157:
+ 342:modules/imu/BMI088driver.c ****     BMI088_accel_read_single_reg(BMI088_ACC_CHIP_ID, accel_id);
+ 1591              		.loc 1 342 5 view .LVU467
+ 1592 0038 FFF7FEFF 		bl	BMI088_BeginRead
+ 1593              	.LVL158:
+ 343:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || accel_id != BMI088_ACC_CHIP_ID_VALUE) return 0;
+ 1594              		.loc 1 343 5 view .LVU468
+ 1595 003c FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1596              	.LVL159:
+ 343:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || accel_id != BMI088_ACC_CHIP_ID_VALUE) return 0;
+ 1597              		.loc 1 343 5 view .LVU469
+ 1598 0040 8020     		movs	r0, #128
+ 1599 0042 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1600              	.LVL160:
+ 343:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || accel_id != BMI088_ACC_CHIP_ID_VALUE) return 0;
+ 1601              		.loc 1 343 5 view .LVU470
+ 1602 0046 5520     		movs	r0, #85
+ 1603 0048 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1604              	.LVL161:
+ 343:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || accel_id != BMI088_ACC_CHIP_ID_VALUE) return 0;
+ 1605              		.loc 1 343 5 view .LVU471
+ 1606 004c 5520     		movs	r0, #85
+ 1607 004e FFF7FEFF 		bl	BMI088_read_write_byte
+ 1608              	.LVL162:
+ 1609 0052 0446     		mov	r4, r0
+ 1610              	.LVL163:
+ 343:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || accel_id != BMI088_ACC_CHIP_ID_VALUE) return 0;
+ 1611              		.loc 1 343 5 view .LVU472
+ 1612 0054 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1613              	.LVL164:
+ 343:modules/imu/BMI088driver.c ****     if (!BMI088_ReadOK() || accel_id != BMI088_ACC_CHIP_ID_VALUE) return 0;
+ 1614              		.loc 1 343 63 view .LVU473
+ 344:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 1615              		.loc 1 344 5 view .LVU474
+ 344:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 1616              		.loc 1 344 10 is_stmt 0 view .LVU475
+ 1617 0058 FFF7FEFF 		bl	BMI088_ReadOK
+ARM GAS  /tmp/cc4u8TDW.s 			page 45
+
+
+ 1618              	.LVL165:
+ 344:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 1619              		.loc 1 344 8 view .LVU476
+ 1620 005c 0346     		mov	r3, r0
+ 1621 005e 10B1     		cbz	r0, .L81
+ 344:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 1622              		.loc 1 344 26 discriminator 2 view .LVU477
+ 1623 0060 1E2C     		cmp	r4, #30
+ 1624 0062 03D0     		beq	.L92
+ 344:modules/imu/BMI088driver.c ****     int16_t bmi088_raw_temp;
+ 1625              		.loc 1 344 74 view .LVU478
+ 1626 0064 0023     		movs	r3, #0
+ 1627              	.LVL166:
+ 1628              	.L81:
+ 419:modules/imu/BMI088driver.c **** 
+ 1629              		.loc 1 419 1 view .LVU479
+ 1630 0066 1846     		mov	r0, r3
+ 1631 0068 11B0     		add	sp, sp, #68
+ 1632              	.LCFI20:
+ 1633              		.cfi_remember_state
+ 1634              		.cfi_def_cfa_offset 12
+ 1635              		@ sp needed
+ 1636 006a 30BD     		pop	{r4, r5, pc}
+ 1637              	.LVL167:
+ 1638              	.L92:
+ 1639              	.LCFI21:
+ 1640              		.cfi_restore_state
+ 345:modules/imu/BMI088driver.c **** /* [USB_SP 修改 01 结束] */
+ 1641              		.loc 1 345 5 is_stmt 1 view .LVU480
+ 348:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1642              		.loc 1 348 5 view .LVU481
+ 1643 006c FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1644              	.LVL168:
+ 348:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1645              		.loc 1 348 5 view .LVU482
+ 1646 0070 9220     		movs	r0, #146
+ 1647 0072 FFF7FEFF 		bl	BMI088_read_write_byte
+ 1648              	.LVL169:
+ 348:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1649              		.loc 1 348 5 view .LVU483
+ 1650 0076 0622     		movs	r2, #6
+ 1651 0078 01A9     		add	r1, sp, #4
+ 1652 007a 1220     		movs	r0, #18
+ 1653 007c FFF7FEFF 		bl	BMI088_read_muli_reg
+ 1654              	.LVL170:
+ 348:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1655              		.loc 1 348 5 view .LVU484
+ 1656 0080 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1657              	.LVL171:
+ 348:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1658              		.loc 1 348 60 view .LVU485
+ 350:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 结束] */
+ 1659              		.loc 1 350 5 view .LVU486
+ 350:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 结束] */
+ 1660              		.loc 1 350 10 is_stmt 0 view .LVU487
+ 1661 0084 FFF7FEFF 		bl	BMI088_ReadOK
+ 1662              	.LVL172:
+ARM GAS  /tmp/cc4u8TDW.s 			page 46
+
+
+ 350:modules/imu/BMI088driver.c **** /* [USB_SP 修改 02 结束] */
+ 1663              		.loc 1 350 8 view .LVU488
+ 1664 0088 0346     		mov	r3, r0
+ 1665 008a 0028     		cmp	r0, #0
+ 1666 008c EBD0     		beq	.L81
+ 353:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1667              		.loc 1 353 5 is_stmt 1 view .LVU489
+ 353:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1668              		.loc 1 353 37 is_stmt 0 view .LVU490
+ 1669 008e 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 353:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1670              		.loc 1 353 42 view .LVU491
+ 1671 0092 1B02     		lsls	r3, r3, #8
+ 353:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1672              		.loc 1 353 23 view .LVU492
+ 1673 0094 1BB2     		sxth	r3, r3
+ 353:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1674              		.loc 1 353 53 view .LVU493
+ 1675 0096 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 353:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1676              		.loc 1 353 21 view .LVU494
+ 1677 009a 1343     		orrs	r3, r3, r2
+ 1678 009c 07EE903A 		vmov	s15, r3	@ int
+ 1679              	.LVL173:
+ 355:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 结束] */
+ 1680              		.loc 1 355 5 is_stmt 1 view .LVU495
+ 355:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 结束] */
+ 1681              		.loc 1 355 37 is_stmt 0 view .LVU496
+ 1682 00a0 774B     		ldr	r3, .L93
+ 1683 00a2 D3ED006A 		vldr.32	s13, [r3]
+ 1684 00a6 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1685              	.LVL174:
+ 355:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 结束] */
+ 1686              		.loc 1 355 37 view .LVU497
+ 1687 00aa 67EEA67A 		vmul.f32	s15, s15, s13
+ 355:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 结束] */
+ 1688              		.loc 1 355 62 view .LVU498
+ 1689 00ae 9DED0B7A 		vldr.32	s14, [sp, #44]
+ 355:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 结束] */
+ 1690              		.loc 1 355 56 view .LVU499
+ 1691 00b2 67EE877A 		vmul.f32	s15, s15, s14
+ 355:modules/imu/BMI088driver.c **** /* [USB_SP 修改 03 结束] */
+ 1692              		.loc 1 355 19 view .LVU500
+ 1693 00b6 CDED037A 		vstr.32	s15, [sp, #12]
+ 357:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1694              		.loc 1 357 5 is_stmt 1 view .LVU501
+ 357:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1695              		.loc 1 357 37 is_stmt 0 view .LVU502
+ 1696 00ba 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 357:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1697              		.loc 1 357 42 view .LVU503
+ 1698 00be 1B02     		lsls	r3, r3, #8
+ 357:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1699              		.loc 1 357 23 view .LVU504
+ 1700 00c0 1BB2     		sxth	r3, r3
+ 357:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1701              		.loc 1 357 53 view .LVU505
+ARM GAS  /tmp/cc4u8TDW.s 			page 47
+
+
+ 1702 00c2 9DF80620 		ldrb	r2, [sp, #6]	@ zero_extendqisi2
+ 1703              	.LVL175:
+ 357:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1704              		.loc 1 357 21 view .LVU506
+ 1705 00c6 1343     		orrs	r3, r3, r2
+ 1706 00c8 07EE903A 		vmov	s15, r3	@ int
+ 1707              	.LVL176:
+ 359:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 结束] */
+ 1708              		.loc 1 359 5 is_stmt 1 view .LVU507
+ 359:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 结束] */
+ 1709              		.loc 1 359 37 is_stmt 0 view .LVU508
+ 1710 00cc F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1711              	.LVL177:
+ 359:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 结束] */
+ 1712              		.loc 1 359 37 view .LVU509
+ 1713 00d0 67EEA67A 		vmul.f32	s15, s15, s13
+ 359:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 结束] */
+ 1714              		.loc 1 359 56 view .LVU510
+ 1715 00d4 67EE277A 		vmul.f32	s15, s14, s15
+ 359:modules/imu/BMI088driver.c **** /* [USB_SP 修改 04 结束] */
+ 1716              		.loc 1 359 19 view .LVU511
+ 1717 00d8 CDED047A 		vstr.32	s15, [sp, #16]
+ 361:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1718              		.loc 1 361 5 is_stmt 1 view .LVU512
+ 361:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1719              		.loc 1 361 37 is_stmt 0 view .LVU513
+ 1720 00dc 9DF80930 		ldrb	r3, [sp, #9]	@ zero_extendqisi2
+ 1721              	.LVL178:
+ 361:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1722              		.loc 1 361 42 view .LVU514
+ 1723 00e0 1B02     		lsls	r3, r3, #8
+ 361:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1724              		.loc 1 361 23 view .LVU515
+ 1725 00e2 1BB2     		sxth	r3, r3
+ 361:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1726              		.loc 1 361 53 view .LVU516
+ 1727 00e4 9DF80820 		ldrb	r2, [sp, #8]	@ zero_extendqisi2
+ 1728              	.LVL179:
+ 361:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1729              		.loc 1 361 21 view .LVU517
+ 1730 00e8 1343     		orrs	r3, r3, r2
+ 1731 00ea 07EE903A 		vmov	s15, r3	@ int
+ 1732              	.LVL180:
+ 363:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 结束] */
+ 1733              		.loc 1 363 5 is_stmt 1 view .LVU518
+ 363:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 结束] */
+ 1734              		.loc 1 363 37 is_stmt 0 view .LVU519
+ 1735 00ee F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1736              	.LVL181:
+ 363:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 结束] */
+ 1737              		.loc 1 363 37 view .LVU520
+ 1738 00f2 67EEA67A 		vmul.f32	s15, s15, s13
+ 363:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 结束] */
+ 1739              		.loc 1 363 56 view .LVU521
+ 1740 00f6 67EE277A 		vmul.f32	s15, s14, s15
+ 363:modules/imu/BMI088driver.c **** /* [USB_SP 修改 05 结束] */
+ 1741              		.loc 1 363 19 view .LVU522
+ARM GAS  /tmp/cc4u8TDW.s 			page 48
+
+
+ 1742 00fa CDED057A 		vstr.32	s15, [sp, #20]
+ 366:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1743              		.loc 1 366 5 is_stmt 1 view .LVU523
+ 1744 00fe FFF7FEFF 		bl	BMI088_GYRO_NS_L
+ 1745              	.LVL182:
+ 366:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1746              		.loc 1 366 5 view .LVU524
+ 1747 0102 0822     		movs	r2, #8
+ 1748 0104 01A9     		add	r1, sp, #4
+ 1749 0106 0020     		movs	r0, #0
+ 1750 0108 FFF7FEFF 		bl	BMI088_read_muli_reg
+ 1751              	.LVL183:
+ 366:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1752              		.loc 1 366 5 view .LVU525
+ 1753 010c FFF7FEFF 		bl	BMI088_GYRO_NS_H
+ 1754              	.LVL184:
+ 366:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1755              		.loc 1 366 59 view .LVU526
+ 368:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 结束] */
+ 1756              		.loc 1 368 5 view .LVU527
+ 368:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 结束] */
+ 1757              		.loc 1 368 10 is_stmt 0 view .LVU528
+ 1758 0110 FFF7FEFF 		bl	BMI088_ReadOK
+ 1759              	.LVL185:
+ 368:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 结束] */
+ 1760              		.loc 1 368 8 view .LVU529
+ 1761 0114 0346     		mov	r3, r0
+ 1762 0116 0028     		cmp	r0, #0
+ 1763 0118 A5D0     		beq	.L81
+ 368:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 结束] */
+ 1764              		.loc 1 368 32 discriminator 2 view .LVU530
+ 1765 011a 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 368:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 结束] */
+ 1766              		.loc 1 368 26 discriminator 2 view .LVU531
+ 1767 011e 0F2B     		cmp	r3, #15
+ 1768 0120 40F0AB80 		bne	.L87
+ 370:modules/imu/BMI088driver.c ****     {
+ 1769              		.loc 1 370 5 is_stmt 1 view .LVU532
+ 372:modules/imu/BMI088driver.c ****         {
+ 1770              		.loc 1 372 9 view .LVU533
+ 372:modules/imu/BMI088driver.c ****         {
+ 1771              		.loc 1 372 13 is_stmt 0 view .LVU534
+ 1772 0124 574B     		ldr	r3, .L93+4
+ 1773 0126 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 372:modules/imu/BMI088driver.c ****         {
+ 1774              		.loc 1 372 12 view .LVU535
+ 1775 0128 002B     		cmp	r3, #0
+ 1776 012a 72D0     		beq	.L82
+ 374:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1777              		.loc 1 374 13 is_stmt 1 view .LVU536
+ 374:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1778              		.loc 1 374 45 is_stmt 0 view .LVU537
+ 1779 012c 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 374:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1780              		.loc 1 374 50 view .LVU538
+ 1781 0130 1B02     		lsls	r3, r3, #8
+ 374:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ARM GAS  /tmp/cc4u8TDW.s 			page 49
+
+
+ 1782              		.loc 1 374 31 view .LVU539
+ 1783 0132 1BB2     		sxth	r3, r3
+ 374:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1784              		.loc 1 374 61 view .LVU540
+ 1785 0134 9DF80620 		ldrb	r2, [sp, #6]	@ zero_extendqisi2
+ 374:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1786              		.loc 1 374 29 view .LVU541
+ 1787 0138 1343     		orrs	r3, r3, r2
+ 1788 013a 07EE903A 		vmov	s15, r3	@ int
+ 1789              	.LVL186:
+ 376:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 结束] */
+ 1790              		.loc 1 376 13 is_stmt 1 view .LVU542
+ 376:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 结束] */
+ 1791              		.loc 1 376 44 is_stmt 0 view .LVU543
+ 1792 013e 524B     		ldr	r3, .L93+8
+ 1793 0140 93ED007A 		vldr.32	s14, [r3]
+ 1794 0144 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1795              	.LVL187:
+ 376:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 结束] */
+ 1796              		.loc 1 376 44 view .LVU544
+ 1797 0148 67EE877A 		vmul.f32	s15, s15, s14
+ 376:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 结束] */
+ 1798              		.loc 1 376 79 view .LVU545
+ 1799 014c DDED0C6A 		vldr.32	s13, [sp, #48]
+ 376:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 结束] */
+ 1800              		.loc 1 376 62 view .LVU546
+ 1801 0150 77EEE67A 		vsub.f32	s15, s15, s13
+ 376:modules/imu/BMI088driver.c **** /* [USB_SP 修改 07 结束] */
+ 1802              		.loc 1 376 26 view .LVU547
+ 1803 0154 CDED067A 		vstr.32	s15, [sp, #24]
+ 378:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1804              		.loc 1 378 13 is_stmt 1 view .LVU548
+ 378:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1805              		.loc 1 378 45 is_stmt 0 view .LVU549
+ 1806 0158 9DF80930 		ldrb	r3, [sp, #9]	@ zero_extendqisi2
+ 378:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1807              		.loc 1 378 50 view .LVU550
+ 1808 015c 1B02     		lsls	r3, r3, #8
+ 378:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1809              		.loc 1 378 31 view .LVU551
+ 1810 015e 1BB2     		sxth	r3, r3
+ 378:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1811              		.loc 1 378 61 view .LVU552
+ 1812 0160 9DF80820 		ldrb	r2, [sp, #8]	@ zero_extendqisi2
+ 1813              	.LVL188:
+ 378:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1814              		.loc 1 378 29 view .LVU553
+ 1815 0164 1343     		orrs	r3, r3, r2
+ 1816 0166 07EE903A 		vmov	s15, r3	@ int
+ 1817              	.LVL189:
+ 380:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 结束] */
+ 1818              		.loc 1 380 13 is_stmt 1 view .LVU554
+ 380:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 结束] */
+ 1819              		.loc 1 380 44 is_stmt 0 view .LVU555
+ 1820 016a F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1821              	.LVL190:
+ 380:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 结束] */
+ARM GAS  /tmp/cc4u8TDW.s 			page 50
+
+
+ 1822              		.loc 1 380 44 view .LVU556
+ 1823 016e 67EE877A 		vmul.f32	s15, s15, s14
+ 380:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 结束] */
+ 1824              		.loc 1 380 79 view .LVU557
+ 1825 0172 DDED0D6A 		vldr.32	s13, [sp, #52]
+ 380:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 结束] */
+ 1826              		.loc 1 380 62 view .LVU558
+ 1827 0176 77EEE67A 		vsub.f32	s15, s15, s13
+ 380:modules/imu/BMI088driver.c **** /* [USB_SP 修改 08 结束] */
+ 1828              		.loc 1 380 26 view .LVU559
+ 1829 017a CDED077A 		vstr.32	s15, [sp, #28]
+ 382:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1830              		.loc 1 382 13 is_stmt 1 view .LVU560
+ 382:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1831              		.loc 1 382 45 is_stmt 0 view .LVU561
+ 1832 017e 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 1833              	.LVL191:
+ 382:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1834              		.loc 1 382 50 view .LVU562
+ 1835 0182 1B02     		lsls	r3, r3, #8
+ 382:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1836              		.loc 1 382 31 view .LVU563
+ 1837 0184 1BB2     		sxth	r3, r3
+ 382:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1838              		.loc 1 382 61 view .LVU564
+ 1839 0186 9DF80A20 		ldrb	r2, [sp, #10]	@ zero_extendqisi2
+ 1840              	.LVL192:
+ 382:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1841              		.loc 1 382 29 view .LVU565
+ 1842 018a 1343     		orrs	r3, r3, r2
+ 1843 018c 07EE903A 		vmov	s15, r3	@ int
+ 1844              	.LVL193:
+ 384:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 结束] */
+ 1845              		.loc 1 384 13 is_stmt 1 view .LVU566
+ 384:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 结束] */
+ 1846              		.loc 1 384 44 is_stmt 0 view .LVU567
+ 1847 0190 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1848              	.LVL194:
+ 384:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 结束] */
+ 1849              		.loc 1 384 44 view .LVU568
+ 1850 0194 67EE877A 		vmul.f32	s15, s15, s14
+ 384:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 结束] */
+ 1851              		.loc 1 384 79 view .LVU569
+ 1852 0198 9DED0E7A 		vldr.32	s14, [sp, #56]
+ 384:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 结束] */
+ 1853              		.loc 1 384 62 view .LVU570
+ 1854 019c 77EEC77A 		vsub.f32	s15, s15, s14
+ 384:modules/imu/BMI088driver.c **** /* [USB_SP 修改 09 结束] */
+ 1855              		.loc 1 384 26 view .LVU571
+ 1856 01a0 CDED087A 		vstr.32	s15, [sp, #32]
+ 1857              	.LVL195:
+ 1858              	.L83:
+ 403:modules/imu/BMI088driver.c **** 
+ 1859              		.loc 1 403 5 is_stmt 1 view .LVU572
+ 1860 01a4 FFF7FEFF 		bl	BMI088_ACCEL_NS_L
+ 1861              	.LVL196:
+ 403:modules/imu/BMI088driver.c **** 
+ARM GAS  /tmp/cc4u8TDW.s 			page 51
+
+
+ 1862              		.loc 1 403 5 view .LVU573
+ 1863 01a8 A220     		movs	r0, #162
+ 1864 01aa FFF7FEFF 		bl	BMI088_read_write_byte
+ 1865              	.LVL197:
+ 403:modules/imu/BMI088driver.c **** 
+ 1866              		.loc 1 403 5 view .LVU574
+ 1867 01ae 0222     		movs	r2, #2
+ 1868 01b0 01A9     		add	r1, sp, #4
+ 1869 01b2 2220     		movs	r0, #34
+ 1870 01b4 FFF7FEFF 		bl	BMI088_read_muli_reg
+ 1871              	.LVL198:
+ 403:modules/imu/BMI088driver.c **** 
+ 1872              		.loc 1 403 5 view .LVU575
+ 1873 01b8 FFF7FEFF 		bl	BMI088_ACCEL_NS_H
+ 1874              	.LVL199:
+ 403:modules/imu/BMI088driver.c **** 
+ 1875              		.loc 1 403 54 view .LVU576
+ 405:modules/imu/BMI088driver.c **** 
+ 1876              		.loc 1 405 5 view .LVU577
+ 405:modules/imu/BMI088driver.c **** 
+ 1877              		.loc 1 405 37 is_stmt 0 view .LVU578
+ 1878 01bc 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+ 405:modules/imu/BMI088driver.c **** 
+ 1879              		.loc 1 405 53 view .LVU579
+ 1880 01c0 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+ 405:modules/imu/BMI088driver.c **** 
+ 1881              		.loc 1 405 23 view .LVU580
+ 1882 01c4 5B09     		lsrs	r3, r3, #5
+ 405:modules/imu/BMI088driver.c **** 
+ 1883              		.loc 1 405 21 view .LVU581
+ 1884 01c6 43EAC203 		orr	r3, r3, r2, lsl #3
+ 1885              	.LVL200:
+ 407:modules/imu/BMI088driver.c ****     {
+ 1886              		.loc 1 407 5 is_stmt 1 view .LVU582
+ 407:modules/imu/BMI088driver.c ****     {
+ 1887              		.loc 1 407 8 is_stmt 0 view .LVU583
+ 1888 01ca B3F5806F 		cmp	r3, #1024
+ 1889 01ce 01DB     		blt	.L84
+ 409:modules/imu/BMI088driver.c ****     }
+ 1890              		.loc 1 409 9 is_stmt 1 view .LVU584
+ 409:modules/imu/BMI088driver.c ****     }
+ 1891              		.loc 1 409 25 is_stmt 0 view .LVU585
+ 1892 01d0 A3F50063 		sub	r3, r3, #2048
+ 1893              	.LVL201:
+ 1894              	.L84:
+ 413:modules/imu/BMI088driver.c **** 
+ 1895              		.loc 1 413 5 is_stmt 1 view .LVU586
+ 413:modules/imu/BMI088driver.c **** 
+ 1896              		.loc 1 413 40 is_stmt 0 view .LVU587
+ 1897 01d4 07EE903A 		vmov	s15, r3	@ int
+ 1898 01d8 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1899 01dc B4EE007A 		vmov.f32	s14, #1.25e-1
+ 1900 01e0 67EE877A 		vmul.f32	s15, s15, s14
+ 413:modules/imu/BMI088driver.c **** 
+ 1901              		.loc 1 413 61 view .LVU588
+ 1902 01e4 B3EE077A 		vmov.f32	s14, #2.3e+1
+ 1903 01e8 77EE877A 		vadd.f32	s15, s15, s14
+ARM GAS  /tmp/cc4u8TDW.s 			page 52
+
+
+ 413:modules/imu/BMI088driver.c **** 
+ 1904              		.loc 1 413 22 view .LVU589
+ 1905 01ec CDED0A7A 		vstr.32	s15, [sp, #40]
+ 415:modules/imu/BMI088driver.c ****     *bmi088 = next;
+ 1906              		.loc 1 415 5 is_stmt 1 view .LVU590
+ 415:modules/imu/BMI088driver.c ****     *bmi088 = next;
+ 1907              		.loc 1 415 10 is_stmt 0 view .LVU591
+ 1908 01f0 FFF7FEFF 		bl	BMI088_ReadOK
+ 1909              	.LVL202:
+ 415:modules/imu/BMI088driver.c ****     *bmi088 = next;
+ 1910              		.loc 1 415 8 view .LVU592
+ 1911 01f4 0346     		mov	r3, r0
+ 1912 01f6 0028     		cmp	r0, #0
+ 1913 01f8 3FF435AF 		beq	.L81
+ 416:modules/imu/BMI088driver.c ****     return 1;
+ 1914              		.loc 1 416 5 is_stmt 1 view .LVU593
+ 416:modules/imu/BMI088driver.c ****     return 1;
+ 1915              		.loc 1 416 13 is_stmt 0 view .LVU594
+ 1916 01fc 03AC     		add	r4, sp, #12
+ 1917              	.LVL203:
+ 416:modules/imu/BMI088driver.c ****     return 1;
+ 1918              		.loc 1 416 13 view .LVU595
+ 1919 01fe 0FCC     		ldmia	r4!, {r0, r1, r2, r3}
+ 1920 0200 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ 1921              	.LVL204:
+ 416:modules/imu/BMI088driver.c ****     return 1;
+ 1922              		.loc 1 416 13 view .LVU596
+ 1923 0202 0FCC     		ldmia	r4!, {r0, r1, r2, r3}
+ 1924 0204 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ 1925              	.LVL205:
+ 416:modules/imu/BMI088driver.c ****     return 1;
+ 1926              		.loc 1 416 13 view .LVU597
+ 1927 0206 0FCC     		ldmia	r4!, {r0, r1, r2, r3}
+ 1928 0208 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ 1929              	.LVL206:
+ 416:modules/imu/BMI088driver.c ****     return 1;
+ 1930              		.loc 1 416 13 view .LVU598
+ 1931 020a 2368     		ldr	r3, [r4]
+ 1932 020c 2B60     		str	r3, [r5]
+ 417:modules/imu/BMI088driver.c **** /* [USB_SP 修改 13 结束] */
+ 1933              		.loc 1 417 5 is_stmt 1 view .LVU599
+ 417:modules/imu/BMI088driver.c **** /* [USB_SP 修改 13 结束] */
+ 1934              		.loc 1 417 12 is_stmt 0 view .LVU600
+ 1935 020e 0123     		movs	r3, #1
+ 1936 0210 29E7     		b	.L81
+ 1937              	.LVL207:
+ 1938              	.L82:
+ 389:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1939              		.loc 1 389 13 is_stmt 1 view .LVU601
+ 389:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1940              		.loc 1 389 45 is_stmt 0 view .LVU602
+ 1941 0212 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 389:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1942              		.loc 1 389 50 view .LVU603
+ 1943 0216 1B02     		lsls	r3, r3, #8
+ 389:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1944              		.loc 1 389 31 view .LVU604
+ARM GAS  /tmp/cc4u8TDW.s 			page 53
+
+
+ 1945 0218 1BB2     		sxth	r3, r3
+ 389:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1946              		.loc 1 389 61 view .LVU605
+ 1947 021a 9DF80620 		ldrb	r2, [sp, #6]	@ zero_extendqisi2
+ 389:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1948              		.loc 1 389 29 view .LVU606
+ 1949 021e 1343     		orrs	r3, r3, r2
+ 1950 0220 07EE903A 		vmov	s15, r3	@ int
+ 1951              	.LVL208:
+ 391:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 结束] */
+ 1952              		.loc 1 391 13 is_stmt 1 view .LVU607
+ 391:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 结束] */
+ 1953              		.loc 1 391 44 is_stmt 0 view .LVU608
+ 1954 0224 184B     		ldr	r3, .L93+8
+ 1955 0226 93ED007A 		vldr.32	s14, [r3]
+ 1956 022a F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1957              	.LVL209:
+ 391:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 结束] */
+ 1958              		.loc 1 391 44 view .LVU609
+ 1959 022e 67EE877A 		vmul.f32	s15, s15, s14
+ 391:modules/imu/BMI088driver.c **** /* [USB_SP 修改 10 结束] */
+ 1960              		.loc 1 391 26 view .LVU610
+ 1961 0232 CDED067A 		vstr.32	s15, [sp, #24]
+ 393:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1962              		.loc 1 393 13 is_stmt 1 view .LVU611
+ 393:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1963              		.loc 1 393 45 is_stmt 0 view .LVU612
+ 1964 0236 9DF80930 		ldrb	r3, [sp, #9]	@ zero_extendqisi2
+ 393:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1965              		.loc 1 393 50 view .LVU613
+ 1966 023a 1B02     		lsls	r3, r3, #8
+ 393:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1967              		.loc 1 393 31 view .LVU614
+ 1968 023c 1BB2     		sxth	r3, r3
+ 393:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1969              		.loc 1 393 61 view .LVU615
+ 1970 023e 9DF80820 		ldrb	r2, [sp, #8]	@ zero_extendqisi2
+ 1971              	.LVL210:
+ 393:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1972              		.loc 1 393 29 view .LVU616
+ 1973 0242 1343     		orrs	r3, r3, r2
+ 1974 0244 07EE903A 		vmov	s15, r3	@ int
+ 1975              	.LVL211:
+ 395:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 结束] */
+ 1976              		.loc 1 395 13 is_stmt 1 view .LVU617
+ 395:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 结束] */
+ 1977              		.loc 1 395 44 is_stmt 0 view .LVU618
+ 1978 0248 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1979              	.LVL212:
+ 395:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 结束] */
+ 1980              		.loc 1 395 44 view .LVU619
+ 1981 024c 67EE877A 		vmul.f32	s15, s15, s14
+ 395:modules/imu/BMI088driver.c **** /* [USB_SP 修改 11 结束] */
+ 1982              		.loc 1 395 26 view .LVU620
+ 1983 0250 CDED077A 		vstr.32	s15, [sp, #28]
+ 397:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1984              		.loc 1 397 13 is_stmt 1 view .LVU621
+ARM GAS  /tmp/cc4u8TDW.s 			page 54
+
+
+ 397:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1985              		.loc 1 397 45 is_stmt 0 view .LVU622
+ 1986 0254 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 1987              	.LVL213:
+ 397:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1988              		.loc 1 397 50 view .LVU623
+ 1989 0258 1B02     		lsls	r3, r3, #8
+ 397:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1990              		.loc 1 397 31 view .LVU624
+ 1991 025a 1BB2     		sxth	r3, r3
+ 397:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1992              		.loc 1 397 61 view .LVU625
+ 1993 025c 9DF80A20 		ldrb	r2, [sp, #10]	@ zero_extendqisi2
+ 1994              	.LVL214:
+ 397:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 1995              		.loc 1 397 29 view .LVU626
+ 1996 0260 1343     		orrs	r3, r3, r2
+ 1997 0262 07EE903A 		vmov	s15, r3	@ int
+ 1998              	.LVL215:
+ 399:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 结束] */
+ 1999              		.loc 1 399 13 is_stmt 1 view .LVU627
+ 399:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 结束] */
+ 2000              		.loc 1 399 44 is_stmt 0 view .LVU628
+ 2001 0266 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 2002              	.LVL216:
+ 399:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 结束] */
+ 2003              		.loc 1 399 44 view .LVU629
+ 2004 026a 67EE877A 		vmul.f32	s15, s15, s14
+ 399:modules/imu/BMI088driver.c **** /* [USB_SP 修改 12 结束] */
+ 2005              		.loc 1 399 26 view .LVU630
+ 2006 026e CDED087A 		vstr.32	s15, [sp, #32]
+ 2007 0272 97E7     		b	.L83
+ 2008              	.LVL217:
+ 2009              	.L85:
+ 2010              	.LCFI22:
+ 2011              		.cfi_def_cfa_offset 0
+ 2012              		.cfi_restore 4
+ 2013              		.cfi_restore 5
+ 2014              		.cfi_restore 14
+ 338:modules/imu/BMI088driver.c ****     IMU_Data_t next = *bmi088;
+ 2015              		.loc 1 338 25 view .LVU631
+ 2016 0274 0023     		movs	r3, #0
+ 419:modules/imu/BMI088driver.c **** 
+ 2017              		.loc 1 419 1 view .LVU632
+ 2018 0276 1846     		mov	r0, r3
+ 2019              	.LVL218:
+ 419:modules/imu/BMI088driver.c **** 
+ 2020              		.loc 1 419 1 view .LVU633
+ 2021 0278 7047     		bx	lr
+ 2022              	.LVL219:
+ 2023              	.L87:
+ 2024              	.LCFI23:
+ 2025              		.cfi_def_cfa_offset 80
+ 2026              		.cfi_offset 4, -12
+ 2027              		.cfi_offset 5, -8
+ 2028              		.cfi_offset 14, -4
+ 368:modules/imu/BMI088driver.c **** /* [USB_SP 修改 06 结束] */
+ARM GAS  /tmp/cc4u8TDW.s 			page 55
+
+
+ 2029              		.loc 1 368 73 view .LVU634
+ 2030 027a 0023     		movs	r3, #0
+ 2031 027c F3E6     		b	.L81
+ 2032              	.L94:
+ 2033 027e 00BF     		.align	2
+ 2034              	.L93:
+ 2035 0280 00000000 		.word	.LANCHOR2
+ 2036 0284 00000000 		.word	.LANCHOR13
+ 2037 0288 00000000 		.word	.LANCHOR3
+ 2038              		.cfi_endproc
+ 2039              	.LFE247:
+ 2041              		.section	.text.BMI088_Read,"ax",%progbits
+ 2042              		.align	1
+ 2043              		.global	BMI088_Read
+ 2044              		.syntax unified
+ 2045              		.thumb
+ 2046              		.thumb_func
+ 2047              		.fpu fpv4-sp-d16
+ 2049              	BMI088_Read:
+ 2050              	.LVL220:
+ 2051              	.LFB246:
+ 331:modules/imu/BMI088driver.c **** /* [USB_SP 修改 01 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 2052              		.loc 1 331 1 is_stmt 1 view -0
+ 2053              		.cfi_startproc
+ 2054              		@ args = 0, pretend = 0, frame = 0
+ 2055              		@ frame_needed = 0, uses_anonymous_args = 0
+ 331:modules/imu/BMI088driver.c **** /* [USB_SP 修改 01 开始] 新增Checked读取，两颗芯片ID和所有SPI字节成功才原子�
+ 2056              		.loc 1 331 1 is_stmt 0 view .LVU636
+ 2057 0000 08B5     		push	{r3, lr}
+ 2058              	.LCFI24:
+ 2059              		.cfi_def_cfa_offset 8
+ 2060              		.cfi_offset 3, -8
+ 2061              		.cfi_offset 14, -4
+ 333:modules/imu/BMI088driver.c **** }
+ 2062              		.loc 1 333 5 is_stmt 1 view .LVU637
+ 333:modules/imu/BMI088driver.c **** }
+ 2063              		.loc 1 333 11 is_stmt 0 view .LVU638
+ 2064 0002 FFF7FEFF 		bl	BMI088_ReadChecked
+ 2065              	.LVL221:
+ 334:modules/imu/BMI088driver.c **** 
+ 2066              		.loc 1 334 1 view .LVU639
+ 2067 0006 08BD     		pop	{r3, pc}
+ 2068              		.cfi_endproc
+ 2069              	.LFE246:
+ 2071              		.global	BMI088
+ 2072              		.global	caliCount
+ 2073              		.global	caliOffset
+ 2074              		.global	gNormDiff
+ 2075              		.global	gyroDiff
+ 2076              		.global	BMI088_GYRO_SEN
+ 2077              		.global	BMI088_ACCEL_SEN
+ 2078              		.section	.rodata
+ 2079              		.align	2
+ 2080              		.set	.LANCHOR0,. + 0
+ 2081              	.LC0:
+ 2082 0000 00000000 		.ascii	"\000\000\000\000\000\000\000"
+ 2082      000000
+ARM GAS  /tmp/cc4u8TDW.s 			page 56
+
+
+ 2083 0007 00       		.space	1
+ 2084              		.section	.bss.BMI088,"aw",%nobits
+ 2085              		.align	2
+ 2086              		.set	.LANCHOR12,. + 0
+ 2089              	BMI088:
+ 2090 0000 00000000 		.space	52
+ 2090      00000000 
+ 2090      00000000 
+ 2090      00000000 
+ 2090      00000000 
+ 2091              		.section	.bss.caliCount,"aw",%nobits
+ 2092              		.align	1
+ 2093              		.set	.LANCHOR6,. + 0
+ 2096              	caliCount:
+ 2097 0000 0000     		.space	2
+ 2098              		.section	.bss.error,"aw",%nobits
+ 2099              		.set	.LANCHOR10,. + 0
+ 2102              	error:
+ 2103 0000 00       		.space	1
+ 2104              		.section	.bss.gNormDiff,"aw",%nobits
+ 2105              		.align	2
+ 2106              		.set	.LANCHOR4,. + 0
+ 2109              	gNormDiff:
+ 2110 0000 00000000 		.space	4
+ 2111              		.section	.bss.gyroDiff,"aw",%nobits
+ 2112              		.align	2
+ 2113              		.set	.LANCHOR5,. + 0
+ 2116              	gyroDiff:
+ 2117 0000 00000000 		.space	12
+ 2117      00000000 
+ 2117      00000000 
+ 2118              		.section	.bss.res,"aw",%nobits
+ 2119              		.set	.LANCHOR7,. + 0
+ 2122              	res:
+ 2123 0000 00       		.space	1
+ 2124              		.section	.bss.startTime.1,"aw",%nobits
+ 2125              		.align	2
+ 2126              		.set	.LANCHOR1,. + 0
+ 2129              	startTime.1:
+ 2130 0000 00000000 		.space	4
+ 2131              		.section	.bss.write_reg_num,"aw",%nobits
+ 2132              		.set	.LANCHOR8,. + 0
+ 2135              	write_reg_num:
+ 2136 0000 00       		.space	1
+ 2137              		.section	.data.BMI088_ACCEL_SEN,"aw"
+ 2138              		.align	2
+ 2139              		.set	.LANCHOR2,. + 0
+ 2142              	BMI088_ACCEL_SEN:
+ 2143 0000 3333EB3A 		.word	988492595
+ 2144              		.section	.data.BMI088_GYRO_SEN,"aw"
+ 2145              		.align	2
+ 2146              		.set	.LANCHOR3,. + 0
+ 2149              	BMI088_GYRO_SEN:
+ 2150 0000 58A08B3A 		.word	982229080
+ 2151              		.section	.data.caliOffset,"aw"
+ 2152              		.set	.LANCHOR13,. + 0
+ 2155              	caliOffset:
+ARM GAS  /tmp/cc4u8TDW.s 			page 57
+
+
+ 2156 0000 01       		.byte	1
+ 2157              		.section	.rodata.BMI088_Accel_Init_Table,"a"
+ 2158              		.align	2
+ 2159              		.set	.LANCHOR9,. + 0
+ 2162              	BMI088_Accel_Init_Table:
+ 2163 0000 7D0401   		.ascii	"}\004\001"
+ 2164 0003 7C0002   		.ascii	"|\000\002"
+ 2165 0006 40AB03   		.ascii	"@\253\003"
+ 2166 0009 410105   		.ascii	"A\001\005"
+ 2167 000c 530806   		.ascii	"S\010\006"
+ 2168 000f 580407   		.ascii	"X\004\007"
+ 2169              		.section	.rodata.BMI088_Gyro_Init_Table,"a"
+ 2170              		.align	2
+ 2171              		.set	.LANCHOR11,. + 0
+ 2174              	BMI088_Gyro_Init_Table:
+ 2175 0000 0F0008   		.ascii	"\017\000\010"
+ 2176 0003 108109   		.ascii	"\020\201\011"
+ 2177 0006 11000A   		.ascii	"\021\000\012"
+ 2178 0009 15800B   		.ascii	"\025\200\013"
+ 2179 000c 16000C   		.ascii	"\026\000\014"
+ 2180 000f 18010D   		.ascii	"\030\001\015"
+ 2181              		.text
+ 2182              	.Letext0:
+ 2183              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 2184              		.file 3 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 2185              		.file 4 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 2186              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 2187              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
+ 2188              		.file 7 "modules/imu/BMI088driver.h"
+ 2189              		.file 8 "modules/imu/BMI088Middleware.h"
+ 2190              		.file 9 "bsp/dwt/bsp_dwt.h"
+ 2191              		.file 10 "/usr/include/newlib/math.h"
+ARM GAS  /tmp/cc4u8TDW.s 			page 58
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 BMI088driver.c
+     /tmp/cc4u8TDW.s:18     .text.BMI088_read_muli_reg:0000000000000000 $t
+     /tmp/cc4u8TDW.s:25     .text.BMI088_read_muli_reg:0000000000000000 BMI088_read_muli_reg
+     /tmp/cc4u8TDW.s:81     .text.BMI088_write_single_reg:0000000000000000 $t
+     /tmp/cc4u8TDW.s:87     .text.BMI088_write_single_reg:0000000000000000 BMI088_write_single_reg
+     /tmp/cc4u8TDW.s:114    .text.BMI088_read_single_reg:0000000000000000 $t
+     /tmp/cc4u8TDW.s:120    .text.BMI088_read_single_reg:0000000000000000 BMI088_read_single_reg
+     /tmp/cc4u8TDW.s:154    .text.Calibrate_MPU_Offset:0000000000000000 $t
+     /tmp/cc4u8TDW.s:160    .text.Calibrate_MPU_Offset:0000000000000000 Calibrate_MPU_Offset
+     /tmp/cc4u8TDW.s:763    .text.Calibrate_MPU_Offset:0000000000000328 $d
+     /tmp/cc4u8TDW.s:783    .text.Calibrate_MPU_Offset:0000000000000368 $t
+     /tmp/cc4u8TDW.s:926    .text.Calibrate_MPU_Offset:000000000000048c $d
+     /tmp/cc4u8TDW.s:936    .text.bmi088_accel_init:0000000000000000 $t
+     /tmp/cc4u8TDW.s:943    .text.bmi088_accel_init:0000000000000000 bmi088_accel_init
+     /tmp/cc4u8TDW.s:1193   .text.bmi088_accel_init:0000000000000150 $d
+     /tmp/cc4u8TDW.s:1203   .text.bmi088_gyro_init:0000000000000000 $t
+     /tmp/cc4u8TDW.s:1210   .text.bmi088_gyro_init:0000000000000000 bmi088_gyro_init
+     /tmp/cc4u8TDW.s:1428   .text.bmi088_gyro_init:0000000000000120 $d
+     /tmp/cc4u8TDW.s:1439   .text.BMI088Init:0000000000000000 $t
+     /tmp/cc4u8TDW.s:1446   .text.BMI088Init:0000000000000000 BMI088Init
+     /tmp/cc4u8TDW.s:1529   .text.BMI088Init:000000000000004c $d
+     /tmp/cc4u8TDW.s:1541   .text.BMI088_ReadChecked:0000000000000000 $t
+     /tmp/cc4u8TDW.s:1548   .text.BMI088_ReadChecked:0000000000000000 BMI088_ReadChecked
+     /tmp/cc4u8TDW.s:2035   .text.BMI088_ReadChecked:0000000000000280 $d
+     /tmp/cc4u8TDW.s:2042   .text.BMI088_Read:0000000000000000 $t
+     /tmp/cc4u8TDW.s:2049   .text.BMI088_Read:0000000000000000 BMI088_Read
+     /tmp/cc4u8TDW.s:2089   .bss.BMI088:0000000000000000 BMI088
+     /tmp/cc4u8TDW.s:2096   .bss.caliCount:0000000000000000 caliCount
+     /tmp/cc4u8TDW.s:2155   .data.caliOffset:0000000000000000 caliOffset
+     /tmp/cc4u8TDW.s:2109   .bss.gNormDiff:0000000000000000 gNormDiff
+     /tmp/cc4u8TDW.s:2116   .bss.gyroDiff:0000000000000000 gyroDiff
+     /tmp/cc4u8TDW.s:2149   .data.BMI088_GYRO_SEN:0000000000000000 BMI088_GYRO_SEN
+     /tmp/cc4u8TDW.s:2142   .data.BMI088_ACCEL_SEN:0000000000000000 BMI088_ACCEL_SEN
+     /tmp/cc4u8TDW.s:2079   .rodata:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2085   .bss.BMI088:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2092   .bss.caliCount:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2102   .bss.error:0000000000000000 error
+     /tmp/cc4u8TDW.s:2103   .bss.error:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2105   .bss.gNormDiff:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2112   .bss.gyroDiff:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2122   .bss.res:0000000000000000 res
+     /tmp/cc4u8TDW.s:2123   .bss.res:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2125   .bss.startTime.1:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2129   .bss.startTime.1:0000000000000000 startTime.1
+     /tmp/cc4u8TDW.s:2135   .bss.write_reg_num:0000000000000000 write_reg_num
+     /tmp/cc4u8TDW.s:2136   .bss.write_reg_num:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2138   .data.BMI088_ACCEL_SEN:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2145   .data.BMI088_GYRO_SEN:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2158   .rodata.BMI088_Accel_Init_Table:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2162   .rodata.BMI088_Accel_Init_Table:0000000000000000 BMI088_Accel_Init_Table
+     /tmp/cc4u8TDW.s:2170   .rodata.BMI088_Gyro_Init_Table:0000000000000000 $d
+     /tmp/cc4u8TDW.s:2174   .rodata.BMI088_Gyro_Init_Table:0000000000000000 BMI088_Gyro_Init_Table
+
+UNDEFINED SYMBOLS
+BMI088_read_write_byte
+DWT_GetTimeline_s
+ARM GAS  /tmp/cc4u8TDW.s 			page 59
+
+
+DWT_Delay
+BMI088_ACCEL_NS_L
+BMI088_ACCEL_NS_H
+sqrtf
+BMI088_GYRO_NS_L
+BMI088_GYRO_NS_H
+BMI088_SPI
+BMI088_BeginRead
+BMI088_ReadOK

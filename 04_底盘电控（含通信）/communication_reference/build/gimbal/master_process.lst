@@ -1,0 +1,302 @@
+ARM GAS  /tmp/ccvDwGac.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"master_process.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.VisionInit,"ax",%progbits
+  18              		.align	1
+  19              		.global	VisionInit
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	VisionInit:
+  27              	.LVL0:
+  28              	.LFB239:
+  29              		.file 1 "modules/master_machine/master_process.c"
+   1:modules/master_machine/master_process.c **** /* [USB_SP 通信整理] 旧Vision接口兼容层，实际收发逻辑集中在robot_comm.c。 */
+   2:modules/master_machine/master_process.c **** #include "master_process.h"
+   3:modules/master_machine/master_process.c **** #include "robot_comm.h"
+   4:modules/master_machine/master_process.c **** 
+   5:modules/master_machine/master_process.c **** Vision_Recv_s *VisionInit(UART_HandleTypeDef *unused)
+   6:modules/master_machine/master_process.c **** {
+  30              		.loc 1 6 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 6 1 is_stmt 0 view .LVU1
+  35 0000 08B5     		push	{r3, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 3, -8
+  39              		.cfi_offset 14, -4
+   7:modules/master_machine/master_process.c ****     (void)unused;
+  40              		.loc 1 7 5 is_stmt 1 view .LVU2
+   8:modules/master_machine/master_process.c ****     return RobotCommInit();
+  41              		.loc 1 8 5 view .LVU3
+  42              		.loc 1 8 12 is_stmt 0 view .LVU4
+  43 0002 FFF7FEFF 		bl	RobotCommInit
+  44              	.LVL1:
+   9:modules/master_machine/master_process.c **** }
+  45              		.loc 1 9 1 view .LVU5
+  46 0006 08BD     		pop	{r3, pc}
+  47              		.cfi_endproc
+  48              	.LFE239:
+  50              		.section	.text.VisionSend,"ax",%progbits
+ARM GAS  /tmp/ccvDwGac.s 			page 2
+
+
+  51              		.align	1
+  52              		.global	VisionSend
+  53              		.syntax unified
+  54              		.thumb
+  55              		.thumb_func
+  56              		.fpu fpv4-sp-d16
+  58              	VisionSend:
+  59              	.LFB240:
+  10:modules/master_machine/master_process.c **** 
+  11:modules/master_machine/master_process.c **** void VisionSend(void)
+  12:modules/master_machine/master_process.c **** {
+  60              		.loc 1 12 1 is_stmt 1 view -0
+  61              		.cfi_startproc
+  62              		@ args = 0, pretend = 0, frame = 0
+  63              		@ frame_needed = 0, uses_anonymous_args = 0
+  64 0000 08B5     		push	{r3, lr}
+  65              	.LCFI1:
+  66              		.cfi_def_cfa_offset 8
+  67              		.cfi_offset 3, -8
+  68              		.cfi_offset 14, -4
+  13:modules/master_machine/master_process.c ****     RobotCommUpdate();
+  69              		.loc 1 13 5 view .LVU7
+  70 0002 FFF7FEFF 		bl	RobotCommUpdate
+  71              	.LVL2:
+  14:modules/master_machine/master_process.c **** }
+  72              		.loc 1 14 1 is_stmt 0 view .LVU8
+  73 0006 08BD     		pop	{r3, pc}
+  74              		.cfi_endproc
+  75              	.LFE240:
+  77              		.section	.text.VisionGetCommand,"ax",%progbits
+  78              		.align	1
+  79              		.global	VisionGetCommand
+  80              		.syntax unified
+  81              		.thumb
+  82              		.thumb_func
+  83              		.fpu fpv4-sp-d16
+  85              	VisionGetCommand:
+  86              	.LVL3:
+  87              	.LFB241:
+  15:modules/master_machine/master_process.c **** 
+  16:modules/master_machine/master_process.c **** uint8_t VisionGetCommand(Vision_Recv_s *out)
+  17:modules/master_machine/master_process.c **** {
+  88              		.loc 1 17 1 is_stmt 1 view -0
+  89              		.cfi_startproc
+  90              		@ args = 0, pretend = 0, frame = 0
+  91              		@ frame_needed = 0, uses_anonymous_args = 0
+  92              		.loc 1 17 1 is_stmt 0 view .LVU10
+  93 0000 08B5     		push	{r3, lr}
+  94              	.LCFI2:
+  95              		.cfi_def_cfa_offset 8
+  96              		.cfi_offset 3, -8
+  97              		.cfi_offset 14, -4
+  18:modules/master_machine/master_process.c ****     return RobotCommGetVisionCommand(out);
+  98              		.loc 1 18 5 is_stmt 1 view .LVU11
+  99              		.loc 1 18 12 is_stmt 0 view .LVU12
+ 100 0002 FFF7FEFF 		bl	RobotCommGetVisionCommand
+ 101              	.LVL4:
+ARM GAS  /tmp/ccvDwGac.s 			page 3
+
+
+  19:modules/master_machine/master_process.c **** }
+ 102              		.loc 1 19 1 view .LVU13
+ 103 0006 08BD     		pop	{r3, pc}
+ 104              		.cfi_endproc
+ 105              	.LFE241:
+ 107              		.section	.text.VisionIsOnline,"ax",%progbits
+ 108              		.align	1
+ 109              		.global	VisionIsOnline
+ 110              		.syntax unified
+ 111              		.thumb
+ 112              		.thumb_func
+ 113              		.fpu fpv4-sp-d16
+ 115              	VisionIsOnline:
+ 116              	.LFB242:
+  20:modules/master_machine/master_process.c **** 
+  21:modules/master_machine/master_process.c **** uint8_t VisionIsOnline(void)
+  22:modules/master_machine/master_process.c **** {
+ 117              		.loc 1 22 1 is_stmt 1 view -0
+ 118              		.cfi_startproc
+ 119              		@ args = 0, pretend = 0, frame = 0
+ 120              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121 0000 08B5     		push	{r3, lr}
+ 122              	.LCFI3:
+ 123              		.cfi_def_cfa_offset 8
+ 124              		.cfi_offset 3, -8
+ 125              		.cfi_offset 14, -4
+  23:modules/master_machine/master_process.c ****     return RobotCommVisionIsOnline();
+ 126              		.loc 1 23 5 view .LVU15
+ 127              		.loc 1 23 12 is_stmt 0 view .LVU16
+ 128 0002 FFF7FEFF 		bl	RobotCommVisionIsOnline
+ 129              	.LVL5:
+  24:modules/master_machine/master_process.c **** }
+ 130              		.loc 1 24 1 view .LVU17
+ 131 0006 08BD     		pop	{r3, pc}
+ 132              		.cfi_endproc
+ 133              	.LFE242:
+ 135              		.section	.text.VisionSetMode,"ax",%progbits
+ 136              		.align	1
+ 137              		.global	VisionSetMode
+ 138              		.syntax unified
+ 139              		.thumb
+ 140              		.thumb_func
+ 141              		.fpu fpv4-sp-d16
+ 143              	VisionSetMode:
+ 144              	.LVL6:
+ 145              	.LFB243:
+  25:modules/master_machine/master_process.c **** 
+  26:modules/master_machine/master_process.c **** void VisionSetMode(uint8_t mode)
+  27:modules/master_machine/master_process.c **** {
+ 146              		.loc 1 27 1 is_stmt 1 view -0
+ 147              		.cfi_startproc
+ 148              		@ args = 0, pretend = 0, frame = 0
+ 149              		@ frame_needed = 0, uses_anonymous_args = 0
+ 150              		.loc 1 27 1 is_stmt 0 view .LVU19
+ 151 0000 08B5     		push	{r3, lr}
+ 152              	.LCFI4:
+ 153              		.cfi_def_cfa_offset 8
+ARM GAS  /tmp/ccvDwGac.s 			page 4
+
+
+ 154              		.cfi_offset 3, -8
+ 155              		.cfi_offset 14, -4
+  28:modules/master_machine/master_process.c ****     RobotCommSetVisionMode(mode);
+ 156              		.loc 1 28 5 is_stmt 1 view .LVU20
+ 157 0002 FFF7FEFF 		bl	RobotCommSetVisionMode
+ 158              	.LVL7:
+  29:modules/master_machine/master_process.c **** }
+ 159              		.loc 1 29 1 is_stmt 0 view .LVU21
+ 160 0006 08BD     		pop	{r3, pc}
+ 161              		.cfi_endproc
+ 162              	.LFE243:
+ 164              		.section	.text.VisionSetFlag,"ax",%progbits
+ 165              		.align	1
+ 166              		.global	VisionSetFlag
+ 167              		.syntax unified
+ 168              		.thumb
+ 169              		.thumb_func
+ 170              		.fpu fpv4-sp-d16
+ 172              	VisionSetFlag:
+ 173              	.LVL8:
+ 174              	.LFB244:
+  30:modules/master_machine/master_process.c **** 
+  31:modules/master_machine/master_process.c **** void VisionSetFlag(Enemy_Color_e color, Work_Mode_e mode, Bullet_Speed_e speed)
+  32:modules/master_machine/master_process.c **** {
+ 175              		.loc 1 32 1 is_stmt 1 view -0
+ 176              		.cfi_startproc
+ 177              		@ args = 0, pretend = 0, frame = 0
+ 178              		@ frame_needed = 0, uses_anonymous_args = 0
+ 179              		.loc 1 32 1 is_stmt 0 view .LVU23
+ 180 0000 08B5     		push	{r3, lr}
+ 181              	.LCFI5:
+ 182              		.cfi_def_cfa_offset 8
+ 183              		.cfi_offset 3, -8
+ 184              		.cfi_offset 14, -4
+  33:modules/master_machine/master_process.c ****     (void)color;
+ 185              		.loc 1 33 5 is_stmt 1 view .LVU24
+  34:modules/master_machine/master_process.c ****     (void)mode;
+ 186              		.loc 1 34 5 view .LVU25
+  35:modules/master_machine/master_process.c ****     RobotCommSetVisionBulletSpeed(speed);
+ 187              		.loc 1 35 5 view .LVU26
+ 188 0002 1046     		mov	r0, r2
+ 189              	.LVL9:
+ 190              		.loc 1 35 5 is_stmt 0 view .LVU27
+ 191 0004 FFF7FEFF 		bl	RobotCommSetVisionBulletSpeed
+ 192              	.LVL10:
+  36:modules/master_machine/master_process.c **** }
+ 193              		.loc 1 36 1 view .LVU28
+ 194 0008 08BD     		pop	{r3, pc}
+ 195              		.cfi_endproc
+ 196              	.LFE244:
+ 198              		.section	.text.VisionSetAltitude,"ax",%progbits
+ 199              		.align	1
+ 200              		.global	VisionSetAltitude
+ 201              		.syntax unified
+ 202              		.thumb
+ 203              		.thumb_func
+ 204              		.fpu fpv4-sp-d16
+ARM GAS  /tmp/ccvDwGac.s 			page 5
+
+
+ 206              	VisionSetAltitude:
+ 207              	.LVL11:
+ 208              	.LFB245:
+  37:modules/master_machine/master_process.c **** 
+  38:modules/master_machine/master_process.c **** void VisionSetAltitude(float yaw, float pitch, float roll)
+  39:modules/master_machine/master_process.c **** {
+ 209              		.loc 1 39 1 is_stmt 1 view -0
+ 210              		.cfi_startproc
+ 211              		@ args = 0, pretend = 0, frame = 0
+ 212              		@ frame_needed = 0, uses_anonymous_args = 0
+ 213              		@ link register save eliminated.
+  40:modules/master_machine/master_process.c ****     /* 保留原来的兼容空操作，实际回传使用完整INS快照。 */
+  41:modules/master_machine/master_process.c ****     (void)yaw;
+ 214              		.loc 1 41 5 view .LVU30
+  42:modules/master_machine/master_process.c ****     (void)pitch;
+ 215              		.loc 1 42 5 view .LVU31
+  43:modules/master_machine/master_process.c ****     (void)roll;
+ 216              		.loc 1 43 5 view .LVU32
+  44:modules/master_machine/master_process.c **** }
+ 217              		.loc 1 44 1 is_stmt 0 view .LVU33
+ 218 0000 7047     		bx	lr
+ 219              		.cfi_endproc
+ 220              	.LFE245:
+ 222              		.text
+ 223              	.Letext0:
+ 224              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 225              		.file 3 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 226              		.file 4 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 227              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 228              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 229              		.file 7 "modules/master_machine/master_process.h"
+ 230              		.file 8 "application/communication/robot_comm.h"
+ARM GAS  /tmp/ccvDwGac.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 master_process.c
+     /tmp/ccvDwGac.s:18     .text.VisionInit:0000000000000000 $t
+     /tmp/ccvDwGac.s:26     .text.VisionInit:0000000000000000 VisionInit
+     /tmp/ccvDwGac.s:51     .text.VisionSend:0000000000000000 $t
+     /tmp/ccvDwGac.s:58     .text.VisionSend:0000000000000000 VisionSend
+     /tmp/ccvDwGac.s:78     .text.VisionGetCommand:0000000000000000 $t
+     /tmp/ccvDwGac.s:85     .text.VisionGetCommand:0000000000000000 VisionGetCommand
+     /tmp/ccvDwGac.s:108    .text.VisionIsOnline:0000000000000000 $t
+     /tmp/ccvDwGac.s:115    .text.VisionIsOnline:0000000000000000 VisionIsOnline
+     /tmp/ccvDwGac.s:136    .text.VisionSetMode:0000000000000000 $t
+     /tmp/ccvDwGac.s:143    .text.VisionSetMode:0000000000000000 VisionSetMode
+     /tmp/ccvDwGac.s:165    .text.VisionSetFlag:0000000000000000 $t
+     /tmp/ccvDwGac.s:172    .text.VisionSetFlag:0000000000000000 VisionSetFlag
+     /tmp/ccvDwGac.s:199    .text.VisionSetAltitude:0000000000000000 $t
+     /tmp/ccvDwGac.s:206    .text.VisionSetAltitude:0000000000000000 VisionSetAltitude
+
+UNDEFINED SYMBOLS
+RobotCommInit
+RobotCommUpdate
+RobotCommGetVisionCommand
+RobotCommVisionIsOnline
+RobotCommSetVisionMode
+RobotCommSetVisionBulletSpeed

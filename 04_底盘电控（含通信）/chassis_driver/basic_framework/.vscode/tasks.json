@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "DiPan_Board: build chassis",
+      "type": "process",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/../../tools/build_chassis.sh"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "DiPan_Board: host communication tests",
+      "type": "process",
+      "command": "bash",
+      "args": [
+        "${workspaceFolder}/../../tools/test.sh"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

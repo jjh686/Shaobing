@@ -1,0 +1,14 @@
+PASS protocol: typed CAN fields, CRC/order/version/DLC/EXT/RTR/drop/timeout, quantization, wrap, BUSY expiry, session STOP, USB SP mux
+PASS independent CAN1/CAN2 hardware mailboxes: in-flight group blocks replacement, expiry aborts only the owning bus, USB reset abort
+PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap
+PASS actual ports with deferred FIFO0/FIFO1 IRQ delivery: 10000 software USB/CAN round trips, STOP/ACK, motion lock, SI units, RC/motor loss, TTL, stale queue, overflow, USB BUSY/disconnect
+PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap
+PASS actual ports with deferred FIFO0/FIFO1 IRQ delivery: 10000 software USB/CAN round trips, STOP/ACK, motion lock, SI units, RC/motor loss, TTL, stale queue, overflow, USB BUSY/disconnect
+PASS 6 host test executables; no hardware accessed
+PASS legacy_alternating: expected STOP ACK failure reproduced
+PASS fixed_single_fifo: corrected round trips passed
+....
+----------------------------------------------------------------------
+Ran 4 tests in 3.042s
+
+OK

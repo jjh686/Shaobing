@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-11-14T21:22:33.348848+08:00",
+  "board": "底盘C板",
+  "uid": "002A003B3034470F31353233",
+  "elf": "/home/wangjiaming/桌面/DiPan_Board/artifacts/DiPan_Board.elf",
+  "sha256": "c833387de9a24214578841907a691aa756a4ed235fb8bceea27510c82eb02f9e",
+  "motion_macros": {
+    "CHASSIS_COMM_ALLOW_MOTION": 1,
+    "CHASSIS_COMM_AXES_VERIFIED": 1
+  },
+  "programmed": true,
+  "verify_passed": true,
+  "reset_completed": true,
+  "zero_test": {
+    "port": "/dev/ttyACM1",
+    "enabled": false,
+    "passed": true,
+    "session": 2555162804,
+    "sent_STOP": 226,
+    "fresh_chassis_ACK": 250,
+    "USB_bytes": 53426,
+    "frames": {
+      "SP": 1002,
+      "gimbal": 40,
+      "feedback": 250
+    },
+    "last_gimbal": {
+      "uptime": 2679997,
+      "sequence": 224,
+      "session": 2555162804,
+      "command_received_ms": 2679983
+    }
+  },
+  "gimbal_programmed_this_run": false,
+  "motor_rotation_tested": false,
+  "physical_axes_verified": false,
+  "note": "用户要求置1用于架空测试；不代表轮序、方向或几何已实测。保持遥控许可、四电机在线、STOP握手和TTL门控。"
+}

@@ -1,0 +1,91 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+
+
+
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "Debug with OpenOCD",
+            "request": "launch",
+            "type": "cortex-debug",
+            "executable": "${workspaceFolder}/build/basic_framework.elf",
+            "device": "STM32F407IG",
+            "servertype": "openocd",
+            "configFiles": [
+                "${workspaceFolder}/openocd_dap.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/STM32F407.svd",
+            "rtos": "FreeRTOS",
+            "toolchainPrefix": "arm-none-eabi",
+            "runToEntryPoint": "main",
+            "linux": {
+                "armToolchainPath": "/usr/bin",
+                "gdbPath": "/usr/bin/gdb-multiarch",
+                "serverpath": "/usr/bin/openocd"
+            },
+            "windows": {
+                "armToolchainPath": "D:/msys64/ucrt64/bin",
+                "gdbPath": "D:/msys64/ucrt64/bin/gdb-multiarch.exe",
+                "serverpath": "D:/msys64/ucrt64/bin/openocd.exe"
+            }
+        },
+        {
+            "name": "DAPLink：烧录并调试",
+            "request": "launch",
+            "type": "cortex-debug",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/basic_framework.elf",
+            "device": "STM32F407IG",
+            "servertype": "openocd",
+            "configFiles": [
+                "${workspaceFolder}/openocd_dap.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/STM32F407.svd",
+            "rtos": "FreeRTOS",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "build task",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            "toolchainPrefix": "arm-none-eabi",
+            "linux": {
+                "armToolchainPath": "/usr/bin",
+                "gdbPath": "/usr/bin/gdb-multiarch",
+                "serverpath": "/usr/bin/openocd"
+            },
+            "windows": {
+                "armToolchainPath": "D:/msys64/ucrt64/bin",
+                "gdbPath": "D:/msys64/ucrt64/bin/gdb-multiarch.exe",
+                "serverpath": "D:/msys64/ucrt64/bin/openocd.exe"
+            }
+        },
+        {
+            "name": "DAPLink：附加调试（不烧录）",
+            "request": "attach",
+            "type": "cortex-debug",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/basic_framework.elf",
+            "device": "STM32F407IG",
+            "servertype": "openocd",
+            "configFiles": [
+                "${workspaceFolder}/openocd_dap.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/STM32F407.svd",
+            "rtos": "FreeRTOS",
+            "toolchainPrefix": "arm-none-eabi",
+            "linux": {
+                "armToolchainPath": "/usr/bin",
+                "gdbPath": "/usr/bin/gdb-multiarch",
+                "serverpath": "/usr/bin/openocd"
+            },
+            "windows": {
+                "armToolchainPath": "D:/msys64/ucrt64/bin",
+                "gdbPath": "D:/msys64/ucrt64/bin/gdb-multiarch.exe",
+                "serverpath": "D:/msys64/ucrt64/bin/openocd.exe"
+            }
+        }
+    ]
+}

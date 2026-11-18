@@ -1,0 +1,1 @@
+/* INS public data types do not require the sensor driver in host tests. */

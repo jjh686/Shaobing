@@ -1,0 +1,4 @@
+{
+    "emberprobe.transport": "swd",
+    "emberprobe.adapterSpeedKhz": 100
+}

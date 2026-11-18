@@ -1,0 +1,2311 @@
+ARM GAS  /tmp/ccMpZV1N.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"nav_can.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.w16,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	w16:
+  26              	.LVL0:
+  27              	.LFB0:
+  28              		.file 1 "modules/nav_conversion/nav_can.c"
+   1:modules/nav_conversion/nav_can.c **** #include "nav_can.h"
+   2:modules/nav_conversion/nav_can.c **** #include <math.h>
+   3:modules/nav_conversion/nav_can.c **** #include <string.h>
+   4:modules/nav_conversion/nav_can.c **** static void w16(uint8_t *p,uint16_t v) { p[0]=(uint8_t)v;p[1]=(uint8_t)(v>>8); }
+  29              		.loc 1 4 40 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              		.loc 1 4 42 view .LVU1
+  35              		.loc 1 4 46 is_stmt 0 view .LVU2
+  36 0000 0170     		strb	r1, [r0]
+  37              		.loc 1 4 58 is_stmt 1 view .LVU3
+  38              		.loc 1 4 63 is_stmt 0 view .LVU4
+  39 0002 090A     		lsrs	r1, r1, #8
+  40              	.LVL1:
+  41              		.loc 1 4 62 view .LVU5
+  42 0004 4170     		strb	r1, [r0, #1]
+  43              		.loc 1 4 80 view .LVU6
+  44 0006 7047     		bx	lr
+  45              		.cfi_endproc
+  46              	.LFE0:
+  48              		.section	.text.w32,"ax",%progbits
+  49              		.align	1
+  50              		.syntax unified
+  51              		.thumb
+  52              		.thumb_func
+  53              		.fpu fpv4-sp-d16
+  55              	w32:
+  56              	.LVL2:
+ARM GAS  /tmp/ccMpZV1N.s 			page 2
+
+
+  57              	.LFB1:
+   5:modules/nav_conversion/nav_can.c **** static void w32(uint8_t *p,uint32_t v) { for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i)); }
+  58              		.loc 1 5 40 is_stmt 1 view -0
+  59              		.cfi_startproc
+  60              		@ args = 0, pretend = 0, frame = 0
+  61              		@ frame_needed = 0, uses_anonymous_args = 0
+  62              		@ link register save eliminated.
+  63              		.loc 1 5 42 view .LVU8
+  64              	.LBB2:
+  65              		.loc 1 5 46 view .LVU9
+  66              		.loc 1 5 55 is_stmt 0 view .LVU10
+  67 0000 0023     		movs	r3, #0
+  68              		.loc 1 5 42 view .LVU11
+  69 0002 04E0     		b	.L3
+  70              	.LVL3:
+  71              	.L4:
+  72              		.loc 1 5 67 is_stmt 1 discriminator 3 view .LVU12
+  73              		.loc 1 5 87 is_stmt 0 discriminator 3 view .LVU13
+  74 0004 DA00     		lsls	r2, r3, #3
+  75              		.loc 1 5 83 discriminator 3 view .LVU14
+  76 0006 21FA02F2 		lsr	r2, r1, r2
+  77              		.loc 1 5 71 discriminator 3 view .LVU15
+  78 000a C254     		strb	r2, [r0, r3]
+  79              		.loc 1 5 63 is_stmt 1 discriminator 3 view .LVU16
+  80              		.loc 1 5 64 is_stmt 0 discriminator 3 view .LVU17
+  81 000c 0133     		adds	r3, r3, #1
+  82              	.LVL4:
+  83              	.L3:
+  84              		.loc 1 5 59 is_stmt 1 discriminator 1 view .LVU18
+  85              		.loc 1 5 42 is_stmt 0 discriminator 1 view .LVU19
+  86 000e 032B     		cmp	r3, #3
+  87 0010 F8D9     		bls	.L4
+  88              	.LBE2:
+  89              		.loc 1 5 93 view .LVU20
+  90 0012 7047     		bx	lr
+  91              		.cfi_endproc
+  92              	.LFE1:
+  94              		.section	.text.r16,"ax",%progbits
+  95              		.align	1
+  96              		.syntax unified
+  97              		.thumb
+  98              		.thumb_func
+  99              		.fpu fpv4-sp-d16
+ 101              	r16:
+ 102              	.LVL5:
+ 103              	.LFB2:
+   6:modules/nav_conversion/nav_can.c **** static uint16_t r16(const uint8_t *p) { return (uint16_t)p[0]|((uint16_t)p[1]<<8); }
+ 104              		.loc 1 6 39 is_stmt 1 view -0
+ 105              		.cfi_startproc
+ 106              		@ args = 0, pretend = 0, frame = 0
+ 107              		@ frame_needed = 0, uses_anonymous_args = 0
+ 108              		@ link register save eliminated.
+ 109              		.loc 1 6 41 view .LVU22
+ 110              		.loc 1 6 59 is_stmt 0 view .LVU23
+ 111 0000 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 112              		.loc 1 6 75 view .LVU24
+ 113 0002 4078     		ldrb	r0, [r0, #1]	@ zero_extendqisi2
+ARM GAS  /tmp/ccMpZV1N.s 			page 3
+
+
+ 114              	.LVL6:
+ 115              		.loc 1 6 84 view .LVU25
+ 116 0004 43EA0020 		orr	r0, r3, r0, lsl #8
+ 117 0008 7047     		bx	lr
+ 118              		.cfi_endproc
+ 119              	.LFE2:
+ 121              		.section	.text.s16,"ax",%progbits
+ 122              		.align	1
+ 123              		.syntax unified
+ 124              		.thumb
+ 125              		.thumb_func
+ 126              		.fpu fpv4-sp-d16
+ 128              	s16:
+ 129              	.LVL7:
+ 130              	.LFB3:
+   7:modules/nav_conversion/nav_can.c **** static int32_t s16(const uint8_t *p) { uint16_t v=r16(p);return v>=32768?(int32_t)v-65536:v; }
+ 131              		.loc 1 7 38 is_stmt 1 view -0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135              		.loc 1 7 38 is_stmt 0 view .LVU27
+ 136 0000 08B5     		push	{r3, lr}
+ 137              	.LCFI0:
+ 138              		.cfi_def_cfa_offset 8
+ 139              		.cfi_offset 3, -8
+ 140              		.cfi_offset 14, -4
+ 141              		.loc 1 7 40 is_stmt 1 view .LVU28
+ 142              		.loc 1 7 51 is_stmt 0 view .LVU29
+ 143 0002 FFF7FEFF 		bl	r16
+ 144              	.LVL8:
+ 145              		.loc 1 7 58 is_stmt 1 view .LVU30
+ 146              		.loc 1 7 90 is_stmt 0 view .LVU31
+ 147 0006 10F4004F 		tst	r0, #32768
+ 148 000a 00D1     		bne	.L10
+ 149              	.LVL9:
+ 150              	.L6:
+ 151              		.loc 1 7 94 view .LVU32
+ 152 000c 08BD     		pop	{r3, pc}
+ 153              	.LVL10:
+ 154              	.L10:
+ 155              		.loc 1 7 90 discriminator 1 view .LVU33
+ 156 000e A0F58030 		sub	r0, r0, #65536
+ 157              	.LVL11:
+ 158              		.loc 1 7 90 discriminator 1 view .LVU34
+ 159 0012 FBE7     		b	.L6
+ 160              		.cfi_endproc
+ 161              	.LFE3:
+ 163              		.section	.text.r32,"ax",%progbits
+ 164              		.align	1
+ 165              		.syntax unified
+ 166              		.thumb
+ 167              		.thumb_func
+ 168              		.fpu fpv4-sp-d16
+ 170              	r32:
+ 171              	.LVL12:
+ 172              	.LFB4:
+   8:modules/nav_conversion/nav_can.c **** static uint32_t r32(const uint8_t *p) { return (uint32_t)r16(p)|((uint32_t)r16(p+2)<<16); }
+ARM GAS  /tmp/ccMpZV1N.s 			page 4
+
+
+ 173              		.loc 1 8 39 is_stmt 1 view -0
+ 174              		.cfi_startproc
+ 175              		@ args = 0, pretend = 0, frame = 0
+ 176              		@ frame_needed = 0, uses_anonymous_args = 0
+ 177              		.loc 1 8 39 is_stmt 0 view .LVU36
+ 178 0000 38B5     		push	{r3, r4, r5, lr}
+ 179              	.LCFI1:
+ 180              		.cfi_def_cfa_offset 16
+ 181              		.cfi_offset 3, -16
+ 182              		.cfi_offset 4, -12
+ 183              		.cfi_offset 5, -8
+ 184              		.cfi_offset 14, -4
+ 185 0002 0546     		mov	r5, r0
+ 186              		.loc 1 8 41 is_stmt 1 view .LVU37
+ 187              		.loc 1 8 58 is_stmt 0 view .LVU38
+ 188 0004 FFF7FEFF 		bl	r16
+ 189              	.LVL13:
+ 190              		.loc 1 8 58 view .LVU39
+ 191 0008 0446     		mov	r4, r0
+ 192              		.loc 1 8 76 view .LVU40
+ 193 000a A81C     		adds	r0, r5, #2
+ 194 000c FFF7FEFF 		bl	r16
+ 195              	.LVL14:
+ 196              		.loc 1 8 91 view .LVU41
+ 197 0010 44EA0040 		orr	r0, r4, r0, lsl #16
+ 198 0014 38BD     		pop	{r3, r4, r5, pc}
+ 199              		.loc 1 8 91 view .LVU42
+ 200              		.cfi_endproc
+ 201              	.LFE4:
+ 203              		.section	.text.command_ok,"ax",%progbits
+ 204              		.align	1
+ 205              		.syntax unified
+ 206              		.thumb
+ 207              		.thumb_func
+ 208              		.fpu fpv4-sp-d16
+ 210              	command_ok:
+ 211              	.LVL15:
+ 212              	.LFB8:
+   9:modules/nav_conversion/nav_can.c **** uint16_t nc_crc(const uint8_t *p,unsigned n)
+  10:modules/nav_conversion/nav_can.c **** {
+  11:modules/nav_conversion/nav_can.c ****     uint16_t c=0xffff;
+  12:modules/nav_conversion/nav_can.c ****     while(n--) { c^=*p++;for(unsigned i=0;i<8;i++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0)); }
+  13:modules/nav_conversion/nav_can.c ****     return c;
+  14:modules/nav_conversion/nav_can.c **** }
+  15:modules/nav_conversion/nav_can.c **** static void seal(nc_group_t *g,uint32_t uptime,uint16_t seq)
+  16:modules/nav_conversion/nav_can.c **** {
+  17:modules/nav_conversion/nav_can.c ****     uint8_t bytes[20];memcpy(bytes,g->data,16);w32(bytes+16,uptime);
+  18:modules/nav_conversion/nav_can.c ****     w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
+  19:modules/nav_conversion/nav_can.c **** }
+  20:modules/nav_conversion/nav_can.c **** static bool sealed(const nc_group_t *g)
+  21:modules/nav_conversion/nav_can.c **** {
+  22:modules/nav_conversion/nav_can.c ****     uint8_t bytes[20];memcpy(bytes,g->data,16);memcpy(bytes+16,g->data[2],4);
+  23:modules/nav_conversion/nav_can.c ****     return r16(g->data[2]+6)==r16(g->data[0]+4) && r16(g->data[2]+4)==nc_crc(bytes,20);
+  24:modules/nav_conversion/nav_can.c **** }
+  25:modules/nav_conversion/nav_can.c **** static bool command_ok(const rm_command_t *c)
+  26:modules/nav_conversion/nav_can.c **** {
+ 213              		.loc 1 26 1 is_stmt 1 view -0
+ARM GAS  /tmp/ccMpZV1N.s 			page 5
+
+
+ 214              		.cfi_startproc
+ 215              		@ args = 0, pretend = 0, frame = 40
+ 216              		@ frame_needed = 0, uses_anonymous_args = 0
+  27:modules/nav_conversion/nav_can.c ****     uint8_t test[RM_FRAME_SIZE];
+ 217              		.loc 1 27 5 view .LVU44
+  28:modules/nav_conversion/nav_can.c ****     return c && c->route==2 && rm_encode_command(c,test) &&
+ 218              		.loc 1 28 5 view .LVU45
+  29:modules/nav_conversion/nav_can.c ****         c->ttl_ms<=NC_MAX_TTL_MS && hypotf(c->vx,c->vy)<=0.300001f && fabsf(c->wz)<=0.500001f;
+ 219              		.loc 1 29 68 is_stmt 0 view .LVU46
+ 220 0000 78B3     		cbz	r0, .L17
+  26:modules/nav_conversion/nav_can.c ****     uint8_t test[RM_FRAME_SIZE];
+ 221              		.loc 1 26 1 view .LVU47
+ 222 0002 10B5     		push	{r4, lr}
+ 223              	.LCFI2:
+ 224              		.cfi_def_cfa_offset 8
+ 225              		.cfi_offset 4, -8
+ 226              		.cfi_offset 14, -4
+ 227 0004 8AB0     		sub	sp, sp, #40
+ 228              	.LCFI3:
+ 229              		.cfi_def_cfa_offset 48
+ 230 0006 0446     		mov	r4, r0
+  28:modules/nav_conversion/nav_can.c ****     return c && c->route==2 && rm_encode_command(c,test) &&
+ 231              		.loc 1 28 18 view .LVU48
+ 232 0008 837B     		ldrb	r3, [r0, #14]	@ zero_extendqisi2
+  28:modules/nav_conversion/nav_can.c ****     return c && c->route==2 && rm_encode_command(c,test) &&
+ 233              		.loc 1 28 14 view .LVU49
+ 234 000a 022B     		cmp	r3, #2
+ 235 000c 04D0     		beq	.L30
+ 236              		.loc 1 29 68 view .LVU50
+ 237 000e 0023     		movs	r3, #0
+ 238              	.LVL16:
+ 239              	.L14:
+  30:modules/nav_conversion/nav_can.c **** }
+ 240              		.loc 1 30 1 discriminator 7 view .LVU51
+ 241 0010 03F00100 		and	r0, r3, #1
+ 242 0014 0AB0     		add	sp, sp, #40
+ 243              	.LCFI4:
+ 244              		.cfi_remember_state
+ 245              		.cfi_def_cfa_offset 8
+ 246              		@ sp needed
+ 247 0016 10BD     		pop	{r4, pc}
+ 248              	.LVL17:
+ 249              	.L30:
+ 250              	.LCFI5:
+ 251              		.cfi_restore_state
+  28:modules/nav_conversion/nav_can.c ****         c->ttl_ms<=NC_MAX_TTL_MS && hypotf(c->vx,c->vy)<=0.300001f && fabsf(c->wz)<=0.500001f;
+ 252              		.loc 1 28 32 discriminator 1 view .LVU52
+ 253 0018 01A9     		add	r1, sp, #4
+ 254 001a FFF7FEFF 		bl	rm_encode_command
+ 255              	.LVL18:
+  28:modules/nav_conversion/nav_can.c ****         c->ttl_ms<=NC_MAX_TTL_MS && hypotf(c->vx,c->vy)<=0.300001f && fabsf(c->wz)<=0.500001f;
+ 256              		.loc 1 28 29 discriminator 1 view .LVU53
+ 257 001e 0346     		mov	r3, r0
+ 258 0020 0028     		cmp	r0, #0
+ 259 0022 F5D0     		beq	.L14
+  29:modules/nav_conversion/nav_can.c **** }
+ 260              		.loc 1 29 10 discriminator 2 view .LVU54
+ARM GAS  /tmp/ccMpZV1N.s 			page 6
+
+
+ 261 0024 6389     		ldrh	r3, [r4, #10]
+  28:modules/nav_conversion/nav_can.c ****         c->ttl_ms<=NC_MAX_TTL_MS && hypotf(c->vx,c->vy)<=0.300001f && fabsf(c->wz)<=0.500001f;
+ 262              		.loc 1 28 58 discriminator 2 view .LVU55
+ 263 0026 962B     		cmp	r3, #150
+ 264 0028 01D9     		bls	.L31
+  29:modules/nav_conversion/nav_can.c **** }
+ 265              		.loc 1 29 68 view .LVU56
+ 266 002a 0023     		movs	r3, #0
+ 267 002c F0E7     		b	.L14
+ 268              	.L31:
+  29:modules/nav_conversion/nav_can.c **** }
+ 269              		.loc 1 29 37 discriminator 3 view .LVU57
+ 270 002e D4ED050A 		vldr.32	s1, [r4, #20]
+ 271 0032 94ED040A 		vldr.32	s0, [r4, #16]
+ 272 0036 FFF7FEFF 		bl	hypotf
+ 273              	.LVL19:
+  29:modules/nav_conversion/nav_can.c **** }
+ 274              		.loc 1 29 34 discriminator 3 view .LVU58
+ 275 003a DFED0E7A 		vldr.32	s15, .L32
+ 276 003e B4EEE70A 		vcmpe.f32	s0, s15
+ 277 0042 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 278 0046 10D8     		bhi	.L24
+  29:modules/nav_conversion/nav_can.c **** }
+ 279              		.loc 1 29 78 discriminator 2 view .LVU59
+ 280 0048 D4ED067A 		vldr.32	s15, [r4, #24]
+  29:modules/nav_conversion/nav_can.c **** }
+ 281              		.loc 1 29 71 discriminator 2 view .LVU60
+ 282 004c F0EEE77A 		vabs.f32	s15, s15
+  29:modules/nav_conversion/nav_can.c **** }
+ 283              		.loc 1 29 68 discriminator 2 view .LVU61
+ 284 0050 9FED097A 		vldr.32	s14, .L32+4
+ 285 0054 F4EEC77A 		vcmpe.f32	s15, s14
+ 286 0058 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 287 005c 07D8     		bhi	.L25
+  29:modules/nav_conversion/nav_can.c **** }
+ 288              		.loc 1 29 68 view .LVU62
+ 289 005e 0123     		movs	r3, #1
+ 290 0060 D6E7     		b	.L14
+ 291              	.LVL20:
+ 292              	.L17:
+ 293              	.LCFI6:
+ 294              		.cfi_def_cfa_offset 0
+ 295              		.cfi_restore 4
+ 296              		.cfi_restore 14
+  29:modules/nav_conversion/nav_can.c **** }
+ 297              		.loc 1 29 68 view .LVU63
+ 298 0062 0023     		movs	r3, #0
+ 299              		.loc 1 30 1 view .LVU64
+ 300 0064 03F00100 		and	r0, r3, #1
+ 301              	.LVL21:
+ 302              		.loc 1 30 1 view .LVU65
+ 303 0068 7047     		bx	lr
+ 304              	.LVL22:
+ 305              	.L24:
+ 306              	.LCFI7:
+ 307              		.cfi_def_cfa_offset 48
+ 308              		.cfi_offset 4, -8
+ARM GAS  /tmp/ccMpZV1N.s 			page 7
+
+
+ 309              		.cfi_offset 14, -4
+  29:modules/nav_conversion/nav_can.c **** }
+ 310              		.loc 1 29 68 view .LVU66
+ 311 006a 0023     		movs	r3, #0
+ 312 006c D0E7     		b	.L14
+ 313              	.L25:
+ 314 006e 0023     		movs	r3, #0
+ 315 0070 CEE7     		b	.L14
+ 316              	.L33:
+ 317 0072 00BF     		.align	2
+ 318              	.L32:
+ 319 0074 BB99993E 		.word	1050253755
+ 320 0078 1100003F 		.word	1056964625
+ 321              		.cfi_endproc
+ 322              	.LFE8:
+ 324              		.section	.text.velocity,"ax",%progbits
+ 325              		.align	1
+ 326              		.syntax unified
+ 327              		.thumb
+ 328              		.thumb_func
+ 329              		.fpu fpv4-sp-d16
+ 331              	velocity:
+ 332              	.LVL23:
+ 333              	.LFB9:
+  31:modules/nav_conversion/nav_can.c **** static void velocity(uint8_t *p,float vx,float vy,float wz,bool feedback)
+  32:modules/nav_conversion/nav_can.c **** {
+ 334              		.loc 1 32 1 is_stmt 1 view -0
+ 335              		.cfi_startproc
+ 336              		@ args = 0, pretend = 0, frame = 16
+ 337              		@ frame_needed = 0, uses_anonymous_args = 0
+ 338              		.loc 1 32 1 is_stmt 0 view .LVU68
+ 339 0000 70B5     		push	{r4, r5, r6, lr}
+ 340              	.LCFI8:
+ 341              		.cfi_def_cfa_offset 16
+ 342              		.cfi_offset 4, -16
+ 343              		.cfi_offset 5, -12
+ 344              		.cfi_offset 6, -8
+ 345              		.cfi_offset 14, -4
+ 346 0002 84B0     		sub	sp, sp, #16
+ 347              	.LCFI9:
+ 348              		.cfi_def_cfa_offset 32
+ 349 0004 0646     		mov	r6, r0
+ 350 0006 0D46     		mov	r5, r1
+  33:modules/nav_conversion/nav_can.c ****     float v[3]={vx,vy,wz};
+ 351              		.loc 1 33 5 is_stmt 1 view .LVU69
+ 352              		.loc 1 33 11 is_stmt 0 view .LVU70
+ 353 0008 8DED010A 		vstr.32	s0, [sp, #4]
+ 354 000c CDED020A 		vstr.32	s1, [sp, #8]
+ 355 0010 8DED031A 		vstr.32	s2, [sp, #12]
+  34:modules/nav_conversion/nav_can.c ****     for(unsigned i=0;i<3;i++) {
+ 356              		.loc 1 34 5 is_stmt 1 view .LVU71
+ 357              	.LBB3:
+ 358              		.loc 1 34 9 view .LVU72
+ 359              	.LVL24:
+ 360              		.loc 1 34 18 is_stmt 0 view .LVU73
+ 361 0014 0024     		movs	r4, #0
+ 362              		.loc 1 34 5 view .LVU74
+ARM GAS  /tmp/ccMpZV1N.s 			page 8
+
+
+ 363 0016 14E0     		b	.L35
+ 364              	.LVL25:
+ 365              	.L36:
+ 366              	.LBB4:
+  35:modules/nav_conversion/nav_can.c ****         /* Commands round toward zero so quantization cannot increase speed. */
+  36:modules/nav_conversion/nav_can.c ****         int32_t q=(int32_t)(feedback?roundf(v[i]*1000.0f):truncf(v[i]*1000.0f));
+ 367              		.loc 1 36 67 discriminator 2 view .LVU75
+ 368 0018 04AB     		add	r3, sp, #16
+ 369 001a 03EB8403 		add	r3, r3, r4, lsl #2
+ 370 001e 13ED030A 		vldr.32	s0, [r3, #-12]
+ 371              		.loc 1 36 59 discriminator 2 view .LVU76
+ 372 0022 DFED127A 		vldr.32	s15, .L41
+ 373 0026 20EE270A 		vmul.f32	s0, s0, s15
+ 374 002a FFF7FEFF 		bl	truncf
+ 375              	.LVL26:
+ 376              		.loc 1 36 19 discriminator 2 view .LVU77
+ 377 002e BDEEC00A 		vcvt.s32.f32	s0, s0
+ 378              	.L37:
+ 379              	.LVL27:
+  37:modules/nav_conversion/nav_can.c ****         w16(p+2*i,(uint16_t)q);
+ 380              		.loc 1 37 9 is_stmt 1 discriminator 4 view .LVU78
+ 381 0032 10EE103A 		vmov	r3, s0	@ int
+ 382 0036 99B2     		uxth	r1, r3
+ 383 0038 06EB4400 		add	r0, r6, r4, lsl #1
+ 384 003c FFF7FEFF 		bl	w16
+ 385              	.LVL28:
+ 386              		.loc 1 37 9 is_stmt 0 discriminator 4 view .LVU79
+ 387              	.LBE4:
+  34:modules/nav_conversion/nav_can.c ****     for(unsigned i=0;i<3;i++) {
+ 388              		.loc 1 34 26 is_stmt 1 discriminator 4 view .LVU80
+  34:modules/nav_conversion/nav_can.c ****     for(unsigned i=0;i<3;i++) {
+ 389              		.loc 1 34 27 is_stmt 0 discriminator 4 view .LVU81
+ 390 0040 0134     		adds	r4, r4, #1
+ 391              	.LVL29:
+ 392              	.L35:
+  34:modules/nav_conversion/nav_can.c ****     for(unsigned i=0;i<3;i++) {
+ 393              		.loc 1 34 22 is_stmt 1 discriminator 2 view .LVU82
+  34:modules/nav_conversion/nav_can.c ****     for(unsigned i=0;i<3;i++) {
+ 394              		.loc 1 34 5 is_stmt 0 discriminator 2 view .LVU83
+ 395 0042 022C     		cmp	r4, #2
+ 396 0044 0FD8     		bhi	.L40
+ 397              	.LBB5:
+  36:modules/nav_conversion/nav_can.c ****         w16(p+2*i,(uint16_t)q);
+ 398              		.loc 1 36 9 is_stmt 1 view .LVU84
+  36:modules/nav_conversion/nav_can.c ****         w16(p+2*i,(uint16_t)q);
+ 399              		.loc 1 36 19 is_stmt 0 view .LVU85
+ 400 0046 002D     		cmp	r5, #0
+ 401 0048 E6D0     		beq	.L36
+  36:modules/nav_conversion/nav_can.c ****         w16(p+2*i,(uint16_t)q);
+ 402              		.loc 1 36 46 discriminator 1 view .LVU86
+ 403 004a 04AB     		add	r3, sp, #16
+ 404 004c 03EB8403 		add	r3, r3, r4, lsl #2
+ 405 0050 13ED030A 		vldr.32	s0, [r3, #-12]
+  36:modules/nav_conversion/nav_can.c ****         w16(p+2*i,(uint16_t)q);
+ 406              		.loc 1 36 38 discriminator 1 view .LVU87
+ 407 0054 DFED057A 		vldr.32	s15, .L41
+ 408 0058 20EE270A 		vmul.f32	s0, s0, s15
+ARM GAS  /tmp/ccMpZV1N.s 			page 9
+
+
+ 409 005c FFF7FEFF 		bl	roundf
+ 410              	.LVL30:
+  36:modules/nav_conversion/nav_can.c ****         w16(p+2*i,(uint16_t)q);
+ 411              		.loc 1 36 19 discriminator 1 view .LVU88
+ 412 0060 BDEEC00A 		vcvt.s32.f32	s0, s0
+ 413 0064 E5E7     		b	.L37
+ 414              	.L40:
+ 415              	.LBE5:
+ 416              	.LBE3:
+  38:modules/nav_conversion/nav_can.c ****     }
+  39:modules/nav_conversion/nav_can.c **** }
+ 417              		.loc 1 39 1 view .LVU89
+ 418 0066 04B0     		add	sp, sp, #16
+ 419              	.LCFI10:
+ 420              		.cfi_def_cfa_offset 16
+ 421              		@ sp needed
+ 422 0068 70BD     		pop	{r4, r5, r6, pc}
+ 423              	.LVL31:
+ 424              	.L42:
+ 425              		.loc 1 39 1 view .LVU90
+ 426 006a 00BF     		.align	2
+ 427              	.L41:
+ 428 006c 00007A44 		.word	1148846080
+ 429              		.cfi_endproc
+ 430              	.LFE9:
+ 432              		.section	.text.nc_crc,"ax",%progbits
+ 433              		.align	1
+ 434              		.global	nc_crc
+ 435              		.syntax unified
+ 436              		.thumb
+ 437              		.thumb_func
+ 438              		.fpu fpv4-sp-d16
+ 440              	nc_crc:
+ 441              	.LVL32:
+ 442              	.LFB5:
+  10:modules/nav_conversion/nav_can.c ****     uint16_t c=0xffff;
+ 443              		.loc 1 10 1 is_stmt 1 view -0
+ 444              		.cfi_startproc
+ 445              		@ args = 0, pretend = 0, frame = 0
+ 446              		@ frame_needed = 0, uses_anonymous_args = 0
+ 447              		@ link register save eliminated.
+  10:modules/nav_conversion/nav_can.c ****     uint16_t c=0xffff;
+ 448              		.loc 1 10 1 is_stmt 0 view .LVU92
+ 449 0000 8446     		mov	ip, r0
+  11:modules/nav_conversion/nav_can.c ****     while(n--) { c^=*p++;for(unsigned i=0;i<8;i++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0)); }
+ 450              		.loc 1 11 5 is_stmt 1 view .LVU93
+ 451              	.LVL33:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 452              		.loc 1 12 5 view .LVU94
+  11:modules/nav_conversion/nav_can.c ****     while(n--) { c^=*p++;for(unsigned i=0;i<8;i++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0)); }
+ 453              		.loc 1 11 14 is_stmt 0 view .LVU95
+ 454 0002 4FF6FF70 		movw	r0, #65535
+ 455              	.LVL34:
+ 456              	.L44:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 457              		.loc 1 12 10 is_stmt 1 discriminator 8 view .LVU96
+ 458 0006 0B46     		mov	r3, r1
+ARM GAS  /tmp/ccMpZV1N.s 			page 10
+
+
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 459              		.loc 1 12 12 is_stmt 0 discriminator 8 view .LVU97
+ 460 0008 0139     		subs	r1, r1, #1
+ 461              	.LVL35:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 462              		.loc 1 12 10 discriminator 8 view .LVU98
+ 463 000a 83B1     		cbz	r3, .L50
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 464              		.loc 1 12 18 is_stmt 1 discriminator 9 view .LVU99
+ 465              	.LVL36:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 466              		.loc 1 12 21 is_stmt 0 discriminator 9 view .LVU100
+ 467 000c 1CF8013B 		ldrb	r3, [ip], #1	@ zero_extendqisi2
+ 468              	.LVL37:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 469              		.loc 1 12 19 discriminator 9 view .LVU101
+ 470 0010 5840     		eors	r0, r0, r3
+ 471              	.LVL38:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 472              		.loc 1 12 26 is_stmt 1 discriminator 9 view .LVU102
+ 473              	.LBB6:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 474              		.loc 1 12 30 discriminator 9 view .LVU103
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 475              		.loc 1 12 39 is_stmt 0 discriminator 9 view .LVU104
+ 476 0012 0022     		movs	r2, #0
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 477              		.loc 1 12 26 discriminator 9 view .LVU105
+ 478 0014 03E0     		b	.L45
+ 479              	.LVL39:
+ 480              	.L49:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 481              		.loc 1 12 70 view .LVU106
+ 482 0016 0020     		movs	r0, #0
+ 483              	.LVL40:
+ 484              	.L46:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 485              		.loc 1 12 70 discriminator 5 view .LVU107
+ 486 0018 4340     		eors	r3, r3, r0
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 487              		.loc 1 12 52 discriminator 5 view .LVU108
+ 488 001a 98B2     		uxth	r0, r3
+ 489              	.LVL41:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 490              		.loc 1 12 47 is_stmt 1 discriminator 5 view .LVU109
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 491              		.loc 1 12 48 is_stmt 0 discriminator 5 view .LVU110
+ 492 001c 0132     		adds	r2, r2, #1
+ 493              	.LVL42:
+ 494              	.L45:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 495              		.loc 1 12 43 is_stmt 1 discriminator 6 view .LVU111
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 496              		.loc 1 12 26 is_stmt 0 discriminator 6 view .LVU112
+ 497 001e 072A     		cmp	r2, #7
+ 498 0020 F1D8     		bhi	.L44
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ARM GAS  /tmp/ccMpZV1N.s 			page 11
+
+
+ 499              		.loc 1 12 51 is_stmt 1 discriminator 7 view .LVU113
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 500              		.loc 1 12 70 is_stmt 0 discriminator 7 view .LVU114
+ 501 0022 4308     		lsrs	r3, r0, #1
+ 502 0024 10F0010F 		tst	r0, #1
+ 503 0028 F5D0     		beq	.L49
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 504              		.loc 1 12 70 view .LVU115
+ 505 002a 0148     		ldr	r0, .L51
+ 506              	.LVL43:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 507              		.loc 1 12 70 view .LVU116
+ 508 002c F4E7     		b	.L46
+ 509              	.LVL44:
+ 510              	.L50:
+  12:modules/nav_conversion/nav_can.c ****     return c;
+ 511              		.loc 1 12 70 view .LVU117
+ 512              	.LBE6:
+  13:modules/nav_conversion/nav_can.c **** }
+ 513              		.loc 1 13 5 is_stmt 1 view .LVU118
+  14:modules/nav_conversion/nav_can.c **** static void seal(nc_group_t *g,uint32_t uptime,uint16_t seq)
+ 514              		.loc 1 14 1 is_stmt 0 view .LVU119
+ 515 002e 7047     		bx	lr
+ 516              	.L52:
+ 517              		.align	2
+ 518              	.L51:
+ 519 0030 0884FFFF 		.word	-31736
+ 520              		.cfi_endproc
+ 521              	.LFE5:
+ 523              		.section	.text.seal,"ax",%progbits
+ 524              		.align	1
+ 525              		.syntax unified
+ 526              		.thumb
+ 527              		.thumb_func
+ 528              		.fpu fpv4-sp-d16
+ 530              	seal:
+ 531              	.LVL45:
+ 532              	.LFB6:
+  16:modules/nav_conversion/nav_can.c ****     uint8_t bytes[20];memcpy(bytes,g->data,16);w32(bytes+16,uptime);
+ 533              		.loc 1 16 1 is_stmt 1 view -0
+ 534              		.cfi_startproc
+ 535              		@ args = 0, pretend = 0, frame = 24
+ 536              		@ frame_needed = 0, uses_anonymous_args = 0
+  16:modules/nav_conversion/nav_can.c ****     uint8_t bytes[20];memcpy(bytes,g->data,16);w32(bytes+16,uptime);
+ 537              		.loc 1 16 1 is_stmt 0 view .LVU121
+ 538 0000 70B5     		push	{r4, r5, r6, lr}
+ 539              	.LCFI11:
+ 540              		.cfi_def_cfa_offset 16
+ 541              		.cfi_offset 4, -16
+ 542              		.cfi_offset 5, -12
+ 543              		.cfi_offset 6, -8
+ 544              		.cfi_offset 14, -4
+ 545 0002 86B0     		sub	sp, sp, #24
+ 546              	.LCFI12:
+ 547              		.cfi_def_cfa_offset 40
+ 548 0004 0446     		mov	r4, r0
+ 549 0006 0D46     		mov	r5, r1
+ARM GAS  /tmp/ccMpZV1N.s 			page 12
+
+
+ 550 0008 1646     		mov	r6, r2
+  17:modules/nav_conversion/nav_can.c ****     w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
+ 551              		.loc 1 17 5 is_stmt 1 view .LVU122
+  17:modules/nav_conversion/nav_can.c ****     w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
+ 552              		.loc 1 17 23 view .LVU123
+ 553 000a 0DF1040C 		add	ip, sp, #4
+ 554 000e 0068     		ldr	r0, [r0]	@ unaligned
+ 555              	.LVL46:
+  17:modules/nav_conversion/nav_can.c ****     w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
+ 556              		.loc 1 17 23 is_stmt 0 view .LVU124
+ 557 0010 6168     		ldr	r1, [r4, #4]	@ unaligned
+ 558              	.LVL47:
+  17:modules/nav_conversion/nav_can.c ****     w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
+ 559              		.loc 1 17 23 view .LVU125
+ 560 0012 A268     		ldr	r2, [r4, #8]	@ unaligned
+ 561              	.LVL48:
+  17:modules/nav_conversion/nav_can.c ****     w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
+ 562              		.loc 1 17 23 view .LVU126
+ 563 0014 E368     		ldr	r3, [r4, #12]	@ unaligned
+ 564 0016 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+  17:modules/nav_conversion/nav_can.c ****     w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
+ 565              		.loc 1 17 48 is_stmt 1 view .LVU127
+ 566 001a 2946     		mov	r1, r5
+ 567 001c 6046     		mov	r0, ip
+ 568 001e FFF7FEFF 		bl	w32
+ 569              	.LVL49:
+  18:modules/nav_conversion/nav_can.c **** }
+ 570              		.loc 1 18 5 view .LVU128
+ 571 0022 2946     		mov	r1, r5
+ 572 0024 04F11000 		add	r0, r4, #16
+ 573 0028 FFF7FEFF 		bl	w32
+ 574              	.LVL50:
+  18:modules/nav_conversion/nav_can.c **** }
+ 575              		.loc 1 18 28 view .LVU129
+ 576 002c 1421     		movs	r1, #20
+ 577 002e 01A8     		add	r0, sp, #4
+ 578 0030 FFF7FEFF 		bl	nc_crc
+ 579              	.LVL51:
+ 580 0034 0146     		mov	r1, r0
+ 581 0036 04F11400 		add	r0, r4, #20
+ 582 003a FFF7FEFF 		bl	w16
+ 583              	.LVL52:
+  18:modules/nav_conversion/nav_can.c **** }
+ 584              		.loc 1 18 74 view .LVU130
+ 585 003e 3146     		mov	r1, r6
+ 586 0040 04F11600 		add	r0, r4, #22
+ 587 0044 FFF7FEFF 		bl	w16
+ 588              	.LVL53:
+  19:modules/nav_conversion/nav_can.c **** static bool sealed(const nc_group_t *g)
+ 589              		.loc 1 19 1 is_stmt 0 view .LVU131
+ 590 0048 06B0     		add	sp, sp, #24
+ 591              	.LCFI13:
+ 592              		.cfi_def_cfa_offset 16
+ 593              		@ sp needed
+ 594 004a 70BD     		pop	{r4, r5, r6, pc}
+  19:modules/nav_conversion/nav_can.c **** static bool sealed(const nc_group_t *g)
+ 595              		.loc 1 19 1 view .LVU132
+ARM GAS  /tmp/ccMpZV1N.s 			page 13
+
+
+ 596              		.cfi_endproc
+ 597              	.LFE6:
+ 599              		.section	.text.sealed,"ax",%progbits
+ 600              		.align	1
+ 601              		.syntax unified
+ 602              		.thumb
+ 603              		.thumb_func
+ 604              		.fpu fpv4-sp-d16
+ 606              	sealed:
+ 607              	.LVL54:
+ 608              	.LFB7:
+  21:modules/nav_conversion/nav_can.c ****     uint8_t bytes[20];memcpy(bytes,g->data,16);memcpy(bytes+16,g->data[2],4);
+ 609              		.loc 1 21 1 is_stmt 1 view -0
+ 610              		.cfi_startproc
+ 611              		@ args = 0, pretend = 0, frame = 24
+ 612              		@ frame_needed = 0, uses_anonymous_args = 0
+  21:modules/nav_conversion/nav_can.c ****     uint8_t bytes[20];memcpy(bytes,g->data,16);memcpy(bytes+16,g->data[2],4);
+ 613              		.loc 1 21 1 is_stmt 0 view .LVU134
+ 614 0000 30B5     		push	{r4, r5, lr}
+ 615              	.LCFI14:
+ 616              		.cfi_def_cfa_offset 12
+ 617              		.cfi_offset 4, -12
+ 618              		.cfi_offset 5, -8
+ 619              		.cfi_offset 14, -4
+ 620 0002 87B0     		sub	sp, sp, #28
+ 621              	.LCFI15:
+ 622              		.cfi_def_cfa_offset 40
+ 623 0004 0446     		mov	r4, r0
+  22:modules/nav_conversion/nav_can.c ****     return r16(g->data[2]+6)==r16(g->data[0]+4) && r16(g->data[2]+4)==nc_crc(bytes,20);
+ 624              		.loc 1 22 5 is_stmt 1 view .LVU135
+  22:modules/nav_conversion/nav_can.c ****     return r16(g->data[2]+6)==r16(g->data[0]+4) && r16(g->data[2]+4)==nc_crc(bytes,20);
+ 625              		.loc 1 22 23 view .LVU136
+ 626 0006 0DF1040C 		add	ip, sp, #4
+ 627 000a 0068     		ldr	r0, [r0]	@ unaligned
+ 628              	.LVL55:
+  22:modules/nav_conversion/nav_can.c ****     return r16(g->data[2]+6)==r16(g->data[0]+4) && r16(g->data[2]+4)==nc_crc(bytes,20);
+ 629              		.loc 1 22 23 is_stmt 0 view .LVU137
+ 630 000c 6168     		ldr	r1, [r4, #4]	@ unaligned
+ 631 000e A268     		ldr	r2, [r4, #8]	@ unaligned
+ 632 0010 E368     		ldr	r3, [r4, #12]	@ unaligned
+ 633 0012 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+  22:modules/nav_conversion/nav_can.c ****     return r16(g->data[2]+6)==r16(g->data[0]+4) && r16(g->data[2]+4)==nc_crc(bytes,20);
+ 634              		.loc 1 22 48 is_stmt 1 view .LVU138
+ 635 0016 2369     		ldr	r3, [r4, #16]	@ unaligned
+ 636 0018 0593     		str	r3, [sp, #20]
+  23:modules/nav_conversion/nav_can.c **** }
+ 637              		.loc 1 23 5 view .LVU139
+  23:modules/nav_conversion/nav_can.c **** }
+ 638              		.loc 1 23 12 is_stmt 0 view .LVU140
+ 639 001a 04F11600 		add	r0, r4, #22
+ 640 001e FFF7FEFF 		bl	r16
+ 641              	.LVL56:
+ 642 0022 0546     		mov	r5, r0
+  23:modules/nav_conversion/nav_can.c **** }
+ 643              		.loc 1 23 31 view .LVU141
+ 644 0024 201D     		adds	r0, r4, #4
+ 645 0026 FFF7FEFF 		bl	r16
+ARM GAS  /tmp/ccMpZV1N.s 			page 14
+
+
+ 646              	.LVL57:
+  23:modules/nav_conversion/nav_can.c **** }
+ 647              		.loc 1 23 49 view .LVU142
+ 648 002a 8542     		cmp	r5, r0
+ 649 002c 02D0     		beq	.L60
+ 650 002e 0020     		movs	r0, #0
+ 651              	.LVL58:
+ 652              	.L56:
+  24:modules/nav_conversion/nav_can.c **** static bool command_ok(const rm_command_t *c)
+ 653              		.loc 1 24 1 discriminator 6 view .LVU143
+ 654 0030 07B0     		add	sp, sp, #28
+ 655              	.LCFI16:
+ 656              		.cfi_remember_state
+ 657              		.cfi_def_cfa_offset 12
+ 658              		@ sp needed
+ 659 0032 30BD     		pop	{r4, r5, pc}
+ 660              	.LVL59:
+ 661              	.L60:
+ 662              	.LCFI17:
+ 663              		.cfi_restore_state
+  23:modules/nav_conversion/nav_can.c **** }
+ 664              		.loc 1 23 52 discriminator 1 view .LVU144
+ 665 0034 04F11400 		add	r0, r4, #20
+ 666 0038 FFF7FEFF 		bl	r16
+ 667              	.LVL60:
+ 668 003c 0446     		mov	r4, r0
+ 669              	.LVL61:
+  23:modules/nav_conversion/nav_can.c **** }
+ 670              		.loc 1 23 71 discriminator 1 view .LVU145
+ 671 003e 1421     		movs	r1, #20
+ 672 0040 01A8     		add	r0, sp, #4
+ 673 0042 FFF7FEFF 		bl	nc_crc
+ 674              	.LVL62:
+  23:modules/nav_conversion/nav_can.c **** }
+ 675              		.loc 1 23 49 discriminator 1 view .LVU146
+ 676 0046 8442     		cmp	r4, r0
+ 677 0048 01D0     		beq	.L61
+  23:modules/nav_conversion/nav_can.c **** }
+ 678              		.loc 1 23 49 view .LVU147
+ 679 004a 0020     		movs	r0, #0
+ 680 004c F0E7     		b	.L56
+ 681              	.L61:
+ 682 004e 0120     		movs	r0, #1
+ 683 0050 EEE7     		b	.L56
+ 684              		.cfi_endproc
+ 685              	.LFE7:
+ 687              		.section	.text.nc_command_group,"ax",%progbits
+ 688              		.align	1
+ 689              		.global	nc_command_group
+ 690              		.syntax unified
+ 691              		.thumb
+ 692              		.thumb_func
+ 693              		.fpu fpv4-sp-d16
+ 695              	nc_command_group:
+ 696              	.LVL63:
+ 697              	.LFB10:
+  40:modules/nav_conversion/nav_can.c **** bool nc_command_group(const rm_command_t *c,nc_group_t *g)
+ARM GAS  /tmp/ccMpZV1N.s 			page 15
+
+
+  41:modules/nav_conversion/nav_can.c **** {
+ 698              		.loc 1 41 1 is_stmt 1 view -0
+ 699              		.cfi_startproc
+ 700              		@ args = 0, pretend = 0, frame = 0
+ 701              		@ frame_needed = 0, uses_anonymous_args = 0
+ 702              		.loc 1 41 1 is_stmt 0 view .LVU149
+ 703 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 704              	.LCFI18:
+ 705              		.cfi_def_cfa_offset 24
+ 706              		.cfi_offset 3, -24
+ 707              		.cfi_offset 4, -20
+ 708              		.cfi_offset 5, -16
+ 709              		.cfi_offset 6, -12
+ 710              		.cfi_offset 7, -8
+ 711              		.cfi_offset 14, -4
+  42:modules/nav_conversion/nav_can.c ****     if(!g||!command_ok(c))return false;
+ 712              		.loc 1 42 5 is_stmt 1 view .LVU150
+ 713              		.loc 1 42 7 is_stmt 0 view .LVU151
+ 714 0002 29B1     		cbz	r1, .L63
+ 715 0004 0446     		mov	r4, r0
+ 716 0006 0D46     		mov	r5, r1
+ 717              		.loc 1 42 13 discriminator 2 view .LVU152
+ 718 0008 FFF7FEFF 		bl	command_ok
+ 719              	.LVL64:
+ 720              		.loc 1 42 10 discriminator 2 view .LVU153
+ 721 000c 0746     		mov	r7, r0
+ 722 000e 10B9     		cbnz	r0, .L64
+ 723              	.LVL65:
+ 724              	.L63:
+ 725              		.loc 1 42 27 is_stmt 1 discriminator 3 view .LVU154
+ 726              		.loc 1 42 34 is_stmt 0 discriminator 3 view .LVU155
+ 727 0010 0027     		movs	r7, #0
+ 728              	.L65:
+  43:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_COMMAND_BASE;
+  44:modules/nav_conversion/nav_can.c ****     w32(g->data[0],c->session);w16(g->data[0]+4,c->sequence);w16(g->data[0]+6,c->ttl_ms);
+  45:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],c->vx,c->vy,c->wz,false);w16(g->data[1]+6,NC_VERSION|c->flags);
+  46:modules/nav_conversion/nav_can.c ****     seal(g,c->uptime_ms,c->sequence);return true;
+  47:modules/nav_conversion/nav_can.c **** }
+ 729              		.loc 1 47 1 view .LVU156
+ 730 0012 3846     		mov	r0, r7
+ 731 0014 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 732              	.LVL66:
+ 733              	.L64:
+  43:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_COMMAND_BASE;
+ 734              		.loc 1 43 5 is_stmt 1 view .LVU157
+ 735 0016 0026     		movs	r6, #0
+ 736 0018 2E60     		str	r6, [r5]	@ unaligned
+ 737 001a 6E60     		str	r6, [r5, #4]	@ unaligned
+ 738 001c AE60     		str	r6, [r5, #8]	@ unaligned
+ 739 001e EE60     		str	r6, [r5, #12]	@ unaligned
+ 740 0020 2E61     		str	r6, [r5, #16]	@ unaligned
+ 741 0022 6E61     		str	r6, [r5, #20]	@ unaligned
+ 742 0024 2E83     		strh	r6, [r5, #24]	@ unaligned
+  43:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_COMMAND_BASE;
+ 743              		.loc 1 43 28 view .LVU158
+  43:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_COMMAND_BASE;
+ 744              		.loc 1 43 35 is_stmt 0 view .LVU159
+ARM GAS  /tmp/ccMpZV1N.s 			page 16
+
+
+ 745 0026 4FF44C73 		mov	r3, #816
+ 746 002a 2B83     		strh	r3, [r5, #24]	@ movhi
+  44:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],c->vx,c->vy,c->wz,false);w16(g->data[1]+6,NC_VERSION|c->flags);
+ 747              		.loc 1 44 5 is_stmt 1 view .LVU160
+ 748 002c 6168     		ldr	r1, [r4, #4]
+ 749 002e 2846     		mov	r0, r5
+ 750 0030 FFF7FEFF 		bl	w32
+ 751              	.LVL67:
+  44:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],c->vx,c->vy,c->wz,false);w16(g->data[1]+6,NC_VERSION|c->flags);
+ 752              		.loc 1 44 32 view .LVU161
+ 753 0034 2189     		ldrh	r1, [r4, #8]
+ 754 0036 281D     		adds	r0, r5, #4
+ 755 0038 FFF7FEFF 		bl	w16
+ 756              	.LVL68:
+  44:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],c->vx,c->vy,c->wz,false);w16(g->data[1]+6,NC_VERSION|c->flags);
+ 757              		.loc 1 44 62 view .LVU162
+ 758 003c 6189     		ldrh	r1, [r4, #10]
+ 759 003e A81D     		adds	r0, r5, #6
+ 760 0040 FFF7FEFF 		bl	w16
+ 761              	.LVL69:
+  45:modules/nav_conversion/nav_can.c ****     seal(g,c->uptime_ms,c->sequence);return true;
+ 762              		.loc 1 45 5 view .LVU163
+ 763 0044 3146     		mov	r1, r6
+ 764 0046 94ED061A 		vldr.32	s2, [r4, #24]
+ 765 004a D4ED050A 		vldr.32	s1, [r4, #20]
+ 766 004e 94ED040A 		vldr.32	s0, [r4, #16]
+ 767 0052 05F10800 		add	r0, r5, #8
+ 768 0056 FFF7FEFF 		bl	velocity
+ 769              	.LVL70:
+  45:modules/nav_conversion/nav_can.c ****     seal(g,c->uptime_ms,c->sequence);return true;
+ 770              		.loc 1 45 50 view .LVU164
+  45:modules/nav_conversion/nav_can.c ****     seal(g,c->uptime_ms,c->sequence);return true;
+ 771              		.loc 1 45 79 is_stmt 0 view .LVU165
+ 772 005a A189     		ldrh	r1, [r4, #12]
+  45:modules/nav_conversion/nav_can.c ****     seal(g,c->uptime_ms,c->sequence);return true;
+ 773              		.loc 1 45 50 view .LVU166
+ 774 005c 41F48071 		orr	r1, r1, #256
+ 775 0060 05F10E00 		add	r0, r5, #14
+ 776 0064 FFF7FEFF 		bl	w16
+ 777              	.LVL71:
+  46:modules/nav_conversion/nav_can.c **** }
+ 778              		.loc 1 46 5 is_stmt 1 view .LVU167
+ 779 0068 2289     		ldrh	r2, [r4, #8]
+ 780 006a 2168     		ldr	r1, [r4]
+ 781 006c 2846     		mov	r0, r5
+ 782 006e FFF7FEFF 		bl	seal
+ 783              	.LVL72:
+  46:modules/nav_conversion/nav_can.c **** }
+ 784              		.loc 1 46 38 view .LVU168
+  46:modules/nav_conversion/nav_can.c **** }
+ 785              		.loc 1 46 45 is_stmt 0 view .LVU169
+ 786 0072 CEE7     		b	.L65
+ 787              		.cfi_endproc
+ 788              	.LFE10:
+ 790              		.section	.text.nc_command_decode,"ax",%progbits
+ 791              		.align	1
+ 792              		.global	nc_command_decode
+ARM GAS  /tmp/ccMpZV1N.s 			page 17
+
+
+ 793              		.syntax unified
+ 794              		.thumb
+ 795              		.thumb_func
+ 796              		.fpu fpv4-sp-d16
+ 798              	nc_command_decode:
+ 799              	.LVL73:
+ 800              	.LFB11:
+  48:modules/nav_conversion/nav_can.c **** bool nc_command_decode(const nc_group_t *g,rm_command_t *c)
+  49:modules/nav_conversion/nav_can.c **** {
+ 801              		.loc 1 49 1 is_stmt 1 view -0
+ 802              		.cfi_startproc
+ 803              		@ args = 0, pretend = 0, frame = 32
+ 804              		@ frame_needed = 0, uses_anonymous_args = 0
+  50:modules/nav_conversion/nav_can.c ****     if(!g||!c||g->base!=NC_COMMAND_BASE||!sealed(g)||(r16(g->data[1]+6)&0xff00)!=NC_VERSION)return 
+ 805              		.loc 1 50 5 view .LVU171
+ 806              		.loc 1 50 7 is_stmt 0 view .LVU172
+ 807 0000 0028     		cmp	r0, #0
+ 808 0002 78D0     		beq	.L72
+  49:modules/nav_conversion/nav_can.c ****     if(!g||!c||g->base!=NC_COMMAND_BASE||!sealed(g)||(r16(g->data[1]+6)&0xff00)!=NC_VERSION)return 
+ 809              		.loc 1 49 1 discriminator 2 view .LVU173
+ 810 0004 70B5     		push	{r4, r5, r6, lr}
+ 811              	.LCFI19:
+ 812              		.cfi_def_cfa_offset 16
+ 813              		.cfi_offset 4, -16
+ 814              		.cfi_offset 5, -12
+ 815              		.cfi_offset 6, -8
+ 816              		.cfi_offset 14, -4
+ 817 0006 2DED028B 		vpush.64	{d8}
+ 818              	.LCFI20:
+ 819              		.cfi_def_cfa_offset 24
+ 820              		.cfi_offset 80, -24
+ 821              		.cfi_offset 81, -20
+ 822 000a 88B0     		sub	sp, sp, #32
+ 823              	.LCFI21:
+ 824              		.cfi_def_cfa_offset 56
+ 825 000c 0D46     		mov	r5, r1
+ 826 000e 0446     		mov	r4, r0
+ 827              		.loc 1 50 10 discriminator 2 view .LVU174
+ 828 0010 19B1     		cbz	r1, .L68
+ 829              		.loc 1 50 17 discriminator 4 view .LVU175
+ 830 0012 038B     		ldrh	r3, [r0, #24]
+ 831              		.loc 1 50 14 discriminator 4 view .LVU176
+ 832 0014 B3F54C7F 		cmp	r3, #816
+ 833 0018 06D0     		beq	.L75
+ 834              	.LVL74:
+ 835              	.L68:
+ 836              		.loc 1 50 93 is_stmt 1 discriminator 9 view .LVU177
+ 837              		.loc 1 50 100 is_stmt 0 discriminator 9 view .LVU178
+ 838 001a 4FF0000C 		mov	ip, #0
+ 839              	.LVL75:
+ 840              	.L70:
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+  52:modules/nav_conversion/nav_can.c ****     value.ttl_ms=r16(g->data[0]+6);value.flags=r16(g->data[1]+6)&255;
+  53:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+  54:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+  55:modules/nav_conversion/nav_can.c **** }
+ 841              		.loc 1 55 1 view .LVU179
+ARM GAS  /tmp/ccMpZV1N.s 			page 18
+
+
+ 842 001e 6046     		mov	r0, ip
+ 843 0020 08B0     		add	sp, sp, #32
+ 844              	.LCFI22:
+ 845              		.cfi_remember_state
+ 846              		.cfi_def_cfa_offset 24
+ 847              		@ sp needed
+ 848 0022 BDEC028B 		vldm	sp!, {d8}
+ 849              	.LCFI23:
+ 850              		.cfi_restore 80
+ 851              		.cfi_restore 81
+ 852              		.cfi_def_cfa_offset 16
+ 853 0026 70BD     		pop	{r4, r5, r6, pc}
+ 854              	.LVL76:
+ 855              	.L75:
+ 856              	.LCFI24:
+ 857              		.cfi_restore_state
+  50:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 858              		.loc 1 50 43 discriminator 6 view .LVU180
+ 859 0028 FFF7FEFF 		bl	sealed
+ 860              	.LVL77:
+  50:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 861              		.loc 1 50 40 discriminator 6 view .LVU181
+ 862 002c 0028     		cmp	r0, #0
+ 863 002e F4D0     		beq	.L68
+  50:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 864              		.loc 1 50 55 discriminator 8 view .LVU182
+ 865 0030 04F10E06 		add	r6, r4, #14
+ 866 0034 3046     		mov	r0, r6
+ 867 0036 FFF7FEFF 		bl	r16
+ 868              	.LVL78:
+  50:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 869              		.loc 1 50 52 discriminator 8 view .LVU183
+ 870 003a 00F47F40 		and	r0, r0, #65280
+ 871 003e B0F5807F 		cmp	r0, #256
+ 872 0042 EAD1     		bne	.L68
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 873              		.loc 1 51 5 is_stmt 1 view .LVU184
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 874              		.loc 1 51 18 is_stmt 0 view .LVU185
+ 875 0044 0023     		movs	r3, #0
+ 876 0046 0193     		str	r3, [sp, #4]
+ 877 0048 0293     		str	r3, [sp, #8]
+ 878 004a 0393     		str	r3, [sp, #12]
+ 879 004c 0493     		str	r3, [sp, #16]
+ 880 004e 0593     		str	r3, [sp, #20]
+ 881 0050 0693     		str	r3, [sp, #24]
+ 882 0052 0793     		str	r3, [sp, #28]
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 883              		.loc 1 51 28 is_stmt 1 view .LVU186
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 884              		.loc 1 51 39 is_stmt 0 view .LVU187
+ 885 0054 0223     		movs	r3, #2
+ 886 0056 8DF81230 		strb	r3, [sp, #18]
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 887              		.loc 1 51 42 is_stmt 1 view .LVU188
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 888              		.loc 1 51 56 is_stmt 0 view .LVU189
+ARM GAS  /tmp/ccMpZV1N.s 			page 19
+
+
+ 889 005a 2046     		mov	r0, r4
+ 890 005c FFF7FEFF 		bl	r32
+ 891              	.LVL79:
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 892              		.loc 1 51 55 view .LVU190
+ 893 0060 0290     		str	r0, [sp, #8]
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 894              		.loc 1 51 72 is_stmt 1 view .LVU191
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 895              		.loc 1 51 87 is_stmt 0 view .LVU192
+ 896 0062 201D     		adds	r0, r4, #4
+ 897 0064 FFF7FEFF 		bl	r16
+ 898              	.LVL80:
+  51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 899              		.loc 1 51 86 view .LVU193
+ 900 0068 ADF80C00 		strh	r0, [sp, #12]	@ movhi
+  52:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 901              		.loc 1 52 5 is_stmt 1 view .LVU194
+  52:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 902              		.loc 1 52 18 is_stmt 0 view .LVU195
+ 903 006c A01D     		adds	r0, r4, #6
+ 904 006e FFF7FEFF 		bl	r16
+ 905              	.LVL81:
+  52:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 906              		.loc 1 52 17 view .LVU196
+ 907 0072 ADF80E00 		strh	r0, [sp, #14]	@ movhi
+  52:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 908              		.loc 1 52 36 is_stmt 1 view .LVU197
+  52:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 909              		.loc 1 52 48 is_stmt 0 view .LVU198
+ 910 0076 3046     		mov	r0, r6
+ 911 0078 FFF7FEFF 		bl	r16
+ 912              	.LVL82:
+  52:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 913              		.loc 1 52 65 view .LVU199
+ 914 007c C0B2     		uxtb	r0, r0
+  52:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 915              		.loc 1 52 47 view .LVU200
+ 916 007e ADF81000 		strh	r0, [sp, #16]	@ movhi
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 917              		.loc 1 53 5 is_stmt 1 view .LVU201
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 918              		.loc 1 53 14 is_stmt 0 view .LVU202
+ 919 0082 04F10800 		add	r0, r4, #8
+ 920 0086 FFF7FEFF 		bl	s16
+ 921              	.LVL83:
+ 922 008a 07EE900A 		vmov	s15, r0	@ int
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 923              		.loc 1 53 29 view .LVU203
+ 924 008e F8EEE77A 		vcvt.f32.s32	s15, s15
+ 925 0092 9FED1B8A 		vldr.32	s16, .L76
+ 926 0096 87EE887A 		vdiv.f32	s14, s15, s16
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 927              		.loc 1 53 13 view .LVU204
+ 928 009a 8DED057A 		vstr.32	s14, [sp, #20]
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 929              		.loc 1 53 38 is_stmt 1 view .LVU205
+ARM GAS  /tmp/ccMpZV1N.s 			page 20
+
+
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 930              		.loc 1 53 47 is_stmt 0 view .LVU206
+ 931 009e 04F10A00 		add	r0, r4, #10
+ 932 00a2 FFF7FEFF 		bl	s16
+ 933              	.LVL84:
+ 934 00a6 07EE900A 		vmov	s15, r0	@ int
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 935              		.loc 1 53 64 view .LVU207
+ 936 00aa F8EEE77A 		vcvt.f32.s32	s15, s15
+ 937 00ae 87EE887A 		vdiv.f32	s14, s15, s16
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 938              		.loc 1 53 46 view .LVU208
+ 939 00b2 8DED067A 		vstr.32	s14, [sp, #24]
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 940              		.loc 1 53 73 is_stmt 1 view .LVU209
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 941              		.loc 1 53 82 is_stmt 0 view .LVU210
+ 942 00b6 04F10C00 		add	r0, r4, #12
+ 943 00ba FFF7FEFF 		bl	s16
+ 944              	.LVL85:
+ 945 00be 07EE900A 		vmov	s15, r0	@ int
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 946              		.loc 1 53 99 view .LVU211
+ 947 00c2 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 948 00c6 87EE887A 		vdiv.f32	s14, s15, s16
+  53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
+ 949              		.loc 1 53 81 view .LVU212
+ 950 00ca 8DED077A 		vstr.32	s14, [sp, #28]
+  54:modules/nav_conversion/nav_can.c **** }
+ 951              		.loc 1 54 5 is_stmt 1 view .LVU213
+  54:modules/nav_conversion/nav_can.c **** }
+ 952              		.loc 1 54 21 is_stmt 0 view .LVU214
+ 953 00ce 04F11000 		add	r0, r4, #16
+ 954 00d2 FFF7FEFF 		bl	r32
+ 955              	.LVL86:
+  54:modules/nav_conversion/nav_can.c **** }
+ 956              		.loc 1 54 20 view .LVU215
+ 957 00d6 0190     		str	r0, [sp, #4]
+  54:modules/nav_conversion/nav_can.c **** }
+ 958              		.loc 1 54 37 is_stmt 1 view .LVU216
+  54:modules/nav_conversion/nav_can.c **** }
+ 959              		.loc 1 54 41 is_stmt 0 view .LVU217
+ 960 00d8 01A8     		add	r0, sp, #4
+ 961 00da FFF7FEFF 		bl	command_ok
+ 962              	.LVL87:
+  54:modules/nav_conversion/nav_can.c **** }
+ 963              		.loc 1 54 39 view .LVU218
+ 964 00de 8446     		mov	ip, r0
+ 965 00e0 0028     		cmp	r0, #0
+ 966 00e2 9CD0     		beq	.L70
+  54:modules/nav_conversion/nav_can.c **** }
+ 967              		.loc 1 54 73 is_stmt 1 discriminator 2 view .LVU219
+  54:modules/nav_conversion/nav_can.c **** }
+ 968              		.loc 1 54 75 is_stmt 0 discriminator 2 view .LVU220
+ 969 00e4 2C46     		mov	r4, r5
+ 970              	.LVL88:
+  54:modules/nav_conversion/nav_can.c **** }
+ARM GAS  /tmp/ccMpZV1N.s 			page 21
+
+
+ 971              		.loc 1 54 75 discriminator 2 view .LVU221
+ 972 00e6 01AD     		add	r5, sp, #4
+ 973              	.LVL89:
+  54:modules/nav_conversion/nav_can.c **** }
+ 974              		.loc 1 54 75 discriminator 2 view .LVU222
+ 975 00e8 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 976 00ea 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 977              	.LVL90:
+  54:modules/nav_conversion/nav_can.c **** }
+ 978              		.loc 1 54 75 discriminator 2 view .LVU223
+ 979 00ec 95E80700 		ldm	r5, {r0, r1, r2}
+ 980 00f0 84E80700 		stm	r4, {r0, r1, r2}
+  54:modules/nav_conversion/nav_can.c **** }
+ 981              		.loc 1 54 82 is_stmt 1 discriminator 2 view .LVU224
+  54:modules/nav_conversion/nav_can.c **** }
+ 982              		.loc 1 54 89 is_stmt 0 discriminator 2 view .LVU225
+ 983 00f4 93E7     		b	.L70
+ 984              	.LVL91:
+ 985              	.L72:
+ 986              	.LCFI25:
+ 987              		.cfi_def_cfa_offset 0
+ 988              		.cfi_restore 4
+ 989              		.cfi_restore 5
+ 990              		.cfi_restore 6
+ 991              		.cfi_restore 14
+ 992              		.cfi_restore 80
+ 993              		.cfi_restore 81
+  50:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 994              		.loc 1 50 93 is_stmt 1 view .LVU226
+  50:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
+ 995              		.loc 1 50 100 is_stmt 0 view .LVU227
+ 996 00f6 4FF0000C 		mov	ip, #0
+ 997              		.loc 1 55 1 view .LVU228
+ 998 00fa 6046     		mov	r0, ip
+ 999              	.LVL92:
+ 1000              		.loc 1 55 1 view .LVU229
+ 1001 00fc 7047     		bx	lr
+ 1002              	.L77:
+ 1003 00fe 00BF     		.align	2
+ 1004              	.L76:
+ 1005 0100 00007A44 		.word	1148846080
+ 1006              		.cfi_endproc
+ 1007              	.LFE11:
+ 1009              		.section	.text.nc_feedback_group,"ax",%progbits
+ 1010              		.align	1
+ 1011              		.global	nc_feedback_group
+ 1012              		.syntax unified
+ 1013              		.thumb
+ 1014              		.thumb_func
+ 1015              		.fpu fpv4-sp-d16
+ 1017              	nc_feedback_group:
+ 1018              	.LVL93:
+ 1019              	.LFB12:
+  56:modules/nav_conversion/nav_can.c **** bool nc_feedback_group(const rm_feedback_t *f,nc_group_t *g)
+  57:modules/nav_conversion/nav_can.c **** {
+ 1020              		.loc 1 57 1 is_stmt 1 view -0
+ 1021              		.cfi_startproc
+ARM GAS  /tmp/ccMpZV1N.s 			page 22
+
+
+ 1022              		@ args = 0, pretend = 0, frame = 40
+ 1023              		@ frame_needed = 0, uses_anonymous_args = 0
+  58:modules/nav_conversion/nav_can.c ****     uint8_t bytes[RM_FRAME_SIZE];
+ 1024              		.loc 1 58 5 view .LVU231
+  59:modules/nav_conversion/nav_can.c ****     if(!g||!f||f->route!=2||!rm_encode_feedback(f,bytes)||fabsf(f->wz)>32.767f)return false;
+ 1025              		.loc 1 59 5 view .LVU232
+ 1026              		.loc 1 59 7 is_stmt 0 view .LVU233
+ 1027 0000 0029     		cmp	r1, #0
+ 1028 0002 4AD0     		beq	.L85
+  57:modules/nav_conversion/nav_can.c ****     uint8_t bytes[RM_FRAME_SIZE];
+ 1029              		.loc 1 57 1 discriminator 2 view .LVU234
+ 1030 0004 30B5     		push	{r4, r5, lr}
+ 1031              	.LCFI26:
+ 1032              		.cfi_def_cfa_offset 12
+ 1033              		.cfi_offset 4, -12
+ 1034              		.cfi_offset 5, -8
+ 1035              		.cfi_offset 14, -4
+ 1036 0006 8BB0     		sub	sp, sp, #44
+ 1037              	.LCFI27:
+ 1038              		.cfi_def_cfa_offset 56
+ 1039 0008 0446     		mov	r4, r0
+ 1040 000a 0D46     		mov	r5, r1
+ 1041              		.loc 1 59 10 discriminator 2 view .LVU235
+ 1042 000c 10B1     		cbz	r0, .L79
+ 1043              		.loc 1 59 17 discriminator 4 view .LVU236
+ 1044 000e 837B     		ldrb	r3, [r0, #14]	@ zero_extendqisi2
+ 1045              		.loc 1 59 14 discriminator 4 view .LVU237
+ 1046 0010 022B     		cmp	r3, #2
+ 1047 0012 02D0     		beq	.L88
+ 1048              	.LVL94:
+ 1049              	.L79:
+ 1050              		.loc 1 59 80 is_stmt 1 discriminator 9 view .LVU238
+ 1051              		.loc 1 59 87 is_stmt 0 discriminator 9 view .LVU239
+ 1052 0014 0020     		movs	r0, #0
+ 1053              	.L82:
+  60:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+  61:modules/nav_conversion/nav_can.c ****     w32(g->data[0],f->session);w16(g->data[0]+4,f->sequence);w16(g->data[0]+6,NC_VERSION|f->status)
+  62:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
+  63:modules/nav_conversion/nav_can.c ****     seal(g,f->uptime_ms,f->sequence);return true;
+  64:modules/nav_conversion/nav_can.c **** }
+ 1054              		.loc 1 64 1 view .LVU240
+ 1055 0016 0BB0     		add	sp, sp, #44
+ 1056              	.LCFI28:
+ 1057              		.cfi_remember_state
+ 1058              		.cfi_def_cfa_offset 12
+ 1059              		@ sp needed
+ 1060 0018 30BD     		pop	{r4, r5, pc}
+ 1061              	.LVL95:
+ 1062              	.L88:
+ 1063              	.LCFI29:
+ 1064              		.cfi_restore_state
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1065              		.loc 1 59 30 discriminator 6 view .LVU241
+ 1066 001a 01A9     		add	r1, sp, #4
+ 1067              	.LVL96:
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1068              		.loc 1 59 30 discriminator 6 view .LVU242
+ARM GAS  /tmp/ccMpZV1N.s 			page 23
+
+
+ 1069 001c FFF7FEFF 		bl	rm_encode_feedback
+ 1070              	.LVL97:
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1071              		.loc 1 59 27 discriminator 6 view .LVU243
+ 1072 0020 0028     		cmp	r0, #0
+ 1073 0022 F7D0     		beq	.L79
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1074              		.loc 1 59 66 discriminator 8 view .LVU244
+ 1075 0024 D4ED067A 		vldr.32	s15, [r4, #24]
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1076              		.loc 1 59 59 discriminator 8 view .LVU245
+ 1077 0028 F0EEE77A 		vabs.f32	s15, s15
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1078              		.loc 1 59 57 discriminator 8 view .LVU246
+ 1079 002c 9FED1C7A 		vldr.32	s14, .L89
+ 1080 0030 F4EEC77A 		vcmpe.f32	s15, s14
+ 1081 0034 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1082 0038 ECDC     		bgt	.L79
+  60:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1083              		.loc 1 60 5 is_stmt 1 view .LVU247
+ 1084 003a 0023     		movs	r3, #0
+ 1085 003c 2B60     		str	r3, [r5]	@ unaligned
+ 1086 003e 6B60     		str	r3, [r5, #4]	@ unaligned
+ 1087 0040 AB60     		str	r3, [r5, #8]	@ unaligned
+ 1088 0042 EB60     		str	r3, [r5, #12]	@ unaligned
+ 1089 0044 2B61     		str	r3, [r5, #16]	@ unaligned
+ 1090 0046 6B61     		str	r3, [r5, #20]	@ unaligned
+ 1091 0048 2B83     		strh	r3, [r5, #24]	@ unaligned
+  60:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1092              		.loc 1 60 28 view .LVU248
+  60:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1093              		.loc 1 60 35 is_stmt 0 view .LVU249
+ 1094 004a 4FF44E73 		mov	r3, #824
+ 1095 004e 2B83     		strh	r3, [r5, #24]	@ movhi
+  61:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
+ 1096              		.loc 1 61 5 is_stmt 1 view .LVU250
+ 1097 0050 6168     		ldr	r1, [r4, #4]
+ 1098 0052 2846     		mov	r0, r5
+ 1099 0054 FFF7FEFF 		bl	w32
+ 1100              	.LVL98:
+  61:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
+ 1101              		.loc 1 61 32 view .LVU251
+ 1102 0058 2189     		ldrh	r1, [r4, #8]
+ 1103 005a 281D     		adds	r0, r5, #4
+ 1104 005c FFF7FEFF 		bl	w16
+ 1105              	.LVL99:
+  61:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
+ 1106              		.loc 1 61 62 view .LVU252
+  61:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
+ 1107              		.loc 1 61 91 is_stmt 0 view .LVU253
+ 1108 0060 6189     		ldrh	r1, [r4, #10]
+  61:modules/nav_conversion/nav_can.c ****     velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
+ 1109              		.loc 1 61 62 view .LVU254
+ 1110 0062 41F48071 		orr	r1, r1, #256
+ 1111 0066 A81D     		adds	r0, r5, #6
+ 1112 0068 FFF7FEFF 		bl	w16
+ 1113              	.LVL100:
+ARM GAS  /tmp/ccMpZV1N.s 			page 24
+
+
+  62:modules/nav_conversion/nav_can.c ****     seal(g,f->uptime_ms,f->sequence);return true;
+ 1114              		.loc 1 62 5 is_stmt 1 view .LVU255
+ 1115 006c 0121     		movs	r1, #1
+ 1116 006e 94ED061A 		vldr.32	s2, [r4, #24]
+ 1117 0072 D4ED050A 		vldr.32	s1, [r4, #20]
+ 1118 0076 94ED040A 		vldr.32	s0, [r4, #16]
+ 1119 007a 05F10800 		add	r0, r5, #8
+ 1120 007e FFF7FEFF 		bl	velocity
+ 1121              	.LVL101:
+  62:modules/nav_conversion/nav_can.c ****     seal(g,f->uptime_ms,f->sequence);return true;
+ 1122              		.loc 1 62 49 view .LVU256
+ 1123 0082 A189     		ldrh	r1, [r4, #12]
+ 1124 0084 05F10E00 		add	r0, r5, #14
+ 1125 0088 FFF7FEFF 		bl	w16
+ 1126              	.LVL102:
+  63:modules/nav_conversion/nav_can.c **** }
+ 1127              		.loc 1 63 5 view .LVU257
+ 1128 008c 2289     		ldrh	r2, [r4, #8]
+ 1129 008e 2168     		ldr	r1, [r4]
+ 1130 0090 2846     		mov	r0, r5
+ 1131 0092 FFF7FEFF 		bl	seal
+ 1132              	.LVL103:
+  63:modules/nav_conversion/nav_can.c **** }
+ 1133              		.loc 1 63 38 view .LVU258
+  63:modules/nav_conversion/nav_can.c **** }
+ 1134              		.loc 1 63 45 is_stmt 0 view .LVU259
+ 1135 0096 0120     		movs	r0, #1
+ 1136 0098 BDE7     		b	.L82
+ 1137              	.LVL104:
+ 1138              	.L85:
+ 1139              	.LCFI30:
+ 1140              		.cfi_def_cfa_offset 0
+ 1141              		.cfi_restore 4
+ 1142              		.cfi_restore 5
+ 1143              		.cfi_restore 14
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1144              		.loc 1 59 80 is_stmt 1 view .LVU260
+  59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
+ 1145              		.loc 1 59 87 is_stmt 0 view .LVU261
+ 1146 009a 0020     		movs	r0, #0
+ 1147              	.LVL105:
+ 1148              		.loc 1 64 1 view .LVU262
+ 1149 009c 7047     		bx	lr
+ 1150              	.L90:
+ 1151 009e 00BF     		.align	2
+ 1152              	.L89:
+ 1153 00a0 68110342 		.word	1107497320
+ 1154              		.cfi_endproc
+ 1155              	.LFE12:
+ 1157              		.section	.text.nc_feedback_decode,"ax",%progbits
+ 1158              		.align	1
+ 1159              		.global	nc_feedback_decode
+ 1160              		.syntax unified
+ 1161              		.thumb
+ 1162              		.thumb_func
+ 1163              		.fpu fpv4-sp-d16
+ 1165              	nc_feedback_decode:
+ARM GAS  /tmp/ccMpZV1N.s 			page 25
+
+
+ 1166              	.LVL106:
+ 1167              	.LFB13:
+  65:modules/nav_conversion/nav_can.c **** bool nc_feedback_decode(const nc_group_t *g,rm_feedback_t *f)
+  66:modules/nav_conversion/nav_can.c **** {
+ 1168              		.loc 1 66 1 is_stmt 1 view -0
+ 1169              		.cfi_startproc
+ 1170              		@ args = 0, pretend = 0, frame = 64
+ 1171              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1172              		.loc 1 66 1 is_stmt 0 view .LVU264
+ 1173 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1174              	.LCFI31:
+ 1175              		.cfi_def_cfa_offset 20
+ 1176              		.cfi_offset 4, -20
+ 1177              		.cfi_offset 5, -16
+ 1178              		.cfi_offset 6, -12
+ 1179              		.cfi_offset 7, -8
+ 1180              		.cfi_offset 14, -4
+ 1181 0002 2DED028B 		vpush.64	{d8}
+ 1182              	.LCFI32:
+ 1183              		.cfi_def_cfa_offset 28
+ 1184              		.cfi_offset 80, -28
+ 1185              		.cfi_offset 81, -24
+ 1186 0006 91B0     		sub	sp, sp, #68
+ 1187              	.LCFI33:
+ 1188              		.cfi_def_cfa_offset 96
+  67:modules/nav_conversion/nav_can.c ****     if(!g||!f||g->base!=NC_FEEDBACK_BASE||!sealed(g)||(r16(g->data[0]+6)&0xff00)!=NC_VERSION)return
+ 1189              		.loc 1 67 5 is_stmt 1 view .LVU265
+ 1190              		.loc 1 67 7 is_stmt 0 view .LVU266
+ 1191 0008 30B1     		cbz	r0, .L92
+ 1192 000a 0D46     		mov	r5, r1
+ 1193 000c 0646     		mov	r6, r0
+ 1194              		.loc 1 67 10 discriminator 2 view .LVU267
+ 1195 000e 19B1     		cbz	r1, .L92
+ 1196              		.loc 1 67 17 discriminator 4 view .LVU268
+ 1197 0010 038B     		ldrh	r3, [r0, #24]
+ 1198              		.loc 1 67 14 discriminator 4 view .LVU269
+ 1199 0012 B3F54E7F 		cmp	r3, #824
+ 1200 0016 05D0     		beq	.L97
+ 1201              	.LVL107:
+ 1202              	.L92:
+ 1203              		.loc 1 67 94 is_stmt 1 discriminator 9 view .LVU270
+ 1204              		.loc 1 67 101 is_stmt 0 discriminator 9 view .LVU271
+ 1205 0018 0024     		movs	r4, #0
+ 1206              	.L94:
+  68:modules/nav_conversion/nav_can.c ****     rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
+  69:modules/nav_conversion/nav_can.c ****     value.session=r32(g->data[0]);value.sequence=r16(g->data[0]+4);value.status=r16(g->data[0]+6)&2
+  70:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+  71:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+  72:modules/nav_conversion/nav_can.c ****     if(!rm_encode_feedback(&value,bytes))return false;
+  73:modules/nav_conversion/nav_can.c ****     *f=value;return true;
+  74:modules/nav_conversion/nav_can.c **** }
+ 1207              		.loc 1 74 1 view .LVU272
+ 1208 001a 2046     		mov	r0, r4
+ 1209 001c 11B0     		add	sp, sp, #68
+ 1210              	.LCFI34:
+ 1211              		.cfi_remember_state
+ 1212              		.cfi_def_cfa_offset 28
+ARM GAS  /tmp/ccMpZV1N.s 			page 26
+
+
+ 1213              		@ sp needed
+ 1214 001e BDEC028B 		vldm	sp!, {d8}
+ 1215              	.LCFI35:
+ 1216              		.cfi_restore 80
+ 1217              		.cfi_restore 81
+ 1218              		.cfi_def_cfa_offset 20
+ 1219 0022 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1220              	.LVL108:
+ 1221              	.L97:
+ 1222              	.LCFI36:
+ 1223              		.cfi_restore_state
+  67:modules/nav_conversion/nav_can.c ****     if(!g||!f||g->base!=NC_FEEDBACK_BASE||!sealed(g)||(r16(g->data[0]+6)&0xff00)!=NC_VERSION)return
+ 1224              		.loc 1 67 44 discriminator 6 view .LVU273
+ 1225 0024 FFF7FEFF 		bl	sealed
+ 1226              	.LVL109:
+  67:modules/nav_conversion/nav_can.c ****     if(!g||!f||g->base!=NC_FEEDBACK_BASE||!sealed(g)||(r16(g->data[0]+6)&0xff00)!=NC_VERSION)return
+ 1227              		.loc 1 67 41 discriminator 6 view .LVU274
+ 1228 0028 0446     		mov	r4, r0
+ 1229 002a 0028     		cmp	r0, #0
+ 1230 002c F4D0     		beq	.L92
+  67:modules/nav_conversion/nav_can.c ****     if(!g||!f||g->base!=NC_FEEDBACK_BASE||!sealed(g)||(r16(g->data[0]+6)&0xff00)!=NC_VERSION)return
+ 1231              		.loc 1 67 56 discriminator 8 view .LVU275
+ 1232 002e B71D     		adds	r7, r6, #6
+ 1233 0030 3846     		mov	r0, r7
+ 1234 0032 FFF7FEFF 		bl	r16
+ 1235              	.LVL110:
+  67:modules/nav_conversion/nav_can.c ****     if(!g||!f||g->base!=NC_FEEDBACK_BASE||!sealed(g)||(r16(g->data[0]+6)&0xff00)!=NC_VERSION)return
+ 1236              		.loc 1 67 53 discriminator 8 view .LVU276
+ 1237 0036 00F47F40 		and	r0, r0, #65280
+ 1238 003a B0F5807F 		cmp	r0, #256
+ 1239 003e EBD1     		bne	.L92
+  68:modules/nav_conversion/nav_can.c ****     rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
+ 1240              		.loc 1 68 5 is_stmt 1 view .LVU277
+  68:modules/nav_conversion/nav_can.c ****     rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
+ 1241              		.loc 1 68 19 is_stmt 0 view .LVU278
+ 1242 0040 0023     		movs	r3, #0
+ 1243 0042 0993     		str	r3, [sp, #36]
+ 1244 0044 0A93     		str	r3, [sp, #40]
+ 1245 0046 0B93     		str	r3, [sp, #44]
+ 1246 0048 0C93     		str	r3, [sp, #48]
+ 1247 004a 0D93     		str	r3, [sp, #52]
+ 1248 004c 0E93     		str	r3, [sp, #56]
+ 1249 004e 0F93     		str	r3, [sp, #60]
+  68:modules/nav_conversion/nav_can.c ****     rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
+ 1250              		.loc 1 68 29 is_stmt 1 view .LVU279
+  68:modules/nav_conversion/nav_can.c ****     rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
+ 1251              		.loc 1 68 58 view .LVU280
+  68:modules/nav_conversion/nav_can.c ****     rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
+ 1252              		.loc 1 68 69 is_stmt 0 view .LVU281
+ 1253 0050 0223     		movs	r3, #2
+ 1254 0052 8DF83230 		strb	r3, [sp, #50]
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1255              		.loc 1 69 5 is_stmt 1 view .LVU282
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1256              		.loc 1 69 19 is_stmt 0 view .LVU283
+ 1257 0056 3046     		mov	r0, r6
+ 1258 0058 FFF7FEFF 		bl	r32
+ARM GAS  /tmp/ccMpZV1N.s 			page 27
+
+
+ 1259              	.LVL111:
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1260              		.loc 1 69 18 view .LVU284
+ 1261 005c 0A90     		str	r0, [sp, #40]
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1262              		.loc 1 69 35 is_stmt 1 view .LVU285
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1263              		.loc 1 69 50 is_stmt 0 view .LVU286
+ 1264 005e 301D     		adds	r0, r6, #4
+ 1265 0060 FFF7FEFF 		bl	r16
+ 1266              	.LVL112:
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1267              		.loc 1 69 49 view .LVU287
+ 1268 0064 ADF82C00 		strh	r0, [sp, #44]	@ movhi
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1269              		.loc 1 69 68 is_stmt 1 view .LVU288
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1270              		.loc 1 69 81 is_stmt 0 view .LVU289
+ 1271 0068 3846     		mov	r0, r7
+ 1272 006a FFF7FEFF 		bl	r16
+ 1273              	.LVL113:
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1274              		.loc 1 69 98 view .LVU290
+ 1275 006e C0B2     		uxtb	r0, r0
+  69:modules/nav_conversion/nav_can.c ****     value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/
+ 1276              		.loc 1 69 80 view .LVU291
+ 1277 0070 ADF82E00 		strh	r0, [sp, #46]	@ movhi
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1278              		.loc 1 70 5 is_stmt 1 view .LVU292
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1279              		.loc 1 70 14 is_stmt 0 view .LVU293
+ 1280 0074 06F10800 		add	r0, r6, #8
+ 1281 0078 FFF7FEFF 		bl	s16
+ 1282              	.LVL114:
+ 1283 007c 07EE900A 		vmov	s15, r0	@ int
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1284              		.loc 1 70 29 view .LVU294
+ 1285 0080 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1286 0084 9FED1C8A 		vldr.32	s16, .L98
+ 1287 0088 87EE887A 		vdiv.f32	s14, s15, s16
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1288              		.loc 1 70 13 view .LVU295
+ 1289 008c 8DED0D7A 		vstr.32	s14, [sp, #52]
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1290              		.loc 1 70 38 is_stmt 1 view .LVU296
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1291              		.loc 1 70 47 is_stmt 0 view .LVU297
+ 1292 0090 06F10A00 		add	r0, r6, #10
+ 1293 0094 FFF7FEFF 		bl	s16
+ 1294              	.LVL115:
+ 1295 0098 07EE900A 		vmov	s15, r0	@ int
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1296              		.loc 1 70 64 view .LVU298
+ 1297 009c F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1298 00a0 87EE887A 		vdiv.f32	s14, s15, s16
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1299              		.loc 1 70 46 view .LVU299
+ARM GAS  /tmp/ccMpZV1N.s 			page 28
+
+
+ 1300 00a4 8DED0E7A 		vstr.32	s14, [sp, #56]
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1301              		.loc 1 70 73 is_stmt 1 view .LVU300
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1302              		.loc 1 70 82 is_stmt 0 view .LVU301
+ 1303 00a8 06F10C00 		add	r0, r6, #12
+ 1304 00ac FFF7FEFF 		bl	s16
+ 1305              	.LVL116:
+ 1306 00b0 07EE900A 		vmov	s15, r0	@ int
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1307              		.loc 1 70 99 view .LVU302
+ 1308 00b4 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1309 00b8 87EE887A 		vdiv.f32	s14, s15, s16
+  70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
+ 1310              		.loc 1 70 81 view .LVU303
+ 1311 00bc 8DED0F7A 		vstr.32	s14, [sp, #60]
+  71:modules/nav_conversion/nav_can.c ****     if(!rm_encode_feedback(&value,bytes))return false;
+ 1312              		.loc 1 71 5 is_stmt 1 view .LVU304
+  71:modules/nav_conversion/nav_can.c ****     if(!rm_encode_feedback(&value,bytes))return false;
+ 1313              		.loc 1 71 22 is_stmt 0 view .LVU305
+ 1314 00c0 06F10E00 		add	r0, r6, #14
+ 1315 00c4 FFF7FEFF 		bl	r16
+ 1316              	.LVL117:
+  71:modules/nav_conversion/nav_can.c ****     if(!rm_encode_feedback(&value,bytes))return false;
+ 1317              		.loc 1 71 21 view .LVU306
+ 1318 00c8 ADF83000 		strh	r0, [sp, #48]	@ movhi
+  71:modules/nav_conversion/nav_can.c ****     if(!rm_encode_feedback(&value,bytes))return false;
+ 1319              		.loc 1 71 40 is_stmt 1 view .LVU307
+  71:modules/nav_conversion/nav_can.c ****     if(!rm_encode_feedback(&value,bytes))return false;
+ 1320              		.loc 1 71 56 is_stmt 0 view .LVU308
+ 1321 00cc 06F11000 		add	r0, r6, #16
+ 1322 00d0 FFF7FEFF 		bl	r32
+ 1323              	.LVL118:
+  71:modules/nav_conversion/nav_can.c ****     if(!rm_encode_feedback(&value,bytes))return false;
+ 1324              		.loc 1 71 55 view .LVU309
+ 1325 00d4 0990     		str	r0, [sp, #36]
+  72:modules/nav_conversion/nav_can.c ****     *f=value;return true;
+ 1326              		.loc 1 72 5 is_stmt 1 view .LVU310
+  72:modules/nav_conversion/nav_can.c ****     *f=value;return true;
+ 1327              		.loc 1 72 9 is_stmt 0 view .LVU311
+ 1328 00d6 6946     		mov	r1, sp
+ 1329 00d8 09A8     		add	r0, sp, #36
+ 1330 00da FFF7FEFF 		bl	rm_encode_feedback
+ 1331              	.LVL119:
+  72:modules/nav_conversion/nav_can.c ****     *f=value;return true;
+ 1332              		.loc 1 72 7 view .LVU312
+ 1333 00de 48B1     		cbz	r0, .L95
+  73:modules/nav_conversion/nav_can.c **** }
+ 1334              		.loc 1 73 5 is_stmt 1 view .LVU313
+  73:modules/nav_conversion/nav_can.c **** }
+ 1335              		.loc 1 73 7 is_stmt 0 view .LVU314
+ 1336 00e0 AC46     		mov	ip, r5
+ 1337 00e2 09AD     		add	r5, sp, #36
+ 1338              	.LVL120:
+  73:modules/nav_conversion/nav_can.c **** }
+ 1339              		.loc 1 73 7 view .LVU315
+ 1340 00e4 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ARM GAS  /tmp/ccMpZV1N.s 			page 29
+
+
+ 1341 00e6 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1342              	.LVL121:
+  73:modules/nav_conversion/nav_can.c **** }
+ 1343              		.loc 1 73 7 view .LVU316
+ 1344 00ea 95E80700 		ldm	r5, {r0, r1, r2}
+ 1345 00ee 8CE80700 		stm	ip, {r0, r1, r2}
+  73:modules/nav_conversion/nav_can.c **** }
+ 1346              		.loc 1 73 14 is_stmt 1 view .LVU317
+  73:modules/nav_conversion/nav_can.c **** }
+ 1347              		.loc 1 73 21 is_stmt 0 view .LVU318
+ 1348 00f2 92E7     		b	.L94
+ 1349              	.LVL122:
+ 1350              	.L95:
+  72:modules/nav_conversion/nav_can.c ****     *f=value;return true;
+ 1351              		.loc 1 72 49 view .LVU319
+ 1352 00f4 0024     		movs	r4, #0
+ 1353 00f6 90E7     		b	.L94
+ 1354              	.L99:
+ 1355              		.align	2
+ 1356              	.L98:
+ 1357 00f8 00007A44 		.word	1148846080
+ 1358              		.cfi_endproc
+ 1359              	.LFE13:
+ 1361              		.section	.text.nc_rx_push,"ax",%progbits
+ 1362              		.align	1
+ 1363              		.global	nc_rx_push
+ 1364              		.syntax unified
+ 1365              		.thumb
+ 1366              		.thumb_func
+ 1367              		.fpu fpv4-sp-d16
+ 1369              	nc_rx_push:
+ 1370              	.LVL123:
+ 1371              	.LFB14:
+  75:modules/nav_conversion/nav_can.c **** bool nc_rx_push(nc_rx_t *r,uint16_t base,uint32_t id,bool extended,bool rtr,unsigned dlc,
+  76:modules/nav_conversion/nav_can.c ****                 const uint8_t *bytes,uint32_t now,nc_group_t *out)
+  77:modules/nav_conversion/nav_can.c **** {
+ 1372              		.loc 1 77 1 is_stmt 1 view -0
+ 1373              		.cfi_startproc
+ 1374              		@ args = 20, pretend = 0, frame = 0
+ 1375              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1376              		.loc 1 77 1 is_stmt 0 view .LVU321
+ 1377 0000 38B5     		push	{r3, r4, r5, lr}
+ 1378              	.LCFI37:
+ 1379              		.cfi_def_cfa_offset 16
+ 1380              		.cfi_offset 3, -16
+ 1381              		.cfi_offset 4, -12
+ 1382              		.cfi_offset 5, -8
+ 1383              		.cfi_offset 14, -4
+ 1384 0002 9DF81040 		ldrb	r4, [sp, #16]	@ zero_extendqisi2
+  78:modules/nav_conversion/nav_can.c ****     if(!r||!out||id<base||id>base+2u)return false;
+ 1385              		.loc 1 78 5 is_stmt 1 view .LVU322
+ 1386              		.loc 1 78 7 is_stmt 0 view .LVU323
+ 1387 0006 0028     		cmp	r0, #0
+ 1388 0008 51D0     		beq	.L107
+ 1389 000a 0546     		mov	r5, r0
+ 1390              		.loc 1 78 10 discriminator 2 view .LVU324
+ 1391 000c 0898     		ldr	r0, [sp, #32]
+ARM GAS  /tmp/ccMpZV1N.s 			page 30
+
+
+ 1392              	.LVL124:
+ 1393              		.loc 1 78 10 discriminator 2 view .LVU325
+ 1394 000e 0028     		cmp	r0, #0
+ 1395 0010 50D0     		beq	.L108
+ 1396              		.loc 1 78 16 discriminator 4 view .LVU326
+ 1397 0012 9142     		cmp	r1, r2
+ 1398 0014 51D8     		bhi	.L109
+ 1399              		.loc 1 78 34 discriminator 6 view .LVU327
+ 1400 0016 881C     		adds	r0, r1, #2
+ 1401              		.loc 1 78 25 discriminator 6 view .LVU328
+ 1402 0018 9042     		cmp	r0, r2
+ 1403 001a 51D3     		bcc	.L110
+  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
+ 1404              		.loc 1 79 5 is_stmt 1 view .LVU329
+ 1405              		.loc 1 79 7 is_stmt 0 view .LVU330
+ 1406 001c B3B9     		cbnz	r3, .L102
+ 1407              		.loc 1 79 16 discriminator 2 view .LVU331
+ 1408 001e ACB9     		cbnz	r4, .L102
+ 1409              		.loc 1 79 21 discriminator 4 view .LVU332
+ 1410 0020 059B     		ldr	r3, [sp, #20]
+ 1411              	.LVL125:
+ 1412              		.loc 1 79 21 discriminator 4 view .LVU333
+ 1413 0022 082B     		cmp	r3, #8
+ 1414 0024 12D1     		bne	.L102
+ 1415              		.loc 1 79 29 discriminator 6 view .LVU334
+ 1416 0026 069B     		ldr	r3, [sp, #24]
+ 1417 0028 83B1     		cbz	r3, .L102
+  80:modules/nav_conversion/nav_can.c ****     if(id==base){r->active=1;r->next=0;r->started_ms=now;r->group.base=base;}
+ 1418              		.loc 1 80 5 is_stmt 1 view .LVU335
+ 1419              		.loc 1 80 7 is_stmt 0 view .LVU336
+ 1420 002a 9142     		cmp	r1, r2
+ 1421 002c 14D0     		beq	.L113
+ 1422              	.L104:
+  81:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1423              		.loc 1 81 5 is_stmt 1 view .LVU337
+ 1424              		.loc 1 81 10 is_stmt 0 view .LVU338
+ 1425 002e EB7E     		ldrb	r3, [r5, #27]	@ zero_extendqisi2
+ 1426              		.loc 1 81 7 view .LVU339
+ 1427 0030 43B1     		cbz	r3, .L105
+ 1428              		.loc 1 81 36 discriminator 2 view .LVU340
+ 1429 0032 EB69     		ldr	r3, [r5, #28]
+ 1430              		.loc 1 81 34 discriminator 2 view .LVU341
+ 1431 0034 0798     		ldr	r0, [sp, #28]
+ 1432 0036 C31A     		subs	r3, r0, r3
+ 1433              		.loc 1 81 18 discriminator 2 view .LVU342
+ 1434 0038 0A2B     		cmp	r3, #10
+ 1435 003a 03D8     		bhi	.L105
+ 1436              		.loc 1 81 73 discriminator 4 view .LVU343
+ 1437 003c AB7E     		ldrb	r3, [r5, #26]	@ zero_extendqisi2
+ 1438              		.loc 1 81 71 discriminator 4 view .LVU344
+ 1439 003e 1944     		add	r1, r1, r3
+ 1440              	.LVL126:
+ 1441              		.loc 1 81 61 discriminator 4 view .LVU345
+ 1442 0040 9142     		cmp	r1, r2
+ 1443 0042 11D0     		beq	.L106
+ 1444              	.L105:
+ 1445              		.loc 1 81 81 is_stmt 1 discriminator 5 view .LVU346
+ARM GAS  /tmp/ccMpZV1N.s 			page 31
+
+
+ 1446              		.loc 1 81 90 is_stmt 0 discriminator 5 view .LVU347
+ 1447 0044 0023     		movs	r3, #0
+ 1448 0046 EB76     		strb	r3, [r5, #27]
+ 1449              		.loc 1 81 93 is_stmt 1 discriminator 5 view .LVU348
+ 1450              		.loc 1 81 100 is_stmt 0 discriminator 5 view .LVU349
+ 1451 0048 A446     		mov	ip, r4
+ 1452 004a 03E0     		b	.L101
+ 1453              	.LVL127:
+ 1454              	.L102:
+  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
+ 1455              		.loc 1 79 39 is_stmt 1 discriminator 7 view .LVU350
+  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
+ 1456              		.loc 1 79 48 is_stmt 0 discriminator 7 view .LVU351
+ 1457 004c 4FF0000C 		mov	ip, #0
+ 1458 0050 85F81BC0 		strb	ip, [r5, #27]
+  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
+ 1459              		.loc 1 79 51 is_stmt 1 discriminator 7 view .LVU352
+ 1460              	.LVL128:
+ 1461              	.L101:
+  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
+  83:modules/nav_conversion/nav_can.c ****     if(r->next!=3)return false;
+  84:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
+  85:modules/nav_conversion/nav_can.c **** }
+ 1462              		.loc 1 85 1 is_stmt 0 view .LVU353
+ 1463 0054 6046     		mov	r0, ip
+ 1464 0056 38BD     		pop	{r3, r4, r5, pc}
+ 1465              	.LVL129:
+ 1466              	.L113:
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1467              		.loc 1 80 18 is_stmt 1 discriminator 1 view .LVU354
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1468              		.loc 1 80 27 is_stmt 0 discriminator 1 view .LVU355
+ 1469 0058 0123     		movs	r3, #1
+ 1470 005a EB76     		strb	r3, [r5, #27]
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1471              		.loc 1 80 30 is_stmt 1 discriminator 1 view .LVU356
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1472              		.loc 1 80 37 is_stmt 0 discriminator 1 view .LVU357
+ 1473 005c 0023     		movs	r3, #0
+ 1474 005e AB76     		strb	r3, [r5, #26]
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1475              		.loc 1 80 40 is_stmt 1 discriminator 1 view .LVU358
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1476              		.loc 1 80 53 is_stmt 0 discriminator 1 view .LVU359
+ 1477 0060 079B     		ldr	r3, [sp, #28]
+ 1478 0062 EB61     		str	r3, [r5, #28]
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1479              		.loc 1 80 58 is_stmt 1 discriminator 1 view .LVU360
+  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
+ 1480              		.loc 1 80 71 is_stmt 0 discriminator 1 view .LVU361
+ 1481 0064 2983     		strh	r1, [r5, #24]	@ movhi
+ 1482 0066 E2E7     		b	.L104
+ 1483              	.LVL130:
+ 1484              	.L106:
+  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
+ 1485              		.loc 1 82 5 is_stmt 1 view .LVU362
+  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
+ARM GAS  /tmp/ccMpZV1N.s 			page 32
+
+
+ 1486              		.loc 1 82 33 is_stmt 0 view .LVU363
+ 1487 0068 5A1C     		adds	r2, r3, #1
+ 1488              	.LVL131:
+  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
+ 1489              		.loc 1 82 33 view .LVU364
+ 1490 006a AA76     		strb	r2, [r5, #26]
+  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
+ 1491              		.loc 1 82 25 view .LVU365
+ 1492 006c 05EBC302 		add	r2, r5, r3, lsl #3
+  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
+ 1493              		.loc 1 82 5 view .LVU366
+ 1494 0070 0699     		ldr	r1, [sp, #24]
+ 1495 0072 0868     		ldr	r0, [r1]	@ unaligned
+ 1496 0074 4968     		ldr	r1, [r1, #4]	@ unaligned
+ 1497 0076 45F83300 		str	r0, [r5, r3, lsl #3]	@ unaligned
+ 1498 007a 5160     		str	r1, [r2, #4]	@ unaligned
+  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
+ 1499              		.loc 1 83 5 is_stmt 1 view .LVU367
+  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
+ 1500              		.loc 1 83 9 is_stmt 0 view .LVU368
+ 1501 007c AB7E     		ldrb	r3, [r5, #26]	@ zero_extendqisi2
+  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
+ 1502              		.loc 1 83 7 view .LVU369
+ 1503 007e 032B     		cmp	r3, #3
+ 1504 0080 01D0     		beq	.L114
+  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
+ 1505              		.loc 1 83 26 view .LVU370
+ 1506 0082 A446     		mov	ip, r4
+ 1507 0084 E6E7     		b	.L101
+ 1508              	.L114:
+  84:modules/nav_conversion/nav_can.c **** }
+ 1509              		.loc 1 84 5 is_stmt 1 view .LVU371
+  84:modules/nav_conversion/nav_can.c **** }
+ 1510              		.loc 1 84 14 is_stmt 0 view .LVU372
+ 1511 0086 0023     		movs	r3, #0
+ 1512 0088 EB76     		strb	r3, [r5, #27]
+  84:modules/nav_conversion/nav_can.c **** }
+ 1513              		.loc 1 84 17 is_stmt 1 view .LVU373
+  84:modules/nav_conversion/nav_can.c **** }
+ 1514              		.loc 1 84 21 is_stmt 0 view .LVU374
+ 1515 008a 2846     		mov	r0, r5
+ 1516 008c FFF7FEFF 		bl	sealed
+ 1517              	.LVL132:
+  84:modules/nav_conversion/nav_can.c **** }
+ 1518              		.loc 1 84 19 view .LVU375
+ 1519 0090 8446     		mov	ip, r0
+ 1520 0092 0028     		cmp	r0, #0
+ 1521 0094 DED0     		beq	.L101
+  84:modules/nav_conversion/nav_can.c **** }
+ 1522              		.loc 1 84 52 is_stmt 1 discriminator 2 view .LVU376
+  84:modules/nav_conversion/nav_can.c **** }
+ 1523              		.loc 1 84 56 is_stmt 0 discriminator 2 view .LVU377
+ 1524 0096 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 1525              	.LVL133:
+  84:modules/nav_conversion/nav_can.c **** }
+ 1526              		.loc 1 84 56 discriminator 2 view .LVU378
+ 1527 0098 089C     		ldr	r4, [sp, #32]
+ARM GAS  /tmp/ccMpZV1N.s 			page 33
+
+
+ 1528 009a 2060     		str	r0, [r4]	@ unaligned
+ 1529 009c 6160     		str	r1, [r4, #4]	@ unaligned
+ 1530 009e A260     		str	r2, [r4, #8]	@ unaligned
+ 1531 00a0 E360     		str	r3, [r4, #12]	@ unaligned
+ 1532 00a2 03CD     		ldmia	r5!, {r0, r1}
+ 1533              	.LVL134:
+  84:modules/nav_conversion/nav_can.c **** }
+ 1534              		.loc 1 84 56 discriminator 2 view .LVU379
+ 1535 00a4 2061     		str	r0, [r4, #16]	@ unaligned
+ 1536 00a6 6161     		str	r1, [r4, #20]	@ unaligned
+ 1537 00a8 2B88     		ldrh	r3, [r5]	@ unaligned
+ 1538 00aa 2383     		strh	r3, [r4, #24]	@ unaligned
+  84:modules/nav_conversion/nav_can.c **** }
+ 1539              		.loc 1 84 66 is_stmt 1 discriminator 2 view .LVU380
+  84:modules/nav_conversion/nav_can.c **** }
+ 1540              		.loc 1 84 73 is_stmt 0 discriminator 2 view .LVU381
+ 1541 00ac D2E7     		b	.L101
+ 1542              	.LVL135:
+ 1543              	.L107:
+  78:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
+ 1544              		.loc 1 78 45 view .LVU382
+ 1545 00ae 4FF0000C 		mov	ip, #0
+ 1546 00b2 CFE7     		b	.L101
+ 1547              	.LVL136:
+ 1548              	.L108:
+  78:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
+ 1549              		.loc 1 78 45 view .LVU383
+ 1550 00b4 4FF0000C 		mov	ip, #0
+ 1551 00b8 CCE7     		b	.L101
+ 1552              	.L109:
+ 1553 00ba 4FF0000C 		mov	ip, #0
+ 1554 00be C9E7     		b	.L101
+ 1555              	.L110:
+ 1556 00c0 4FF0000C 		mov	ip, #0
+ 1557 00c4 C6E7     		b	.L101
+ 1558              		.cfi_endproc
+ 1559              	.LFE14:
+ 1561              		.section	.text.nc_tx_start,"ax",%progbits
+ 1562              		.align	1
+ 1563              		.global	nc_tx_start
+ 1564              		.syntax unified
+ 1565              		.thumb
+ 1566              		.thumb_func
+ 1567              		.fpu fpv4-sp-d16
+ 1569              	nc_tx_start:
+ 1570              	.LVL137:
+ 1571              	.LFB15:
+  86:modules/nav_conversion/nav_can.c **** bool nc_tx_start(nc_tx_t *t,const nc_group_t *g,uint32_t now)
+  87:modules/nav_conversion/nav_can.c **** {
+ 1572              		.loc 1 87 1 is_stmt 1 view -0
+ 1573              		.cfi_startproc
+ 1574              		@ args = 0, pretend = 0, frame = 0
+ 1575              		@ frame_needed = 0, uses_anonymous_args = 0
+  88:modules/nav_conversion/nav_can.c ****     if(!t||!g||t->active)return false;
+ 1576              		.loc 1 88 5 view .LVU385
+ 1577              		.loc 1 88 7 is_stmt 0 view .LVU386
+ 1578 0000 E8B1     		cbz	r0, .L117
+ARM GAS  /tmp/ccMpZV1N.s 			page 34
+
+
+  87:modules/nav_conversion/nav_can.c ****     if(!t||!g||t->active)return false;
+ 1579              		.loc 1 87 1 discriminator 2 view .LVU387
+ 1580 0002 30B5     		push	{r4, r5, lr}
+ 1581              	.LCFI38:
+ 1582              		.cfi_def_cfa_offset 12
+ 1583              		.cfi_offset 4, -12
+ 1584              		.cfi_offset 5, -8
+ 1585              		.cfi_offset 14, -4
+ 1586 0004 0C46     		mov	r4, r1
+ 1587 0006 1546     		mov	r5, r2
+ 1588 0008 8646     		mov	lr, r0
+ 1589              		.loc 1 88 10 discriminator 2 view .LVU388
+ 1590 000a D1B1     		cbz	r1, .L118
+ 1591              		.loc 1 88 17 discriminator 4 view .LVU389
+ 1592 000c C37E     		ldrb	r3, [r0, #27]	@ zero_extendqisi2
+ 1593              		.loc 1 88 14 discriminator 4 view .LVU390
+ 1594 000e D3B9     		cbnz	r3, .L119
+  89:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1595              		.loc 1 89 5 is_stmt 1 view .LVU391
+ 1596              		.loc 1 89 13 is_stmt 0 view .LVU392
+ 1597 0010 8446     		mov	ip, r0
+ 1598 0012 0868     		ldr	r0, [r1]	@ unaligned
+ 1599              	.LVL138:
+ 1600              		.loc 1 89 13 view .LVU393
+ 1601 0014 4968     		ldr	r1, [r1, #4]	@ unaligned
+ 1602              	.LVL139:
+ 1603              		.loc 1 89 13 view .LVU394
+ 1604 0016 A268     		ldr	r2, [r4, #8]	@ unaligned
+ 1605              	.LVL140:
+ 1606              		.loc 1 89 13 view .LVU395
+ 1607 0018 E368     		ldr	r3, [r4, #12]	@ unaligned
+ 1608 001a ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1609              	.LVL141:
+ 1610              		.loc 1 89 13 view .LVU396
+ 1611 001e 2069     		ldr	r0, [r4, #16]	@ unaligned
+ 1612 0020 6169     		ldr	r1, [r4, #20]	@ unaligned
+ 1613 0022 ACE80300 		stmia	ip!, {r0, r1}
+ 1614 0026 238B     		ldrh	r3, [r4, #24]	@ unaligned
+ 1615 0028 ACF80030 		strh	r3, [ip]	@ unaligned
+ 1616              		.loc 1 89 17 is_stmt 1 view .LVU397
+ 1617              		.loc 1 89 24 is_stmt 0 view .LVU398
+ 1618 002c 0023     		movs	r3, #0
+ 1619 002e 8EF81A30 		strb	r3, [lr, #26]
+ 1620              		.loc 1 89 27 is_stmt 1 view .LVU399
+ 1621              		.loc 1 89 36 is_stmt 0 view .LVU400
+ 1622 0032 0120     		movs	r0, #1
+ 1623 0034 8EF81B00 		strb	r0, [lr, #27]
+ 1624              		.loc 1 89 39 is_stmt 1 view .LVU401
+ 1625              		.loc 1 89 52 is_stmt 0 view .LVU402
+ 1626 0038 CEF81C50 		str	r5, [lr, #28]
+ 1627              		.loc 1 89 57 is_stmt 1 view .LVU403
+ 1628              	.L116:
+  90:modules/nav_conversion/nav_can.c **** }
+ 1629              		.loc 1 90 1 is_stmt 0 view .LVU404
+ 1630 003c 30BD     		pop	{r4, r5, pc}
+ 1631              	.LVL142:
+ 1632              	.L117:
+ARM GAS  /tmp/ccMpZV1N.s 			page 35
+
+
+ 1633              	.LCFI39:
+ 1634              		.cfi_def_cfa_offset 0
+ 1635              		.cfi_restore 4
+ 1636              		.cfi_restore 5
+ 1637              		.cfi_restore 14
+  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1638              		.loc 1 88 33 view .LVU405
+ 1639 003e 0020     		movs	r0, #0
+ 1640              	.LVL143:
+ 1641              		.loc 1 90 1 view .LVU406
+ 1642 0040 7047     		bx	lr
+ 1643              	.LVL144:
+ 1644              	.L118:
+ 1645              	.LCFI40:
+ 1646              		.cfi_def_cfa_offset 12
+ 1647              		.cfi_offset 4, -12
+ 1648              		.cfi_offset 5, -8
+ 1649              		.cfi_offset 14, -4
+  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1650              		.loc 1 88 33 view .LVU407
+ 1651 0042 0020     		movs	r0, #0
+ 1652              	.LVL145:
+  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1653              		.loc 1 88 33 view .LVU408
+ 1654 0044 FAE7     		b	.L116
+ 1655              	.LVL146:
+ 1656              	.L119:
+  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1657              		.loc 1 88 33 view .LVU409
+ 1658 0046 0020     		movs	r0, #0
+ 1659              	.LVL147:
+  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1660              		.loc 1 88 33 view .LVU410
+ 1661 0048 F8E7     		b	.L116
+ 1662              		.cfi_endproc
+ 1663              	.LFE15:
+ 1665              		.section	.text.nc_tx_peek,"ax",%progbits
+ 1666              		.align	1
+ 1667              		.global	nc_tx_peek
+ 1668              		.syntax unified
+ 1669              		.thumb
+ 1670              		.thumb_func
+ 1671              		.fpu fpv4-sp-d16
+ 1673              	nc_tx_peek:
+ 1674              	.LVL148:
+ 1675              	.LFB16:
+  91:modules/nav_conversion/nav_can.c **** bool nc_tx_peek(nc_tx_t *t,uint32_t now,uint16_t *id,uint8_t bytes[8])
+  92:modules/nav_conversion/nav_can.c **** {
+ 1676              		.loc 1 92 1 is_stmt 1 view -0
+ 1677              		.cfi_startproc
+ 1678              		@ args = 0, pretend = 0, frame = 0
+ 1679              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1680              		@ link register save eliminated.
+  93:modules/nav_conversion/nav_can.c ****     if(!t||!id||!bytes)return false;
+ 1681              		.loc 1 93 5 view .LVU412
+ 1682              		.loc 1 93 7 is_stmt 0 view .LVU413
+ 1683 0000 8446     		mov	ip, r0
+ARM GAS  /tmp/ccMpZV1N.s 			page 36
+
+
+ 1684 0002 F0B1     		cbz	r0, .L127
+ 1685              		.loc 1 93 10 discriminator 2 view .LVU414
+ 1686 0004 FAB1     		cbz	r2, .L128
+ 1687              		.loc 1 93 15 discriminator 4 view .LVU415
+ 1688 0006 03B3     		cbz	r3, .L129
+  94:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1689              		.loc 1 94 5 is_stmt 1 view .LVU416
+ 1690              		.loc 1 94 24 is_stmt 0 view .LVU417
+ 1691 0008 C069     		ldr	r0, [r0, #28]
+ 1692              	.LVL149:
+ 1693              		.loc 1 94 22 view .LVU418
+ 1694 000a 091A     		subs	r1, r1, r0
+ 1695              	.LVL150:
+ 1696              		.loc 1 94 7 view .LVU419
+ 1697 000c 0829     		cmp	r1, #8
+ 1698 000e 02D9     		bls	.L126
+ 1699              		.loc 1 94 47 is_stmt 1 discriminator 1 view .LVU420
+ 1700              		.loc 1 94 56 is_stmt 0 discriminator 1 view .LVU421
+ 1701 0010 0021     		movs	r1, #0
+ 1702 0012 8CF81B10 		strb	r1, [ip, #27]
+ 1703              	.L126:
+  95:modules/nav_conversion/nav_can.c ****     if(!t->active)return false;
+ 1704              		.loc 1 95 5 is_stmt 1 view .LVU422
+ 1705              		.loc 1 95 10 is_stmt 0 view .LVU423
+ 1706 0016 9CF81B10 		ldrb	r1, [ip, #27]	@ zero_extendqisi2
+ 1707              		.loc 1 95 7 view .LVU424
+ 1708 001a 09B9     		cbnz	r1, .L131
+ 1709              		.loc 1 95 26 view .LVU425
+ 1710 001c 0020     		movs	r0, #0
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+  97:modules/nav_conversion/nav_can.c **** }
+ 1711              		.loc 1 97 1 view .LVU426
+ 1712 001e 7047     		bx	lr
+ 1713              	.L131:
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1714              		.loc 1 96 5 is_stmt 1 view .LVU427
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1715              		.loc 1 96 17 is_stmt 0 view .LVU428
+ 1716 0020 BCF81810 		ldrh	r1, [ip, #24]
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1717              		.loc 1 96 24 view .LVU429
+ 1718 0024 9CF81A00 		ldrb	r0, [ip, #26]	@ zero_extendqisi2
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1719              		.loc 1 96 22 view .LVU430
+ 1720 0028 0144     		add	r1, r1, r0
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1721              		.loc 1 96 8 view .LVU431
+ 1722 002a 1180     		strh	r1, [r2]	@ movhi
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1723              		.loc 1 96 31 is_stmt 1 view .LVU432
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1724              		.loc 1 96 59 is_stmt 0 view .LVU433
+ 1725 002c 9CF81A20 		ldrb	r2, [ip, #26]	@ zero_extendqisi2
+ 1726              	.LVL151:
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1727              		.loc 1 96 57 view .LVU434
+ 1728 0030 0CEBC200 		add	r0, ip, r2, lsl #3
+ARM GAS  /tmp/ccMpZV1N.s 			page 37
+
+
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1729              		.loc 1 96 31 view .LVU435
+ 1730 0034 5CF83210 		ldr	r1, [ip, r2, lsl #3]	@ unaligned
+ 1731 0038 4268     		ldr	r2, [r0, #4]	@ unaligned
+ 1732 003a 1960     		str	r1, [r3]	@ unaligned
+ 1733 003c 5A60     		str	r2, [r3, #4]	@ unaligned
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1734              		.loc 1 96 70 is_stmt 1 view .LVU436
+  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1735              		.loc 1 96 77 is_stmt 0 view .LVU437
+ 1736 003e 0120     		movs	r0, #1
+ 1737 0040 7047     		bx	lr
+ 1738              	.LVL152:
+ 1739              	.L127:
+  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1740              		.loc 1 93 31 view .LVU438
+ 1741 0042 0020     		movs	r0, #0
+ 1742              	.LVL153:
+  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1743              		.loc 1 93 31 view .LVU439
+ 1744 0044 7047     		bx	lr
+ 1745              	.LVL154:
+ 1746              	.L128:
+  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1747              		.loc 1 93 31 view .LVU440
+ 1748 0046 0020     		movs	r0, #0
+ 1749              	.LVL155:
+  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1750              		.loc 1 93 31 view .LVU441
+ 1751 0048 7047     		bx	lr
+ 1752              	.LVL156:
+ 1753              	.L129:
+  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1754              		.loc 1 93 31 view .LVU442
+ 1755 004a 0020     		movs	r0, #0
+ 1756              	.LVL157:
+  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1757              		.loc 1 93 31 view .LVU443
+ 1758 004c 7047     		bx	lr
+ 1759              		.cfi_endproc
+ 1760              	.LFE16:
+ 1762              		.section	.text.nc_tx_commit,"ax",%progbits
+ 1763              		.align	1
+ 1764              		.global	nc_tx_commit
+ 1765              		.syntax unified
+ 1766              		.thumb
+ 1767              		.thumb_func
+ 1768              		.fpu fpv4-sp-d16
+ 1770              	nc_tx_commit:
+ 1771              	.LVL158:
+ 1772              	.LFB17:
+  98:modules/nav_conversion/nav_can.c **** void nc_tx_commit(nc_tx_t *t){if(t&&t->active&&++t->next==3)t->active=0;}
+ 1773              		.loc 1 98 30 is_stmt 1 view -0
+ 1774              		.cfi_startproc
+ 1775              		@ args = 0, pretend = 0, frame = 0
+ 1776              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1777              		@ link register save eliminated.
+ARM GAS  /tmp/ccMpZV1N.s 			page 38
+
+
+ 1778              		.loc 1 98 31 view .LVU445
+ 1779              		.loc 1 98 33 is_stmt 0 view .LVU446
+ 1780 0000 38B1     		cbz	r0, .L132
+ 1781              		.loc 1 98 38 discriminator 1 view .LVU447
+ 1782 0002 C27E     		ldrb	r2, [r0, #27]	@ zero_extendqisi2
+ 1783              		.loc 1 98 35 discriminator 1 view .LVU448
+ 1784 0004 2AB1     		cbz	r2, .L132
+ 1785              		.loc 1 98 51 discriminator 3 view .LVU449
+ 1786 0006 827E     		ldrb	r2, [r0, #26]	@ zero_extendqisi2
+ 1787              		.loc 1 98 48 discriminator 3 view .LVU450
+ 1788 0008 0132     		adds	r2, r2, #1
+ 1789 000a D2B2     		uxtb	r2, r2
+ 1790              		.loc 1 98 46 discriminator 3 view .LVU451
+ 1791 000c 8276     		strb	r2, [r0, #26]
+ 1792 000e 032A     		cmp	r2, #3
+ 1793 0010 00D0     		beq	.L134
+ 1794              	.L132:
+ 1795              		.loc 1 98 73 view .LVU452
+ 1796 0012 7047     		bx	lr
+ 1797              	.L134:
+ 1798              		.loc 1 98 61 is_stmt 1 discriminator 5 view .LVU453
+ 1799              		.loc 1 98 70 is_stmt 0 discriminator 5 view .LVU454
+ 1800 0014 0022     		movs	r2, #0
+ 1801 0016 C276     		strb	r2, [r0, #27]
+ 1802              		.loc 1 98 73 discriminator 5 view .LVU455
+ 1803 0018 FBE7     		b	.L132
+ 1804              		.cfi_endproc
+ 1805              	.LFE17:
+ 1807              		.text
+ 1808              	.Letext0:
+ 1809              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 1810              		.file 3 "modules/nav_conversion/rm_chassis_comm/protocol.h"
+ 1811              		.file 4 "modules/nav_conversion/nav_can.h"
+ 1812              		.file 5 "/usr/include/newlib/math.h"
+ARM GAS  /tmp/ccMpZV1N.s 			page 39
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 nav_can.c
+     /tmp/ccMpZV1N.s:18     .text.w16:0000000000000000 $t
+     /tmp/ccMpZV1N.s:25     .text.w16:0000000000000000 w16
+     /tmp/ccMpZV1N.s:49     .text.w32:0000000000000000 $t
+     /tmp/ccMpZV1N.s:55     .text.w32:0000000000000000 w32
+     /tmp/ccMpZV1N.s:95     .text.r16:0000000000000000 $t
+     /tmp/ccMpZV1N.s:101    .text.r16:0000000000000000 r16
+     /tmp/ccMpZV1N.s:122    .text.s16:0000000000000000 $t
+     /tmp/ccMpZV1N.s:128    .text.s16:0000000000000000 s16
+     /tmp/ccMpZV1N.s:164    .text.r32:0000000000000000 $t
+     /tmp/ccMpZV1N.s:170    .text.r32:0000000000000000 r32
+     /tmp/ccMpZV1N.s:204    .text.command_ok:0000000000000000 $t
+     /tmp/ccMpZV1N.s:210    .text.command_ok:0000000000000000 command_ok
+     /tmp/ccMpZV1N.s:319    .text.command_ok:0000000000000074 $d
+     /tmp/ccMpZV1N.s:325    .text.velocity:0000000000000000 $t
+     /tmp/ccMpZV1N.s:331    .text.velocity:0000000000000000 velocity
+     /tmp/ccMpZV1N.s:428    .text.velocity:000000000000006c $d
+     /tmp/ccMpZV1N.s:433    .text.nc_crc:0000000000000000 $t
+     /tmp/ccMpZV1N.s:440    .text.nc_crc:0000000000000000 nc_crc
+     /tmp/ccMpZV1N.s:519    .text.nc_crc:0000000000000030 $d
+     /tmp/ccMpZV1N.s:524    .text.seal:0000000000000000 $t
+     /tmp/ccMpZV1N.s:530    .text.seal:0000000000000000 seal
+     /tmp/ccMpZV1N.s:600    .text.sealed:0000000000000000 $t
+     /tmp/ccMpZV1N.s:606    .text.sealed:0000000000000000 sealed
+     /tmp/ccMpZV1N.s:688    .text.nc_command_group:0000000000000000 $t
+     /tmp/ccMpZV1N.s:695    .text.nc_command_group:0000000000000000 nc_command_group
+     /tmp/ccMpZV1N.s:791    .text.nc_command_decode:0000000000000000 $t
+     /tmp/ccMpZV1N.s:798    .text.nc_command_decode:0000000000000000 nc_command_decode
+     /tmp/ccMpZV1N.s:1005   .text.nc_command_decode:0000000000000100 $d
+     /tmp/ccMpZV1N.s:1010   .text.nc_feedback_group:0000000000000000 $t
+     /tmp/ccMpZV1N.s:1017   .text.nc_feedback_group:0000000000000000 nc_feedback_group
+     /tmp/ccMpZV1N.s:1153   .text.nc_feedback_group:00000000000000a0 $d
+     /tmp/ccMpZV1N.s:1158   .text.nc_feedback_decode:0000000000000000 $t
+     /tmp/ccMpZV1N.s:1165   .text.nc_feedback_decode:0000000000000000 nc_feedback_decode
+     /tmp/ccMpZV1N.s:1357   .text.nc_feedback_decode:00000000000000f8 $d
+     /tmp/ccMpZV1N.s:1362   .text.nc_rx_push:0000000000000000 $t
+     /tmp/ccMpZV1N.s:1369   .text.nc_rx_push:0000000000000000 nc_rx_push
+     /tmp/ccMpZV1N.s:1562   .text.nc_tx_start:0000000000000000 $t
+     /tmp/ccMpZV1N.s:1569   .text.nc_tx_start:0000000000000000 nc_tx_start
+     /tmp/ccMpZV1N.s:1666   .text.nc_tx_peek:0000000000000000 $t
+     /tmp/ccMpZV1N.s:1673   .text.nc_tx_peek:0000000000000000 nc_tx_peek
+     /tmp/ccMpZV1N.s:1763   .text.nc_tx_commit:0000000000000000 $t
+     /tmp/ccMpZV1N.s:1770   .text.nc_tx_commit:0000000000000000 nc_tx_commit
+
+UNDEFINED SYMBOLS
+rm_encode_command
+hypotf
+truncf
+roundf
+rm_encode_feedback

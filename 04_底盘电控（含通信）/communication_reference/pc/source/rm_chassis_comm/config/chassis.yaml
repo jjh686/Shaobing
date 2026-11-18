@@ -1,0 +1,13 @@
+/**:
+  ros__parameters:
+    connect: false
+    enabled: false
+    serial_port: /dev/ttyACM0
+    baud_rate: 115200
+    send_hz: 50
+    command_timeout_ms: 150
+    feedback_timeout_ms: 250
+    max_linear_speed: 0.3
+    max_angular_speed: 0.5
+    frame_id: base_link
+    sp_proxy_enabled: false

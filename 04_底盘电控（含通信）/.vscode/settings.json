@@ -1,0 +1,6 @@
+{
+  "cmake.sourceDirectory": "${workspaceFolder}/chassis_driver/basic_framework",
+  "cmake.buildDirectory": "${workspaceFolder}/build/chassis",
+  "emberprobe.transport": "swd",
+  "emberprobe.adapterSpeedKhz": 100
+}

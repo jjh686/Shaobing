@@ -1,0 +1,1084 @@
+ARM GAS  /tmp/ccRUsRWZ.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"mcu_link.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.safe,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	safe:
+  26              	.LVL0:
+  27              	.LFB0:
+  28              		.file 1 "modules/nav_conversion/mcu_link.c"
+   1:modules/nav_conversion/mcu_link.c **** #include "rm_chassis_comm/mcu_link.h"
+   2:modules/nav_conversion/mcu_link.c **** #include <math.h>
+   3:modules/nav_conversion/mcu_link.c **** #include <string.h>
+   4:modules/nav_conversion/mcu_link.c **** static bool safe(const rm_mcu_link_t*l){return l->ready&&!l->estop&&!l->manual&&!l->fault_mask;}
+  29              		.loc 1 4 40 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              		.loc 1 4 41 view .LVU1
+  35              		.loc 1 4 49 is_stmt 0 view .LVU2
+  36 0000 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+  37              		.loc 1 4 79 view .LVU3
+  38 0002 3BB1     		cbz	r3, .L3
+  39              		.loc 1 4 60 discriminator 1 view .LVU4
+  40 0004 8378     		ldrb	r3, [r0, #2]	@ zero_extendqisi2
+  41              		.loc 1 4 56 discriminator 1 view .LVU5
+  42 0006 3BB9     		cbnz	r3, .L4
+  43              		.loc 1 4 71 discriminator 3 view .LVU6
+  44 0008 C378     		ldrb	r3, [r0, #3]	@ zero_extendqisi2
+  45              		.loc 1 4 67 discriminator 3 view .LVU7
+  46 000a 3BB9     		cbnz	r3, .L5
+  47              		.loc 1 4 83 discriminator 5 view .LVU8
+  48 000c 0389     		ldrh	r3, [r0, #8]
+  49              		.loc 1 4 79 discriminator 5 view .LVU9
+  50 000e 3BB1     		cbz	r3, .L6
+  51              		.loc 1 4 79 view .LVU10
+  52 0010 0020     		movs	r0, #0
+  53              	.LVL1:
+  54              		.loc 1 4 79 view .LVU11
+ARM GAS  /tmp/ccRUsRWZ.s 			page 2
+
+
+  55 0012 7047     		bx	lr
+  56              	.LVL2:
+  57              	.L3:
+  58              		.loc 1 4 79 view .LVU12
+  59 0014 0020     		movs	r0, #0
+  60              	.LVL3:
+  61              		.loc 1 4 79 view .LVU13
+  62 0016 7047     		bx	lr
+  63              	.LVL4:
+  64              	.L4:
+  65              		.loc 1 4 79 view .LVU14
+  66 0018 0020     		movs	r0, #0
+  67              	.LVL5:
+  68              		.loc 1 4 79 view .LVU15
+  69 001a 7047     		bx	lr
+  70              	.LVL6:
+  71              	.L5:
+  72              		.loc 1 4 79 view .LVU16
+  73 001c 0020     		movs	r0, #0
+  74              	.LVL7:
+  75              		.loc 1 4 79 view .LVU17
+  76 001e 7047     		bx	lr
+  77              	.LVL8:
+  78              	.L6:
+  79              		.loc 1 4 79 view .LVU18
+  80 0020 0120     		movs	r0, #1
+  81              	.LVL9:
+  82              		.loc 1 4 96 view .LVU19
+  83 0022 7047     		bx	lr
+  84              		.cfi_endproc
+  85              	.LFE0:
+  87              		.section	.text.rm_mcu_init,"ax",%progbits
+  88              		.align	1
+  89              		.global	rm_mcu_init
+  90              		.syntax unified
+  91              		.thumb
+  92              		.thumb_func
+  93              		.fpu fpv4-sp-d16
+  95              	rm_mcu_init:
+  96              	.LVL10:
+  97              	.LFB1:
+   5:modules/nav_conversion/mcu_link.c **** void rm_mcu_init(rm_mcu_link_t*l,uint8_t route){if(!l)return;
+  98              		.loc 1 5 48 is_stmt 1 view -0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 0
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102              		.loc 1 5 49 view .LVU21
+ 103              		.loc 1 5 51 is_stmt 0 view .LVU22
+ 104 0000 50B1     		cbz	r0, .L10
+ 105              		.loc 1 5 48 view .LVU23
+ 106 0002 38B5     		push	{r3, r4, r5, lr}
+ 107              	.LCFI0:
+ 108              		.cfi_def_cfa_offset 16
+ 109              		.cfi_offset 3, -16
+ 110              		.cfi_offset 4, -12
+ 111              		.cfi_offset 5, -8
+ 112              		.cfi_offset 14, -4
+ARM GAS  /tmp/ccRUsRWZ.s 			page 3
+
+
+ 113 0004 0C46     		mov	r4, r1
+ 114 0006 0546     		mov	r5, r0
+   6:modules/nav_conversion/mcu_link.c ****  memset(l,0,sizeof(*l));
+ 115              		.loc 1 6 2 is_stmt 1 view .LVU24
+ 116 0008 2C22     		movs	r2, #44
+ 117 000a 0021     		movs	r1, #0
+ 118              	.LVL11:
+ 119              		.loc 1 6 2 is_stmt 0 view .LVU25
+ 120 000c FFF7FEFF 		bl	memset
+ 121              	.LVL12:
+   7:modules/nav_conversion/mcu_link.c ****  l->route=route;
+ 122              		.loc 1 7 2 is_stmt 1 view .LVU26
+ 123              		.loc 1 7 10 is_stmt 0 view .LVU27
+ 124 0010 2C70     		strb	r4, [r5]
+   8:modules/nav_conversion/mcu_link.c ****  l->requires_stop=true;}
+ 125              		.loc 1 8 2 is_stmt 1 view .LVU28
+ 126              		.loc 1 8 18 is_stmt 0 view .LVU29
+ 127 0012 0123     		movs	r3, #1
+ 128 0014 6B71     		strb	r3, [r5, #5]
+ 129              		.loc 1 8 24 view .LVU30
+ 130 0016 38BD     		pop	{r3, r4, r5, pc}
+ 131              	.LVL13:
+ 132              	.L10:
+ 133              	.LCFI1:
+ 134              		.cfi_def_cfa_offset 0
+ 135              		.cfi_restore 3
+ 136              		.cfi_restore 4
+ 137              		.cfi_restore 5
+ 138              		.cfi_restore 14
+ 139              		.loc 1 8 24 view .LVU31
+ 140 0018 7047     		bx	lr
+ 141              		.cfi_endproc
+ 142              	.LFE1:
+ 144              		.section	.text.rm_mcu_set_safety,"ax",%progbits
+ 145              		.align	1
+ 146              		.global	rm_mcu_set_safety
+ 147              		.syntax unified
+ 148              		.thumb
+ 149              		.thumb_func
+ 150              		.fpu fpv4-sp-d16
+ 152              	rm_mcu_set_safety:
+ 153              	.LVL14:
+ 154              	.LFB2:
+   9:modules/nav_conversion/mcu_link.c **** void rm_mcu_set_safety(rm_mcu_link_t*l,bool ready,bool estop,bool manual,uint16_t fault){if(!l)retu
+ 155              		.loc 1 9 89 is_stmt 1 view -0
+ 156              		.cfi_startproc
+ 157              		@ args = 4, pretend = 0, frame = 0
+ 158              		@ frame_needed = 0, uses_anonymous_args = 0
+ 159              		.loc 1 9 90 view .LVU33
+ 160              		.loc 1 9 92 is_stmt 0 view .LVU34
+ 161 0000 78B1     		cbz	r0, .L16
+ 162              		.loc 1 9 89 view .LVU35
+ 163 0002 10B5     		push	{r4, lr}
+ 164              	.LCFI2:
+ 165              		.cfi_def_cfa_offset 8
+ 166              		.cfi_offset 4, -8
+ 167              		.cfi_offset 14, -4
+ARM GAS  /tmp/ccRUsRWZ.s 			page 4
+
+
+ 168 0004 0446     		mov	r4, r0
+  10:modules/nav_conversion/mcu_link.c ****  l->ready=ready;
+ 169              		.loc 1 10 2 is_stmt 1 view .LVU36
+ 170              		.loc 1 10 10 is_stmt 0 view .LVU37
+ 171 0006 4170     		strb	r1, [r0, #1]
+  11:modules/nav_conversion/mcu_link.c ****  l->estop=estop;
+ 172              		.loc 1 11 2 is_stmt 1 view .LVU38
+ 173              		.loc 1 11 10 is_stmt 0 view .LVU39
+ 174 0008 8270     		strb	r2, [r0, #2]
+  12:modules/nav_conversion/mcu_link.c ****  l->manual=manual;
+ 175              		.loc 1 12 2 is_stmt 1 view .LVU40
+ 176              		.loc 1 12 11 is_stmt 0 view .LVU41
+ 177 000a C370     		strb	r3, [r0, #3]
+  13:modules/nav_conversion/mcu_link.c ****  l->fault_mask=fault;
+ 178              		.loc 1 13 2 is_stmt 1 view .LVU42
+ 179              		.loc 1 13 15 is_stmt 0 view .LVU43
+ 180 000c BDF80830 		ldrh	r3, [sp, #8]
+ 181              	.LVL15:
+ 182              		.loc 1 13 15 view .LVU44
+ 183 0010 0381     		strh	r3, [r0, #8]	@ movhi
+  14:modules/nav_conversion/mcu_link.c ****  if(!safe(l)){l->active=false;
+ 184              		.loc 1 14 2 is_stmt 1 view .LVU45
+ 185              		.loc 1 14 6 is_stmt 0 view .LVU46
+ 186 0012 FFF7FEFF 		bl	safe
+ 187              	.LVL16:
+ 188              		.loc 1 14 4 view .LVU47
+ 189 0016 18B9     		cbnz	r0, .L13
+ 190              		.loc 1 14 15 is_stmt 1 discriminator 1 view .LVU48
+ 191              		.loc 1 14 24 is_stmt 0 discriminator 1 view .LVU49
+ 192 0018 0023     		movs	r3, #0
+ 193 001a A371     		strb	r3, [r4, #6]
+  15:modules/nav_conversion/mcu_link.c ****  l->requires_stop=true;}}
+ 194              		.loc 1 15 2 is_stmt 1 discriminator 1 view .LVU50
+ 195              		.loc 1 15 18 is_stmt 0 discriminator 1 view .LVU51
+ 196 001c 0123     		movs	r3, #1
+ 197 001e 6371     		strb	r3, [r4, #5]
+ 198              	.L13:
+ 199              		.loc 1 15 25 view .LVU52
+ 200 0020 10BD     		pop	{r4, pc}
+ 201              	.LVL17:
+ 202              	.L16:
+ 203              	.LCFI3:
+ 204              		.cfi_def_cfa_offset 0
+ 205              		.cfi_restore 4
+ 206              		.cfi_restore 14
+ 207              		.loc 1 15 25 view .LVU53
+ 208 0022 7047     		bx	lr
+ 209              		.cfi_endproc
+ 210              	.LFE2:
+ 212              		.section	.text.rm_mcu_get_output,"ax",%progbits
+ 213              		.align	1
+ 214              		.global	rm_mcu_get_output
+ 215              		.syntax unified
+ 216              		.thumb
+ 217              		.thumb_func
+ 218              		.fpu fpv4-sp-d16
+ 220              	rm_mcu_get_output:
+ARM GAS  /tmp/ccRUsRWZ.s 			page 5
+
+
+ 221              	.LVL18:
+ 222              	.LFB3:
+  16:modules/nav_conversion/mcu_link.c **** void rm_mcu_get_output(rm_mcu_link_t*l,uint32_t now,rm_output_t*out){if(!out)return;
+ 223              		.loc 1 16 69 is_stmt 1 view -0
+ 224              		.cfi_startproc
+ 225              		@ args = 0, pretend = 0, frame = 0
+ 226              		@ frame_needed = 0, uses_anonymous_args = 0
+ 227              		.loc 1 16 70 view .LVU55
+ 228              		.loc 1 16 72 is_stmt 0 view .LVU56
+ 229 0000 4AB3     		cbz	r2, .L24
+ 230              		.loc 1 16 69 view .LVU57
+ 231 0002 38B5     		push	{r3, r4, r5, lr}
+ 232              	.LCFI4:
+ 233              		.cfi_def_cfa_offset 16
+ 234              		.cfi_offset 3, -16
+ 235              		.cfi_offset 4, -12
+ 236              		.cfi_offset 5, -8
+ 237              		.cfi_offset 14, -4
+ 238 0004 0446     		mov	r4, r0
+ 239 0006 1546     		mov	r5, r2
+  17:modules/nav_conversion/mcu_link.c ****  memset(out,0,sizeof(*out));
+ 240              		.loc 1 17 2 is_stmt 1 view .LVU58
+ 241 0008 0023     		movs	r3, #0
+ 242 000a 1360     		str	r3, [r2]	@ unaligned
+ 243 000c 5360     		str	r3, [r2, #4]	@ unaligned
+ 244 000e 9360     		str	r3, [r2, #8]	@ unaligned
+ 245 0010 D360     		str	r3, [r2, #12]	@ unaligned
+  18:modules/nav_conversion/mcu_link.c ****  if(!l)return;
+ 246              		.loc 1 18 2 view .LVU59
+ 247              		.loc 1 18 4 is_stmt 0 view .LVU60
+ 248 0012 F8B1     		cbz	r0, .L19
+  19:modules/nav_conversion/mcu_link.c ****  if(l->active&&(uint32_t)(now-l->received_ms)>=l->command.ttl_ms){l->active=false;
+ 249              		.loc 1 19 2 is_stmt 1 view .LVU61
+ 250              		.loc 1 19 6 is_stmt 0 view .LVU62
+ 251 0014 8379     		ldrb	r3, [r0, #6]	@ zero_extendqisi2
+ 252              		.loc 1 19 4 view .LVU63
+ 253 0016 4BB1     		cbz	r3, .L21
+ 254              		.loc 1 19 32 discriminator 1 view .LVU64
+ 255 0018 C368     		ldr	r3, [r0, #12]
+ 256              		.loc 1 19 30 discriminator 1 view .LVU65
+ 257 001a C91A     		subs	r1, r1, r3
+ 258              	.LVL19:
+ 259              		.loc 1 19 58 discriminator 1 view .LVU66
+ 260 001c 438B     		ldrh	r3, [r0, #26]
+ 261              		.loc 1 19 14 discriminator 1 view .LVU67
+ 262 001e 9942     		cmp	r1, r3
+ 263 0020 04D3     		bcc	.L21
+ 264              		.loc 1 19 67 is_stmt 1 discriminator 2 view .LVU68
+ 265              		.loc 1 19 76 is_stmt 0 discriminator 2 view .LVU69
+ 266 0022 0023     		movs	r3, #0
+ 267 0024 8371     		strb	r3, [r0, #6]
+  20:modules/nav_conversion/mcu_link.c ****  l->requires_stop=true;
+ 268              		.loc 1 20 2 is_stmt 1 discriminator 2 view .LVU70
+ 269              		.loc 1 20 18 is_stmt 0 discriminator 2 view .LVU71
+ 270 0026 0123     		movs	r3, #1
+ 271 0028 4371     		strb	r3, [r0, #5]
+  21:modules/nav_conversion/mcu_link.c ****  l->timed_out=true;}
+ARM GAS  /tmp/ccRUsRWZ.s 			page 6
+
+
+ 272              		.loc 1 21 2 is_stmt 1 discriminator 2 view .LVU72
+ 273              		.loc 1 21 14 is_stmt 0 discriminator 2 view .LVU73
+ 274 002a C371     		strb	r3, [r0, #7]
+ 275              	.L21:
+  22:modules/nav_conversion/mcu_link.c ****  if(!safe(l)){l->active=false;
+ 276              		.loc 1 22 2 is_stmt 1 view .LVU74
+ 277              		.loc 1 22 6 is_stmt 0 view .LVU75
+ 278 002c 2046     		mov	r0, r4
+ 279              	.LVL20:
+ 280              		.loc 1 22 6 view .LVU76
+ 281 002e FFF7FEFF 		bl	safe
+ 282              	.LVL21:
+ 283              		.loc 1 22 4 view .LVU77
+ 284 0032 18B9     		cbnz	r0, .L22
+ 285              		.loc 1 22 15 is_stmt 1 discriminator 1 view .LVU78
+ 286              		.loc 1 22 24 is_stmt 0 discriminator 1 view .LVU79
+ 287 0034 0023     		movs	r3, #0
+ 288 0036 A371     		strb	r3, [r4, #6]
+  23:modules/nav_conversion/mcu_link.c ****  l->requires_stop=true;}
+ 289              		.loc 1 23 2 is_stmt 1 discriminator 1 view .LVU80
+ 290              		.loc 1 23 18 is_stmt 0 discriminator 1 view .LVU81
+ 291 0038 0123     		movs	r3, #1
+ 292 003a 6371     		strb	r3, [r4, #5]
+ 293              	.L22:
+  24:modules/nav_conversion/mcu_link.c ****  if(l->active&&!l->requires_stop){out->enabled=true;
+ 294              		.loc 1 24 2 is_stmt 1 view .LVU82
+ 295              		.loc 1 24 6 is_stmt 0 view .LVU83
+ 296 003c A379     		ldrb	r3, [r4, #6]	@ zero_extendqisi2
+ 297              		.loc 1 24 4 view .LVU84
+ 298 003e 4BB1     		cbz	r3, .L19
+ 299              		.loc 1 24 18 discriminator 1 view .LVU85
+ 300 0040 6379     		ldrb	r3, [r4, #5]	@ zero_extendqisi2
+ 301              		.loc 1 24 14 discriminator 1 view .LVU86
+ 302 0042 3BB9     		cbnz	r3, .L19
+ 303              		.loc 1 24 35 is_stmt 1 discriminator 2 view .LVU87
+ 304              		.loc 1 24 47 is_stmt 0 discriminator 2 view .LVU88
+ 305 0044 0123     		movs	r3, #1
+ 306 0046 2B70     		strb	r3, [r5]
+  25:modules/nav_conversion/mcu_link.c ****  out->vx=l->command.vx;
+ 307              		.loc 1 25 2 is_stmt 1 discriminator 2 view .LVU89
+ 308              		.loc 1 25 20 is_stmt 0 discriminator 2 view .LVU90
+ 309 0048 236A     		ldr	r3, [r4, #32]	@ float
+ 310              		.loc 1 25 9 discriminator 2 view .LVU91
+ 311 004a 6B60     		str	r3, [r5, #4]	@ float
+  26:modules/nav_conversion/mcu_link.c ****  out->vy=l->command.vy;
+ 312              		.loc 1 26 2 is_stmt 1 discriminator 2 view .LVU92
+ 313              		.loc 1 26 20 is_stmt 0 discriminator 2 view .LVU93
+ 314 004c 636A     		ldr	r3, [r4, #36]	@ float
+ 315              		.loc 1 26 9 discriminator 2 view .LVU94
+ 316 004e AB60     		str	r3, [r5, #8]	@ float
+  27:modules/nav_conversion/mcu_link.c ****  out->wz=l->command.wz;}}
+ 317              		.loc 1 27 2 is_stmt 1 discriminator 2 view .LVU95
+ 318              		.loc 1 27 20 is_stmt 0 discriminator 2 view .LVU96
+ 319 0050 A36A     		ldr	r3, [r4, #40]	@ float
+ 320              		.loc 1 27 9 discriminator 2 view .LVU97
+ 321 0052 EB60     		str	r3, [r5, #12]	@ float
+ 322              	.L19:
+ARM GAS  /tmp/ccRUsRWZ.s 			page 7
+
+
+ 323              		.loc 1 27 25 view .LVU98
+ 324 0054 38BD     		pop	{r3, r4, r5, pc}
+ 325              	.LVL22:
+ 326              	.L24:
+ 327              	.LCFI5:
+ 328              		.cfi_def_cfa_offset 0
+ 329              		.cfi_restore 3
+ 330              		.cfi_restore 4
+ 331              		.cfi_restore 5
+ 332              		.cfi_restore 14
+ 333              		.loc 1 27 25 view .LVU99
+ 334 0056 7047     		bx	lr
+ 335              		.cfi_endproc
+ 336              	.LFE3:
+ 338              		.section	.text.rm_mcu_receive,"ax",%progbits
+ 339              		.align	1
+ 340              		.global	rm_mcu_receive
+ 341              		.syntax unified
+ 342              		.thumb
+ 343              		.thumb_func
+ 344              		.fpu fpv4-sp-d16
+ 346              	rm_mcu_receive:
+ 347              	.LVL23:
+ 348              	.LFB4:
+  28:modules/nav_conversion/mcu_link.c **** int rm_mcu_receive(rm_mcu_link_t*l,const uint8_t*p,size_t n,uint32_t now){rm_command_t c;rm_output_
+ 349              		.loc 1 28 74 is_stmt 1 view -0
+ 350              		.cfi_startproc
+ 351              		@ args = 0, pretend = 0, frame = 48
+ 352              		@ frame_needed = 0, uses_anonymous_args = 0
+ 353              		.loc 1 28 75 view .LVU101
+ 354              		.loc 1 28 90 view .LVU102
+ 355              		.loc 1 28 110 view .LVU103
+  29:modules/nav_conversion/mcu_link.c ****  if(!l||!rm_decode_command(p,n,&c)||c.route!=l->route)return 0;
+ 356              		.loc 1 29 2 view .LVU104
+ 357              		.loc 1 29 4 is_stmt 0 view .LVU105
+ 358 0000 0028     		cmp	r0, #0
+ 359 0002 76D0     		beq	.L39
+  28:modules/nav_conversion/mcu_link.c **** int rm_mcu_receive(rm_mcu_link_t*l,const uint8_t*p,size_t n,uint32_t now){rm_command_t c;rm_output_
+ 360              		.loc 1 28 74 discriminator 2 view .LVU106
+ 361 0004 30B5     		push	{r4, r5, lr}
+ 362              	.LCFI6:
+ 363              		.cfi_def_cfa_offset 12
+ 364              		.cfi_offset 4, -12
+ 365              		.cfi_offset 5, -8
+ 366              		.cfi_offset 14, -4
+ 367 0006 8DB0     		sub	sp, sp, #52
+ 368              	.LCFI7:
+ 369              		.cfi_def_cfa_offset 64
+ 370 0008 8C46     		mov	ip, r1
+ 371 000a 1146     		mov	r1, r2
+ 372              	.LVL24:
+  28:modules/nav_conversion/mcu_link.c **** int rm_mcu_receive(rm_mcu_link_t*l,const uint8_t*p,size_t n,uint32_t now){rm_command_t c;rm_output_
+ 373              		.loc 1 28 74 discriminator 2 view .LVU107
+ 374 000c 1C46     		mov	r4, r3
+ 375 000e 0546     		mov	r5, r0
+ 376              		.loc 1 29 10 discriminator 2 view .LVU108
+ 377 0010 05AA     		add	r2, sp, #20
+ARM GAS  /tmp/ccRUsRWZ.s 			page 8
+
+
+ 378              	.LVL25:
+ 379              		.loc 1 29 10 discriminator 2 view .LVU109
+ 380 0012 6046     		mov	r0, ip
+ 381              	.LVL26:
+ 382              		.loc 1 29 10 discriminator 2 view .LVU110
+ 383 0014 FFF7FEFF 		bl	rm_decode_command
+ 384              	.LVL27:
+ 385              		.loc 1 29 7 discriminator 2 view .LVU111
+ 386 0018 20B1     		cbz	r0, .L28
+ 387              		.loc 1 29 38 discriminator 4 view .LVU112
+ 388 001a 9DF82220 		ldrb	r2, [sp, #34]	@ zero_extendqisi2
+ 389              		.loc 1 29 47 discriminator 4 view .LVU113
+ 390 001e 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 391              		.loc 1 29 35 discriminator 4 view .LVU114
+ 392 0020 9A42     		cmp	r2, r3
+ 393 0022 02D0     		beq	.L29
+ 394              	.L28:
+ 395              		.loc 1 29 55 is_stmt 1 discriminator 5 view .LVU115
+ 396              		.loc 1 29 62 is_stmt 0 discriminator 5 view .LVU116
+ 397 0024 0020     		movs	r0, #0
+ 398              	.LVL28:
+ 399              	.L27:
+  30:modules/nav_conversion/mcu_link.c ****  rm_mcu_get_output(l,now,&ignored); /* Expiry is enforced even if output polling was delayed. */
+  31:modules/nav_conversion/mcu_link.c ****  if(!(c.flags&RM_FLAG_ENABLE)){
+  32:modules/nav_conversion/mcu_link.c ****   /* STOP always removes output. A replay from this session must not roll the
+  33:modules/nav_conversion/mcu_link.c ****    * sequence baseline backwards or unlock a timeout/safety latch. */
+  34:modules/nav_conversion/mcu_link.c ****   l->active=false;
+  35:modules/nav_conversion/mcu_link.c ****   if(l->ack_valid&&c.session==l->command.session){
+  36:modules/nav_conversion/mcu_link.c ****     diff=(uint16_t)(c.sequence-l->command.sequence);
+  37:modules/nav_conversion/mcu_link.c ****     if(!diff||diff>=32768u){l->requires_stop=true;return 0;}
+  38:modules/nav_conversion/mcu_link.c ****   }
+  39:modules/nav_conversion/mcu_link.c ****   l->command=c;
+  40:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+  41:modules/nav_conversion/mcu_link.c ****  l->ack_valid=true;
+  42:modules/nav_conversion/mcu_link.c ****  l->active=false;
+  43:modules/nav_conversion/mcu_link.c ****  l->timed_out=false;
+  44:modules/nav_conversion/mcu_link.c ****   l->requires_stop=!safe(l);
+  45:modules/nav_conversion/mcu_link.c ****  return 1;
+  46:modules/nav_conversion/mcu_link.c ****  }
+  47:modules/nav_conversion/mcu_link.c ****  if(!l->ack_valid||l->requires_stop||!safe(l)||c.session!=l->command.session)return 0;
+  48:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+  49:modules/nav_conversion/mcu_link.c ****  if(!diff||diff>=32768u)return 0;
+  50:modules/nav_conversion/mcu_link.c ****  l->command=c;
+  51:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+  52:modules/nav_conversion/mcu_link.c ****  l->active=true;
+  53:modules/nav_conversion/mcu_link.c ****  l->timed_out=false;
+  54:modules/nav_conversion/mcu_link.c ****  return 1;}
+ 400              		.loc 1 54 11 view .LVU117
+ 401 0026 0DB0     		add	sp, sp, #52
+ 402              	.LCFI8:
+ 403              		.cfi_remember_state
+ 404              		.cfi_def_cfa_offset 12
+ 405              		@ sp needed
+ 406 0028 30BD     		pop	{r4, r5, pc}
+ 407              	.LVL29:
+ 408              	.L29:
+ 409              	.LCFI9:
+ARM GAS  /tmp/ccRUsRWZ.s 			page 9
+
+
+ 410              		.cfi_restore_state
+  30:modules/nav_conversion/mcu_link.c ****  rm_mcu_get_output(l,now,&ignored); /* Expiry is enforced even if output polling was delayed. */
+ 411              		.loc 1 30 2 is_stmt 1 view .LVU118
+ 412 002a 01AA     		add	r2, sp, #4
+ 413 002c 2146     		mov	r1, r4
+ 414 002e 2846     		mov	r0, r5
+ 415 0030 FFF7FEFF 		bl	rm_mcu_get_output
+ 416              	.LVL30:
+  31:modules/nav_conversion/mcu_link.c ****   /* STOP always removes output. A replay from this session must not roll the
+ 417              		.loc 1 31 2 view .LVU119
+  31:modules/nav_conversion/mcu_link.c ****   /* STOP always removes output. A replay from this session must not roll the
+ 418              		.loc 1 31 8 is_stmt 0 view .LVU120
+ 419 0034 BDF82030 		ldrh	r3, [sp, #32]
+  31:modules/nav_conversion/mcu_link.c ****   /* STOP always removes output. A replay from this session must not roll the
+ 420              		.loc 1 31 4 view .LVU121
+ 421 0038 13F0010F 		tst	r3, #1
+ 422 003c 2AD1     		bne	.L31
+  34:modules/nav_conversion/mcu_link.c ****   if(l->ack_valid&&c.session==l->command.session){
+ 423              		.loc 1 34 3 is_stmt 1 view .LVU122
+  34:modules/nav_conversion/mcu_link.c ****   if(l->ack_valid&&c.session==l->command.session){
+ 424              		.loc 1 34 12 is_stmt 0 view .LVU123
+ 425 003e 0023     		movs	r3, #0
+ 426 0040 AB71     		strb	r3, [r5, #6]
+  35:modules/nav_conversion/mcu_link.c ****     diff=(uint16_t)(c.sequence-l->command.sequence);
+ 427              		.loc 1 35 3 is_stmt 1 view .LVU124
+  35:modules/nav_conversion/mcu_link.c ****     diff=(uint16_t)(c.sequence-l->command.sequence);
+ 428              		.loc 1 35 7 is_stmt 0 view .LVU125
+ 429 0042 2B79     		ldrb	r3, [r5, #4]	@ zero_extendqisi2
+  35:modules/nav_conversion/mcu_link.c ****     diff=(uint16_t)(c.sequence-l->command.sequence);
+ 430              		.loc 1 35 5 view .LVU126
+ 431 0044 53B1     		cbz	r3, .L32
+  35:modules/nav_conversion/mcu_link.c ****     diff=(uint16_t)(c.sequence-l->command.sequence);
+ 432              		.loc 1 35 41 discriminator 1 view .LVU127
+ 433 0046 6B69     		ldr	r3, [r5, #20]
+  35:modules/nav_conversion/mcu_link.c ****     diff=(uint16_t)(c.sequence-l->command.sequence);
+ 434              		.loc 1 35 18 discriminator 1 view .LVU128
+ 435 0048 069A     		ldr	r2, [sp, #24]
+ 436 004a 9A42     		cmp	r2, r3
+ 437 004c 06D1     		bne	.L32
+  36:modules/nav_conversion/mcu_link.c ****     if(!diff||diff>=32768u){l->requires_stop=true;return 0;}
+ 438              		.loc 1 36 5 is_stmt 1 view .LVU129
+  36:modules/nav_conversion/mcu_link.c ****     if(!diff||diff>=32768u){l->requires_stop=true;return 0;}
+ 439              		.loc 1 36 22 is_stmt 0 view .LVU130
+ 440 004e BDF81C30 		ldrh	r3, [sp, #28]
+  36:modules/nav_conversion/mcu_link.c ****     if(!diff||diff>=32768u){l->requires_stop=true;return 0;}
+ 441              		.loc 1 36 42 view .LVU131
+ 442 0052 2A8B     		ldrh	r2, [r5, #24]
+  36:modules/nav_conversion/mcu_link.c ****     if(!diff||diff>=32768u){l->requires_stop=true;return 0;}
+ 443              		.loc 1 36 9 view .LVU132
+ 444 0054 9B1A     		subs	r3, r3, r2
+ 445              	.LVL31:
+  37:modules/nav_conversion/mcu_link.c ****   }
+ 446              		.loc 1 37 5 is_stmt 1 view .LVU133
+  37:modules/nav_conversion/mcu_link.c ****   }
+ 447              		.loc 1 37 13 is_stmt 0 view .LVU134
+ 448 0056 1BB2     		sxth	r3, r3
+  37:modules/nav_conversion/mcu_link.c ****   }
+ARM GAS  /tmp/ccRUsRWZ.s 			page 10
+
+
+ 449              		.loc 1 37 7 view .LVU135
+ 450 0058 002B     		cmp	r3, #0
+ 451 005a 17DD     		ble	.L42
+ 452              	.LVL32:
+ 453              	.L32:
+  39:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+ 454              		.loc 1 39 3 is_stmt 1 view .LVU136
+  39:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+ 455              		.loc 1 39 13 is_stmt 0 view .LVU137
+ 456 005c 05F1100C 		add	ip, r5, #16
+ 457 0060 0DF1140E 		add	lr, sp, #20
+ 458 0064 BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 459 0068 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 460 006c 9EE80700 		ldm	lr, {r0, r1, r2}
+ 461 0070 8CE80700 		stm	ip, {r0, r1, r2}
+  40:modules/nav_conversion/mcu_link.c ****  l->ack_valid=true;
+ 462              		.loc 1 40 2 is_stmt 1 view .LVU138
+  40:modules/nav_conversion/mcu_link.c ****  l->ack_valid=true;
+ 463              		.loc 1 40 16 is_stmt 0 view .LVU139
+ 464 0074 EC60     		str	r4, [r5, #12]
+  41:modules/nav_conversion/mcu_link.c ****  l->active=false;
+ 465              		.loc 1 41 2 is_stmt 1 view .LVU140
+  41:modules/nav_conversion/mcu_link.c ****  l->active=false;
+ 466              		.loc 1 41 14 is_stmt 0 view .LVU141
+ 467 0076 0124     		movs	r4, #1
+ 468              	.LVL33:
+  41:modules/nav_conversion/mcu_link.c ****  l->active=false;
+ 469              		.loc 1 41 14 view .LVU142
+ 470 0078 2C71     		strb	r4, [r5, #4]
+  42:modules/nav_conversion/mcu_link.c ****  l->timed_out=false;
+ 471              		.loc 1 42 2 is_stmt 1 view .LVU143
+  43:modules/nav_conversion/mcu_link.c ****   l->requires_stop=!safe(l);
+ 472              		.loc 1 43 2 view .LVU144
+  43:modules/nav_conversion/mcu_link.c ****   l->requires_stop=!safe(l);
+ 473              		.loc 1 43 14 is_stmt 0 view .LVU145
+ 474 007a 0023     		movs	r3, #0
+ 475 007c EB71     		strb	r3, [r5, #7]
+  44:modules/nav_conversion/mcu_link.c ****  return 1;
+ 476              		.loc 1 44 3 is_stmt 1 view .LVU146
+  44:modules/nav_conversion/mcu_link.c ****  return 1;
+ 477              		.loc 1 44 21 is_stmt 0 view .LVU147
+ 478 007e 2846     		mov	r0, r5
+ 479 0080 FFF7FEFF 		bl	safe
+ 480              	.LVL34:
+  44:modules/nav_conversion/mcu_link.c ****  return 1;
+ 481              		.loc 1 44 3 view .LVU148
+ 482 0084 6040     		eors	r0, r0, r4
+  44:modules/nav_conversion/mcu_link.c ****  return 1;
+ 483              		.loc 1 44 19 view .LVU149
+ 484 0086 6871     		strb	r0, [r5, #5]
+  45:modules/nav_conversion/mcu_link.c ****  }
+ 485              		.loc 1 45 2 is_stmt 1 view .LVU150
+  45:modules/nav_conversion/mcu_link.c ****  }
+ 486              		.loc 1 45 9 is_stmt 0 view .LVU151
+ 487 0088 2046     		mov	r0, r4
+ 488 008a CCE7     		b	.L27
+ 489              	.LVL35:
+ARM GAS  /tmp/ccRUsRWZ.s 			page 11
+
+
+ 490              	.L42:
+  37:modules/nav_conversion/mcu_link.c ****   }
+ 491              		.loc 1 37 29 is_stmt 1 discriminator 1 view .LVU152
+  37:modules/nav_conversion/mcu_link.c ****   }
+ 492              		.loc 1 37 45 is_stmt 0 discriminator 1 view .LVU153
+ 493 008c 0123     		movs	r3, #1
+ 494              	.LVL36:
+  37:modules/nav_conversion/mcu_link.c ****   }
+ 495              		.loc 1 37 45 discriminator 1 view .LVU154
+ 496 008e 6B71     		strb	r3, [r5, #5]
+ 497              	.LVL37:
+  37:modules/nav_conversion/mcu_link.c ****   }
+ 498              		.loc 1 37 51 is_stmt 1 discriminator 1 view .LVU155
+  37:modules/nav_conversion/mcu_link.c ****   }
+ 499              		.loc 1 37 58 is_stmt 0 discriminator 1 view .LVU156
+ 500 0090 0020     		movs	r0, #0
+ 501 0092 C8E7     		b	.L27
+ 502              	.L31:
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 503              		.loc 1 47 2 is_stmt 1 view .LVU157
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 504              		.loc 1 47 7 is_stmt 0 view .LVU158
+ 505 0094 2B79     		ldrb	r3, [r5, #4]	@ zero_extendqisi2
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 506              		.loc 1 47 4 view .LVU159
+ 507 0096 13B3     		cbz	r3, .L33
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 508              		.loc 1 47 21 discriminator 2 view .LVU160
+ 509 0098 6B79     		ldrb	r3, [r5, #5]	@ zero_extendqisi2
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 510              		.loc 1 47 18 discriminator 2 view .LVU161
+ 511 009a 13BB     		cbnz	r3, .L34
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 512              		.loc 1 47 39 discriminator 4 view .LVU162
+ 513 009c 2846     		mov	r0, r5
+ 514 009e FFF7FEFF 		bl	safe
+ 515              	.LVL38:
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 516              		.loc 1 47 36 discriminator 4 view .LVU163
+ 517 00a2 00B3     		cbz	r0, .L35
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 518              		.loc 1 47 69 discriminator 6 view .LVU164
+ 519 00a4 6B69     		ldr	r3, [r5, #20]
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 520              		.loc 1 47 46 discriminator 6 view .LVU165
+ 521 00a6 069A     		ldr	r2, [sp, #24]
+ 522 00a8 9A42     		cmp	r2, r3
+ 523 00aa 1ED1     		bne	.L36
+  48:modules/nav_conversion/mcu_link.c ****  if(!diff||diff>=32768u)return 0;
+ 524              		.loc 1 48 2 is_stmt 1 view .LVU166
+  48:modules/nav_conversion/mcu_link.c ****  if(!diff||diff>=32768u)return 0;
+ 525              		.loc 1 48 19 is_stmt 0 view .LVU167
+ 526 00ac BDF81C30 		ldrh	r3, [sp, #28]
+  48:modules/nav_conversion/mcu_link.c ****  if(!diff||diff>=32768u)return 0;
+ 527              		.loc 1 48 39 view .LVU168
+ 528 00b0 2A8B     		ldrh	r2, [r5, #24]
+  48:modules/nav_conversion/mcu_link.c ****  if(!diff||diff>=32768u)return 0;
+ARM GAS  /tmp/ccRUsRWZ.s 			page 12
+
+
+ 529              		.loc 1 48 6 view .LVU169
+ 530 00b2 9B1A     		subs	r3, r3, r2
+ 531              	.LVL39:
+  49:modules/nav_conversion/mcu_link.c ****  l->command=c;
+ 532              		.loc 1 49 2 is_stmt 1 view .LVU170
+  49:modules/nav_conversion/mcu_link.c ****  l->command=c;
+ 533              		.loc 1 49 10 is_stmt 0 view .LVU171
+ 534 00b4 1BB2     		sxth	r3, r3
+  49:modules/nav_conversion/mcu_link.c ****  l->command=c;
+ 535              		.loc 1 49 4 view .LVU172
+ 536 00b6 002B     		cmp	r3, #0
+ 537 00b8 19DD     		ble	.L37
+  50:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+ 538              		.loc 1 50 2 is_stmt 1 view .LVU173
+  50:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+ 539              		.loc 1 50 12 is_stmt 0 view .LVU174
+ 540 00ba 05F1100C 		add	ip, r5, #16
+ 541 00be 0DF1140E 		add	lr, sp, #20
+ 542 00c2 BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 543              	.LVL40:
+  50:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+ 544              		.loc 1 50 12 view .LVU175
+ 545 00c6 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 546              	.LVL41:
+  50:modules/nav_conversion/mcu_link.c ****  l->received_ms=now;
+ 547              		.loc 1 50 12 view .LVU176
+ 548 00ca 9EE80700 		ldm	lr, {r0, r1, r2}
+ 549 00ce 8CE80700 		stm	ip, {r0, r1, r2}
+  51:modules/nav_conversion/mcu_link.c ****  l->active=true;
+ 550              		.loc 1 51 2 is_stmt 1 view .LVU177
+  51:modules/nav_conversion/mcu_link.c ****  l->active=true;
+ 551              		.loc 1 51 16 is_stmt 0 view .LVU178
+ 552 00d2 EC60     		str	r4, [r5, #12]
+  52:modules/nav_conversion/mcu_link.c ****  l->timed_out=false;
+ 553              		.loc 1 52 2 is_stmt 1 view .LVU179
+  52:modules/nav_conversion/mcu_link.c ****  l->timed_out=false;
+ 554              		.loc 1 52 11 is_stmt 0 view .LVU180
+ 555 00d4 0120     		movs	r0, #1
+ 556 00d6 A871     		strb	r0, [r5, #6]
+  53:modules/nav_conversion/mcu_link.c ****  return 1;}
+ 557              		.loc 1 53 2 is_stmt 1 view .LVU181
+  53:modules/nav_conversion/mcu_link.c ****  return 1;}
+ 558              		.loc 1 53 14 is_stmt 0 view .LVU182
+ 559 00d8 0023     		movs	r3, #0
+ 560 00da EB71     		strb	r3, [r5, #7]
+ 561              		.loc 1 54 2 is_stmt 1 view .LVU183
+ 562              		.loc 1 54 9 is_stmt 0 view .LVU184
+ 563 00dc A3E7     		b	.L27
+ 564              	.L33:
+  47:modules/nav_conversion/mcu_link.c ****  diff=(uint16_t)(c.sequence-l->command.sequence);
+ 565              		.loc 1 47 85 view .LVU185
+ 566 00de 0020     		movs	r0, #0
+ 567 00e0 A1E7     		b	.L27
+ 568              	.L34:
+ 569 00e2 0020     		movs	r0, #0
+ 570 00e4 9FE7     		b	.L27
+ 571              	.L35:
+ARM GAS  /tmp/ccRUsRWZ.s 			page 13
+
+
+ 572 00e6 0020     		movs	r0, #0
+ 573 00e8 9DE7     		b	.L27
+ 574              	.L36:
+ 575 00ea 0020     		movs	r0, #0
+ 576 00ec 9BE7     		b	.L27
+ 577              	.LVL42:
+ 578              	.L37:
+  49:modules/nav_conversion/mcu_link.c ****  l->command=c;
+ 579              		.loc 1 49 32 view .LVU186
+ 580 00ee 0020     		movs	r0, #0
+ 581 00f0 99E7     		b	.L27
+ 582              	.LVL43:
+ 583              	.L39:
+ 584              	.LCFI10:
+ 585              		.cfi_def_cfa_offset 0
+ 586              		.cfi_restore 4
+ 587              		.cfi_restore 5
+ 588              		.cfi_restore 14
+  29:modules/nav_conversion/mcu_link.c ****  rm_mcu_get_output(l,now,&ignored); /* Expiry is enforced even if output polling was delayed. */
+ 589              		.loc 1 29 55 is_stmt 1 view .LVU187
+  29:modules/nav_conversion/mcu_link.c ****  rm_mcu_get_output(l,now,&ignored); /* Expiry is enforced even if output polling was delayed. */
+ 590              		.loc 1 29 62 is_stmt 0 view .LVU188
+ 591 00f2 0020     		movs	r0, #0
+ 592              	.LVL44:
+ 593              		.loc 1 54 11 view .LVU189
+ 594 00f4 7047     		bx	lr
+ 595              		.cfi_endproc
+ 596              	.LFE4:
+ 598              		.section	.text.rm_mcu_feedback,"ax",%progbits
+ 599              		.align	1
+ 600              		.global	rm_mcu_feedback
+ 601              		.syntax unified
+ 602              		.thumb
+ 603              		.thumb_func
+ 604              		.fpu fpv4-sp-d16
+ 606              	rm_mcu_feedback:
+ 607              	.LVL45:
+ 608              	.LFB5:
+  55:modules/nav_conversion/mcu_link.c **** void rm_mcu_feedback(rm_mcu_link_t*l,uint32_t now,bool valid,float x,float y,float z,rm_feedback_t*
+ 609              		.loc 1 55 104 is_stmt 1 view -0
+ 610              		.cfi_startproc
+ 611              		@ args = 0, pretend = 0, frame = 16
+ 612              		@ frame_needed = 0, uses_anonymous_args = 0
+ 613              		.loc 1 55 105 view .LVU191
+  56:modules/nav_conversion/mcu_link.c ****  if(!l||!out)return;
+ 614              		.loc 1 56 2 view .LVU192
+ 615              		.loc 1 56 4 is_stmt 0 view .LVU193
+ 616 0000 0028     		cmp	r0, #0
+ 617 0002 00F08E80 		beq	.L65
+  55:modules/nav_conversion/mcu_link.c **** void rm_mcu_feedback(rm_mcu_link_t*l,uint32_t now,bool valid,float x,float y,float z,rm_feedback_t*
+ 618              		.loc 1 55 104 discriminator 2 view .LVU194
+ 619 0006 F0B5     		push	{r4, r5, r6, r7, lr}
+ 620              	.LCFI11:
+ 621              		.cfi_def_cfa_offset 20
+ 622              		.cfi_offset 4, -20
+ 623              		.cfi_offset 5, -16
+ 624              		.cfi_offset 6, -12
+ARM GAS  /tmp/ccRUsRWZ.s 			page 14
+
+
+ 625              		.cfi_offset 7, -8
+ 626              		.cfi_offset 14, -4
+ 627 0008 2DED048B 		vpush.64	{d8, d9}
+ 628              	.LCFI12:
+ 629              		.cfi_def_cfa_offset 36
+ 630              		.cfi_offset 80, -36
+ 631              		.cfi_offset 81, -32
+ 632              		.cfi_offset 82, -28
+ 633              		.cfi_offset 83, -24
+ 634 000c 85B0     		sub	sp, sp, #20
+ 635              	.LCFI13:
+ 636              		.cfi_def_cfa_offset 56
+ 637 000e 0E46     		mov	r6, r1
+ 638 0010 1746     		mov	r7, r2
+ 639 0012 B0EE408A 		vmov.f32	s16, s0
+ 640 0016 F0EE608A 		vmov.f32	s17, s1
+ 641 001a B0EE419A 		vmov.f32	s18, s2
+ 642 001e 1C46     		mov	r4, r3
+ 643 0020 0546     		mov	r5, r0
+ 644              		.loc 1 56 7 discriminator 2 view .LVU195
+ 645 0022 002B     		cmp	r3, #0
+ 646 0024 75D0     		beq	.L43
+  57:modules/nav_conversion/mcu_link.c ****  rm_mcu_get_output(l,now,&current);
+ 647              		.loc 1 57 2 is_stmt 1 view .LVU196
+ 648 0026 6A46     		mov	r2, sp
+ 649              	.LVL46:
+ 650              		.loc 1 57 2 is_stmt 0 view .LVU197
+ 651 0028 FFF7FEFF 		bl	rm_mcu_get_output
+ 652              	.LVL47:
+  58:modules/nav_conversion/mcu_link.c ****  memset(out,0,sizeof(*out));
+ 653              		.loc 1 58 2 is_stmt 1 view .LVU198
+ 654 002c 0023     		movs	r3, #0
+ 655 002e 2360     		str	r3, [r4]	@ unaligned
+ 656 0030 6360     		str	r3, [r4, #4]	@ unaligned
+ 657 0032 A360     		str	r3, [r4, #8]	@ unaligned
+ 658 0034 E360     		str	r3, [r4, #12]	@ unaligned
+ 659 0036 2361     		str	r3, [r4, #16]	@ unaligned
+ 660 0038 6361     		str	r3, [r4, #20]	@ unaligned
+ 661 003a A361     		str	r3, [r4, #24]	@ unaligned
+  59:modules/nav_conversion/mcu_link.c ****  out->uptime_ms=now;
+ 662              		.loc 1 59 2 view .LVU199
+ 663              		.loc 1 59 16 is_stmt 0 view .LVU200
+ 664 003c 2660     		str	r6, [r4]
+  60:modules/nav_conversion/mcu_link.c ****  out->route=l->route;
+ 665              		.loc 1 60 2 is_stmt 1 view .LVU201
+ 666              		.loc 1 60 14 is_stmt 0 view .LVU202
+ 667 003e 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 668              		.loc 1 60 12 view .LVU203
+ 669 0040 A373     		strb	r3, [r4, #14]
+  61:modules/nav_conversion/mcu_link.c ****  out->session=l->ack_valid?l->command.session:0u;
+ 670              		.loc 1 61 2 is_stmt 1 view .LVU204
+ 671              		.loc 1 61 16 is_stmt 0 view .LVU205
+ 672 0042 2B79     		ldrb	r3, [r5, #4]	@ zero_extendqisi2
+ 673              		.loc 1 61 46 view .LVU206
+ 674 0044 002B     		cmp	r3, #0
+ 675 0046 68D0     		beq	.L59
+ 676              		.loc 1 61 46 discriminator 1 view .LVU207
+ARM GAS  /tmp/ccRUsRWZ.s 			page 15
+
+
+ 677 0048 6B69     		ldr	r3, [r5, #20]
+ 678              	.L47:
+ 679              		.loc 1 61 14 discriminator 4 view .LVU208
+ 680 004a 6360     		str	r3, [r4, #4]
+  62:modules/nav_conversion/mcu_link.c ****  out->sequence=l->ack_valid?l->command.sequence:0;
+ 681              		.loc 1 62 2 is_stmt 1 discriminator 4 view .LVU209
+ 682              		.loc 1 62 17 is_stmt 0 discriminator 4 view .LVU210
+ 683 004c 2B79     		ldrb	r3, [r5, #4]	@ zero_extendqisi2
+ 684              		.loc 1 62 15 discriminator 4 view .LVU211
+ 685 004e 002B     		cmp	r3, #0
+ 686 0050 65D0     		beq	.L60
+ 687              		.loc 1 62 15 discriminator 1 view .LVU212
+ 688 0052 2B8B     		ldrh	r3, [r5, #24]
+ 689              	.L48:
+ 690              		.loc 1 62 15 discriminator 4 view .LVU213
+ 691 0054 2381     		strh	r3, [r4, #8]	@ movhi
+  63:modules/nav_conversion/mcu_link.c ****  out->fault_mask=l->fault_mask;
+ 692              		.loc 1 63 2 is_stmt 1 discriminator 4 view .LVU214
+ 693              		.loc 1 63 19 is_stmt 0 discriminator 4 view .LVU215
+ 694 0056 2B89     		ldrh	r3, [r5, #8]
+ 695              		.loc 1 63 17 discriminator 4 view .LVU216
+ 696 0058 A381     		strh	r3, [r4, #12]	@ movhi
+  64:modules/nav_conversion/mcu_link.c ****  if(l->ready)out->status|=RM_STATUS_READY;
+ 697              		.loc 1 64 2 is_stmt 1 discriminator 4 view .LVU217
+ 698              		.loc 1 64 6 is_stmt 0 discriminator 4 view .LVU218
+ 699 005a 6B78     		ldrb	r3, [r5, #1]	@ zero_extendqisi2
+ 700              		.loc 1 64 4 discriminator 4 view .LVU219
+ 701 005c 0BB1     		cbz	r3, .L49
+ 702              		.loc 1 64 14 is_stmt 1 discriminator 1 view .LVU220
+ 703              		.loc 1 64 25 is_stmt 0 discriminator 1 view .LVU221
+ 704 005e 0123     		movs	r3, #1
+ 705 0060 6381     		strh	r3, [r4, #10]	@ movhi
+ 706              	.L49:
+  65:modules/nav_conversion/mcu_link.c ****  if(current.enabled)out->status|=RM_STATUS_ACTIVE;
+ 707              		.loc 1 65 2 is_stmt 1 view .LVU222
+ 708              		.loc 1 65 12 is_stmt 0 view .LVU223
+ 709 0062 9DF80030 		ldrb	r3, [sp]	@ zero_extendqisi2
+ 710              		.loc 1 65 4 view .LVU224
+ 711 0066 1BB1     		cbz	r3, .L50
+ 712              		.loc 1 65 21 is_stmt 1 discriminator 1 view .LVU225
+ 713              		.loc 1 65 32 is_stmt 0 discriminator 1 view .LVU226
+ 714 0068 6389     		ldrh	r3, [r4, #10]
+ 715 006a 43F00203 		orr	r3, r3, #2
+ 716 006e 6381     		strh	r3, [r4, #10]	@ movhi
+ 717              	.L50:
+  66:modules/nav_conversion/mcu_link.c ****  if(l->estop)out->status|=RM_STATUS_ESTOP;
+ 718              		.loc 1 66 2 is_stmt 1 view .LVU227
+ 719              		.loc 1 66 6 is_stmt 0 view .LVU228
+ 720 0070 AB78     		ldrb	r3, [r5, #2]	@ zero_extendqisi2
+ 721              		.loc 1 66 4 view .LVU229
+ 722 0072 1BB1     		cbz	r3, .L51
+ 723              		.loc 1 66 14 is_stmt 1 discriminator 1 view .LVU230
+ 724              		.loc 1 66 25 is_stmt 0 discriminator 1 view .LVU231
+ 725 0074 6389     		ldrh	r3, [r4, #10]
+ 726 0076 43F00403 		orr	r3, r3, #4
+ 727 007a 6381     		strh	r3, [r4, #10]	@ movhi
+ 728              	.L51:
+ARM GAS  /tmp/ccRUsRWZ.s 			page 16
+
+
+  67:modules/nav_conversion/mcu_link.c ****  if(l->manual)out->status|=RM_STATUS_MANUAL;
+ 729              		.loc 1 67 2 is_stmt 1 view .LVU232
+ 730              		.loc 1 67 6 is_stmt 0 view .LVU233
+ 731 007c EB78     		ldrb	r3, [r5, #3]	@ zero_extendqisi2
+ 732              		.loc 1 67 4 view .LVU234
+ 733 007e 1BB1     		cbz	r3, .L52
+ 734              		.loc 1 67 15 is_stmt 1 discriminator 1 view .LVU235
+ 735              		.loc 1 67 26 is_stmt 0 discriminator 1 view .LVU236
+ 736 0080 6389     		ldrh	r3, [r4, #10]
+ 737 0082 43F02003 		orr	r3, r3, #32
+ 738 0086 6381     		strh	r3, [r4, #10]	@ movhi
+ 739              	.L52:
+  68:modules/nav_conversion/mcu_link.c ****  if(l->timed_out)out->status|=RM_STATUS_TIMEOUT;
+ 740              		.loc 1 68 2 is_stmt 1 view .LVU237
+ 741              		.loc 1 68 6 is_stmt 0 view .LVU238
+ 742 0088 EB79     		ldrb	r3, [r5, #7]	@ zero_extendqisi2
+ 743              		.loc 1 68 4 view .LVU239
+ 744 008a 1BB1     		cbz	r3, .L53
+ 745              		.loc 1 68 18 is_stmt 1 discriminator 1 view .LVU240
+ 746              		.loc 1 68 29 is_stmt 0 discriminator 1 view .LVU241
+ 747 008c 6389     		ldrh	r3, [r4, #10]
+ 748 008e 43F01003 		orr	r3, r3, #16
+ 749 0092 6381     		strh	r3, [r4, #10]	@ movhi
+ 750              	.L53:
+  69:modules/nav_conversion/mcu_link.c ****  if(l->ack_valid)out->status|=RM_STATUS_ACK_VALID;
+ 751              		.loc 1 69 2 is_stmt 1 view .LVU242
+ 752              		.loc 1 69 6 is_stmt 0 view .LVU243
+ 753 0094 2B79     		ldrb	r3, [r5, #4]	@ zero_extendqisi2
+ 754              		.loc 1 69 4 view .LVU244
+ 755 0096 1BB1     		cbz	r3, .L54
+ 756              		.loc 1 69 18 is_stmt 1 discriminator 1 view .LVU245
+ 757              		.loc 1 69 29 is_stmt 0 discriminator 1 view .LVU246
+ 758 0098 6389     		ldrh	r3, [r4, #10]
+ 759 009a 43F04003 		orr	r3, r3, #64
+ 760 009e 6381     		strh	r3, [r4, #10]	@ movhi
+ 761              	.L54:
+  70:modules/nav_conversion/mcu_link.c ****  if(valid&&isfinite(x)&&isfinite(y)&&isfinite(z)&&fabsf(x)<=20&&fabsf(y)<=20&&fabsf(z)<=100){
+ 762              		.loc 1 70 2 is_stmt 1 view .LVU247
+ 763              		.loc 1 70 4 is_stmt 0 view .LVU248
+ 764 00a0 BFB3     		cbz	r7, .L43
+ 765              		.loc 1 70 12 discriminator 1 view .LVU249
+ 766 00a2 F0EEC87A 		vabs.f32	s15, s16
+ 767              		.loc 1 70 10 discriminator 1 view .LVU250
+ 768 00a6 9FED1F7A 		vldr.32	s14, .L68
+ 769 00aa F4EE477A 		vcmp.f32	s15, s14
+ 770 00ae F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 771 00b2 2ED8     		bhi	.L43
+ 772              		.loc 1 70 25 discriminator 2 view .LVU251
+ 773 00b4 B0EEE87A 		vabs.f32	s14, s17
+ 774              		.loc 1 70 23 discriminator 2 view .LVU252
+ 775 00b8 DFED1A6A 		vldr.32	s13, .L68
+ 776 00bc B4EE667A 		vcmp.f32	s14, s13
+ 777 00c0 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 778 00c4 25D8     		bhi	.L43
+ 779              		.loc 1 70 38 discriminator 3 view .LVU253
+ 780 00c6 F0EEC96A 		vabs.f32	s13, s18
+ 781              		.loc 1 70 36 discriminator 3 view .LVU254
+ARM GAS  /tmp/ccRUsRWZ.s 			page 17
+
+
+ 782 00ca 9FED166A 		vldr.32	s12, .L68
+ 783 00ce F4EE466A 		vcmp.f32	s13, s12
+ 784 00d2 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 785 00d6 1CD8     		bhi	.L43
+ 786              		.loc 1 70 49 discriminator 4 view .LVU255
+ 787 00d8 B3EE046A 		vmov.f32	s12, #2.0e+1
+ 788 00dc F4EEC67A 		vcmpe.f32	s15, s12
+ 789 00e0 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 790 00e4 15D8     		bhi	.L43
+ 791              		.loc 1 70 63 discriminator 5 view .LVU256
+ 792 00e6 B4EEC67A 		vcmpe.f32	s14, s12
+ 793 00ea F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 794 00ee 10D8     		bhi	.L43
+ 795              		.loc 1 70 77 discriminator 6 view .LVU257
+ 796 00f0 DFED0D7A 		vldr.32	s15, .L68+4
+ 797 00f4 F4EEE76A 		vcmpe.f32	s13, s15
+ 798 00f8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 799 00fc 09D8     		bhi	.L43
+  71:modules/nav_conversion/mcu_link.c ****   out->status|=RM_STATUS_MEASURED;
+ 800              		.loc 1 71 3 is_stmt 1 view .LVU258
+ 801              		.loc 1 71 14 is_stmt 0 view .LVU259
+ 802 00fe 6389     		ldrh	r3, [r4, #10]
+ 803 0100 43F00803 		orr	r3, r3, #8
+ 804 0104 6381     		strh	r3, [r4, #10]	@ movhi
+  72:modules/nav_conversion/mcu_link.c ****  out->vx=x;
+ 805              		.loc 1 72 2 is_stmt 1 view .LVU260
+ 806              		.loc 1 72 9 is_stmt 0 view .LVU261
+ 807 0106 84ED048A 		vstr.32	s16, [r4, #16]
+  73:modules/nav_conversion/mcu_link.c ****  out->vy=y;
+ 808              		.loc 1 73 2 is_stmt 1 view .LVU262
+ 809              		.loc 1 73 9 is_stmt 0 view .LVU263
+ 810 010a C4ED058A 		vstr.32	s17, [r4, #20]
+  74:modules/nav_conversion/mcu_link.c ****  out->wz=z;}}
+ 811              		.loc 1 74 2 is_stmt 1 view .LVU264
+ 812              		.loc 1 74 9 is_stmt 0 view .LVU265
+ 813 010e 84ED069A 		vstr.32	s18, [r4, #24]
+ 814              	.L43:
+ 815              		.loc 1 74 13 view .LVU266
+ 816 0112 05B0     		add	sp, sp, #20
+ 817              	.LCFI14:
+ 818              		.cfi_remember_state
+ 819              		.cfi_def_cfa_offset 36
+ 820              		@ sp needed
+ 821 0114 BDEC048B 		vldm	sp!, {d8-d9}
+ 822              	.LCFI15:
+ 823              		.cfi_restore 82
+ 824              		.cfi_restore 83
+ 825              		.cfi_restore 80
+ 826              		.cfi_restore 81
+ 827              		.cfi_def_cfa_offset 20
+ 828              	.LVL48:
+ 829              		.loc 1 74 13 view .LVU267
+ 830 0118 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 831              	.LVL49:
+ 832              	.L59:
+ 833              	.LCFI16:
+ 834              		.cfi_restore_state
+ARM GAS  /tmp/ccRUsRWZ.s 			page 18
+
+
+  61:modules/nav_conversion/mcu_link.c ****  out->sequence=l->ack_valid?l->command.sequence:0;
+ 835              		.loc 1 61 46 view .LVU268
+ 836 011a 0023     		movs	r3, #0
+ 837 011c 95E7     		b	.L47
+ 838              	.L60:
+  62:modules/nav_conversion/mcu_link.c ****  out->fault_mask=l->fault_mask;
+ 839              		.loc 1 62 15 view .LVU269
+ 840 011e 0023     		movs	r3, #0
+ 841 0120 98E7     		b	.L48
+ 842              	.LVL50:
+ 843              	.L65:
+ 844              	.LCFI17:
+ 845              		.cfi_def_cfa_offset 0
+ 846              		.cfi_restore 4
+ 847              		.cfi_restore 5
+ 848              		.cfi_restore 6
+ 849              		.cfi_restore 7
+ 850              		.cfi_restore 14
+ 851              		.cfi_restore 80
+ 852              		.cfi_restore 81
+ 853              		.cfi_restore 82
+ 854              		.cfi_restore 83
+  62:modules/nav_conversion/mcu_link.c ****  out->fault_mask=l->fault_mask;
+ 855              		.loc 1 62 15 view .LVU270
+ 856 0122 7047     		bx	lr
+ 857              	.L69:
+ 858              		.align	2
+ 859              	.L68:
+ 860 0124 FFFF7F7F 		.word	2139095039
+ 861 0128 0000C842 		.word	1120403456
+ 862              		.cfi_endproc
+ 863              	.LFE5:
+ 865              		.text
+ 866              	.Letext0:
+ 867              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h"
+ 868              		.file 3 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 869              		.file 4 "modules/nav_conversion/rm_chassis_comm/protocol.h"
+ 870              		.file 5 "modules/nav_conversion/rm_chassis_comm/mcu_link.h"
+ 871              		.file 6 "<built-in>"
+ARM GAS  /tmp/ccRUsRWZ.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 mcu_link.c
+     /tmp/ccRUsRWZ.s:18     .text.safe:0000000000000000 $t
+     /tmp/ccRUsRWZ.s:25     .text.safe:0000000000000000 safe
+     /tmp/ccRUsRWZ.s:88     .text.rm_mcu_init:0000000000000000 $t
+     /tmp/ccRUsRWZ.s:95     .text.rm_mcu_init:0000000000000000 rm_mcu_init
+     /tmp/ccRUsRWZ.s:145    .text.rm_mcu_set_safety:0000000000000000 $t
+     /tmp/ccRUsRWZ.s:152    .text.rm_mcu_set_safety:0000000000000000 rm_mcu_set_safety
+     /tmp/ccRUsRWZ.s:213    .text.rm_mcu_get_output:0000000000000000 $t
+     /tmp/ccRUsRWZ.s:220    .text.rm_mcu_get_output:0000000000000000 rm_mcu_get_output
+     /tmp/ccRUsRWZ.s:339    .text.rm_mcu_receive:0000000000000000 $t
+     /tmp/ccRUsRWZ.s:346    .text.rm_mcu_receive:0000000000000000 rm_mcu_receive
+     /tmp/ccRUsRWZ.s:599    .text.rm_mcu_feedback:0000000000000000 $t
+     /tmp/ccRUsRWZ.s:606    .text.rm_mcu_feedback:0000000000000000 rm_mcu_feedback
+     /tmp/ccRUsRWZ.s:860    .text.rm_mcu_feedback:0000000000000124 $d
+
+UNDEFINED SYMBOLS
+memset
+rm_decode_command

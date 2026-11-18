@@ -1,0 +1,50 @@
+{
+  "result": "FAIL: 未获得持续的新鲜底盘 STOP ACK（有效 0 帧）",
+  "transmitted_stop_frames": 225,
+  "session": 24006235,
+  "received_bytes": 54586,
+  "crc_valid_frame_counts": {
+    "chassis_feedback": 0,
+    "gimbal_telemetry": 250,
+    "sp_status": 1002
+  },
+  "unparsed_bytes": 0,
+  "first_gimbal": [
+    {
+      "uptime": 572190,
+      "version": 1,
+      "route": 2,
+      "sequence": 0,
+      "status": 0,
+      "age": 0,
+      "session": 24006235,
+      "sample_ms": 572190,
+      "command_received_ms": 572174,
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "yaw_rate": 0.0,
+      "pitch_rate": 0.0
+    }
+  ],
+  "last_gimbal": [
+    {
+      "uptime": 577170,
+      "version": 1,
+      "route": 2,
+      "sequence": 224,
+      "status": 0,
+      "age": 0,
+      "session": 24006235,
+      "sample_ms": 577170,
+      "command_received_ms": 577170,
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "yaw_rate": 0.0,
+      "pitch_rate": 0.0
+    }
+  ],
+  "gimbal_same_session_frames": 250,
+  "decoded_chassis_count": 0,
+  "last_chassis": [],
+  "raw_file": "/home/wangjiaming/桌面/c_board_nav_gateway_20261111/logs/overall-usb-detail-20261111-215508.bin"
+}

@@ -1,0 +1,1217 @@
+ARM GAS  /tmp/ccBUzZaz.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gimbal_protocol.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.c8,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	c8:
+  26              	.LVL0:
+  27              	.LFB0:
+  28              		.file 1 "modules/nav_conversion/gimbal_protocol.c"
+   1:modules/nav_conversion/gimbal_protocol.c **** #include "rm_chassis_comm/gimbal_protocol.h"
+   2:modules/nav_conversion/gimbal_protocol.c **** #include <math.h>
+   3:modules/nav_conversion/gimbal_protocol.c **** #include <float.h>
+   4:modules/nav_conversion/gimbal_protocol.c **** #include <string.h>
+   5:modules/nav_conversion/gimbal_protocol.c **** typedef char rm_gimbal_binary32_required[(sizeof(float)==4&&FLT_RADIX==2&&FLT_MANT_DIG==24&&FLT_MAX
+   6:modules/nav_conversion/gimbal_protocol.c **** static uint8_t c8(const uint8_t*p,size_t n){uint8_t c=255;for(size_t i=0;i<n;i++){c^=p[i];for(unsig
+  29              		.loc 1 6 44 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 6 44 is_stmt 0 view .LVU1
+  34 0000 00B5     		push	{lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 4
+  37              		.cfi_offset 14, -4
+  38 0002 8646     		mov	lr, r0
+  39              		.loc 1 6 45 is_stmt 1 view .LVU2
+  40              	.LVL1:
+  41              		.loc 1 6 59 view .LVU3
+  42              	.LBB2:
+  43              		.loc 1 6 63 view .LVU4
+  44              		.loc 1 6 70 is_stmt 0 view .LVU5
+  45 0004 4FF0000C 		mov	ip, #0
+  46              	.LBE2:
+  47              		.loc 1 6 53 view .LVU6
+  48 0008 FF20     		movs	r0, #255
+  49              	.LVL2:
+  50              	.LBB5:
+  51              		.loc 1 6 59 view .LVU7
+  52 000a 0EE0     		b	.L2
+ARM GAS  /tmp/ccBUzZaz.s 			page 2
+
+
+  53              	.LVL3:
+  54              	.L7:
+  55              	.LBB3:
+  56              		.loc 1 6 134 view .LVU8
+  57 000c 0020     		movs	r0, #0
+  58              	.LVL4:
+  59              	.L4:
+  60              		.loc 1 6 134 discriminator 6 view .LVU9
+  61 000e 4340     		eors	r3, r3, r0
+  62              		.loc 1 6 117 discriminator 6 view .LVU10
+  63 0010 D8B2     		uxtb	r0, r3
+  64              	.LVL5:
+  65              		.loc 1 6 112 is_stmt 1 discriminator 6 view .LVU11
+  66              		.loc 1 6 113 is_stmt 0 discriminator 6 view .LVU12
+  67 0012 0132     		adds	r2, r2, #1
+  68              	.LVL6:
+  69              	.L3:
+  70              		.loc 1 6 108 is_stmt 1 discriminator 7 view .LVU13
+  71              		.loc 1 6 91 is_stmt 0 discriminator 7 view .LVU14
+  72 0014 072A     		cmp	r2, #7
+  73 0016 06D8     		bhi	.L9
+  74              		.loc 1 6 116 is_stmt 1 discriminator 8 view .LVU15
+  75              		.loc 1 6 134 is_stmt 0 discriminator 8 view .LVU16
+  76 0018 4308     		lsrs	r3, r0, #1
+  77 001a 10F0010F 		tst	r0, #1
+  78 001e F5D0     		beq	.L7
+  79              		.loc 1 6 134 view .LVU17
+  80 0020 6FF07300 		mvn	r0, #115
+  81              	.LVL7:
+  82              		.loc 1 6 134 view .LVU18
+  83 0024 F3E7     		b	.L4
+  84              	.LVL8:
+  85              	.L9:
+  86              		.loc 1 6 134 view .LVU19
+  87              	.LBE3:
+  88              		.loc 1 6 78 is_stmt 1 discriminator 9 view .LVU20
+  89              		.loc 1 6 79 is_stmt 0 discriminator 9 view .LVU21
+  90 0026 0CF1010C 		add	ip, ip, #1
+  91              	.LVL9:
+  92              	.L2:
+  93              		.loc 1 6 74 is_stmt 1 discriminator 10 view .LVU22
+  94              		.loc 1 6 59 is_stmt 0 discriminator 10 view .LVU23
+  95 002a 8C45     		cmp	ip, r1
+  96 002c 04D2     		bcs	.L10
+  97              		.loc 1 6 83 is_stmt 1 discriminator 11 view .LVU24
+  98              		.loc 1 6 87 is_stmt 0 discriminator 11 view .LVU25
+  99 002e 1EF80C30 		ldrb	r3, [lr, ip]	@ zero_extendqisi2
+ 100              		.loc 1 6 84 discriminator 11 view .LVU26
+ 101 0032 5840     		eors	r0, r0, r3
+ 102              	.LVL10:
+ 103              		.loc 1 6 91 is_stmt 1 discriminator 11 view .LVU27
+ 104              	.LBB4:
+ 105              		.loc 1 6 95 discriminator 11 view .LVU28
+ 106              		.loc 1 6 104 is_stmt 0 discriminator 11 view .LVU29
+ 107 0034 0022     		movs	r2, #0
+ 108              		.loc 1 6 91 discriminator 11 view .LVU30
+ 109 0036 EDE7     		b	.L3
+ARM GAS  /tmp/ccBUzZaz.s 			page 3
+
+
+ 110              	.LVL11:
+ 111              	.L10:
+ 112              		.loc 1 6 91 discriminator 11 view .LVU31
+ 113              	.LBE4:
+ 114              	.LBE5:
+ 115              		.loc 1 6 152 is_stmt 1 discriminator 12 view .LVU32
+ 116              		.loc 1 6 161 is_stmt 0 discriminator 12 view .LVU33
+ 117 0038 5DF804FB 		ldr	pc, [sp], #4
+ 118              		.cfi_endproc
+ 119              	.LFE0:
+ 121              		.section	.text.c16,"ax",%progbits
+ 122              		.align	1
+ 123              		.syntax unified
+ 124              		.thumb
+ 125              		.thumb_func
+ 126              		.fpu fpv4-sp-d16
+ 128              	c16:
+ 129              	.LVL12:
+ 130              	.LFB1:
+   7:modules/nav_conversion/gimbal_protocol.c **** static uint16_t c16(const uint8_t*p,size_t n){uint16_t c=65535;for(size_t i=0;i<n;i++){c^=p[i];for(
+ 131              		.loc 1 7 46 is_stmt 1 view -0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135              		.loc 1 7 46 is_stmt 0 view .LVU35
+ 136 0000 00B5     		push	{lr}
+ 137              	.LCFI1:
+ 138              		.cfi_def_cfa_offset 4
+ 139              		.cfi_offset 14, -4
+ 140 0002 8646     		mov	lr, r0
+ 141              		.loc 1 7 47 is_stmt 1 view .LVU36
+ 142              	.LVL13:
+ 143              		.loc 1 7 64 view .LVU37
+ 144              	.LBB6:
+ 145              		.loc 1 7 68 view .LVU38
+ 146              		.loc 1 7 75 is_stmt 0 view .LVU39
+ 147 0004 4FF0000C 		mov	ip, #0
+ 148              	.LBE6:
+ 149              		.loc 1 7 56 view .LVU40
+ 150 0008 4FF6FF70 		movw	r0, #65535
+ 151              	.LVL14:
+ 152              	.LBB9:
+ 153              		.loc 1 7 64 view .LVU41
+ 154 000c 0DE0     		b	.L12
+ 155              	.LVL15:
+ 156              	.L17:
+ 157              	.LBB7:
+ 158              		.loc 1 7 140 view .LVU42
+ 159 000e 0020     		movs	r0, #0
+ 160              	.LVL16:
+ 161              	.L14:
+ 162              		.loc 1 7 140 discriminator 6 view .LVU43
+ 163 0010 4340     		eors	r3, r3, r0
+ 164              		.loc 1 7 122 discriminator 6 view .LVU44
+ 165 0012 98B2     		uxth	r0, r3
+ 166              	.LVL17:
+ 167              		.loc 1 7 117 is_stmt 1 discriminator 6 view .LVU45
+ARM GAS  /tmp/ccBUzZaz.s 			page 4
+
+
+ 168              		.loc 1 7 118 is_stmt 0 discriminator 6 view .LVU46
+ 169 0014 0132     		adds	r2, r2, #1
+ 170              	.LVL18:
+ 171              	.L13:
+ 172              		.loc 1 7 113 is_stmt 1 discriminator 7 view .LVU47
+ 173              		.loc 1 7 96 is_stmt 0 discriminator 7 view .LVU48
+ 174 0016 072A     		cmp	r2, #7
+ 175 0018 05D8     		bhi	.L19
+ 176              		.loc 1 7 121 is_stmt 1 discriminator 8 view .LVU49
+ 177              		.loc 1 7 140 is_stmt 0 discriminator 8 view .LVU50
+ 178 001a 4308     		lsrs	r3, r0, #1
+ 179 001c 10F0010F 		tst	r0, #1
+ 180 0020 F5D0     		beq	.L17
+ 181              		.loc 1 7 140 view .LVU51
+ 182 0022 0648     		ldr	r0, .L21
+ 183              	.LVL19:
+ 184              		.loc 1 7 140 view .LVU52
+ 185 0024 F4E7     		b	.L14
+ 186              	.LVL20:
+ 187              	.L19:
+ 188              		.loc 1 7 140 view .LVU53
+ 189              	.LBE7:
+ 190              		.loc 1 7 83 is_stmt 1 discriminator 9 view .LVU54
+ 191              		.loc 1 7 84 is_stmt 0 discriminator 9 view .LVU55
+ 192 0026 0CF1010C 		add	ip, ip, #1
+ 193              	.LVL21:
+ 194              	.L12:
+ 195              		.loc 1 7 79 is_stmt 1 discriminator 10 view .LVU56
+ 196              		.loc 1 7 64 is_stmt 0 discriminator 10 view .LVU57
+ 197 002a 8C45     		cmp	ip, r1
+ 198 002c 04D2     		bcs	.L20
+ 199              		.loc 1 7 88 is_stmt 1 discriminator 11 view .LVU58
+ 200              		.loc 1 7 92 is_stmt 0 discriminator 11 view .LVU59
+ 201 002e 1EF80C30 		ldrb	r3, [lr, ip]	@ zero_extendqisi2
+ 202              		.loc 1 7 89 discriminator 11 view .LVU60
+ 203 0032 5840     		eors	r0, r0, r3
+ 204              	.LVL22:
+ 205              		.loc 1 7 96 is_stmt 1 discriminator 11 view .LVU61
+ 206              	.LBB8:
+ 207              		.loc 1 7 100 discriminator 11 view .LVU62
+ 208              		.loc 1 7 109 is_stmt 0 discriminator 11 view .LVU63
+ 209 0034 0022     		movs	r2, #0
+ 210              		.loc 1 7 96 discriminator 11 view .LVU64
+ 211 0036 EEE7     		b	.L13
+ 212              	.LVL23:
+ 213              	.L20:
+ 214              		.loc 1 7 96 discriminator 11 view .LVU65
+ 215              	.LBE8:
+ 216              	.LBE9:
+ 217              		.loc 1 7 160 is_stmt 1 discriminator 12 view .LVU66
+ 218              		.loc 1 7 169 is_stmt 0 discriminator 12 view .LVU67
+ 219 0038 5DF804FB 		ldr	pc, [sp], #4
+ 220              	.L22:
+ 221              		.align	2
+ 222              	.L21:
+ 223 003c 0884FFFF 		.word	-31736
+ 224              		.cfi_endproc
+ARM GAS  /tmp/ccBUzZaz.s 			page 5
+
+
+ 225              	.LFE1:
+ 227              		.section	.text.r16,"ax",%progbits
+ 228              		.align	1
+ 229              		.syntax unified
+ 230              		.thumb
+ 231              		.thumb_func
+ 232              		.fpu fpv4-sp-d16
+ 234              	r16:
+ 235              	.LVL24:
+ 236              	.LFB2:
+   8:modules/nav_conversion/gimbal_protocol.c **** static uint16_t r16(const uint8_t*p){return (uint16_t)(p[0]|((uint16_t)p[1]<<8));}
+ 237              		.loc 1 8 37 is_stmt 1 view -0
+ 238              		.cfi_startproc
+ 239              		@ args = 0, pretend = 0, frame = 0
+ 240              		@ frame_needed = 0, uses_anonymous_args = 0
+ 241              		@ link register save eliminated.
+ 242              		.loc 1 8 38 view .LVU69
+ 243              		.loc 1 8 57 is_stmt 0 view .LVU70
+ 244 0000 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 245              		.loc 1 8 73 view .LVU71
+ 246 0002 4078     		ldrb	r0, [r0, #1]	@ zero_extendqisi2
+ 247              	.LVL25:
+ 248              		.loc 1 8 82 view .LVU72
+ 249 0004 43EA0020 		orr	r0, r3, r0, lsl #8
+ 250 0008 7047     		bx	lr
+ 251              		.cfi_endproc
+ 252              	.LFE2:
+ 254              		.section	.text.r32,"ax",%progbits
+ 255              		.align	1
+ 256              		.syntax unified
+ 257              		.thumb
+ 258              		.thumb_func
+ 259              		.fpu fpv4-sp-d16
+ 261              	r32:
+ 262              	.LVL26:
+ 263              	.LFB3:
+   9:modules/nav_conversion/gimbal_protocol.c **** static uint32_t r32(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)
+ 264              		.loc 1 9 37 is_stmt 1 view -0
+ 265              		.cfi_startproc
+ 266              		@ args = 0, pretend = 0, frame = 0
+ 267              		@ frame_needed = 0, uses_anonymous_args = 0
+ 268              		@ link register save eliminated.
+ 269              		.loc 1 9 38 view .LVU74
+ 270              		.loc 1 9 56 is_stmt 0 view .LVU75
+ 271 0000 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 272              		.loc 1 9 72 view .LVU76
+ 273 0002 4278     		ldrb	r2, [r0, #1]	@ zero_extendqisi2
+ 274              		.loc 1 9 59 view .LVU77
+ 275 0004 43EA0223 		orr	r3, r3, r2, lsl #8
+ 276              		.loc 1 9 92 view .LVU78
+ 277 0008 8278     		ldrb	r2, [r0, #2]	@ zero_extendqisi2
+ 278              		.loc 1 9 79 view .LVU79
+ 279 000a 43EA0243 		orr	r3, r3, r2, lsl #16
+ 280              		.loc 1 9 113 view .LVU80
+ 281 000e C078     		ldrb	r0, [r0, #3]	@ zero_extendqisi2
+ 282              	.LVL27:
+ 283              		.loc 1 9 122 view .LVU81
+ARM GAS  /tmp/ccBUzZaz.s 			page 6
+
+
+ 284 0010 43EA0060 		orr	r0, r3, r0, lsl #24
+ 285 0014 7047     		bx	lr
+ 286              		.cfi_endproc
+ 287              	.LFE3:
+ 289              		.section	.text.w16,"ax",%progbits
+ 290              		.align	1
+ 291              		.syntax unified
+ 292              		.thumb
+ 293              		.thumb_func
+ 294              		.fpu fpv4-sp-d16
+ 296              	w16:
+ 297              	.LVL28:
+ 298              	.LFB4:
+  10:modules/nav_conversion/gimbal_protocol.c **** static void w16(uint8_t*p,uint16_t x){p[0]=(uint8_t)x;p[1]=(uint8_t)(x>>8);}
+ 299              		.loc 1 10 38 is_stmt 1 view -0
+ 300              		.cfi_startproc
+ 301              		@ args = 0, pretend = 0, frame = 0
+ 302              		@ frame_needed = 0, uses_anonymous_args = 0
+ 303              		@ link register save eliminated.
+ 304              		.loc 1 10 39 view .LVU83
+ 305              		.loc 1 10 43 is_stmt 0 view .LVU84
+ 306 0000 0170     		strb	r1, [r0]
+ 307              		.loc 1 10 55 is_stmt 1 view .LVU85
+ 308              		.loc 1 10 60 is_stmt 0 view .LVU86
+ 309 0002 090A     		lsrs	r1, r1, #8
+ 310              	.LVL29:
+ 311              		.loc 1 10 59 view .LVU87
+ 312 0004 4170     		strb	r1, [r0, #1]
+ 313              		.loc 1 10 76 view .LVU88
+ 314 0006 7047     		bx	lr
+ 315              		.cfi_endproc
+ 316              	.LFE4:
+ 318              		.section	.text.w32,"ax",%progbits
+ 319              		.align	1
+ 320              		.syntax unified
+ 321              		.thumb
+ 322              		.thumb_func
+ 323              		.fpu fpv4-sp-d16
+ 325              	w32:
+ 326              	.LVL30:
+ 327              	.LFB5:
+  11:modules/nav_conversion/gimbal_protocol.c **** static void w32(uint8_t*p,uint32_t x){for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(x>>(8*i));}
+ 328              		.loc 1 11 38 is_stmt 1 view -0
+ 329              		.cfi_startproc
+ 330              		@ args = 0, pretend = 0, frame = 0
+ 331              		@ frame_needed = 0, uses_anonymous_args = 0
+ 332              		@ link register save eliminated.
+ 333              		.loc 1 11 39 view .LVU90
+ 334              	.LBB10:
+ 335              		.loc 1 11 43 view .LVU91
+ 336              		.loc 1 11 52 is_stmt 0 view .LVU92
+ 337 0000 0023     		movs	r3, #0
+ 338              		.loc 1 11 39 view .LVU93
+ 339 0002 04E0     		b	.L27
+ 340              	.LVL31:
+ 341              	.L28:
+ 342              		.loc 1 11 64 is_stmt 1 discriminator 3 view .LVU94
+ARM GAS  /tmp/ccBUzZaz.s 			page 7
+
+
+ 343              		.loc 1 11 84 is_stmt 0 discriminator 3 view .LVU95
+ 344 0004 DA00     		lsls	r2, r3, #3
+ 345              		.loc 1 11 80 discriminator 3 view .LVU96
+ 346 0006 21FA02F2 		lsr	r2, r1, r2
+ 347              		.loc 1 11 68 discriminator 3 view .LVU97
+ 348 000a C254     		strb	r2, [r0, r3]
+ 349              		.loc 1 11 60 is_stmt 1 discriminator 3 view .LVU98
+ 350              		.loc 1 11 61 is_stmt 0 discriminator 3 view .LVU99
+ 351 000c 0133     		adds	r3, r3, #1
+ 352              	.LVL32:
+ 353              	.L27:
+ 354              		.loc 1 11 56 is_stmt 1 discriminator 1 view .LVU100
+ 355              		.loc 1 11 39 is_stmt 0 discriminator 1 view .LVU101
+ 356 000e 032B     		cmp	r3, #3
+ 357 0010 F8D9     		bls	.L28
+ 358              	.LBE10:
+ 359              		.loc 1 11 89 view .LVU102
+ 360 0012 7047     		bx	lr
+ 361              		.cfi_endproc
+ 362              	.LFE5:
+ 364              		.section	.text.rf,"ax",%progbits
+ 365              		.align	1
+ 366              		.syntax unified
+ 367              		.thumb
+ 368              		.thumb_func
+ 369              		.fpu fpv4-sp-d16
+ 371              	rf:
+ 372              	.LVL33:
+ 373              	.LFB6:
+  12:modules/nav_conversion/gimbal_protocol.c **** static float rf(const uint8_t*p){uint32_t x=r32(p);float f;memcpy(&f,&x,4);return f;}
+ 374              		.loc 1 12 33 is_stmt 1 view -0
+ 375              		.cfi_startproc
+ 376              		@ args = 0, pretend = 0, frame = 8
+ 377              		@ frame_needed = 0, uses_anonymous_args = 0
+ 378              		.loc 1 12 33 is_stmt 0 view .LVU104
+ 379 0000 00B5     		push	{lr}
+ 380              	.LCFI2:
+ 381              		.cfi_def_cfa_offset 4
+ 382              		.cfi_offset 14, -4
+ 383 0002 83B0     		sub	sp, sp, #12
+ 384              	.LCFI3:
+ 385              		.cfi_def_cfa_offset 16
+ 386              		.loc 1 12 34 is_stmt 1 view .LVU105
+ 387              		.loc 1 12 45 is_stmt 0 view .LVU106
+ 388 0004 FFF7FEFF 		bl	r32
+ 389              	.LVL34:
+ 390              		.loc 1 12 52 is_stmt 1 view .LVU107
+ 391              		.loc 1 12 60 view .LVU108
+ 392 0008 0190     		str	r0, [sp, #4]
+ 393              		.loc 1 12 76 view .LVU109
+ 394              		.loc 1 12 83 is_stmt 0 view .LVU110
+ 395 000a 00EE100A 		vmov	s0, r0
+ 396              		.loc 1 12 85 view .LVU111
+ 397 000e 03B0     		add	sp, sp, #12
+ 398              	.LCFI4:
+ 399              		.cfi_def_cfa_offset 4
+ 400              		@ sp needed
+ARM GAS  /tmp/ccBUzZaz.s 			page 8
+
+
+ 401 0010 5DF804FB 		ldr	pc, [sp], #4
+ 402              		.cfi_endproc
+ 403              	.LFE6:
+ 405              		.section	.text.wf,"ax",%progbits
+ 406              		.align	1
+ 407              		.syntax unified
+ 408              		.thumb
+ 409              		.thumb_func
+ 410              		.fpu fpv4-sp-d16
+ 412              	wf:
+ 413              	.LVL35:
+ 414              	.LFB7:
+  13:modules/nav_conversion/gimbal_protocol.c **** static void wf(uint8_t*p,float f){uint32_t x;memcpy(&x,&f,4);w32(p,x);}
+ 415              		.loc 1 13 34 is_stmt 1 view -0
+ 416              		.cfi_startproc
+ 417              		@ args = 0, pretend = 0, frame = 0
+ 418              		@ frame_needed = 0, uses_anonymous_args = 0
+ 419              		.loc 1 13 34 is_stmt 0 view .LVU113
+ 420 0000 08B5     		push	{r3, lr}
+ 421              	.LCFI5:
+ 422              		.cfi_def_cfa_offset 8
+ 423              		.cfi_offset 3, -8
+ 424              		.cfi_offset 14, -4
+ 425              		.loc 1 13 35 is_stmt 1 view .LVU114
+ 426              		.loc 1 13 46 view .LVU115
+ 427              	.LVL36:
+ 428              		.loc 1 13 62 view .LVU116
+ 429 0002 10EE101A 		vmov	r1, s0	@ int
+ 430 0006 FFF7FEFF 		bl	w32
+ 431              	.LVL37:
+ 432              		.loc 1 13 71 is_stmt 0 view .LVU117
+ 433 000a 08BD     		pop	{r3, pc}
+ 434              		.cfi_endproc
+ 435              	.LFE7:
+ 437              		.section	.text.valid,"ax",%progbits
+ 438              		.align	1
+ 439              		.syntax unified
+ 440              		.thumb
+ 441              		.thumb_func
+ 442              		.fpu fpv4-sp-d16
+ 444              	valid:
+ 445              	.LVL38:
+ 446              	.LFB8:
+  14:modules/nav_conversion/gimbal_protocol.c **** static int valid(const rm_gimbal_t*g){return g&&g->route==2&&!(g->status&~15u)&&
+ 447              		.loc 1 14 38 is_stmt 1 view -0
+ 448              		.cfi_startproc
+ 449              		@ args = 0, pretend = 0, frame = 0
+ 450              		@ frame_needed = 0, uses_anonymous_args = 0
+ 451              		@ link register save eliminated.
+ 452              		.loc 1 14 39 view .LVU119
+  15:modules/nav_conversion/gimbal_protocol.c ****  (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
+  16:modules/nav_conversion/gimbal_protocol.c ****  isfinite(g->yaw)&&isfinite(g->pitch)&&isfinite(g->yaw_rate)&&isfinite(g->pitch_rate)&&
+  17:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_YAW_VALID)?(g->yaw==0&&g->yaw_rate==0):1)&&
+ 453              		.loc 1 18 66 is_stmt 0 view .LVU120
+ 454 0000 0346     		mov	r3, r0
+ 455 0002 0028     		cmp	r0, #0
+ARM GAS  /tmp/ccBUzZaz.s 			page 9
+
+
+ 456 0004 67D0     		beq	.L38
+  14:modules/nav_conversion/gimbal_protocol.c **** static int valid(const rm_gimbal_t*g){return g&&g->route==2&&!(g->status&~15u)&&
+ 457              		.loc 1 14 50 view .LVU121
+ 458 0006 827D     		ldrb	r2, [r0, #22]	@ zero_extendqisi2
+  14:modules/nav_conversion/gimbal_protocol.c **** static int valid(const rm_gimbal_t*g){return g&&g->route==2&&!(g->status&~15u)&&
+ 459              		.loc 1 14 47 view .LVU122
+ 460 0008 022A     		cmp	r2, #2
+ 461 000a 01D0     		beq	.L58
+ 462              		.loc 1 18 66 view .LVU123
+ 463 000c 0020     		movs	r0, #0
+ 464              	.LVL39:
+ 465              		.loc 1 18 66 view .LVU124
+ 466 000e 7047     		bx	lr
+ 467              	.LVL40:
+ 468              	.L58:
+  14:modules/nav_conversion/gimbal_protocol.c **** static int valid(const rm_gimbal_t*g){return g&&g->route==2&&!(g->status&~15u)&&
+ 469              		.loc 1 14 65 discriminator 1 view .LVU125
+ 470 0010 428A     		ldrh	r2, [r0, #18]
+  14:modules/nav_conversion/gimbal_protocol.c **** static int valid(const rm_gimbal_t*g){return g&&g->route==2&&!(g->status&~15u)&&
+ 471              		.loc 1 14 60 discriminator 1 view .LVU126
+ 472 0012 32F00F01 		bics	r1, r2, #15
+ 473 0016 60D1     		bne	.L40
+  15:modules/nav_conversion/gimbal_protocol.c ****  (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
+ 474              		.loc 1 15 14 discriminator 2 view .LVU127
+ 475 0018 0168     		ldr	r1, [r0]
+  15:modules/nav_conversion/gimbal_protocol.c ****  (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
+ 476              		.loc 1 15 27 discriminator 2 view .LVU128
+ 477 001a 4068     		ldr	r0, [r0, #4]
+ 478              	.LVL41:
+  15:modules/nav_conversion/gimbal_protocol.c ****  (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
+ 479              		.loc 1 15 2 discriminator 2 view .LVU129
+ 480 001c 091A     		subs	r1, r1, r0
+  15:modules/nav_conversion/gimbal_protocol.c ****  (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
+ 481              		.loc 1 15 42 discriminator 2 view .LVU130
+ 482 001e 988A     		ldrh	r0, [r3, #20]
+  14:modules/nav_conversion/gimbal_protocol.c **** static int valid(const rm_gimbal_t*g){return g&&g->route==2&&!(g->status&~15u)&&
+ 483              		.loc 1 14 79 discriminator 2 view .LVU131
+ 484 0020 8142     		cmp	r1, r0
+ 485 0022 01D0     		beq	.L59
+ 486              		.loc 1 18 66 view .LVU132
+ 487 0024 0020     		movs	r0, #0
+ 488 0026 7047     		bx	lr
+ 489              	.L59:
+  15:modules/nav_conversion/gimbal_protocol.c ****  (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
+ 490              		.loc 1 15 57 view .LVU133
+ 491 0028 B0F5FA7F 		cmp	r0, #500
+ 492 002c 57D8     		bhi	.L42
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 493              		.loc 1 16 2 discriminator 1 view .LVU134
+ 494 002e D3ED067A 		vldr.32	s15, [r3, #24]
+ 495 0032 B0EEE77A 		vabs.f32	s14, s15
+  15:modules/nav_conversion/gimbal_protocol.c ****  (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
+ 496              		.loc 1 15 80 discriminator 1 view .LVU135
+ 497 0036 DFED366A 		vldr.32	s13, .L60
+ 498 003a B4EE667A 		vcmp.f32	s14, s13
+ 499 003e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 500 0042 4ED8     		bhi	.L43
+ARM GAS  /tmp/ccBUzZaz.s 			page 10
+
+
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 501              		.loc 1 16 20 view .LVU136
+ 502 0044 D3ED076A 		vldr.32	s13, [r3, #28]
+ 503 0048 B0EEE66A 		vabs.f32	s12, s13
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 504              		.loc 1 16 18 view .LVU137
+ 505 004c DFED305A 		vldr.32	s11, .L60
+ 506 0050 B4EE656A 		vcmp.f32	s12, s11
+ 507 0054 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 508 0058 45D8     		bhi	.L44
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 509              		.loc 1 16 40 discriminator 1 view .LVU138
+ 510 005a D3ED085A 		vldr.32	s11, [r3, #32]
+ 511 005e F0EEE54A 		vabs.f32	s9, s11
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 512              		.loc 1 16 38 discriminator 1 view .LVU139
+ 513 0062 9FED2B5A 		vldr.32	s10, .L60
+ 514 0066 F4EE454A 		vcmp.f32	s9, s10
+ 515 006a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 516 006e 3CD8     		bhi	.L45
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 517              		.loc 1 16 63 discriminator 2 view .LVU140
+ 518 0070 93ED095A 		vldr.32	s10, [r3, #36]
+ 519 0074 B0EEC54A 		vabs.f32	s8, s10
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 520              		.loc 1 16 61 discriminator 2 view .LVU141
+ 521 0078 DFED254A 		vldr.32	s9, .L60
+ 522 007c B4EE644A 		vcmp.f32	s8, s9
+ 523 0080 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 524 0084 33D8     		bhi	.L46
+  16:modules/nav_conversion/gimbal_protocol.c ****  fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
+ 525              		.loc 1 16 86 discriminator 3 view .LVU142
+ 526 0086 DFED234A 		vldr.32	s9, .L60+4
+ 527 008a B4EEE47A 		vcmpe.f32	s14, s9
+ 528 008e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 529 0092 2ED8     		bhi	.L56
+  17:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_YAW_VALID)?(g->yaw==0&&g->yaw_rate==0):1)&&
+ 530              		.loc 1 17 26 view .LVU143
+ 531 0094 B4EEE46A 		vcmpe.f32	s12, s9
+ 532 0098 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 533 009c 2BD8     		bhi	.L57
+  17:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_YAW_VALID)?(g->yaw==0&&g->yaw_rate==0):1)&&
+ 534              		.loc 1 17 54 discriminator 1 view .LVU144
+ 535 009e 12F0010F 		tst	r2, #1
+ 536 00a2 09D1     		bne	.L37
+  17:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_YAW_VALID)?(g->yaw==0&&g->yaw_rate==0):1)&&
+ 537              		.loc 1 17 54 discriminator 2 view .LVU145
+ 538 00a4 F5EE407A 		vcmp.f32	s15, #0
+ 539 00a8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 540 00ac 25D1     		bne	.L49
+ 541              		.loc 1 18 46 discriminator 3 view .LVU146
+ 542 00ae F5EE405A 		vcmp.f32	s11, #0
+ 543 00b2 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 544 00b6 22D1     		bne	.L50
+ 545              	.L37:
+ 546              		.loc 1 18 66 discriminator 2 view .LVU147
+ 547 00b8 12F0020F 		tst	r2, #2
+ARM GAS  /tmp/ccBUzZaz.s 			page 11
+
+
+ 548 00bc 21D1     		bne	.L51
+ 549              		.loc 1 18 66 discriminator 5 view .LVU148
+ 550 00be F5EE406A 		vcmp.f32	s13, #0
+ 551 00c2 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 552 00c6 1ED1     		bne	.L52
+  19:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 553              		.loc 1 19 50 view .LVU149
+ 554 00c8 B5EE405A 		vcmp.f32	s10, #0
+ 555 00cc F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 556 00d0 1BD0     		beq	.L53
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 557              		.loc 1 18 66 view .LVU150
+ 558 00d2 0020     		movs	r0, #0
+ 559 00d4 7047     		bx	lr
+ 560              	.LVL42:
+ 561              	.L38:
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 562              		.loc 1 18 66 view .LVU151
+ 563 00d6 0020     		movs	r0, #0
+ 564              	.LVL43:
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 565              		.loc 1 18 66 view .LVU152
+ 566 00d8 7047     		bx	lr
+ 567              	.LVL44:
+ 568              	.L40:
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 569              		.loc 1 18 66 view .LVU153
+ 570 00da 0020     		movs	r0, #0
+ 571              	.LVL45:
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 572              		.loc 1 18 66 view .LVU154
+ 573 00dc 7047     		bx	lr
+ 574              	.L42:
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 575              		.loc 1 18 66 view .LVU155
+ 576 00de 0020     		movs	r0, #0
+ 577 00e0 7047     		bx	lr
+ 578              	.L43:
+  18:modules/nav_conversion/gimbal_protocol.c ****  (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
+ 579              		.loc 1 18 66 view .LVU156
+ 580 00e2 0020     		movs	r0, #0
+ 581 00e4 7047     		bx	lr
+ 582              	.L44:
+ 583 00e6 0020     		movs	r0, #0
+ 584 00e8 7047     		bx	lr
+ 585              	.L45:
+ 586 00ea 0020     		movs	r0, #0
+ 587 00ec 7047     		bx	lr
+ 588              	.L46:
+ 589 00ee 0020     		movs	r0, #0
+ 590 00f0 7047     		bx	lr
+ 591              	.L56:
+ 592 00f2 0020     		movs	r0, #0
+ 593 00f4 7047     		bx	lr
+ 594              	.L57:
+ 595 00f6 0020     		movs	r0, #0
+ 596 00f8 7047     		bx	lr
+ARM GAS  /tmp/ccBUzZaz.s 			page 12
+
+
+ 597              	.L49:
+ 598 00fa 0020     		movs	r0, #0
+ 599 00fc 7047     		bx	lr
+ 600              	.L50:
+ 601 00fe 0020     		movs	r0, #0
+ 602 0100 7047     		bx	lr
+ 603              	.L51:
+ 604 0102 0120     		movs	r0, #1
+ 605 0104 7047     		bx	lr
+ 606              	.L52:
+ 607 0106 0020     		movs	r0, #0
+ 608 0108 7047     		bx	lr
+ 609              	.L53:
+ 610 010a 0120     		movs	r0, #1
+ 611              		.loc 1 19 73 view .LVU157
+ 612 010c 7047     		bx	lr
+ 613              	.L61:
+ 614 010e 00BF     		.align	2
+ 615              	.L60:
+ 616 0110 FFFF7F7F 		.word	2139095039
+ 617 0114 DC0F4940 		.word	1078530012
+ 618              		.cfi_endproc
+ 619              	.LFE8:
+ 621              		.section	.text.rm_encode_gimbal,"ax",%progbits
+ 622              		.align	1
+ 623              		.global	rm_encode_gimbal
+ 624              		.syntax unified
+ 625              		.thumb
+ 626              		.thumb_func
+ 627              		.fpu fpv4-sp-d16
+ 629              	rm_encode_gimbal:
+ 630              	.LVL46:
+ 631              	.LFB9:
+  20:modules/nav_conversion/gimbal_protocol.c **** int rm_encode_gimbal(const rm_gimbal_t*g,uint8_t out[RM_GIMBAL_FRAME_SIZE]){
+ 632              		.loc 1 20 76 is_stmt 1 view -0
+ 633              		.cfi_startproc
+ 634              		@ args = 0, pretend = 0, frame = 0
+ 635              		@ frame_needed = 0, uses_anonymous_args = 0
+  21:modules/nav_conversion/gimbal_protocol.c ****  if(!out||!valid(g))return 0;
+ 636              		.loc 1 21 2 view .LVU159
+ 637              		.loc 1 21 4 is_stmt 0 view .LVU160
+ 638 0000 0029     		cmp	r1, #0
+ 639 0002 5FD0     		beq	.L64
+  20:modules/nav_conversion/gimbal_protocol.c **** int rm_encode_gimbal(const rm_gimbal_t*g,uint8_t out[RM_GIMBAL_FRAME_SIZE]){
+ 640              		.loc 1 20 76 discriminator 2 view .LVU161
+ 641 0004 70B5     		push	{r4, r5, r6, lr}
+ 642              	.LCFI6:
+ 643              		.cfi_def_cfa_offset 16
+ 644              		.cfi_offset 4, -16
+ 645              		.cfi_offset 5, -12
+ 646              		.cfi_offset 6, -8
+ 647              		.cfi_offset 14, -4
+ 648 0006 0546     		mov	r5, r0
+ 649 0008 0C46     		mov	r4, r1
+ 650              		.loc 1 21 12 discriminator 2 view .LVU162
+ 651 000a FFF7FEFF 		bl	valid
+ 652              	.LVL47:
+ARM GAS  /tmp/ccBUzZaz.s 			page 13
+
+
+ 653              		.loc 1 21 9 discriminator 2 view .LVU163
+ 654 000e 00B9     		cbnz	r0, .L69
+ 655              	.L62:
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+  23:modules/nav_conversion/gimbal_protocol.c ****  w32(out+4,g->uptime_ms);out[8]=1;out[9]=g->route;w16(out+10,g->sequence);w16(out+12,g->status);
+  24:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+  25:modules/nav_conversion/gimbal_protocol.c ****  wf(out+28,g->yaw);wf(out+32,g->pitch);wf(out+36,g->yaw_rate);wf(out+40,g->pitch_rate);w16(out+44,c
+ 656              		.loc 1 25 121 view .LVU164
+ 657 0010 70BD     		pop	{r4, r5, r6, pc}
+ 658              	.LVL48:
+ 659              	.L69:
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 660              		.loc 1 22 2 is_stmt 1 view .LVU165
+ 661 0012 2E22     		movs	r2, #46
+ 662 0014 0021     		movs	r1, #0
+ 663 0016 2046     		mov	r0, r4
+ 664 0018 FFF7FEFF 		bl	memset
+ 665              	.LVL49:
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 666              		.loc 1 22 37 view .LVU166
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 667              		.loc 1 22 43 is_stmt 0 view .LVU167
+ 668 001c 5A23     		movs	r3, #90
+ 669 001e 2370     		strb	r3, [r4]
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 670              		.loc 1 22 49 is_stmt 1 view .LVU168
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 671              		.loc 1 22 55 is_stmt 0 view .LVU169
+ 672 0020 2823     		movs	r3, #40
+ 673 0022 6370     		strb	r3, [r4, #1]
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 674              		.loc 1 22 59 is_stmt 1 view .LVU170
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 675              		.loc 1 22 65 is_stmt 0 view .LVU171
+ 676 0024 2223     		movs	r3, #34
+ 677 0026 A370     		strb	r3, [r4, #2]
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 678              		.loc 1 22 79 is_stmt 1 view .LVU172
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 679              		.loc 1 22 86 is_stmt 0 view .LVU173
+ 680 0028 0321     		movs	r1, #3
+ 681 002a 2046     		mov	r0, r4
+ 682 002c FFF7FEFF 		bl	c8
+ 683              	.LVL50:
+  22:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 684              		.loc 1 22 85 view .LVU174
+ 685 0030 E070     		strb	r0, [r4, #3]
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 686              		.loc 1 23 2 is_stmt 1 view .LVU175
+ 687 0032 2968     		ldr	r1, [r5]
+ 688 0034 201D     		adds	r0, r4, #4
+ 689 0036 FFF7FEFF 		bl	w32
+ 690              	.LVL51:
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 691              		.loc 1 23 26 view .LVU176
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 692              		.loc 1 23 32 is_stmt 0 view .LVU177
+ARM GAS  /tmp/ccBUzZaz.s 			page 14
+
+
+ 693 003a 0126     		movs	r6, #1
+ 694 003c 2672     		strb	r6, [r4, #8]
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 695              		.loc 1 23 35 is_stmt 1 view .LVU178
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 696              		.loc 1 23 43 is_stmt 0 view .LVU179
+ 697 003e AB7D     		ldrb	r3, [r5, #22]	@ zero_extendqisi2
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 698              		.loc 1 23 41 view .LVU180
+ 699 0040 6372     		strb	r3, [r4, #9]
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 700              		.loc 1 23 51 is_stmt 1 view .LVU181
+ 701 0042 298A     		ldrh	r1, [r5, #16]
+ 702 0044 04F10A00 		add	r0, r4, #10
+ 703 0048 FFF7FEFF 		bl	w16
+ 704              	.LVL52:
+  23:modules/nav_conversion/gimbal_protocol.c ****  w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command
+ 705              		.loc 1 23 75 view .LVU182
+ 706 004c 698A     		ldrh	r1, [r5, #18]
+ 707 004e 04F10C00 		add	r0, r4, #12
+ 708 0052 FFF7FEFF 		bl	w16
+ 709              	.LVL53:
+  24:modules/nav_conversion/gimbal_protocol.c ****  wf(out+28,g->yaw);wf(out+32,g->pitch);wf(out+36,g->yaw_rate);wf(out+40,g->pitch_rate);w16(out+44,c
+ 710              		.loc 1 24 2 view .LVU183
+ 711 0056 A98A     		ldrh	r1, [r5, #20]
+ 712 0058 04F10E00 		add	r0, r4, #14
+ 713 005c FFF7FEFF 		bl	w16
+ 714              	.LVL54:
+  24:modules/nav_conversion/gimbal_protocol.c ****  wf(out+28,g->yaw);wf(out+32,g->pitch);wf(out+36,g->yaw_rate);wf(out+40,g->pitch_rate);w16(out+44,c
+ 715              		.loc 1 24 31 view .LVU184
+ 716 0060 E968     		ldr	r1, [r5, #12]
+ 717 0062 04F11000 		add	r0, r4, #16
+ 718 0066 FFF7FEFF 		bl	w32
+ 719              	.LVL55:
+  24:modules/nav_conversion/gimbal_protocol.c ****  wf(out+28,g->yaw);wf(out+32,g->pitch);wf(out+36,g->yaw_rate);wf(out+40,g->pitch_rate);w16(out+44,c
+ 720              		.loc 1 24 54 view .LVU185
+ 721 006a 6968     		ldr	r1, [r5, #4]
+ 722 006c 04F11400 		add	r0, r4, #20
+ 723 0070 FFF7FEFF 		bl	w32
+ 724              	.LVL56:
+  24:modules/nav_conversion/gimbal_protocol.c ****  wf(out+28,g->yaw);wf(out+32,g->pitch);wf(out+36,g->yaw_rate);wf(out+40,g->pitch_rate);w16(out+44,c
+ 725              		.loc 1 24 79 view .LVU186
+ 726 0074 A968     		ldr	r1, [r5, #8]
+ 727 0076 04F11800 		add	r0, r4, #24
+ 728 007a FFF7FEFF 		bl	w32
+ 729              	.LVL57:
+ 730              		.loc 1 25 2 view .LVU187
+ 731 007e 95ED060A 		vldr.32	s0, [r5, #24]
+ 732 0082 04F11C00 		add	r0, r4, #28
+ 733 0086 FFF7FEFF 		bl	wf
+ 734              	.LVL58:
+ 735              		.loc 1 25 20 view .LVU188
+ 736 008a 95ED070A 		vldr.32	s0, [r5, #28]
+ 737 008e 04F12000 		add	r0, r4, #32
+ 738 0092 FFF7FEFF 		bl	wf
+ 739              	.LVL59:
+ 740              		.loc 1 25 40 view .LVU189
+ARM GAS  /tmp/ccBUzZaz.s 			page 15
+
+
+ 741 0096 95ED080A 		vldr.32	s0, [r5, #32]
+ 742 009a 04F12400 		add	r0, r4, #36
+ 743 009e FFF7FEFF 		bl	wf
+ 744              	.LVL60:
+ 745              		.loc 1 25 63 view .LVU190
+ 746 00a2 95ED090A 		vldr.32	s0, [r5, #36]
+ 747 00a6 04F12800 		add	r0, r4, #40
+ 748 00aa FFF7FEFF 		bl	wf
+ 749              	.LVL61:
+ 750              		.loc 1 25 88 view .LVU191
+ 751 00ae 2C21     		movs	r1, #44
+ 752 00b0 2046     		mov	r0, r4
+ 753 00b2 FFF7FEFF 		bl	c16
+ 754              	.LVL62:
+ 755 00b6 0146     		mov	r1, r0
+ 756 00b8 04F12C00 		add	r0, r4, #44
+ 757 00bc FFF7FEFF 		bl	w16
+ 758              	.LVL63:
+ 759              		.loc 1 25 112 view .LVU192
+ 760              		.loc 1 25 119 is_stmt 0 view .LVU193
+ 761 00c0 3046     		mov	r0, r6
+ 762 00c2 A5E7     		b	.L62
+ 763              	.LVL64:
+ 764              	.L64:
+ 765              	.LCFI7:
+ 766              		.cfi_def_cfa_offset 0
+ 767              		.cfi_restore 4
+ 768              		.cfi_restore 5
+ 769              		.cfi_restore 6
+ 770              		.cfi_restore 14
+  21:modules/nav_conversion/gimbal_protocol.c ****  memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
+ 771              		.loc 1 21 28 view .LVU194
+ 772 00c4 0020     		movs	r0, #0
+ 773              	.LVL65:
+ 774              		.loc 1 25 121 view .LVU195
+ 775 00c6 7047     		bx	lr
+ 776              		.cfi_endproc
+ 777              	.LFE9:
+ 779              		.section	.text.rm_decode_gimbal,"ax",%progbits
+ 780              		.align	1
+ 781              		.global	rm_decode_gimbal
+ 782              		.syntax unified
+ 783              		.thumb
+ 784              		.thumb_func
+ 785              		.fpu fpv4-sp-d16
+ 787              	rm_decode_gimbal:
+ 788              	.LVL66:
+ 789              	.LFB10:
+  26:modules/nav_conversion/gimbal_protocol.c **** int rm_decode_gimbal(const uint8_t*p,size_t n,rm_gimbal_t*out){rm_gimbal_t g;
+ 790              		.loc 1 26 63 is_stmt 1 view -0
+ 791              		.cfi_startproc
+ 792              		@ args = 0, pretend = 0, frame = 40
+ 793              		@ frame_needed = 0, uses_anonymous_args = 0
+ 794              		.loc 1 26 64 view .LVU197
+  27:modules/nav_conversion/gimbal_protocol.c ****  if(!p||!out||n!=RM_GIMBAL_FRAME_SIZE||p[0]!=0x5a||p[1]!=40||p[2]!=RM_ID_GIMBAL||p[3]!=c8(p,3)||p[8
+ 795              		.loc 1 27 2 view .LVU198
+ 796              		.loc 1 27 4 is_stmt 0 view .LVU199
+ARM GAS  /tmp/ccBUzZaz.s 			page 16
+
+
+ 797 0000 0028     		cmp	r0, #0
+ 798 0002 75D0     		beq	.L72
+  26:modules/nav_conversion/gimbal_protocol.c **** int rm_decode_gimbal(const uint8_t*p,size_t n,rm_gimbal_t*out){rm_gimbal_t g;
+ 799              		.loc 1 26 63 discriminator 2 view .LVU200
+ 800 0004 70B5     		push	{r4, r5, r6, lr}
+ 801              	.LCFI8:
+ 802              		.cfi_def_cfa_offset 16
+ 803              		.cfi_offset 4, -16
+ 804              		.cfi_offset 5, -12
+ 805              		.cfi_offset 6, -8
+ 806              		.cfi_offset 14, -4
+ 807 0006 8AB0     		sub	sp, sp, #40
+ 808              	.LCFI9:
+ 809              		.cfi_def_cfa_offset 56
+ 810 0008 1446     		mov	r4, r2
+ 811 000a 0546     		mov	r5, r0
+ 812              		.loc 1 27 7 discriminator 2 view .LVU201
+ 813 000c 002A     		cmp	r2, #0
+ 814 000e 71D0     		beq	.L73
+ 815              		.loc 1 27 13 discriminator 4 view .LVU202
+ 816 0010 2E29     		cmp	r1, #46
+ 817 0012 71D1     		bne	.L74
+ 818              		.loc 1 27 41 discriminator 6 view .LVU203
+ 819 0014 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 820              		.loc 1 27 38 discriminator 6 view .LVU204
+ 821 0016 5A2B     		cmp	r3, #90
+ 822 0018 71D1     		bne	.L75
+ 823              		.loc 1 27 53 discriminator 8 view .LVU205
+ 824 001a 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 825              		.loc 1 27 50 discriminator 8 view .LVU206
+ 826 001c 282B     		cmp	r3, #40
+ 827 001e 70D1     		bne	.L76
+ 828              		.loc 1 27 63 discriminator 10 view .LVU207
+ 829 0020 8378     		ldrb	r3, [r0, #2]	@ zero_extendqisi2
+ 830              		.loc 1 27 60 discriminator 10 view .LVU208
+ 831 0022 222B     		cmp	r3, #34
+ 832 0024 6FD1     		bne	.L77
+ 833              		.loc 1 27 83 discriminator 12 view .LVU209
+ 834 0026 C678     		ldrb	r6, [r0, #3]	@ zero_extendqisi2
+ 835              		.loc 1 27 88 discriminator 12 view .LVU210
+ 836 0028 0321     		movs	r1, #3
+ 837              	.LVL67:
+ 838              		.loc 1 27 88 discriminator 12 view .LVU211
+ 839 002a FFF7FEFF 		bl	c8
+ 840              	.LVL68:
+ 841              		.loc 1 27 80 discriminator 12 view .LVU212
+ 842 002e 8642     		cmp	r6, r0
+ 843 0030 6BD1     		bne	.L78
+ 844              		.loc 1 27 98 discriminator 14 view .LVU213
+ 845 0032 2B7A     		ldrb	r3, [r5, #8]	@ zero_extendqisi2
+ 846              		.loc 1 27 95 discriminator 14 view .LVU214
+ 847 0034 012B     		cmp	r3, #1
+ 848 0036 6AD1     		bne	.L79
+ 849              		.loc 1 27 106 discriminator 16 view .LVU215
+ 850 0038 05F12C00 		add	r0, r5, #44
+ 851 003c FFF7FEFF 		bl	r16
+ 852              	.LVL69:
+ARM GAS  /tmp/ccBUzZaz.s 			page 17
+
+
+ 853 0040 0646     		mov	r6, r0
+ 854              		.loc 1 27 117 discriminator 16 view .LVU216
+ 855 0042 2C21     		movs	r1, #44
+ 856 0044 2846     		mov	r0, r5
+ 857 0046 FFF7FEFF 		bl	c16
+ 858              	.LVL70:
+ 859              		.loc 1 27 104 discriminator 16 view .LVU217
+ 860 004a 8642     		cmp	r6, r0
+ 861 004c 01D0     		beq	.L85
+ 862              		.loc 1 27 134 view .LVU218
+ 863 004e 0020     		movs	r0, #0
+ 864 0050 53E0     		b	.L70
+ 865              	.L85:
+  28:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 866              		.loc 1 28 2 is_stmt 1 view .LVU219
+ 867              		.loc 1 28 14 is_stmt 0 view .LVU220
+ 868 0052 281D     		adds	r0, r5, #4
+ 869 0054 FFF7FEFF 		bl	r32
+ 870              	.LVL71:
+ 871              		.loc 1 28 13 view .LVU221
+ 872 0058 0090     		str	r0, [sp]
+ 873              		.loc 1 28 23 is_stmt 1 view .LVU222
+ 874              		.loc 1 28 30 is_stmt 0 view .LVU223
+ 875 005a 6B7A     		ldrb	r3, [r5, #9]	@ zero_extendqisi2
+ 876 005c 8DF81630 		strb	r3, [sp, #22]
+ 877              		.loc 1 28 36 is_stmt 1 view .LVU224
+ 878              		.loc 1 28 47 is_stmt 0 view .LVU225
+ 879 0060 05F10A00 		add	r0, r5, #10
+ 880 0064 FFF7FEFF 		bl	r16
+ 881              	.LVL72:
+ 882              		.loc 1 28 46 view .LVU226
+ 883 0068 ADF81000 		strh	r0, [sp, #16]	@ movhi
+ 884              		.loc 1 28 57 is_stmt 1 view .LVU227
+ 885              		.loc 1 28 66 is_stmt 0 view .LVU228
+ 886 006c 05F10C00 		add	r0, r5, #12
+ 887 0070 FFF7FEFF 		bl	r16
+ 888              	.LVL73:
+ 889              		.loc 1 28 65 view .LVU229
+ 890 0074 ADF81200 		strh	r0, [sp, #18]	@ movhi
+ 891              		.loc 1 28 76 is_stmt 1 view .LVU230
+ 892              		.loc 1 28 92 is_stmt 0 view .LVU231
+ 893 0078 05F10E00 		add	r0, r5, #14
+ 894 007c FFF7FEFF 		bl	r16
+ 895              	.LVL74:
+ 896              		.loc 1 28 91 view .LVU232
+ 897 0080 ADF81400 		strh	r0, [sp, #20]	@ movhi
+ 898              		.loc 1 28 102 is_stmt 1 view .LVU233
+ 899              		.loc 1 28 112 is_stmt 0 view .LVU234
+ 900 0084 05F11000 		add	r0, r5, #16
+ 901 0088 FFF7FEFF 		bl	r32
+ 902              	.LVL75:
+ 903              		.loc 1 28 111 view .LVU235
+ 904 008c 0390     		str	r0, [sp, #12]
+  29:modules/nav_conversion/gimbal_protocol.c ****  g.sample_ms=r32(p+20);g.command_received_ms=r32(p+24);g.yaw=rf(p+28);g.pitch=rf(p+32);g.yaw_rate=r
+ 905              		.loc 1 29 2 is_stmt 1 view .LVU236
+ 906              		.loc 1 29 14 is_stmt 0 view .LVU237
+ 907 008e 05F11400 		add	r0, r5, #20
+ARM GAS  /tmp/ccBUzZaz.s 			page 18
+
+
+ 908 0092 FFF7FEFF 		bl	r32
+ 909              	.LVL76:
+ 910              		.loc 1 29 13 view .LVU238
+ 911 0096 0190     		str	r0, [sp, #4]
+ 912              		.loc 1 29 24 is_stmt 1 view .LVU239
+ 913              		.loc 1 29 46 is_stmt 0 view .LVU240
+ 914 0098 05F11800 		add	r0, r5, #24
+ 915 009c FFF7FEFF 		bl	r32
+ 916              	.LVL77:
+ 917              		.loc 1 29 45 view .LVU241
+ 918 00a0 0290     		str	r0, [sp, #8]
+ 919              		.loc 1 29 56 is_stmt 1 view .LVU242
+ 920              		.loc 1 29 62 is_stmt 0 view .LVU243
+ 921 00a2 05F11C00 		add	r0, r5, #28
+ 922 00a6 FFF7FEFF 		bl	rf
+ 923              	.LVL78:
+ 924              		.loc 1 29 61 view .LVU244
+ 925 00aa 8DED060A 		vstr.32	s0, [sp, #24]
+ 926              		.loc 1 29 71 is_stmt 1 view .LVU245
+ 927              		.loc 1 29 79 is_stmt 0 view .LVU246
+ 928 00ae 05F12000 		add	r0, r5, #32
+ 929 00b2 FFF7FEFF 		bl	rf
+ 930              	.LVL79:
+ 931              		.loc 1 29 78 view .LVU247
+ 932 00b6 8DED070A 		vstr.32	s0, [sp, #28]
+ 933              		.loc 1 29 88 is_stmt 1 view .LVU248
+ 934              		.loc 1 29 99 is_stmt 0 view .LVU249
+ 935 00ba 05F12400 		add	r0, r5, #36
+ 936 00be FFF7FEFF 		bl	rf
+ 937              	.LVL80:
+ 938              		.loc 1 29 98 view .LVU250
+ 939 00c2 8DED080A 		vstr.32	s0, [sp, #32]
+ 940              		.loc 1 29 108 is_stmt 1 view .LVU251
+ 941              		.loc 1 29 121 is_stmt 0 view .LVU252
+ 942 00c6 05F12800 		add	r0, r5, #40
+ 943 00ca FFF7FEFF 		bl	rf
+ 944              	.LVL81:
+ 945              		.loc 1 29 120 view .LVU253
+ 946 00ce 8DED090A 		vstr.32	s0, [sp, #36]
+  30:modules/nav_conversion/gimbal_protocol.c ****  if(!valid(&g))return 0;
+ 947              		.loc 1 30 2 is_stmt 1 view .LVU254
+ 948              		.loc 1 30 6 is_stmt 0 view .LVU255
+ 949 00d2 6846     		mov	r0, sp
+ 950 00d4 FFF7FEFF 		bl	valid
+ 951              	.LVL82:
+ 952              		.loc 1 30 4 view .LVU256
+ 953 00d8 78B1     		cbz	r0, .L70
+  31:modules/nav_conversion/gimbal_protocol.c ****  *out=g;return 1;}
+ 954              		.loc 1 31 2 is_stmt 1 view .LVU257
+ 955              		.loc 1 31 6 is_stmt 0 view .LVU258
+ 956 00da 6D46     		mov	r5, sp
+ 957              	.LVL83:
+ 958              		.loc 1 31 6 view .LVU259
+ 959 00dc 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 960 00de 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 961              	.LVL84:
+ 962              		.loc 1 31 6 view .LVU260
+ARM GAS  /tmp/ccBUzZaz.s 			page 19
+
+
+ 963 00e0 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 964 00e2 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 965              	.LVL85:
+ 966              		.loc 1 31 6 view .LVU261
+ 967 00e4 95E80300 		ldm	r5, {r0, r1}
+ 968 00e8 84E80300 		stm	r4, {r0, r1}
+ 969              		.loc 1 31 9 is_stmt 1 view .LVU262
+ 970              		.loc 1 31 16 is_stmt 0 view .LVU263
+ 971 00ec 0120     		movs	r0, #1
+ 972 00ee 04E0     		b	.L70
+ 973              	.LVL86:
+ 974              	.L72:
+ 975              	.LCFI10:
+ 976              		.cfi_def_cfa_offset 0
+ 977              		.cfi_restore 4
+ 978              		.cfi_restore 5
+ 979              		.cfi_restore 6
+ 980              		.cfi_restore 14
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 981              		.loc 1 27 134 view .LVU264
+ 982 00f0 0020     		movs	r0, #0
+ 983              	.LVL87:
+ 984              		.loc 1 31 18 view .LVU265
+ 985 00f2 7047     		bx	lr
+ 986              	.LVL88:
+ 987              	.L73:
+ 988              	.LCFI11:
+ 989              		.cfi_def_cfa_offset 56
+ 990              		.cfi_offset 4, -16
+ 991              		.cfi_offset 5, -12
+ 992              		.cfi_offset 6, -8
+ 993              		.cfi_offset 14, -4
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 994              		.loc 1 27 134 view .LVU266
+ 995 00f4 0020     		movs	r0, #0
+ 996              	.LVL89:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 997              		.loc 1 27 134 view .LVU267
+ 998 00f6 00E0     		b	.L70
+ 999              	.LVL90:
+ 1000              	.L74:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1001              		.loc 1 27 134 view .LVU268
+ 1002 00f8 0020     		movs	r0, #0
+ 1003              	.LVL91:
+ 1004              	.L70:
+ 1005              		.loc 1 31 18 view .LVU269
+ 1006 00fa 0AB0     		add	sp, sp, #40
+ 1007              	.LCFI12:
+ 1008              		.cfi_remember_state
+ 1009              		.cfi_def_cfa_offset 16
+ 1010              		@ sp needed
+ 1011 00fc 70BD     		pop	{r4, r5, r6, pc}
+ 1012              	.LVL92:
+ 1013              	.L75:
+ 1014              	.LCFI13:
+ 1015              		.cfi_restore_state
+ARM GAS  /tmp/ccBUzZaz.s 			page 20
+
+
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1016              		.loc 1 27 134 view .LVU270
+ 1017 00fe 0020     		movs	r0, #0
+ 1018              	.LVL93:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1019              		.loc 1 27 134 view .LVU271
+ 1020 0100 FBE7     		b	.L70
+ 1021              	.LVL94:
+ 1022              	.L76:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1023              		.loc 1 27 134 view .LVU272
+ 1024 0102 0020     		movs	r0, #0
+ 1025              	.LVL95:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1026              		.loc 1 27 134 view .LVU273
+ 1027 0104 F9E7     		b	.L70
+ 1028              	.LVL96:
+ 1029              	.L77:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1030              		.loc 1 27 134 view .LVU274
+ 1031 0106 0020     		movs	r0, #0
+ 1032              	.LVL97:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1033              		.loc 1 27 134 view .LVU275
+ 1034 0108 F7E7     		b	.L70
+ 1035              	.LVL98:
+ 1036              	.L78:
+  27:modules/nav_conversion/gimbal_protocol.c ****  g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14
+ 1037              		.loc 1 27 134 view .LVU276
+ 1038 010a 0020     		movs	r0, #0
+ 1039 010c F5E7     		b	.L70
+ 1040              	.L79:
+ 1041 010e 0020     		movs	r0, #0
+ 1042 0110 F3E7     		b	.L70
+ 1043              		.cfi_endproc
+ 1044              	.LFE10:
+ 1046              		.text
+ 1047              	.Letext0:
+ 1048              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 1049              		.file 3 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h"
+ 1050              		.file 4 "modules/nav_conversion/rm_chassis_comm/gimbal_protocol.h"
+ 1051              		.file 5 "<built-in>"
+ARM GAS  /tmp/ccBUzZaz.s 			page 21
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gimbal_protocol.c
+     /tmp/ccBUzZaz.s:18     .text.c8:0000000000000000 $t
+     /tmp/ccBUzZaz.s:25     .text.c8:0000000000000000 c8
+     /tmp/ccBUzZaz.s:122    .text.c16:0000000000000000 $t
+     /tmp/ccBUzZaz.s:128    .text.c16:0000000000000000 c16
+     /tmp/ccBUzZaz.s:223    .text.c16:000000000000003c $d
+     /tmp/ccBUzZaz.s:228    .text.r16:0000000000000000 $t
+     /tmp/ccBUzZaz.s:234    .text.r16:0000000000000000 r16
+     /tmp/ccBUzZaz.s:255    .text.r32:0000000000000000 $t
+     /tmp/ccBUzZaz.s:261    .text.r32:0000000000000000 r32
+     /tmp/ccBUzZaz.s:290    .text.w16:0000000000000000 $t
+     /tmp/ccBUzZaz.s:296    .text.w16:0000000000000000 w16
+     /tmp/ccBUzZaz.s:319    .text.w32:0000000000000000 $t
+     /tmp/ccBUzZaz.s:325    .text.w32:0000000000000000 w32
+     /tmp/ccBUzZaz.s:365    .text.rf:0000000000000000 $t
+     /tmp/ccBUzZaz.s:371    .text.rf:0000000000000000 rf
+     /tmp/ccBUzZaz.s:406    .text.wf:0000000000000000 $t
+     /tmp/ccBUzZaz.s:412    .text.wf:0000000000000000 wf
+     /tmp/ccBUzZaz.s:438    .text.valid:0000000000000000 $t
+     /tmp/ccBUzZaz.s:444    .text.valid:0000000000000000 valid
+     /tmp/ccBUzZaz.s:616    .text.valid:0000000000000110 $d
+     /tmp/ccBUzZaz.s:622    .text.rm_encode_gimbal:0000000000000000 $t
+     /tmp/ccBUzZaz.s:629    .text.rm_encode_gimbal:0000000000000000 rm_encode_gimbal
+     /tmp/ccBUzZaz.s:780    .text.rm_decode_gimbal:0000000000000000 $t
+     /tmp/ccBUzZaz.s:787    .text.rm_decode_gimbal:0000000000000000 rm_decode_gimbal
+
+UNDEFINED SYMBOLS
+memset

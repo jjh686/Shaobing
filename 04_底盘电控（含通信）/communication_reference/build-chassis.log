@@ -1,0 +1,12 @@
+Scanning dependencies of target basic_framework.elf
+Consolidate compiler generated dependencies of target basic_framework.elf
+[  0%] Building C object CMakeFiles/basic_framework.elf.dir/modules/nav_relay/nav_can_adapter.c.obj
+[  1%] Linking C executable basic_framework.elf
+Memory region         Used Size  Region Size  %age Used
+             RAM:       77864 B       128 KB     59.41%
+          CCMRAM:          0 GB        64 KB      0.00%
+           FLASH:       72864 B         1 MB      6.95%
+EXCUTABLE SIZE:
+   text	   data	    bss	    dec	    hex	filename
+  71916	    940	  76928	 149784	  24918	basic_framework.elf
+[100%] Built target basic_framework.elf

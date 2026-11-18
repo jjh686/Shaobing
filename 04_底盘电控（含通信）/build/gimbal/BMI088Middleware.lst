@@ -1,0 +1,375 @@
+ARM GAS  /tmp/ccxwGq51.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"BMI088Middleware.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.BMI088_BeginRead,"ax",%progbits
+  18              		.align	1
+  19              		.global	BMI088_BeginRead
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	BMI088_BeginRead:
+  27              	.LFB239:
+  28              		.file 1 "modules/imu/BMI088Middleware.c"
+   1:modules/imu/BMI088Middleware.c **** #include "BMI088Middleware.h"
+   2:modules/imu/BMI088Middleware.c **** #include "main.h"
+   3:modules/imu/BMI088Middleware.c **** 
+   4:modules/imu/BMI088Middleware.c **** SPI_HandleTypeDef *BMI088_SPI;
+   5:modules/imu/BMI088Middleware.c **** /* [USB_SP 修改 01 开始] SPI接收变量初始化、HAL错误累积和有界传输超时。 */
+   6:modules/imu/BMI088Middleware.c **** static uint8_t spi_read_ok;
+   7:modules/imu/BMI088Middleware.c **** void BMI088_BeginRead(void) { spi_read_ok = 1; }
+  29              		.loc 1 7 29 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              		.loc 1 7 31 view .LVU1
+  35              		.loc 1 7 43 is_stmt 0 view .LVU2
+  36 0000 014B     		ldr	r3, .L2
+  37 0002 0122     		movs	r2, #1
+  38 0004 1A70     		strb	r2, [r3]
+  39              		.loc 1 7 48 view .LVU3
+  40 0006 7047     		bx	lr
+  41              	.L3:
+  42              		.align	2
+  43              	.L2:
+  44 0008 00000000 		.word	.LANCHOR0
+  45              		.cfi_endproc
+  46              	.LFE239:
+  48              		.section	.text.BMI088_ReadOK,"ax",%progbits
+  49              		.align	1
+  50              		.global	BMI088_ReadOK
+  51              		.syntax unified
+  52              		.thumb
+ARM GAS  /tmp/ccxwGq51.s 			page 2
+
+
+  53              		.thumb_func
+  54              		.fpu fpv4-sp-d16
+  56              	BMI088_ReadOK:
+  57              	.LFB240:
+   8:modules/imu/BMI088Middleware.c **** uint8_t BMI088_ReadOK(void) { return spi_read_ok; }
+  58              		.loc 1 8 29 is_stmt 1 view -0
+  59              		.cfi_startproc
+  60              		@ args = 0, pretend = 0, frame = 0
+  61              		@ frame_needed = 0, uses_anonymous_args = 0
+  62              		@ link register save eliminated.
+  63              		.loc 1 8 31 view .LVU5
+  64              		.loc 1 8 51 is_stmt 0 view .LVU6
+  65 0000 014B     		ldr	r3, .L5
+  66 0002 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+  67 0004 7047     		bx	lr
+  68              	.L6:
+  69 0006 00BF     		.align	2
+  70              	.L5:
+  71 0008 00000000 		.word	.LANCHOR0
+  72              		.cfi_endproc
+  73              	.LFE240:
+  75              		.section	.text.BMI088_ACCEL_NS_L,"ax",%progbits
+  76              		.align	1
+  77              		.global	BMI088_ACCEL_NS_L
+  78              		.syntax unified
+  79              		.thumb
+  80              		.thumb_func
+  81              		.fpu fpv4-sp-d16
+  83              	BMI088_ACCEL_NS_L:
+  84              	.LFB241:
+   9:modules/imu/BMI088Middleware.c **** /* [USB_SP 修改 01 结束] */
+  10:modules/imu/BMI088Middleware.c **** 
+  11:modules/imu/BMI088Middleware.c **** void BMI088_ACCEL_NS_L(void)
+  12:modules/imu/BMI088Middleware.c **** {
+  85              		.loc 1 12 1 is_stmt 1 view -0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89 0000 08B5     		push	{r3, lr}
+  90              	.LCFI0:
+  91              		.cfi_def_cfa_offset 8
+  92              		.cfi_offset 3, -8
+  93              		.cfi_offset 14, -4
+  13:modules/imu/BMI088Middleware.c ****     HAL_GPIO_WritePin(CS1_ACCEL_GPIO_Port, CS1_ACCEL_Pin, GPIO_PIN_RESET);
+  94              		.loc 1 13 5 view .LVU8
+  95 0002 0022     		movs	r2, #0
+  96 0004 1021     		movs	r1, #16
+  97 0006 0248     		ldr	r0, .L9
+  98 0008 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  99              	.LVL0:
+  14:modules/imu/BMI088Middleware.c **** }
+ 100              		.loc 1 14 1 is_stmt 0 view .LVU9
+ 101 000c 08BD     		pop	{r3, pc}
+ 102              	.L10:
+ 103 000e 00BF     		.align	2
+ 104              	.L9:
+ 105 0010 00000240 		.word	1073872896
+ARM GAS  /tmp/ccxwGq51.s 			page 3
+
+
+ 106              		.cfi_endproc
+ 107              	.LFE241:
+ 109              		.section	.text.BMI088_ACCEL_NS_H,"ax",%progbits
+ 110              		.align	1
+ 111              		.global	BMI088_ACCEL_NS_H
+ 112              		.syntax unified
+ 113              		.thumb
+ 114              		.thumb_func
+ 115              		.fpu fpv4-sp-d16
+ 117              	BMI088_ACCEL_NS_H:
+ 118              	.LFB242:
+  15:modules/imu/BMI088Middleware.c **** void BMI088_ACCEL_NS_H(void)
+  16:modules/imu/BMI088Middleware.c **** {
+ 119              		.loc 1 16 1 is_stmt 1 view -0
+ 120              		.cfi_startproc
+ 121              		@ args = 0, pretend = 0, frame = 0
+ 122              		@ frame_needed = 0, uses_anonymous_args = 0
+ 123 0000 08B5     		push	{r3, lr}
+ 124              	.LCFI1:
+ 125              		.cfi_def_cfa_offset 8
+ 126              		.cfi_offset 3, -8
+ 127              		.cfi_offset 14, -4
+  17:modules/imu/BMI088Middleware.c ****     HAL_GPIO_WritePin(CS1_ACCEL_GPIO_Port, CS1_ACCEL_Pin, GPIO_PIN_SET);
+ 128              		.loc 1 17 5 view .LVU11
+ 129 0002 0122     		movs	r2, #1
+ 130 0004 1021     		movs	r1, #16
+ 131 0006 0248     		ldr	r0, .L13
+ 132 0008 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 133              	.LVL1:
+  18:modules/imu/BMI088Middleware.c **** }
+ 134              		.loc 1 18 1 is_stmt 0 view .LVU12
+ 135 000c 08BD     		pop	{r3, pc}
+ 136              	.L14:
+ 137 000e 00BF     		.align	2
+ 138              	.L13:
+ 139 0010 00000240 		.word	1073872896
+ 140              		.cfi_endproc
+ 141              	.LFE242:
+ 143              		.section	.text.BMI088_GYRO_NS_L,"ax",%progbits
+ 144              		.align	1
+ 145              		.global	BMI088_GYRO_NS_L
+ 146              		.syntax unified
+ 147              		.thumb
+ 148              		.thumb_func
+ 149              		.fpu fpv4-sp-d16
+ 151              	BMI088_GYRO_NS_L:
+ 152              	.LFB243:
+  19:modules/imu/BMI088Middleware.c **** 
+  20:modules/imu/BMI088Middleware.c **** void BMI088_GYRO_NS_L(void)
+  21:modules/imu/BMI088Middleware.c **** {
+ 153              		.loc 1 21 1 is_stmt 1 view -0
+ 154              		.cfi_startproc
+ 155              		@ args = 0, pretend = 0, frame = 0
+ 156              		@ frame_needed = 0, uses_anonymous_args = 0
+ 157 0000 08B5     		push	{r3, lr}
+ 158              	.LCFI2:
+ 159              		.cfi_def_cfa_offset 8
+ARM GAS  /tmp/ccxwGq51.s 			page 4
+
+
+ 160              		.cfi_offset 3, -8
+ 161              		.cfi_offset 14, -4
+  22:modules/imu/BMI088Middleware.c ****     HAL_GPIO_WritePin(CS1_GYRO_GPIO_Port, CS1_GYRO_Pin, GPIO_PIN_RESET);
+ 162              		.loc 1 22 5 view .LVU14
+ 163 0002 0022     		movs	r2, #0
+ 164 0004 0121     		movs	r1, #1
+ 165 0006 0248     		ldr	r0, .L17
+ 166 0008 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 167              	.LVL2:
+  23:modules/imu/BMI088Middleware.c **** }
+ 168              		.loc 1 23 1 is_stmt 0 view .LVU15
+ 169 000c 08BD     		pop	{r3, pc}
+ 170              	.L18:
+ 171 000e 00BF     		.align	2
+ 172              	.L17:
+ 173 0010 00040240 		.word	1073873920
+ 174              		.cfi_endproc
+ 175              	.LFE243:
+ 177              		.section	.text.BMI088_GYRO_NS_H,"ax",%progbits
+ 178              		.align	1
+ 179              		.global	BMI088_GYRO_NS_H
+ 180              		.syntax unified
+ 181              		.thumb
+ 182              		.thumb_func
+ 183              		.fpu fpv4-sp-d16
+ 185              	BMI088_GYRO_NS_H:
+ 186              	.LFB244:
+  24:modules/imu/BMI088Middleware.c **** void BMI088_GYRO_NS_H(void)
+  25:modules/imu/BMI088Middleware.c **** {
+ 187              		.loc 1 25 1 is_stmt 1 view -0
+ 188              		.cfi_startproc
+ 189              		@ args = 0, pretend = 0, frame = 0
+ 190              		@ frame_needed = 0, uses_anonymous_args = 0
+ 191 0000 08B5     		push	{r3, lr}
+ 192              	.LCFI3:
+ 193              		.cfi_def_cfa_offset 8
+ 194              		.cfi_offset 3, -8
+ 195              		.cfi_offset 14, -4
+  26:modules/imu/BMI088Middleware.c ****     HAL_GPIO_WritePin(CS1_GYRO_GPIO_Port, CS1_GYRO_Pin, GPIO_PIN_SET);
+ 196              		.loc 1 26 5 view .LVU17
+ 197 0002 0122     		movs	r2, #1
+ 198 0004 1146     		mov	r1, r2
+ 199 0006 0248     		ldr	r0, .L21
+ 200 0008 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 201              	.LVL3:
+  27:modules/imu/BMI088Middleware.c **** }
+ 202              		.loc 1 27 1 is_stmt 0 view .LVU18
+ 203 000c 08BD     		pop	{r3, pc}
+ 204              	.L22:
+ 205 000e 00BF     		.align	2
+ 206              	.L21:
+ 207 0010 00040240 		.word	1073873920
+ 208              		.cfi_endproc
+ 209              	.LFE244:
+ 211              		.section	.text.BMI088_read_write_byte,"ax",%progbits
+ 212              		.align	1
+ 213              		.global	BMI088_read_write_byte
+ARM GAS  /tmp/ccxwGq51.s 			page 5
+
+
+ 214              		.syntax unified
+ 215              		.thumb
+ 216              		.thumb_func
+ 217              		.fpu fpv4-sp-d16
+ 219              	BMI088_read_write_byte:
+ 220              	.LVL4:
+ 221              	.LFB245:
+  28:modules/imu/BMI088Middleware.c **** 
+  29:modules/imu/BMI088Middleware.c **** uint8_t BMI088_read_write_byte(uint8_t txdata)
+  30:modules/imu/BMI088Middleware.c **** {
+ 222              		.loc 1 30 1 is_stmt 1 view -0
+ 223              		.cfi_startproc
+ 224              		@ args = 0, pretend = 0, frame = 16
+ 225              		@ frame_needed = 0, uses_anonymous_args = 0
+ 226              		.loc 1 30 1 is_stmt 0 view .LVU20
+ 227 0000 00B5     		push	{lr}
+ 228              	.LCFI4:
+ 229              		.cfi_def_cfa_offset 4
+ 230              		.cfi_offset 14, -4
+ 231 0002 87B0     		sub	sp, sp, #28
+ 232              	.LCFI5:
+ 233              		.cfi_def_cfa_offset 32
+ 234 0004 8DF80F00 		strb	r0, [sp, #15]
+  31:modules/imu/BMI088Middleware.c **** /* [USB_SP 修改 02 开始] SPI接收变量初始化、HAL错误累积和有界传输超时。 */
+  32:modules/imu/BMI088Middleware.c ****     uint8_t rx_data = 0;
+ 235              		.loc 1 32 5 is_stmt 1 view .LVU21
+ 236              		.loc 1 32 13 is_stmt 0 view .LVU22
+ 237 0008 0023     		movs	r3, #0
+ 238 000a 8DF81730 		strb	r3, [sp, #23]
+  33:modules/imu/BMI088Middleware.c ****     /* Bounded transfer: a stalled sensor must not block control for 1 second/byte. */
+  34:modules/imu/BMI088Middleware.c ****     if (!BMI088_SPI || HAL_SPI_TransmitReceive(BMI088_SPI, &txdata, &rx_data, 1, 2) != HAL_OK)
+ 239              		.loc 1 34 5 is_stmt 1 view .LVU23
+ 240              		.loc 1 34 9 is_stmt 0 view .LVU24
+ 241 000e 0A4B     		ldr	r3, .L27
+ 242 0010 1868     		ldr	r0, [r3]
+ 243              	.LVL5:
+ 244              		.loc 1 34 8 view .LVU25
+ 245 0012 48B1     		cbz	r0, .L24
+ 246              		.loc 1 34 24 discriminator 1 view .LVU26
+ 247 0014 0223     		movs	r3, #2
+ 248 0016 0093     		str	r3, [sp]
+ 249 0018 0123     		movs	r3, #1
+ 250 001a 0DF11702 		add	r2, sp, #23
+ 251 001e 0DF10F01 		add	r1, sp, #15
+ 252              	.LVL6:
+ 253              		.loc 1 34 24 discriminator 1 view .LVU27
+ 254 0022 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
+ 255              	.LVL7:
+ 256              		.loc 1 34 21 discriminator 1 view .LVU28
+ 257 0026 10B1     		cbz	r0, .L25
+ 258              	.L24:
+  35:modules/imu/BMI088Middleware.c ****         spi_read_ok = 0;
+ 259              		.loc 1 35 9 is_stmt 1 view .LVU29
+ 260              		.loc 1 35 21 is_stmt 0 view .LVU30
+ 261 0028 044B     		ldr	r3, .L27+4
+ 262 002a 0022     		movs	r2, #0
+ 263 002c 1A70     		strb	r2, [r3]
+ARM GAS  /tmp/ccxwGq51.s 			page 6
+
+
+ 264              	.L25:
+  36:modules/imu/BMI088Middleware.c **** /* [USB_SP 修改 02 结束] */
+  37:modules/imu/BMI088Middleware.c ****     return rx_data;
+ 265              		.loc 1 37 5 is_stmt 1 view .LVU31
+  38:modules/imu/BMI088Middleware.c **** }
+ 266              		.loc 1 38 1 is_stmt 0 view .LVU32
+ 267 002e 9DF81700 		ldrb	r0, [sp, #23]	@ zero_extendqisi2
+ 268 0032 07B0     		add	sp, sp, #28
+ 269              	.LCFI6:
+ 270              		.cfi_def_cfa_offset 4
+ 271              		@ sp needed
+ 272 0034 5DF804FB 		ldr	pc, [sp], #4
+ 273              	.L28:
+ 274              		.align	2
+ 275              	.L27:
+ 276 0038 00000000 		.word	.LANCHOR1
+ 277 003c 00000000 		.word	.LANCHOR0
+ 278              		.cfi_endproc
+ 279              	.LFE245:
+ 281              		.global	BMI088_SPI
+ 282              		.section	.bss.BMI088_SPI,"aw",%nobits
+ 283              		.align	2
+ 284              		.set	.LANCHOR1,. + 0
+ 287              	BMI088_SPI:
+ 288 0000 00000000 		.space	4
+ 289              		.section	.bss.spi_read_ok,"aw",%nobits
+ 290              		.set	.LANCHOR0,. + 0
+ 293              	spi_read_ok:
+ 294 0000 00       		.space	1
+ 295              		.text
+ 296              	.Letext0:
+ 297              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 298              		.file 3 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 299              		.file 4 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 300              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 301              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 302              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
+ 303              		.file 8 "modules/imu/BMI088Middleware.h"
+ARM GAS  /tmp/ccxwGq51.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 BMI088Middleware.c
+     /tmp/ccxwGq51.s:18     .text.BMI088_BeginRead:0000000000000000 $t
+     /tmp/ccxwGq51.s:26     .text.BMI088_BeginRead:0000000000000000 BMI088_BeginRead
+     /tmp/ccxwGq51.s:44     .text.BMI088_BeginRead:0000000000000008 $d
+     /tmp/ccxwGq51.s:49     .text.BMI088_ReadOK:0000000000000000 $t
+     /tmp/ccxwGq51.s:56     .text.BMI088_ReadOK:0000000000000000 BMI088_ReadOK
+     /tmp/ccxwGq51.s:71     .text.BMI088_ReadOK:0000000000000008 $d
+     /tmp/ccxwGq51.s:76     .text.BMI088_ACCEL_NS_L:0000000000000000 $t
+     /tmp/ccxwGq51.s:83     .text.BMI088_ACCEL_NS_L:0000000000000000 BMI088_ACCEL_NS_L
+     /tmp/ccxwGq51.s:105    .text.BMI088_ACCEL_NS_L:0000000000000010 $d
+     /tmp/ccxwGq51.s:110    .text.BMI088_ACCEL_NS_H:0000000000000000 $t
+     /tmp/ccxwGq51.s:117    .text.BMI088_ACCEL_NS_H:0000000000000000 BMI088_ACCEL_NS_H
+     /tmp/ccxwGq51.s:139    .text.BMI088_ACCEL_NS_H:0000000000000010 $d
+     /tmp/ccxwGq51.s:144    .text.BMI088_GYRO_NS_L:0000000000000000 $t
+     /tmp/ccxwGq51.s:151    .text.BMI088_GYRO_NS_L:0000000000000000 BMI088_GYRO_NS_L
+     /tmp/ccxwGq51.s:173    .text.BMI088_GYRO_NS_L:0000000000000010 $d
+     /tmp/ccxwGq51.s:178    .text.BMI088_GYRO_NS_H:0000000000000000 $t
+     /tmp/ccxwGq51.s:185    .text.BMI088_GYRO_NS_H:0000000000000000 BMI088_GYRO_NS_H
+     /tmp/ccxwGq51.s:207    .text.BMI088_GYRO_NS_H:0000000000000010 $d
+     /tmp/ccxwGq51.s:212    .text.BMI088_read_write_byte:0000000000000000 $t
+     /tmp/ccxwGq51.s:219    .text.BMI088_read_write_byte:0000000000000000 BMI088_read_write_byte
+     /tmp/ccxwGq51.s:276    .text.BMI088_read_write_byte:0000000000000038 $d
+     /tmp/ccxwGq51.s:287    .bss.BMI088_SPI:0000000000000000 BMI088_SPI
+     /tmp/ccxwGq51.s:283    .bss.BMI088_SPI:0000000000000000 $d
+     /tmp/ccxwGq51.s:293    .bss.spi_read_ok:0000000000000000 spi_read_ok
+     /tmp/ccxwGq51.s:294    .bss.spi_read_ok:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_SPI_TransmitReceive

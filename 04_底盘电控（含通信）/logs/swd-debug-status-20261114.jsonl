@@ -1,0 +1,1 @@
+{"tool": "debug_status", "result": {"state": "none", "paused": false, "reason": "", "threadId": null, "epoch": 0, "session": null, "capabilities": {"read": null, "write": null, "restart": null, "functionBreakpoints": null}, "sessions": []}}

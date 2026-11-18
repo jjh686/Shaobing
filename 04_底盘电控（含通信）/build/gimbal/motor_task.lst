@@ -1,0 +1,99 @@
+ARM GAS  /tmp/ccYcYnjt.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"motor_task.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MotorControlTask,"ax",%progbits
+  18              		.align	1
+  19              		.global	MotorControlTask
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	MotorControlTask:
+  27              	.LFB275:
+  28              		.file 1 "modules/motor/motor_task.c"
+   1:modules/motor/motor_task.c **** #include "motor_task.h"
+   2:modules/motor/motor_task.c **** #include "LK9025.h"
+   3:modules/motor/motor_task.c **** #include "HT04.h"
+   4:modules/motor/motor_task.c **** #include "dji_motor.h"
+   5:modules/motor/motor_task.c **** #include "step_motor.h"
+   6:modules/motor/motor_task.c **** #include "servo_motor.h"
+   7:modules/motor/motor_task.c **** #include "power_control.h"
+   8:modules/motor/motor_task.c **** #include "dmmotor.h"
+   9:modules/motor/motor_task.c **** 
+  10:modules/motor/motor_task.c **** void MotorControlTask()
+  11:modules/motor/motor_task.c **** {
+  29              		.loc 1 11 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  12:modules/motor/motor_task.c ****     // static uint8_t cnt = 0; 设定不同电机的任务频率
+  13:modules/motor/motor_task.c ****     // if(cnt%5==0) //200hz
+  14:modules/motor/motor_task.c ****     // if(cnt%10==0) //100hz
+  15:modules/motor/motor_task.c ****     DJIMotorControl();
+  38              		.loc 1 15 5 view .LVU1
+  39 0002 FFF7FEFF 		bl	DJIMotorControl
+  40              	.LVL0:
+  16:modules/motor/motor_task.c ****     PowerControl();
+  41              		.loc 1 16 5 view .LVU2
+  42 0006 FFF7FEFF 		bl	PowerControl
+ARM GAS  /tmp/ccYcYnjt.s 			page 2
+
+
+  43              	.LVL1:
+  17:modules/motor/motor_task.c ****     /* 如果有对应的电机则取消注释,可以加入条件编译或者register对应的idx�
+  18:modules/motor/motor_task.c ****     // LKMotorControl();
+  19:modules/motor/motor_task.c ****     DMMotorTask();
+  44              		.loc 1 19 5 view .LVU3
+  45 000a FFF7FEFF 		bl	DMMotorTask
+  46              	.LVL2:
+  20:modules/motor/motor_task.c ****     // legacy support
+  21:modules/motor/motor_task.c ****     // 由于ht04电机的反馈方式为接收到一帧消息后立刻回传,以此方式连续发
+  22:modules/motor/motor_task.c ****     // 为了保证高频率控制,HTMotor中提供了以任务方式启动控制的接口,可通�
+  23:modules/motor/motor_task.c ****     // HTMotorControl();
+  24:modules/motor/motor_task.c ****     // 将所有的CAN设备集中在一处发送,最高反馈频率仅能达到500Hz,为了更好�
+  25:modules/motor/motor_task.c **** 
+  26:modules/motor/motor_task.c ****     // StepMotorControl();
+  27:modules/motor/motor_task.c **** }
+  47              		.loc 1 27 1 is_stmt 0 view .LVU4
+  48 000e 08BD     		pop	{r3, pc}
+  49              		.cfi_endproc
+  50              	.LFE275:
+  52              		.text
+  53              	.Letext0:
+  54              		.file 2 "modules/motor/DJImotor/dji_motor.h"
+  55              		.file 3 "modules/motor/power_control.h"
+  56              		.file 4 "modules/motor/DMmotor/dmmotor.h"
+ARM GAS  /tmp/ccYcYnjt.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 motor_task.c
+     /tmp/ccYcYnjt.s:18     .text.MotorControlTask:0000000000000000 $t
+     /tmp/ccYcYnjt.s:26     .text.MotorControlTask:0000000000000000 MotorControlTask
+
+UNDEFINED SYMBOLS
+DJIMotorControl
+PowerControl
+DMMotorTask

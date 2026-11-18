@@ -1,0 +1,123 @@
+{
+  "purpose": "comparison_only_do_not_load_as_controller_configuration",
+  "created_at": "2026-11-07T21:11:54.280035+08:00",
+  "target_root": "/home/wangjiaming/下载/codex/新云台/basic_framework",
+  "reference_root": "/home/wangjiaming/下载/rmcod2026_-sentry-dev",
+  "target_current_source": {
+    "yaw": {
+      "source": "current_source_not_runtime_readback",
+      "angle_feedback_unit": "rad",
+      "speed_feedback_unit": "rad/s",
+      "angle_Kp_per_s": 8.0,
+      "angle_Ki": 0,
+      "angle_Kd": 0,
+      "angle_deadband_rad": 0.0017453292519943296,
+      "angle_output_limit_rad_s": 8.726646259971648,
+      "speed_Kp_cmd_per_rad_s": 50.0,
+      "speed_Ki_cmd_per_rad": 200.0,
+      "speed_Kd": 0,
+      "speed_integral_output_limit_cmd": 3000,
+      "speed_output_limit_cmd": 20000.0,
+      "max_position_error_rad": 0.08726646259971647,
+      "mechanical_min_deg": -10.0,
+      "mechanical_max_deg": 10.0,
+      "logical_motor_id": 1,
+      "can_bus": 1,
+      "feedback_can_id": "0x205",
+      "command_can_id": "0x1FF",
+      "final_output_sign": 1.0,
+      "outer_speed_bound_from_error_cap_rad_s": 0.6981317007977318
+    },
+    "pitch": {
+      "source": "current_source_not_runtime_readback",
+      "angle_feedback_unit": "rad",
+      "speed_feedback_unit": "rad/s",
+      "angle_Kp_per_s": 10.0,
+      "angle_Ki": 0,
+      "angle_Kd": 0,
+      "angle_deadband_rad": 0,
+      "angle_output_limit_rad_s": 8.726646259971648,
+      "speed_Kp_cmd_per_rad_s": 50.0,
+      "speed_Ki_cmd_per_rad": 350.0,
+      "speed_Kd": 0,
+      "speed_integral_output_limit_cmd": 2500,
+      "speed_output_limit_cmd": 20000.0,
+      "max_position_error_rad": 0.08726646259971647,
+      "mechanical_min_deg": -10.0,
+      "mechanical_max_deg": 10.0,
+      "logical_motor_id": 2,
+      "can_bus": 1,
+      "feedback_can_id": "0x206",
+      "command_can_id": "0x1FF",
+      "final_output_sign": 1.0,
+      "outer_speed_bound_from_error_cap_rad_s": 0.8726646259971648
+    }
+  },
+  "reference_only": {
+    "yaw_angle": {
+      "source": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/chassis/COD_H7_Template/Task/Src/Control_Task.c",
+      "source_line": 74,
+      "raw_values": {
+        "Kp": -35.0,
+        "Ki": 0.0,
+        "Kd": 0.0,
+        "D_filter_alpha": 0.0,
+        "deadband": 0.0,
+        "error_sum_limit": 100.0,
+        "output_limit": 400.0
+      },
+      "activation": "reference_only_not_applied",
+      "integral_definition": "error_sum += error; Iout = Ki * clamp(error_sum, +/- error_sum_limit); no explicit dt"
+    },
+    "yaw_speed": {
+      "source": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/chassis/COD_H7_Template/Task/Src/Control_Task.c",
+      "source_line": 75,
+      "raw_values": {
+        "Kp": 205.0,
+        "Ki": 0.2,
+        "Kd": 2.0,
+        "D_filter_alpha": 0.5,
+        "deadband": 0.0,
+        "error_sum_limit": 1000.0,
+        "output_limit": 15000.0
+      },
+      "activation": "reference_only_not_applied",
+      "integral_definition": "error_sum += error; Iout = Ki * clamp(error_sum, +/- error_sum_limit); no explicit dt",
+      "max_abs_Iout_cmd": 200.0
+    },
+    "pitch_angle": {
+      "source": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Task/Src/Control_Task.c",
+      "source_line": 49,
+      "raw_values": {
+        "Kp": -0.51,
+        "Ki": 0.0,
+        "Kd": 0.0,
+        "D_filter_alpha": 0.0,
+        "deadband": 0.0,
+        "error_sum_limit": 1.0,
+        "output_limit": 8.0
+      },
+      "activation": "reference_only_not_applied",
+      "integral_definition": "error_sum += error; Iout = Ki * clamp(error_sum, +/- error_sum_limit); no explicit dt"
+    },
+    "pitch_speed": {
+      "source": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Task/Src/Control_Task.c",
+      "source_line": 50,
+      "raw_values": {
+        "Kp": 0.305,
+        "Ki": 0.001,
+        "Kd": 0.0,
+        "D_filter_alpha": 0.1,
+        "deadband": 0.0,
+        "error_sum_limit": 1.0,
+        "output_limit": 8.0
+      },
+      "activation": "reference_only_not_applied",
+      "integral_definition": "error_sum += error; Iout = Ki * clamp(error_sum, +/- error_sum_limit); no explicit dt",
+      "max_abs_Iout_MIT_torque_field": 0.001
+    }
+  },
+  "runtime_observation_file": "/home/wangjiaming/下载/sp_vision_25-main/logs/diagnostics/2026-11-07_2030/recovery_samples.json",
+  "runtime_limits": "Prior sample was a manual Yaw disturbance, not a confirmed moving-target step test. Firmware hash match was against a tool flash record, not a new physical Flash verification.",
+  "implementation_status": "No controller source or PID configuration has been modified. No new PID set is proposed as validated."
+}

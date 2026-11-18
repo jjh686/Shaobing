@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-14",
+  "hardware_test": {
+    "port": "/dev/ttyACM0",
+    "enabled": false,
+    "passed": true,
+    "session": 3257761366,
+    "sent_STOP": 458,
+    "fresh_chassis_ACK": 500,
+    "USB_bytes": 126046,
+    "frames": {
+      "SP": 2000,
+      "gimbal": 501,
+      "feedback": 500
+    },
+    "last_gimbal": {
+      "uptime": 907694,
+      "sequence": 457,
+      "session": 3257761366,
+      "command_received_ms": 907678
+    }
+  },
+  "chassis_uid": "002A003B3034470F31353233",
+  "gimbal_uid": "0032003C3533470536363032",
+  "chassis_elf_sha256": "0ec79b4c78c970ad237f12cd4db4849cc2d4e66833d3392726c2eca635a24685",
+  "gimbal_elf_sha256": "34531e90c763f21313c32f4588be06f084dc1bc4c63191f3d8510ac4b9dccc19",
+  "chassis_flashed_this_session": true,
+  "chassis_program_verify_passed": true,
+  "gimbal_flashed_this_session": false,
+  "gimbal_version_evidence": "Existing EmberProbe flash record matches pre-diagnostic ELF; USB/CAN application tested. No independent flash readback comparison performed for gimbal in this session.",
+  "motion_enabled": false,
+  "lidar_navigation_tested": false
+}

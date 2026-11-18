@@ -1,0 +1,11 @@
+make: 进入目录“/home/wangjiaming/桌面/c_board_nav_gateway_20261111/gimbal_firmware”
+Memory region         Used Size  Region Size  %age Used
+             RAM:       79496 B       128 KB     60.65%
+          CCMRAM:          0 GB        64 KB      0.00%
+           FLASH:       93816 B         1 MB      8.95%
+arm-none-eabi-size ../build/gimbal/basic_framework.elf
+   text	   data	    bss	    dec	    hex	filename
+  92648	   1144	  78360	 172152	  2a078	../build/gimbal/basic_framework.elf
+arm-none-eabi-objcopy -O ihex ../build/gimbal/basic_framework.elf ../build/gimbal/basic_framework.hex
+arm-none-eabi-objcopy -O binary -S ../build/gimbal/basic_framework.elf ../build/gimbal/basic_framework.bin	
+make: 离开目录“/home/wangjiaming/桌面/c_board_nav_gateway_20261111/gimbal_firmware”

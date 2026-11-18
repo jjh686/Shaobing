@@ -1,0 +1,20 @@
+{
+  "port": "/dev/ttyACM0",
+  "enabled": false,
+  "passed": true,
+  "session": 2079683994,
+  "sent_STOP": 226,
+  "fresh_chassis_ACK": 250,
+  "USB_bytes": 53981,
+  "frames": {
+    "SP": 1001,
+    "gimbal": 53,
+    "feedback": 250
+  },
+  "last_gimbal": {
+    "uptime": 36336,
+    "sequence": 193,
+    "session": 2079683994,
+    "command_received_ms": 36322
+  }
+}

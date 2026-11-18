@@ -1,0 +1,3 @@
+gimbal {'modified': 15, 'added': 17, 'removed': 0, 'unchanged': 630}
+chassis {'modified': 10, 'added': 17, 'removed': 0, 'unchanged': 505}
+pc {'modified': 0, 'added': 0, 'removed': 0, 'unchanged': 43}

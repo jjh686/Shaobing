@@ -1,0 +1,104 @@
+最新版本（2026-11-14）：遥控CAN转发版，未烧录/硬件未验证。
+两板配套映像：release/遥控CAN转发版-20261114/
+接线、档位、协议和测试步骤：docs/遥控CAN转发与接线说明-20261114.md
+底盘运动锁仍关闭。下方为历史记录，涉及当前版本的描述以最新说明为准。
+
+DiPan_Board 编译、分板固件与通信测试指令
+日期：2026-11-12
+
+2026-11-14 最新状态：底盘已烧入配套诊断固件并自动校验成功，10秒实物测试获得500帧新鲜底盘STOP ACK。
+实测配套固件请使用 release/实物通信通过版-20261114/ 内按板子分开的子目录。
+详细部署、改动和命令见 docs/双C板通信实测与修改记录-20261114.md；底盘运动锁仍保留。
+
+以下为历史指令：版本 CAN_FIFO修正版-20261112，当时只生成源码和固件，没有烧录。
+已修复两块板导航三帧组跨 FIFO 时可能乱序的问题。
+本次需要分别更新底盘、云台两块板，不能只更新一块。
+整理好的分板文件位于：
+/home/wangjiaming/桌面/DiPan_Board/release/CAN_FIFO修正版-20261112/
+
+一、工程位置（以下为新副本，原工程不改）
+/home/wangjiaming/桌面/DiPan_Board
+
+chassis_driver：用户底盘驱动的副本，模块已接入此处。
+communication_reference：已有 USB/CAN 双板通信工程完整副本。
+communication_reference/chassis_firmware 是旧参考，不是此次要部署的新底盘固件。
+
+二、编译新固件（只编译，不烧录）
+cd /home/wangjiaming/桌面/DiPan_Board
+bash tools/build_chassis.sh
+bash tools/build_gimbal.sh
+
+不要使用复制进来的旧 build 缓存；新输出统一在 artifacts/。
+
+三、分别烧到哪块 C 板
+底盘 C 板（电机接 CAN1，板间接 CAN2）：
+/home/wangjiaming/桌面/DiPan_Board/artifacts/DiPan_Board.elf
+同名 DiPan_Board.hex / DiPan_Board.bin 也已生成。
+
+云台 C 板（电脑接 USB，板间接 CAN1）：
+/home/wangjiaming/桌面/DiPan_Board/artifacts/Gimbal_USB_CAN1.elf
+同名 Gimbal_USB_CAN1.hex / Gimbal_USB_CAN1.bin 也已生成。
+
+使用 ELF/HEX 可读取地址；BIN 应用地址为 0x08000000。
+每次 SWD 接实际要写的那块板，并选择对应文件。云台不能经普通 USB/CAN 自动给底盘烧录。
+烧录/复位前断开电机主电源并保留目标板与下载器供电。
+本次并未执行烧录；两块板都需更新到此修正版，才能同时修复命令与反馈接收。
+根目录 VS Code/EmberProbe F5 默认配置是底盘，不能连接云台板后直接 F5。
+
+四、软件测试与文件检查（不连接硬件也能运行）
+cd /home/wangjiaming/桌面/DiPan_Board
+bash tools/test.sh
+python3 tools/verify_sources.py
+(cd artifacts && sha256sum -c SHA256SUMS && sha256sum -c GIMBAL_SHA256SUMS)
+
+预期：6 项软件测试 PASS、FIFO 对照回归 PASS；两份原工程 unchanged=true；六个固件文件校验 OK。
+FIFO 对照回归中的旧 AUTO 版本预期触发断言失败，这是用于复现缺陷的反例，不能烧录；修复版应成功。
+原工程后续若被用户修改，verify_sources 会正确报告与本次复制时基线不同。
+
+五、实物零速度通信测试（需两板已烧本次修正版固件）
+连接：电脑 USB→云台 C 板自身 USB；云台 CAN1↔底盘 CAN2；H-H、L-L、公共地。
+两板有电，电机主电源断开；本项不需要雷达。
+先停止占用同一串口的导航节点/串口工具，不能多个进程同时读写。
+
+查看设备（只读取设备列表）：
+ls -l /dev/serial/by-id/
+
+设置实际设备：以下是以前记录的设备名；若列表不同，以当前应用 USB 为准。
+PORT='/dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_3668306E3533-if00'
+
+cd /home/wangjiaming/桌面/DiPan_Board
+python3 communication_reference/pc/check_port.py "$PORT"
+bash tools/zero_test.sh "$PORT"
+
+程序约运行 5 秒，只发 ENABLE=0 的 STOP；要求至少 10 帧持续的新鲜底盘 ACK。
+预期末尾 PASS: ... 新鲜底盘 STOP ACK；全程 ENABLE=0。
+USB 可见却无 STOP ACK：核对底盘固件、CAN1→CAN2、总线速率和 H/L/地。
+此前已实测 USB 双向有数据，但底盘 STOP ACK 为 0；本次软件修复后仍需烧录两板再复测，不能把软件测试当成实物通过。
+设备找不到：先核对 C 板应用 USB 枚举，不要选 DAPLink/下载器串口。
+串口忙：关闭其他占用进程；不要并行运行两个通信节点。
+
+fault 是按位相加：1运动锁、2遥控/导航档、4电机未在线、8轴标定锁、16接收故障。
+默认锁定且没接遥控和电机时 fault=15 可预期；有 ACK 不等于允许运动。
+
+六、后续连接此前新导航（本次未启动）
+下面引用电脑已有导航包，没有把 ROS 软件复制到单片机工程里：
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+
+电脑 USB 节点联调（需上一步 STOP 测试退出）：
+bash scripts/run_chassis_nav.sh usb "$PORT"
+
+定位/雷达/地图和实物轴向确认、运动锁按实测解除并重新烧录之后，才进入真实导航：
+bash scripts/run_chassis_nav.sh navigation "$PORT" use_rviz:=true
+
+当前底盘 ARM 固件 ALLOW_MOTION=0、AXES_VERIFIED=0，不会因输入上述命令自动解除。
+遥控接收机需接底盘 USART3，CH7+CH8 同时中位为导航档；离线或切档停车。
+未实现摇杆手动驾驶接管，未新增障碍物距离/语义标签载荷。
+
+七、记录文件
+README.md：目录、目标板、构建入口。
+docs/底盘通信模块接入与改动说明-20261112.md：接口、协议、改动及待确认项。
+logs/host-test-results.json：软件测试结果，不代表实物验收。
+logs/source-integrity.json：原工程完整性校验。
+artifacts/build_config.json：本次构建配置和固件哈希。
+docs/通信故障修复与修正版说明-20261112.md：本次 FIFO 修复、复现结果和实物待验项。
+logs/fifo-regression.json：旧策略反例与新策略通过的对照结果。

@@ -1,0 +1,1402 @@
+--- a/.vscode/launch.json
++++ b/.vscode/launch.json
+@@ -1,7 +1,16 @@
+ {
+-    // 使用 IntelliSense 了解相关属性。 
+-    // 悬停以查看现有属性的描述。
+-    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+-    "version": "0.2.0",
+-    "configurations": []
+-}+  "version": "0.2.0",
++  "configurations": [
++    {
++      "name": "DiPan_Board 底盘 (EmberProbe)",
++      "type": "emberprobe",
++      "request": "launch",
++      "cwd": "${workspaceFolder}/../chassis_driver/basic_framework",
++      "executable": "${workspaceFolder}/../artifacts/DiPan_Board.elf",
++      "servertype": "openocd",
++      "runToEntryPoint": "main",
++      "rtos": "FreeRTOS",
++      "preLaunchTask": "DiPan_Board: build chassis"
++    }
++  ]
++}
+--- a/.vscode/settings.json
++++ b/.vscode/settings.json
+@@ -1,3 +1 @@
+-{
+-    "cmake.sourceDirectory": "D:/Edge Download/basic_D:/STM32project/RM/changing/basic_framework-master"
+-}+{"cmake.sourceDirectory": "${workspaceFolder}/basic_framework", "cmake.buildDirectory": "${workspaceFolder}/../build/chassis"}
+--- /dev/null
++++ b/.vscode/tasks.json
+@@ -0,0 +1,27 @@
++{
++  "version": "2.0.0",
++  "tasks": [
++    {
++      "label": "DiPan_Board: build chassis",
++      "type": "process",
++      "command": "bash",
++      "args": [
++        "${workspaceFolder}/../tools/build_chassis.sh"
++      ],
++      "group": {
++        "kind": "build",
++        "isDefault": true
++      },
++      "problemMatcher": []
++    },
++    {
++      "label": "DiPan_Board: host communication tests",
++      "type": "process",
++      "command": "bash",
++      "args": [
++        "${workspaceFolder}/../tools/test.sh"
++      ],
++      "problemMatcher": []
++    }
++  ]
++}
+--- a/basic_framework/.vscode/launch.json
++++ b/basic_framework/.vscode/launch.json
+@@ -1,93 +1,16 @@
+ {
+-    // 启动调试的快捷键是F5
+-    "version": "0.2.0",
+-    "configurations": [
+-        // 使用dap-link(如无线调试器时的参考配置)
+-        {
+-            "name": "DAPlink",
+-            "cwd": "${workspaceRoot}",
+-            "executable": "${workspaceRoot}\\build\\basic_framework.elf", // 要下载到调试器的文件,花括号中的是vscode两个预定义的参数
+-            "request": "launch",
+-            "type": "cortex-debug",
+-            //使用J-link GDB Server时必须;其他GBD Server时可选（有可能帮助自动选择SVD文件）
+-            //支持的设备见 https://www.segger.com/downloads/supported-devices.php
+-            "device": "STM32F407IG",
+-            //svd文件，有这个文件才能查看寄存器的值，每个单片机都不同。可以在以下地址找到 https://github.com/posborne/cmsis-svd
+-            //该项目的根目录已经提供了C型开发板使用的外设svd文件
+-            "svdFile": "STM32F407.svd",
+-            "servertype": "openocd", //使用的GDB Server
+-            "configFiles": [
+-                "openocd_dap.cfg", // 配置文件已经在根目录提供,若要修改以此类推,openocd的路径下的share/scripts中有各种写好的配置文件
+-            ],
+-            "runToEntryPoint": "main", // 调试时在main函数入口停下
+-            "rtos": "FreeRTOS",
+-            "preLaunchTask": "build task",//先运行Build任务编译项目,取消注释即可使用
+-            "liveWatch": {
+-                "enabled": true,
+-                "samplesPerSecond": 4
+-            }
+-            // dap若要使用log,请使用Jlink调试任务启动,之后再打开log任务
+-            // 若想要在调试前编译并且打开log,可只使用log的prelaunch task并为log任务添加depends on依赖
+-        },
+-        // 使用j-link进行调试时的参考配置
+-        {
+-            "name": "Jlink",
+-            "cwd": "${workspaceFolder}",
+-            "executable": "${workspaceRoot}\\build\\basic_framework.elf",
+-            "request": "launch",
+-            "type": "cortex-debug",
+-            "device": "STM32F407IG",
+-            "runToEntryPoint": "main",
+-            "showDevDebugOutput": "none",
+-            "servertype": "jlink",
+-            "interface": "swd",
+-            "svdFile": "STM32F407.svd",
+-            "rtos": "FreeRTOS",
+-            "preLaunchTask": "build task",//先运行Build任务,取消注释即可使用
+-            "liveWatch": {
+-                "enabled": true,
+-                "samplesPerSecond": 4
+-            }
+-            //"preLaunchTask": "log", // 调试时同时开启RTT viewer窗口,若daplink使用jlinkGDBserver启动,需要先开始调试再打开log
+-            // 若想要在调试前编译并且打开log,可只使用log的prelaunch task并为log任务添加depends on依赖
+-        },
+-        {
+-            "name": "DAP-attach",
+-            "cwd": "${workspaceRoot}",
+-            "executable": "${workspaceRoot}\\build\\basic_framework.elf", // 要下载到调试器的文件,花括号中的是vscode两个预定义的参数
+-            "request": "attach",
+-            "type": "cortex-debug",
+-            "device": "STM32F407IG",
+-            "svdFile": "STM32F407.svd",
+-            "servertype": "openocd",
+-            "configFiles": [
+-                "openocd_dap.cfg",
+-            ],
+-        },
+-        {
+-            "name": "Jlink-attach",
+-            "cwd": "${workspaceFolder}",
+-            "executable": "${workspaceRoot}\\build\\basic_framework.elf",
+-            "request": "attach",
+-            "type": "cortex-debug",
+-            "device": "STM32F407IG",
+-            "showDevDebugOutput": "none",
+-            "servertype": "jlink",
+-            "interface": "swd",
+-            "svdFile": "STM32F407.svd",
+-            "rtos": "FreeRTOS",
+-        },
+-
+-        {
+-        "name": "EmberProbe",
+-        "type": "emberprobe",
+-        "request": "launch",
+-        "cwd": "${workspaceFolder}",
+-        "executable": "${workspaceFolder}/build/basic_framework.elf",
+-        "servertype": "openocd",
+-        "runToEntryPoint": "main",
+-        "rtos": "FreeRTOS"
+-        },
+-
+-    ],
+-}+  "version": "0.2.0",
++  "configurations": [
++    {
++      "name": "DiPan_Board 底盘 (EmberProbe)",
++      "type": "emberprobe",
++      "request": "launch",
++      "cwd": "${workspaceFolder}/../../chassis_driver/basic_framework",
++      "executable": "${workspaceFolder}/../../artifacts/DiPan_Board.elf",
++      "servertype": "openocd",
++      "runToEntryPoint": "main",
++      "rtos": "FreeRTOS",
++      "preLaunchTask": "DiPan_Board: build chassis"
++    }
++  ]
++}
+--- a/basic_framework/.vscode/settings.json
++++ b/basic_framework/.vscode/settings.json
+@@ -1,47 +1 @@
+-{
+-    "cmake.configureOnOpen": false,
+-    "files.associations": {
+-        "stm32f4xx_hal_def.h": "c",
+-        "bsp_usb.h": "c",
+-        "usb_device.h": "c",
+-        "usbd_cdc.h": "c",
+-        "usbd_conf.h": "c",
+-        "usbd_desc.h": "c",
+-        "usbd_cdc_if.h": "c",
+-        "chassis.h": "c",
+-        "remote_control.h": "c",
+-        "arm_math.h": "c",
+-        "can_comm.h": "c",
+-        "dji_motor.h": "c",
+-        "bsp_log.h": "c"
+-    },
+-    "stm32-for-vscode.makePath": false,
+-    "makefile.makePath": "D:\\MSYS2\\mingw64\\bin\\mingw32-make.exe",
+-    "makefile.makefilePath": "${workspaceFolder}\\Makefile",
+-    "makefile.makeDirectory": "${workspaceFolder}",
+-    "makefile.configureOnOpen": false,
+-    "makefile.configureOnEdit": false,
+-    "makefile.configurations": [
+-        {
+-            "name": "STM32F407",
+-            "makePath": "D:\\MSYS2\\mingw64\\bin\\mingw32-make.exe",
+-            "makefilePath": "${workspaceFolder}\\Makefile",
+-            "makeDirectory": "${workspaceFolder}",
+-            "makeArgs": ["-j24"]
+-        }
+-    ],
+-    "cortex-debug.armToolchainPath": "D:\\MSYS2\\ucrt64\\bin",
+-    "cortex-debug.gdbPath.windows": "D:\\BaiduNetdiskDownload\\RM\\archive\\EC\\VSCode+Ozone环境配置\\gcc-arm-none-eabi-10.3-2021.10-win32\\Arm-GNU-Toolchian\\bin\\arm-none-eabi-gdb.exe",
+-    "cortex-debug.openocdPath": "D:\\MSYS2\\mingw64\\bin\\openocd.exe",
+-    "cortex-debug.JLinkGDBServerPath": "D:\\Jlink\\JLinkGDBServerCL.exe",
+-
+-    "emberprobe.openocdPath": "D:\\MSYS2\\mingw64\\bin\\openocd.exe",
+-    "emberprobe.gdbPath": "D:\\BaiduNetdiskDownload\\RM\\archive\\EC\\VSCode+Ozone环境配置\\gcc-arm-none-eabi-10.3-2021.10-win32\\Arm-GNU-Toolchian\\bin\\arm-none-eabi-gdb.exe",
+-    "emberprobe.armToolchainPath": "D:\\BaiduNetdiskDownload\\RM\\archive\\EC\\VSCode+Ozone环境配置\\gcc-arm-none-eabi-10.3-2021.10-win32\\Arm-GNU-Toolchian\\bin",
+-    "emberprobe.rtos": "FreeRTOS",
+-    "emberprobe.transport": "swd",
+-    "emberprobe.sampleFrequencyHz": 30,
+-    "emberprobe.maxSamples": 2000
+-
+-}
+-
++{"cmake.sourceDirectory": "${workspaceFolder}", "cmake.buildDirectory": "${workspaceFolder}/../../build/chassis"}
+--- a/basic_framework/.vscode/tasks.json
++++ b/basic_framework/.vscode/tasks.json
+@@ -1,69 +1,27 @@
+ {
+-    // See https://go.microsoft.com/fwlink/?LinkId=733558
+-    "version": "2.0.0",
+-    "tasks": [
+-        {
+-            "label": "build task",
+-            "type": "process",
+-            "command": "D:\\MSYS2\\mingw64\\bin\\mingw32-make.exe",
+-            "args": ["-j24"],
+-            "options": {
+-                "env": {
+-                    "PATH": "D:\\MSYS2\\mingw64\\bin;D:\\MSYS2\\ucrt64\\bin;${env:PATH}"
+-                }
+-            },
+-            "problemMatcher": [],
+-            "presentation": {
+-                "reveal": "always",
+-                "panel": "dedicated",
+-                "clear": true
+-            },
+-            "group": {
+-                "kind": "build",
+-                "isDefault": true
+-            }
+-        },
+-        {
+-            "label": "download dap",
+-            "type": "shell",
+-            "command": "mingw32-make -j24 ; mingw32-make download_dap",
+-            "options": {
+-                "env": {
+-                    "PATH": "D:\\MSYS2\\mingw64\\bin;D:\\MSYS2\\ucrt64\\bin;D:\\Jlink;${env:PATH}"
+-                }
+-            },
+-            "group": {
+-                "kind": "build",
+-                "isDefault": false
+-            }
+-        },
+-        {
+-            "label": "download jlink",
+-            "type": "shell",
+-            "command": "mingw32-make -j24 ; mingw32-make download_jlink",
+-            "options": {
+-                "env": {
+-                    "PATH": "D:\\MSYS2\\mingw64\\bin;D:\\MSYS2\\ucrt64\\bin;D:\\Jlink;${env:PATH}"
+-                }
+-            },
+-            "group": {
+-                "kind": "build",
+-                "isDefault": false
+-            }
+-        },
+-        {
+-            "label": "log",
+-            "type": "shell",
+-            "command": "D:\\Jlink\\JLinkRTTClient.exe",
+-            "args": [],
+-            "problemMatcher": []
+-        },
+-        {
+-            "type": "cmake",
+-            "label": "CMake: 清理",
+-            "command": "clean",
+-            "problemMatcher": [],
+-            "detail": "CMake 模板 清理 任务"
+-        }
+-    ]
++  "version": "2.0.0",
++  "tasks": [
++    {
++      "label": "DiPan_Board: build chassis",
++      "type": "process",
++      "command": "bash",
++      "args": [
++        "${workspaceFolder}/../../tools/build_chassis.sh"
++      ],
++      "group": {
++        "kind": "build",
++        "isDefault": true
++      },
++      "problemMatcher": []
++    },
++    {
++      "label": "DiPan_Board: host communication tests",
++      "type": "process",
++      "command": "bash",
++      "args": [
++        "${workspaceFolder}/../../tools/test.sh"
++      ],
++      "problemMatcher": []
++    }
++  ]
+ }
+--- a/basic_framework/CMakeLists.txt
++++ b/basic_framework/CMakeLists.txt
+@@ -31,7 +31,7 @@
+ add_compile_options(-pipe ${MCU_FLAGS} -Wall -fmessage-length=0 # basic options
+                     -ffunction-sections -fdata-sections -fno-common # optimize options 
+                     )
+-add_link_options(-pipe ${MCU_FLAGS} -T${LINKER_SCRIPT} -Wl,--no-warn-rwx-segments # close RWX warning
++add_link_options(-pipe ${MCU_FLAGS} -T${LINKER_SCRIPT} # toolchain-compatible link options
+                  -lm -lc -lnosys # lib options
+                  -Wl,--gc-sections -flto -specs=nano.specs -specs=nosys.specs # optimize options
+                  -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map -Wl,--cref -Wl,--print-memory-usage # map options
+--- a/basic_framework/Src/can.c
++++ b/basic_framework/Src/can.c
+@@ -77,9 +77,9 @@
+   hcan2.Init.TimeSeg1 = CAN_BS1_10TQ;
+   hcan2.Init.TimeSeg2 = CAN_BS2_3TQ;
+   hcan2.Init.TimeTriggeredMode = DISABLE;
+-  hcan2.Init.AutoBusOff = DISABLE;
++  hcan2.Init.AutoBusOff = ENABLE;
+   hcan2.Init.AutoWakeUp = DISABLE;
+-  hcan2.Init.AutoRetransmission = ENABLE;
++  hcan2.Init.AutoRetransmission = DISABLE;
+   hcan2.Init.ReceiveFifoLocked = DISABLE;
+   hcan2.Init.TransmitFifoPriority = ENABLE;
+   if (HAL_CAN_Init(&hcan2) != HAL_OK)
+--- a/basic_framework/application/chassis/chassis.c
++++ b/basic_framework/application/chassis/chassis.c
+@@ -12,6 +12,8 @@
+  */
+ 
+ #include "chassis.h"
++#include "chassis_comm_port.h"
++#include "chassis_comm_config.h"
+ #include "robot_def.h"
+ #include "power_control.h"
+ #include "super_cap.h"
+@@ -32,12 +34,12 @@
+ 
+ 
+ /* 底盘应用包含的模块和信息存储,底盘是单例模式,因此不需要为底盘建立单独的结构体 */
+-#ifdef CHASSIS_BOARD // 如果是底盘板,使用板载IMU获取底盘转动角速度
+-#include "can_comm.h"
++#ifdef CHASSIS_BOARD
++#if CHASSIS_COMM_USE_INS
+ #include "ins_task.h"
+-static CANCommInstance *chasiss_can_comm; // 双板通信CAN comm
+ attitude_t *Chassis_IMU_data;
+-#endif // CHASSIS_BOARD
++#endif
++#endif
+ #ifdef ONE_BOARD
+ 
+ static Publisher_t *chassis_pub;                    // 用于发布底盘的数据
+@@ -126,6 +128,8 @@
+     chassis_motor_config.can_init_config.tx_id = 3;
+     chassis_motor_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+     motor_rb = PowerControlInit(&chassis_motor_config);
++    DJIMotorStop(motor_lf); DJIMotorStop(motor_rf);
++    DJIMotorStop(motor_lb); DJIMotorStop(motor_rb);
+ 
+     referee_data = UITaskInit(&huart6, &ui_data); // 裁判系统初始化,会同时初始化UI
+ 
+@@ -149,20 +153,11 @@
+ 
+     // 发布订阅初始化,如果为双板,则需要can comm来传递消息
+ #ifdef CHASSIS_BOARD
+-    Chassis_IMU_data = INS_Init(); // 底盘IMU初始化
+-
+-    CANComm_Init_Config_s comm_conf = {
+-        .can_config = {
+-            .can_handle = &hcan2,
+-            .tx_id = 0x311,
+-            .rx_id = 0x312,
+-        },
+-        .recv_data_len = sizeof(Chassis_Ctrl_Cmd_s),
+-        .send_data_len = sizeof(Chassis_Upload_Data_s),
+-        .daemon_count = 10, // 100ms 收不到判离线 (daemon 任务 100Hz)
+-    };
+-    chasiss_can_comm = CANCommInit(&comm_conf); // can comm初始化
+-#endif                                          // CHASSIS_BOARD
++#if CHASSIS_COMM_USE_INS
++    Chassis_IMU_data = INS_Init();
++#endif
++    ChassisCommPortInit();
++#endif
+ 
+ #ifdef ONE_BOARD // 单板控制整车,则通过pubsub来传递消息
+     chassis_sub = SubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
+@@ -314,8 +309,8 @@
+     const float aps_2_mps = PI2 * (RADIUS_WHEEL / 1000.0f) /
+                             (RPM_2_ANGLE_PER_SEC * REDUCTION_RATIO_WHEEL * 60.0f);
+ 
+-    chassis_feedback_data.real_vx = vx_aps * OMNI_KX * aps_2_mps;
+-    chassis_feedback_data.real_vy = vy_aps * OMNI_KY * aps_2_mps;
++    chassis_feedback_data.real_vx = vx_aps * aps_2_mps;
++    chassis_feedback_data.real_vy = vy_aps * aps_2_mps;
+     /* wz 不能复用伪单位 wz_aps, 直接用平均轮速换算: ω = v_wheel / r0 */
+     chassis_feedback_data.real_wz = (lf + rf + lb + rb) * 0.25f * aps_2_mps /
+                                     (OMNI_R0 / 1000.0f) * RAD_2_DEGREE;
+@@ -332,15 +327,11 @@
+ #if defined(ONE_BOARD)
+     SubGetMessage(chassis_sub, &chassis_cmd_recv);
+ #elif defined(CHASSIS_BOARD)
+-    chassis_cmd_recv = *(Chassis_Ctrl_Cmd_s *)CANCommGet(chasiss_can_comm);
+-    if (!CANCommIsOnline(chasiss_can_comm))
+-    {
+-        /* 滑环松了/云台板没上电: 立即零力, 防止按最后一帧乱跑 */
+-        chassis_cmd_recv.chassis_mode = CHASSIS_ZERO_FORCE;
+-        chassis_cmd_recv.vx = 0.0f;
+-        chassis_cmd_recv.vy = 0.0f;
+-        chassis_cmd_recv.wz = 0.0f;
+-    }
++    const int comm_motors_online = motor_lf->feed_cnt && motor_rf->feed_cnt &&
++        motor_lb->feed_cnt && motor_rb->feed_cnt &&
++        DaemonIsOnline(motor_lf->daemon) && DaemonIsOnline(motor_rf->daemon) &&
++        DaemonIsOnline(motor_lb->daemon) && DaemonIsOnline(motor_rb->daemon);
++    ChassisCommPortCommand(&chassis_cmd_recv, comm_motors_online);
+ #endif
+ 
+     /* 姿态指令: 真正发 0x0120 的 UITask 在本板, 所以在这里转给 referee 模块 */
+@@ -468,6 +459,6 @@
+     PubPushMessage(chassis_pub, (void *)&chassis_feedback_data);
+ #endif
+ #ifdef CHASSIS_BOARD
+-    CANCommSend(chasiss_can_comm, (void *)&chassis_feedback_data);
++    ChassisCommPortFeedback(&chassis_feedback_data, comm_motors_online);
+ #endif // CHASSIS_BOARD
+ }--- a/basic_framework/application/robot_def.h
++++ b/basic_framework/application/robot_def.h
+@@ -18,8 +18,8 @@
+ 
+ /* 开发板类型定义,烧录时注意不要弄错对应功能;修改定义后需要重新编译,只能存在一个定义! */
+ // #define ONE_BOARD // 单板控制整车
+-// #define CHASSIS_BOARD //底盘板
+-#define GIMBAL_BOARD  //云台板
++#define CHASSIS_BOARD // DiPan_Board: navigation chassis endpoint
++// #define GIMBAL_BOARD  // cloud/gimbal firmware is a separate image
+ 
+ #define VISION_USE_VCP  // 使用虚拟串口发送视觉数据
+ // #define VISION_USE_UART // 使用串口发送视觉数据
+--- a/basic_framework/application/robot_task.h
++++ b/basic_framework/application/robot_task.h
+@@ -16,6 +16,7 @@
+ #include "buzzer.h"
+ 
+ #include "bsp_log.h"
++#include "chassis_comm_config.h"
+ 
+ osThreadId insTaskHandle;
+ osThreadId robotTaskHandle;
+@@ -35,8 +36,10 @@
+  */
+ void OSTaskInit()
+ {
++#if !defined(CHASSIS_BOARD) || CHASSIS_COMM_USE_INS
+     osThreadDef(instask, StartINSTASK, osPriorityAboveNormal, 0, 1024);
+-    insTaskHandle = osThreadCreate(osThread(instask), NULL); // 由于是阻塞读取传感器,为姿态解算设置较高优先级,确保以1khz的频率执行
++    insTaskHandle = osThreadCreate(osThread(instask), NULL);
++#endif
+     // // 后续修改为读取传感器数据准备好的中断处理,
+ 
+     osThreadDef(motortask, StartMOTORTASK, osPriorityNormal, 0, 256);
+--- a/basic_framework/bsp/can/bsp_can.c
++++ b/basic_framework/bsp/can/bsp_can.c
+@@ -28,7 +28,7 @@
+  *
+  * @param _instance can instance owned by specific module
+  */
+-static void CANAddFilter(CANInstance *_instance)
++static void CANAddFilter(CANInstance *_instance, CAN_RxFifoPolicy_e policy)
+ {
+     CAN_FilterTypeDef can_filter_conf = {0};
+     static uint8_t can1_filter_idx = 0, can2_filter_idx = 14; // 0-13给can1用,14-27给can2用
+@@ -40,6 +40,13 @@
+         can_filter_conf.FilterFIFOAssignment = (can1_filter_idx & 1) ? CAN_RX_FIFO0 : CAN_RX_FIFO1;              // 奇数编号的模块会被分配到FIFO0,偶数编号的模块会被分配到FIFO1
+     }else if(_instance->can_handle == &hcan2){
+         can_filter_conf.FilterFIFOAssignment = (can2_filter_idx & 1) ? CAN_RX_FIFO0 : CAN_RX_FIFO1;              // 奇数编号的模块会被分配到FIFO0,偶数编号的模块会被分配到FIFO1
++    }
++
++    /* A multipart group must never cross RX FIFOs: IRQ servicing can reorder them. */
++    if (policy == CAN_RX_FIFO_POLICY_FIFO0) {
++        can_filter_conf.FilterFIFOAssignment = CAN_RX_FIFO0;
++    } else if (policy == CAN_RX_FIFO_POLICY_FIFO1) {
++        can_filter_conf.FilterFIFOAssignment = CAN_RX_FIFO1;
+     }
+ 
+     can_filter_conf.SlaveStartFilterBank = 14;                                                                // 从第14个过滤器开始配置从机过滤器(在STM32的BxCAN控制器中CAN2是CAN1的从机)
+@@ -156,7 +163,7 @@
+     instance->can_module_callback = config->can_module_callback;
+     instance->id = config->id;
+ 
+-    CANAddFilter(instance);         // 添加CAN过滤器规则
++    CANAddFilter(instance, config->rx_fifo_policy);         // 添加CAN过滤器规则
+     can_instance[idx++] = instance; // 将实例保存到can_instance中
+ 
+     return instance; // 返回can实例指针
+@@ -190,6 +197,7 @@
+     while (HAL_CAN_GetRxFifoFillLevel(_hcan, fifox)) // FIFO不为空,有可能在其他中断时有多帧数据进入
+     {
+         HAL_CAN_GetRxMessage(_hcan, fifox, &rxconf, can_rx_buff); // 从FIFO中获取数据
++        if (rxconf.IDE != CAN_ID_STD || rxconf.RTR != CAN_RTR_DATA || rxconf.DLC > 8) continue;
+         for (size_t i = 0; i < idx; ++i)
+         { // 两者相等说明这是要找的实例
+             if (_hcan == can_instance[i]->can_handle && rxconf.StdId == can_instance[i]->rx_id)
+--- a/basic_framework/bsp/can/bsp_can.h
++++ b/basic_framework/bsp/can/bsp_can.h
+@@ -28,6 +28,13 @@
+ } CANInstance;
+ #pragma pack()
+ 
++/* AUTO preserves legacy balancing; ordered multipart protocols select one FIFO. */
++typedef enum {
++    CAN_RX_FIFO_POLICY_AUTO = 0,
++    CAN_RX_FIFO_POLICY_FIFO0 = 1,
++    CAN_RX_FIFO_POLICY_FIFO1 = 2,
++} CAN_RxFifoPolicy_e;
++
+ /* CAN实例初始化结构体,将此结构体指针传入注册函数 */
+ typedef struct
+ {
+@@ -35,6 +42,7 @@
+     uint32_t tx_id;                             // 发送id
+     uint32_t rx_id;                             // 接收id
+     void (*can_module_callback)(CANInstance *); // 处理接收数据的回调函数
++    CAN_RxFifoPolicy_e rx_fifo_policy; /* zero-initialized callers keep legacy policy */
+     void *id;                                   // 拥有can实例的模块地址,用于区分不同的模块(如果有需要的话),如果不需要可以不传入
+ } CAN_Init_Config_s;
+ 
+--- a/basic_framework/bsp/usart/bsp_usart.c
++++ b/basic_framework/bsp/usart/bsp_usart.c
+@@ -107,6 +107,7 @@
+         { // call the callback function if it is not NULL
+             if (usart_instance[i]->module_callback != NULL)
+             {
++                usart_instance[i]->last_rx_size = Size;
+                 usart_instance[i]->module_callback();
+                 memset(usart_instance[i]->recv_buff, 0,
+                        usart_instance[i]->recv_buff_size);   // 清满, 防止半帧残留
+@@ -137,4 +138,4 @@
+             return;
+         }
+     }
+-}+}
+--- a/basic_framework/bsp/usart/bsp_usart.h
++++ b/basic_framework/bsp/usart/bsp_usart.h
+@@ -25,6 +25,7 @@
+ {
+     uint8_t recv_buff[USART_RXBUFF_LIMIT]; // 预先定义的最大buff大小,如果太小请修改USART_RXBUFF_LIMIT
+     uint8_t recv_buff_size;                // 模块接收一包数据的大小
++    uint16_t last_rx_size;                // Actual DMA/IDLE length for strict SBUS validation
+     UART_HandleTypeDef *usart_handle;      // 实例对应的usart_handle
+     usart_module_callback module_callback; // 解析收到的数据的回调函数
+ } USARTInstance;
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/README.md
+@@ -0,0 +1,46 @@
++# chassis_comm 模块
++
++本模块在底盘任务中处理导航 CAN 命令，输出原底盘驱动使用的控制结构，并生成带会话/序号的实测速度反馈。
++
++## 文件职责
++
++- `chassis_comm.c/.h`：平台无关的状态、组包接收、安全门和反馈；每个 `ChassisComm` 实例独立，不直接使用 HAL、RTOS 或 `robot_def.h`。
++- `chassis_comm_port.c/.h`：C 板 CAN2、USART3 接收机、中断队列、HAL tick、原驱动结构和单位换算。
++- `chassis_comm_config.h`：CAN/UART、轴符号、反馈周期、INS 和运动锁配置。
++- `protocol/`：复用双板工程的字节协议与 CAN HAL 邮箱发送辅助；与 `communication_reference/common` 对应文件保持一致。
++
++## 当前工程中的三个接入点
++
++```c
++// ChassisInit()，仅调用一次
++ChassisCommPortInit();
++// ChassisTask() 开始，四轮均有反馈且 daemon 在线时传 1
++ChassisCommPortCommand(&chassis_cmd_recv, comm_motors_online);
++// ChassisTask() 完成速度估计后
++ChassisCommPortFeedback(&chassis_feedback_data, comm_motors_online);
++```
++
++port 初始化非重入，只初始化一次。接收回调只复制 CAN 帧；核心解析、安全门和输出由同一底盘任务顺序调用，不要跨多个任务并发操作同一实例。ISR 队列有 16 个槽、可用 15 个；满队列/超龄命令进入 RX 故障，等待新鲜有效 STOP 恢复。
++
++## 迁移到其他驱动
++
++可以保留 `protocol/`、`chassis_comm.c/.h`，替换 port：
++
++1. 实例调用 `ChassisCommInit`。
++2. 接收侧先过滤标准 CAN 数据帧，再调用 `ChassisCommReceive`；保留硬件接收时间，不把积压数据标记成当前新数据。
++3. 每个控制周期通过 `ChassisCommSetSafety` 更新遥控在线/导航档/电机在线，并调用 `ChassisCommGetCommand`。只有 `enabled=true` 才输出速度，否则停止。
++4. 用真实轮速的 SI 速度调用 `ChassisCommMakeFeedback`，按顺序发送生成的三帧。
++5. 发生 RX 溢出时调用 `ChassisCommRxFault`，不可丢失安全状态。
++
++`vx/vy` 单位 m/s，`wz` rad/s；+X 前、+Y 左、+yaw 逆时针。核心不检查指针为空，调用方须提供有效对象和缓冲区。纯核心返回的是安全门后的 SI 指令，原驱动 aps 单位换算只在 port。
++
++不要同时编译本模块的协议 `.c` 与旧 `nav_relay` / `nav_conversion` 同名实现，否则会出现重复符号。本底盘 CMake 已递归纳入新模块，无需额外添加源文件。
++
++## 默认值与协议
++
++运动和轴标定锁均为 0；反馈周期 20 ms；CAN2；route=2；遥控器 USART3、CH7+CH8 同时 MID。
++命令 ID 0x330/331/332，反馈 0x338/339/33A，1 Mbps，标准数据帧 DLC=8。字段与验收指令见工程根目录 `docs/`。
++
++三帧命令按到达顺序组包，三个接收过滤器必须设为同一个硬件 FIFO。当前 port 使用 `.rx_fifo_policy = CAN_RX_FIFO_POLICY_FIFO0`；云台反馈接收同样固定 FIFO0。不能退回交替 FIFO 的 AUTO 策略，否则延迟处理中断时可能跨 FIFO 乱序。BSP 新增策略字段，默认 0 保持其他注册端点的旧 AUTO 行为。
++
++关闭导航档或遥控失联只会停车，不会自动恢复旧摇杆驱动；后续如需手动驾驶，须单独设计清楚的命令仲裁。
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/chassis_comm.c
+@@ -0,0 +1,83 @@
++#include "chassis_comm.h"
++#include "chassis_comm_config.h"
++#include <math.h>
++#include <string.h>
++
++static void apply_safety(ChassisComm *state)
++{
++    uint16_t fault = (!CHASSIS_COMM_ALLOW_MOTION ? NC_FAULT_LOCK : 0) |
++        (!CHASSIS_COMM_AXES_VERIFIED ? NC_FAULT_UNITS : 0) |
++        (!state->safety.remote_online || !state->safety.navigation_selected ? NC_FAULT_RC : 0) |
++        (!state->safety.motors_online ? NC_FAULT_MOTOR : 0) |
++        (state->rx_fault ? NC_FAULT_RX : 0);
++    rm_mcu_set_safety(&state->link, fault == 0, !state->safety.remote_online,
++                      !state->safety.remote_online || !state->safety.navigation_selected, fault);
++}
++
++void ChassisCommInit(ChassisComm *state)
++{
++    memset(state, 0, sizeof(*state));
++    rm_mcu_init(&state->link, CHASSIS_COMM_ROUTE);
++    apply_safety(state);
++}
++
++void ChassisCommSetSafety(ChassisComm *state, ChassisCommSafety safety)
++{
++    state->safety = safety;
++    apply_safety(state);
++}
++
++void ChassisCommRxFault(ChassisComm *state)
++{
++    state->receiver.active = 0;
++    state->rx_fault = true;
++    apply_safety(state);
++}
++
++bool ChassisCommReceive(ChassisComm *state, uint16_t id, unsigned dlc,
++                       const uint8_t *data, uint32_t received_ms, uint32_t now_ms)
++{
++    nc_group_t group;
++    rm_command_t command;
++    uint8_t frame[RM_FRAME_SIZE];
++    if ((uint32_t)(now_ms - received_ms) > NC_GROUP_MS) {
++        ChassisCommRxFault(state);
++        return false;
++    }
++    if (!nc_rx_push(&state->receiver, NC_COMMAND_BASE, id, false, false, dlc,
++                     data, received_ms, &group)) {
++        return false;
++    }
++    if (!nc_command_decode(&group, &command)) {
++        state->decode_errors++;
++        return false;
++    }
++    if (!(command.flags & RM_FLAG_ENABLE)) {
++        state->rx_fault = false;
++        apply_safety(state);
++    }
++    if (!rm_encode_command(&command, frame) ||
++        !rm_mcu_receive(&state->link, frame, sizeof(frame), state->receiver.started_ms)) {
++        return false;
++    }
++    state->accepted_commands++;
++    return true;
++}
++
++void ChassisCommGetCommand(ChassisComm *state, uint32_t now_ms, rm_output_t *command)
++{
++    apply_safety(state);
++    rm_mcu_get_output(&state->link, now_ms, command);
++}
++
++bool ChassisCommMakeFeedback(ChassisComm *state, uint32_t now_ms,
++                            float vx_mps, float vy_mps, float wz_radps, nc_group_t *group)
++{
++    rm_feedback_t feedback;
++    apply_safety(state);
++    const bool valid = state->safety.motors_online &&
++        isfinite(vx_mps) && isfinite(vy_mps) && isfinite(wz_radps) &&
++        fabsf(vx_mps) <= 20 && fabsf(vy_mps) <= 20 && fabsf(wz_radps) <= 32.767f;
++    rm_mcu_feedback(&state->link, now_ms, valid, vx_mps, vy_mps, wz_radps, &feedback);
++    return nc_feedback_group(&feedback, group);
++}
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/chassis_comm.h
+@@ -0,0 +1,33 @@
++#ifndef CHASSIS_COMM_H
++#define CHASSIS_COMM_H
++
++/* Platform-independent CAN protocol and safety endpoint. One task owns state. */
++#include "nav_can.h"
++#include "rm_chassis_comm/mcu_link.h"
++
++typedef struct {
++    bool remote_online;
++    bool navigation_selected;
++    bool motors_online;
++} ChassisCommSafety;
++
++typedef struct {
++    rm_mcu_link_t link;
++    nc_rx_t receiver;
++    ChassisCommSafety safety;
++    bool rx_fault;
++    uint32_t accepted_commands;
++    uint32_t decode_errors;
++} ChassisComm;
++
++void ChassisCommInit(ChassisComm *state);
++void ChassisCommSetSafety(ChassisComm *state, ChassisCommSafety safety);
++void ChassisCommRxFault(ChassisComm *state);
++bool ChassisCommReceive(ChassisComm *state, uint16_t id, unsigned dlc,
++                       const uint8_t *data, uint32_t received_ms, uint32_t now_ms);
++void ChassisCommGetCommand(ChassisComm *state, uint32_t now_ms, rm_output_t *command);
++bool ChassisCommMakeFeedback(ChassisComm *state, uint32_t now_ms,
++                            float vx_mps, float vy_mps, float wz_radps,
++                            nc_group_t *group);
++
++#endif
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/chassis_comm_config.h
+@@ -0,0 +1,25 @@
++#ifndef CHASSIS_COMM_CONFIG_H
++#define CHASSIS_COMM_CONFIG_H
++
++/* Single configuration entry. Shipping images remain communication-only. */
++#ifndef CHASSIS_COMM_ALLOW_MOTION
++#define CHASSIS_COMM_ALLOW_MOTION 0
++#endif
++#ifndef CHASSIS_COMM_AXES_VERIFIED
++#define CHASSIS_COMM_AXES_VERIFIED 0
++#endif
++#define CHASSIS_COMM_USE_INS 0
++#define CHASSIS_COMM_ROUTE 2u
++#define CHASSIS_COMM_FEEDBACK_PERIOD_MS 20u
++#define CHASSIS_COMM_RX_QUEUE_SIZE 16u
++#define CHASSIS_COMM_CAN_HANDLE hcan2
++#define CHASSIS_COMM_REMOTE_UART huart3
++/* ROS body axes: +X forward, +Y left, +yaw counterclockwise. Verify on wheels. */
++#define CHASSIS_COMM_VX_SIGN 1.0f
++#define CHASSIS_COMM_VY_SIGN 1.0f
++#define CHASSIS_COMM_WZ_SIGN 1.0f
++
++#if defined(CHASSIS_TEST_FORWARD)
++#error CHASSIS_TEST_FORWARD bypasses command arbitration; remove it for navigation
++#endif
++#endif
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/chassis_comm_port.c
+@@ -0,0 +1,131 @@
++#include "chassis_comm_port.h"
++#include "chassis_comm.h"
++#include "chassis_comm_config.h"
++#include "nav_can_hal.h"
++#include "remote_control.h"
++#include <string.h>
++
++typedef struct {
++    uint8_t bytes[8];
++    uint8_t dlc;
++    uint16_t id;
++    uint32_t received_ms;
++} QueuedCanFrame;
++
++static QueuedCanFrame inbox[CHASSIS_COMM_RX_QUEUE_SIZE];
++static volatile uint8_t head, tail, overrun;
++static ChassisComm endpoint;
++static FS_RC_ctrl_t *remote;
++static nch_tx_t sender;
++static uint32_t feedback_ms;
++volatile uint32_t chassis_comm_rx_frames;
++volatile uint32_t chassis_comm_accepted_commands;
++volatile uint32_t chassis_comm_rx_overruns;
++volatile uint32_t chassis_comm_decode_errors;
++
++static ChassisCommSafety read_safety(int motors_online)
++{
++    const bool online = FS_RemoteControlIsOnline();
++    ChassisCommSafety safety = {
++        .remote_online = online,
++        .navigation_selected = online && remote &&
++            remote[TEMP].channel[6] == FS_RC_SW_MID &&
++            remote[TEMP].channel[7] == FS_RC_SW_MID,
++        .motors_online = motors_online != 0,
++    };
++    return safety;
++}
++
++/* ISR only copies a frame. Decode/safety/control are owned by the chassis task. */
++static void receive_can(CANInstance *can)
++{
++    const uint8_t next = (head + 1u) % CHASSIS_COMM_RX_QUEUE_SIZE;
++    if (next == tail) {
++        overrun = 1;
++        chassis_comm_rx_overruns++;
++        return;
++    }
++    memcpy(inbox[head].bytes, can->rx_buff, 8);
++    inbox[head].dlc = can->rx_len;
++    inbox[head].id = (uint16_t)can->rx_id;
++    inbox[head].received_ms = HAL_GetTick();
++    __DMB();
++    head = next;
++    chassis_comm_rx_frames++;
++}
++
++void ChassisCommPortInit(void)
++{
++    ChassisCommInit(&endpoint);
++    sender.can = &CHASSIS_COMM_CAN_HANDLE;
++    remote = FS_RemoteControlInit(&CHASSIS_COMM_REMOTE_UART);
++    for (unsigned i = 0; i < 3; i++) {
++        CAN_Init_Config_s config = {
++            .can_handle = &CHASSIS_COMM_CAN_HANDLE,
++            .rx_fifo_policy = CAN_RX_FIFO_POLICY_FIFO0,
++            .tx_id = NC_FEEDBACK_BASE + i,
++            .rx_id = NC_COMMAND_BASE + i,
++            .can_module_callback = receive_can,
++        };
++        CANRegister(&config);
++    }
++}
++
++void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
++{
++    const uint32_t now = HAL_GetTick();
++    if (overrun) {
++        const uint32_t irq = __get_PRIMASK();
++        __disable_irq();
++        tail = head;
++        overrun = 0;
++        __set_PRIMASK(irq);
++        ChassisCommRxFault(&endpoint);
++    }
++    ChassisCommSetSafety(&endpoint, read_safety(motors_online));
++    while (tail != head) {
++        const QueuedCanFrame frame = inbox[tail];
++        __DMB();
++        tail = (tail + 1u) % CHASSIS_COMM_RX_QUEUE_SIZE;
++        ChassisCommReceive(&endpoint, frame.id, frame.dlc, frame.bytes, frame.received_ms, now);
++    }
++    chassis_comm_accepted_commands = endpoint.accepted_commands;
++    chassis_comm_decode_errors = endpoint.decode_errors;
++    rm_output_t output;
++    ChassisCommGetCommand(&endpoint, now, &output);
++    memset(command, 0, sizeof(*command));
++    command->chassis_mode = CHASSIS_ZERO_FORCE;
++    if (!output.enabled) {
++        return;
++    }
++    /* Original driver's linear reference is rotor degrees/second (aps). */
++    const float aps_to_mps = 6.28318530718f * (RADIUS_WHEEL / 1000.0f) /
++        (360.0f * REDUCTION_RATIO_WHEEL);
++    command->vx = output.vx * CHASSIS_COMM_VX_SIGN / aps_to_mps;
++    command->vy = output.vy * CHASSIS_COMM_VY_SIGN / aps_to_mps;
++    command->wz = output.wz * CHASSIS_COMM_WZ_SIGN /
++        (1000.0f * 0.01745329252f * aps_to_mps);
++    command->offset_angle = 0;
++    command->chassis_speed_buff = 100;
++    command->chassis_mode = CHASSIS_NO_FOLLOW;
++}
++
++void ChassisCommPortFeedback(const Chassis_Upload_Data_s *measured, int motors_online)
++{
++    const uint32_t now = HAL_GetTick();
++    nch_pump(&sender, now);
++    if ((uint32_t)(now - feedback_ms) < CHASSIS_COMM_FEEDBACK_PERIOD_MS) {
++        return;
++    }
++    feedback_ms = now;
++    ChassisCommSetSafety(&endpoint, read_safety(motors_online));
++    nc_group_t group;
++    if (ChassisCommMakeFeedback(&endpoint, now,
++        measured->real_vx * CHASSIS_COMM_VX_SIGN,
++        measured->real_vy * CHASSIS_COMM_VY_SIGN,
++        measured->real_wz * 0.01745329252f * CHASSIS_COMM_WZ_SIGN, &group) &&
++        nch_start(&sender, &group, now))
++    {
++        nch_pump(&sender, now);
++    }
++}
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/chassis_comm_port.h
+@@ -0,0 +1,15 @@
++#ifndef CHASSIS_COMM_PORT_H
++#define CHASSIS_COMM_PORT_H
++#include "robot_def.h"
++
++/* Call Init once in ChassisInit; Command/Feedback from the 5 ms chassis task. */
++void ChassisCommPortInit(void);
++void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online);
++void ChassisCommPortFeedback(const Chassis_Upload_Data_s *measured, int motors_online);
++
++/* Debugger counters only; never use them to grant motion permission. */
++extern volatile uint32_t chassis_comm_rx_frames;
++extern volatile uint32_t chassis_comm_accepted_commands;
++extern volatile uint32_t chassis_comm_rx_overruns;
++extern volatile uint32_t chassis_comm_decode_errors;
++#endif
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/protocol/mcu_link.c
+@@ -0,0 +1,74 @@
++#include "rm_chassis_comm/mcu_link.h"
++#include <math.h>
++#include <string.h>
++static bool safe(const rm_mcu_link_t*l){return l->ready&&!l->estop&&!l->manual&&!l->fault_mask;}
++void rm_mcu_init(rm_mcu_link_t*l,uint8_t route){if(!l)return;
++ memset(l,0,sizeof(*l));
++ l->route=route;
++ l->requires_stop=true;}
++void rm_mcu_set_safety(rm_mcu_link_t*l,bool ready,bool estop,bool manual,uint16_t fault){if(!l)return;
++ l->ready=ready;
++ l->estop=estop;
++ l->manual=manual;
++ l->fault_mask=fault;
++ if(!safe(l)){l->active=false;
++ l->requires_stop=true;}}
++void rm_mcu_get_output(rm_mcu_link_t*l,uint32_t now,rm_output_t*out){if(!out)return;
++ memset(out,0,sizeof(*out));
++ if(!l)return;
++ if(l->active&&(uint32_t)(now-l->received_ms)>=l->command.ttl_ms){l->active=false;
++ l->requires_stop=true;
++ l->timed_out=true;}
++ if(!safe(l)){l->active=false;
++ l->requires_stop=true;}
++ if(l->active&&!l->requires_stop){out->enabled=true;
++ out->vx=l->command.vx;
++ out->vy=l->command.vy;
++ out->wz=l->command.wz;}}
++int rm_mcu_receive(rm_mcu_link_t*l,const uint8_t*p,size_t n,uint32_t now){rm_command_t c;rm_output_t ignored;uint16_t diff;
++ if(!l||!rm_decode_command(p,n,&c)||c.route!=l->route)return 0;
++ rm_mcu_get_output(l,now,&ignored); /* Expiry is enforced even if output polling was delayed. */
++ if(!(c.flags&RM_FLAG_ENABLE)){
++  /* STOP always removes output. A replay from this session must not roll the
++   * sequence baseline backwards or unlock a timeout/safety latch. */
++  l->active=false;
++  if(l->ack_valid&&c.session==l->command.session){
++    diff=(uint16_t)(c.sequence-l->command.sequence);
++    if(!diff||diff>=32768u){l->requires_stop=true;return 0;}
++  }
++  l->command=c;
++ l->received_ms=now;
++ l->ack_valid=true;
++ l->active=false;
++ l->timed_out=false;
++  l->requires_stop=!safe(l);
++ return 1;
++ }
++ if(!l->ack_valid||l->requires_stop||!safe(l)||c.session!=l->command.session)return 0;
++ diff=(uint16_t)(c.sequence-l->command.sequence);
++ if(!diff||diff>=32768u)return 0;
++ l->command=c;
++ l->received_ms=now;
++ l->active=true;
++ l->timed_out=false;
++ return 1;}
++void rm_mcu_feedback(rm_mcu_link_t*l,uint32_t now,bool valid,float x,float y,float z,rm_feedback_t*out){rm_output_t current;
++ if(!l||!out)return;
++ rm_mcu_get_output(l,now,&current);
++ memset(out,0,sizeof(*out));
++ out->uptime_ms=now;
++ out->route=l->route;
++ out->session=l->ack_valid?l->command.session:0u;
++ out->sequence=l->ack_valid?l->command.sequence:0;
++ out->fault_mask=l->fault_mask;
++ if(l->ready)out->status|=RM_STATUS_READY;
++ if(current.enabled)out->status|=RM_STATUS_ACTIVE;
++ if(l->estop)out->status|=RM_STATUS_ESTOP;
++ if(l->manual)out->status|=RM_STATUS_MANUAL;
++ if(l->timed_out)out->status|=RM_STATUS_TIMEOUT;
++ if(l->ack_valid)out->status|=RM_STATUS_ACK_VALID;
++ if(valid&&isfinite(x)&&isfinite(y)&&isfinite(z)&&fabsf(x)<=20&&fabsf(y)<=20&&fabsf(z)<=100){
++  out->status|=RM_STATUS_MEASURED;
++ out->vx=x;
++ out->vy=y;
++ out->wz=z;}}
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/protocol/nav_can.c
+@@ -0,0 +1,98 @@
++#include "nav_can.h"
++#include <math.h>
++#include <string.h>
++static void w16(uint8_t *p,uint16_t v) { p[0]=(uint8_t)v;p[1]=(uint8_t)(v>>8); }
++static void w32(uint8_t *p,uint32_t v) { for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i)); }
++static uint16_t r16(const uint8_t *p) { return (uint16_t)p[0]|((uint16_t)p[1]<<8); }
++static int32_t s16(const uint8_t *p) { uint16_t v=r16(p);return v>=32768?(int32_t)v-65536:v; }
++static uint32_t r32(const uint8_t *p) { return (uint32_t)r16(p)|((uint32_t)r16(p+2)<<16); }
++uint16_t nc_crc(const uint8_t *p,unsigned n)
++{
++    uint16_t c=0xffff;
++    while(n--) { c^=*p++;for(unsigned i=0;i<8;i++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0)); }
++    return c;
++}
++static void seal(nc_group_t *g,uint32_t uptime,uint16_t seq)
++{
++    uint8_t bytes[20];memcpy(bytes,g->data,16);w32(bytes+16,uptime);
++    w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
++}
++static bool sealed(const nc_group_t *g)
++{
++    uint8_t bytes[20];memcpy(bytes,g->data,16);memcpy(bytes+16,g->data[2],4);
++    return r16(g->data[2]+6)==r16(g->data[0]+4) && r16(g->data[2]+4)==nc_crc(bytes,20);
++}
++static bool command_ok(const rm_command_t *c)
++{
++    uint8_t test[RM_FRAME_SIZE];
++    return c && c->route==2 && rm_encode_command(c,test) &&
++        c->ttl_ms<=NC_MAX_TTL_MS && hypotf(c->vx,c->vy)<=0.300001f && fabsf(c->wz)<=0.500001f;
++}
++static void velocity(uint8_t *p,float vx,float vy,float wz,bool feedback)
++{
++    float v[3]={vx,vy,wz};
++    for(unsigned i=0;i<3;i++) {
++        /* Commands round toward zero so quantization cannot increase speed. */
++        int32_t q=(int32_t)(feedback?roundf(v[i]*1000.0f):truncf(v[i]*1000.0f));
++        w16(p+2*i,(uint16_t)q);
++    }
++}
++bool nc_command_group(const rm_command_t *c,nc_group_t *g)
++{
++    if(!g||!command_ok(c))return false;
++    memset(g,0,sizeof(*g));g->base=NC_COMMAND_BASE;
++    w32(g->data[0],c->session);w16(g->data[0]+4,c->sequence);w16(g->data[0]+6,c->ttl_ms);
++    velocity(g->data[1],c->vx,c->vy,c->wz,false);w16(g->data[1]+6,NC_VERSION|c->flags);
++    seal(g,c->uptime_ms,c->sequence);return true;
++}
++bool nc_command_decode(const nc_group_t *g,rm_command_t *c)
++{
++    if(!g||!c||g->base!=NC_COMMAND_BASE||!sealed(g)||(r16(g->data[1]+6)&0xff00)!=NC_VERSION)return false;
++    rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0]+4);
++    value.ttl_ms=r16(g->data[0]+6);value.flags=r16(g->data[1]+6)&255;
++    value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/1000.0f;
++    value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
++}
++bool nc_feedback_group(const rm_feedback_t *f,nc_group_t *g)
++{
++    uint8_t bytes[RM_FRAME_SIZE];
++    if(!g||!f||f->route!=2||!rm_encode_feedback(f,bytes)||fabsf(f->wz)>32.767f)return false;
++    memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
++    w32(g->data[0],f->session);w16(g->data[0]+4,f->sequence);w16(g->data[0]+6,NC_VERSION|f->status);
++    velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
++    seal(g,f->uptime_ms,f->sequence);return true;
++}
++bool nc_feedback_decode(const nc_group_t *g,rm_feedback_t *f)
++{
++    if(!g||!f||g->base!=NC_FEEDBACK_BASE||!sealed(g)||(r16(g->data[0]+6)&0xff00)!=NC_VERSION)return false;
++    rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
++    value.session=r32(g->data[0]);value.sequence=r16(g->data[0]+4);value.status=r16(g->data[0]+6)&255;
++    value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/1000.0f;
++    value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
++    if(!rm_encode_feedback(&value,bytes))return false;
++    *f=value;return true;
++}
++bool nc_rx_push(nc_rx_t *r,uint16_t base,uint32_t id,bool extended,bool rtr,unsigned dlc,
++                const uint8_t *bytes,uint32_t now,nc_group_t *out)
++{
++    if(!r||!out||id<base||id>base+2u)return false;
++    if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
++    if(id==base){r->active=1;r->next=0;r->started_ms=now;r->group.base=base;}
++    if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return false;}
++    memcpy(r->group.data[r->next++],bytes,8);
++    if(r->next!=3)return false;
++    r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
++}
++bool nc_tx_start(nc_tx_t *t,const nc_group_t *g,uint32_t now)
++{
++    if(!t||!g||t->active)return false;
++    t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
++}
++bool nc_tx_peek(nc_tx_t *t,uint32_t now,uint16_t *id,uint8_t bytes[8])
++{
++    if(!t||!id||!bytes)return false;
++    if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
++    if(!t->active)return false;
++    *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
++}
++void nc_tx_commit(nc_tx_t *t){if(t&&t->active&&++t->next==3)t->active=0;}
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/protocol/nav_can.h
+@@ -0,0 +1,30 @@
++#ifndef NAV_CAN_H
++#define NAV_CAN_H
++#include "rm_chassis_comm/protocol.h"
++#include <stdbool.h>
++#define NC_COMMAND_BASE 0x330u
++#define NC_FEEDBACK_BASE 0x338u
++#define NC_VERSION 0x0100u
++#define NC_GROUP_MS 10u
++#define NC_TX_MS 8u
++#define NC_MAX_TTL_MS 150u
++#define NC_FAULT_LOCK 0x0001u
++#define NC_FAULT_RC 0x0002u
++#define NC_FAULT_MOTOR 0x0004u
++#define NC_FAULT_UNITS 0x0008u
++#define NC_FAULT_RX 0x0010u
++typedef struct { uint8_t data[3][8]; uint16_t base; } nc_group_t;
++typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_rx_t;
++typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_tx_t;
++uint16_t nc_crc(const uint8_t *,unsigned);
++bool nc_command_group(const rm_command_t *,nc_group_t *);
++bool nc_command_decode(const nc_group_t *,rm_command_t *);
++bool nc_feedback_group(const rm_feedback_t *,nc_group_t *);
++bool nc_feedback_decode(const nc_group_t *,rm_feedback_t *);
++/* Unrelated CAN IDs leave receiver intact. Relevant malformed traffic aborts it. */
++bool nc_rx_push(nc_rx_t *,uint16_t base,uint32_t id,bool extended,bool rtr,
++                unsigned dlc,const uint8_t *,uint32_t now,nc_group_t *);
++bool nc_tx_start(nc_tx_t *,const nc_group_t *,uint32_t now);
++bool nc_tx_peek(nc_tx_t *,uint32_t now,uint16_t *id,uint8_t bytes[8]);
++void nc_tx_commit(nc_tx_t *);
++#endif
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/protocol/nav_can_hal.h
+@@ -0,0 +1,32 @@
++#ifndef NAV_CAN_HAL_H
++#define NAV_CAN_HAL_H
++#include "nav_can.h"
++#include "bsp_can.h"
++/* Own the hardware mailboxes until completion as well as the software group.
++ * NART alone cannot remove a frame waiting for a busy bus to become idle. */
++/* Each board selects its local controller; the wire protocol is identical. */
++typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;} nch_tx_t;
++static inline void nch_reset(nch_tx_t *s)
++{
++    if(s->mailboxes)HAL_CAN_AbortTxRequest(s->can,s->mailboxes);
++    s->tx.active=0;
++}
++static inline void nch_pump(nch_tx_t *s,uint32_t now)
++{
++    uint32_t pending=0;
++    for(uint32_t bit=1;bit<=4;bit<<=1)
++        if((s->mailboxes&bit)&&HAL_CAN_IsTxMessagePending(s->can,bit))pending|=bit;
++    s->mailboxes=pending;
++    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){nch_reset(s);return;}
++    uint8_t bytes[8];uint16_t id;uint32_t mailbox;
++    CAN_TxHeaderTypeDef h={0};h.IDE=CAN_ID_STD;h.RTR=CAN_RTR_DATA;h.DLC=8;
++    while(HAL_CAN_GetTxMailboxesFreeLevel(s->can)&&nc_tx_peek(&s->tx,now,&id,bytes)){
++        h.StdId=id;
++        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK)break;
++        s->mailboxes|=mailbox;nc_tx_commit(&s->tx);
++    }
++}
++static inline bool nch_busy(const nch_tx_t *s){return s->mailboxes||s->tx.active;}
++static inline bool nch_start(nch_tx_t *s,const nc_group_t *g,uint32_t now)
++{return !nch_busy(s)&&nc_tx_start(&s->tx,g,now);}
++#endif
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/protocol/protocol.c
+@@ -0,0 +1,65 @@
++#include "rm_chassis_comm/protocol.h"
++#include <float.h>
++#include <math.h>
++#include <string.h>
++#if FLT_RADIX != 2 || FLT_MANT_DIG != 24 || FLT_MAX_EXP != 128
++#error IEEE754 binary32 float required
++#endif
++typedef char rm_float_must_be_four_bytes[(sizeof(float)==4)?1:-1];
++static uint8_t crc8(const uint8_t *p,size_t n){uint8_t c=255;size_t i;unsigned b;
++ for(i=0;i<n;i++){c^=p[i];for(b=0;b<8;b++)c=(uint8_t)((c>>1)^((c&1)?0x8c:0));}return c;}
++static uint16_t crc16(const uint8_t *p,size_t n){uint16_t c=65535;size_t i;unsigned b;
++ for(i=0;i<n;i++){c^=p[i];for(b=0;b<8;b++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0));}return c;}
++static uint16_t u16(const uint8_t*p){return (uint16_t)(p[0]|((uint16_t)p[1]<<8));}
++static uint32_t u32(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);}
++static void w16(uint8_t*p,uint16_t v){p[0]=(uint8_t)v;p[1]=(uint8_t)(v>>8);}
++static void w32(uint8_t*p,uint32_t v){unsigned i;for(i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i));}
++static float f32(const uint8_t*p){uint32_t v=u32(p);float f;
++ memcpy(&f,&v,4);
++ return f;}
++static void wf32(uint8_t*p,float f){uint32_t v;
++ memcpy(&v,&f,4);w32(p,v);}
++static int route_ok(uint8_t r){return r==1||r==2;}
++static int velocity_ok(float x,float y,float z){return isfinite(x)&&isfinite(y)&&isfinite(z)&&fabsf(x)<=20&&fabsf(y)<=20&&fabsf(z)<=100;}
++static int frame_ok(const uint8_t*p,size_t n){return p&&n==RM_FRAME_SIZE&&p[0]==0x5a&&p[1]==28&&
++ (p[2]==RM_ID_COMMAND||p[2]==RM_ID_FEEDBACK)&&p[3]==crc8(p,3)&&u16(p+32)==crc16(p,32);}
++static int command_ok(const rm_command_t*c){return c&&route_ok(c->route)&&c->session&&!(c->flags&~RM_FLAG_ENABLE)&&
++ velocity_ok(c->vx,c->vy,c->wz)&&((c->flags&RM_FLAG_ENABLE)?(c->ttl_ms>=20&&c->ttl_ms<=250):
++ (c->ttl_ms==0&&c->vx==0&&c->vy==0&&c->wz==0));}
++static int feedback_ok(const rm_feedback_t*f){return f&&route_ok(f->route)&&(!(f->status&RM_STATUS_ACK_VALID)||f->session)&&!(f->status&~127u)&&
++ velocity_ok(f->vx,f->vy,f->wz)&&((f->status&RM_STATUS_MEASURED)||(f->vx==0&&f->vy==0&&f->wz==0));}
++static void base(uint8_t*p,uint8_t id,uint32_t uptime,uint8_t route,uint16_t seq,uint16_t a,uint16_t b,uint32_t session,float x,float y,float z){
++ memset(p,0,RM_FRAME_SIZE);p[0]=0x5a;p[1]=28;p[2]=id;p[3]=crc8(p,3);w32(p+4,uptime);p[8]=1;p[9]=route;
++ w16(p+10,seq);w16(p+12,a);w16(p+14,b);w32(p+16,session);wf32(p+20,x);wf32(p+24,y);wf32(p+28,z);w16(p+32,crc16(p,32));}
++int rm_encode_command(const rm_command_t*c,uint8_t out[RM_FRAME_SIZE]){if(!out||!command_ok(c))return 0;
++ base(out,RM_ID_COMMAND,c->uptime_ms,c->route,c->sequence,c->ttl_ms,c->flags,c->session,c->vx,c->vy,c->wz);
++ return 1;}
++int rm_decode_command(const uint8_t*p,size_t n,rm_command_t*out){rm_command_t c;
++ if(!out||!frame_ok(p,n)||p[2]!=RM_ID_COMMAND||p[8]!=1)return 0;
++ c.uptime_ms=u32(p+4);c.route=p[9];c.sequence=u16(p+10);c.ttl_ms=u16(p+12);c.flags=u16(p+14);c.session=u32(p+16);
++ c.vx=f32(p+20);c.vy=f32(p+24);c.wz=f32(p+28);
++ if(!command_ok(&c))return 0;
++ *out=c;
++ return 1;}
++int rm_encode_feedback(const rm_feedback_t*f,uint8_t out[RM_FRAME_SIZE]){if(!out||!feedback_ok(f))return 0;
++ base(out,RM_ID_FEEDBACK,f->uptime_ms,f->route,f->sequence,f->status,f->fault_mask,f->session,f->vx,f->vy,f->wz);
++ return 1;}
++int rm_decode_feedback(const uint8_t*p,size_t n,rm_feedback_t*out){rm_feedback_t f;
++ if(!out||!frame_ok(p,n)||p[2]!=RM_ID_FEEDBACK||p[8]!=1)return 0;
++ f.uptime_ms=u32(p+4);f.route=p[9];f.sequence=u16(p+10);f.status=u16(p+12);f.fault_mask=u16(p+14);f.session=u32(p+16);
++ f.vx=f32(p+20);f.vy=f32(p+24);f.wz=f32(p+28);
++ if(!feedback_ok(&f))return 0;
++ *out=f;
++ return 1;}
++void rm_parser_init(rm_parser_t*p){if(p)p->used=0;}
++int rm_parser_push(rm_parser_t*p,uint8_t b,uint8_t out[RM_FRAME_SIZE]){if(!p||!out)return 0;
++ if(p->used>=RM_FRAME_SIZE)p->used=0;
++ p->data[p->used++]=b;
++ while(p->used){
++  if(p->data[0]!=0x5a||(p->used>=2&&p->data[1]!=28)||(p->used>=3&&p->data[2]!=RM_ID_COMMAND&&p->data[2]!=RM_ID_FEEDBACK)||
++    (p->used>=4&&p->data[3]!=crc8(p->data,3))){memmove(p->data,p->data+1,--p->used);continue;}
++  if(p->used<RM_FRAME_SIZE)return 0;
++  if(frame_ok(p->data,p->used)){memcpy(out,p->data,RM_FRAME_SIZE);p->used=0;
++ return 1;}
++  memmove(p->data,p->data+1,--p->used);
++ }return 0;}
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/mcu_link.h
+@@ -0,0 +1,20 @@
++#ifndef RM_CHASSIS_COMM_MCU_LINK_H
++#define RM_CHASSIS_COMM_MCU_LINK_H
++#include <stdbool.h>
++#include "rm_chassis_comm/protocol.h"
++#ifdef __cplusplus
++extern "C" {
++#endif
++typedef struct {bool enabled;float vx,vy,wz;} rm_output_t;
++/* Single-owner API: caller serializes receive/safety/output/feedback across tasks/ISRs. */
++typedef struct {uint8_t route;bool ready,estop,manual,ack_valid,requires_stop,active,timed_out;
++ uint16_t fault_mask;uint32_t received_ms;rm_command_t command;} rm_mcu_link_t;
++void rm_mcu_init(rm_mcu_link_t*,uint8_t route);
++int rm_mcu_receive(rm_mcu_link_t*,const uint8_t*,size_t,uint32_t now_ms);
++void rm_mcu_set_safety(rm_mcu_link_t*,bool ready,bool estop,bool manual,uint16_t fault_mask);
++void rm_mcu_get_output(rm_mcu_link_t*,uint32_t now_ms,rm_output_t*);
++void rm_mcu_feedback(rm_mcu_link_t*,uint32_t now_ms,bool measured_valid,float vx,float vy,float wz,rm_feedback_t*);
++#ifdef __cplusplus
++}
++#endif
++#endif
+--- /dev/null
++++ b/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/protocol.h
+@@ -0,0 +1,37 @@
++#ifndef RM_CHASSIS_COMM_PROTOCOL_H
++#define RM_CHASSIS_COMM_PROTOCOL_H
++#include <stddef.h>
++#include <stdint.h>
++#ifdef __cplusplus
++extern "C" {
++#endif
++#define RM_FRAME_SIZE 34
++#define RM_PROTOCOL_VERSION 1
++#define RM_ID_COMMAND 0x20
++#define RM_ID_FEEDBACK 0x21
++#define RM_FLAG_ENABLE 1u
++#define RM_STATUS_READY 1u
++#define RM_STATUS_ACTIVE 2u
++#define RM_STATUS_ESTOP 4u
++#define RM_STATUS_MEASURED 8u
++#define RM_STATUS_TIMEOUT 16u
++#define RM_STATUS_MANUAL 32u
++#define RM_STATUS_ACK_VALID 64u
++/* New proposed payload; not binary-compatible with existing PolarBear firmware.
++ * vx/vy in m/s, wz in rad/s; ROS body convention x forward, y left, z up.
++ * len includes uptime: 28. Explicit little-endian integers / IEEE754 binary32. */
++typedef struct {uint32_t uptime_ms,session;uint16_t sequence,ttl_ms,flags;
++ uint8_t route;float vx,vy,wz;} rm_command_t;
++typedef struct {uint32_t uptime_ms,session;uint16_t sequence,status,fault_mask;
++ uint8_t route;float vx,vy,wz;} rm_feedback_t;
++typedef struct {uint8_t data[RM_FRAME_SIZE];size_t used;} rm_parser_t;
++int rm_encode_command(const rm_command_t*,uint8_t out[RM_FRAME_SIZE]);
++int rm_decode_command(const uint8_t*,size_t,rm_command_t*);
++int rm_encode_feedback(const rm_feedback_t*,uint8_t out[RM_FRAME_SIZE]);
++int rm_decode_feedback(const uint8_t*,size_t,rm_feedback_t*);
++void rm_parser_init(rm_parser_t*);
++int rm_parser_push(rm_parser_t*,uint8_t,uint8_t out[RM_FRAME_SIZE]);
++#ifdef __cplusplus
++}
++#endif
++#endif
+--- a/basic_framework/modules/motor/servo_motor/servo_motor.h
++++ b/basic_framework/modules/motor/servo_motor/servo_motor.h
+@@ -3,7 +3,7 @@
+ 
+ #include "main.h"
+ #include "tim.h"
+-#include <stdint-gcc.h>
++#include <stdint.h>
+ #include "bsp_pwm.h"
+ #include "bsp_usart.h"
+ 
+@@ -42,4 +42,4 @@
+ 
+ ServoInstance *ServoInit(Servo_Init_Config_s *Servo_Init_Config);
+ void ServoSetAngle(ServoInstance *servo, float angle);
+-#endif // SERVO_MOTOR_H+#endif // SERVO_MOTOR_H
+--- a/basic_framework/modules/remote/remote_control.c
++++ b/basic_framework/modules/remote/remote_control.c
+@@ -18,6 +18,8 @@
+ // 遥控器数据
+ static RC_ctrl_t rc_ctrl[2];     //[0]:当前数据TEMP,[1]:上一次的数据LAST.用于按键持续按下和切换的判断
+ static FS_RC_ctrl_t fs_rc_ctrl[2]; //[0]:当前数据TEMP,[1]:上一次的数据LAST.用于按键持续按下和切换的判断
++static volatile uint8_t fs_valid_seen;
++static volatile uint32_t fs_valid_tick;
+ static uint8_t rc_init_flag = 0; // 遥控器初始化标志位
+ 
+ // 遥控器拥有的串口实例,因为遥控器是单例,所以这里只有一个,就不封装了
+@@ -95,13 +97,6 @@
+     memcpy(&rc_ctrl[LAST], &rc_ctrl[TEMP], sizeof(RC_ctrl_t)); // 保存上一次的数据,用于按键持续按下和切换的判断
+ }
+ 
+-/* SC(CH8) 异常值连续确认: 连续 N 帧都非法才按上档(急停)处理
+- * 3 帧 × 14ms(SBUS 70Hz) ≈ 42ms, 既能挡单帧误码, 急停响应也不迟钝 */
+-#define SC_BAD_FRAME_THRESHOLD      3u
+-
+-/* 连续非法帧计数, 仅 fs_to_rc 内部使用 */
+-static uint8_t s_sc_bad_cnt  = 0;
+-
+ /**
+  * @brief 把 SBUS 原始开关值映射为 0(上)/1(中)/2(下), 非法值按规则兜底
+  * @param idx  channel 下标, 6=SB(CH7), 7=SC(CH8), 8/9=备用
+@@ -109,6 +104,7 @@
+  */
+ static uint16_t fs_map_switch(uint8_t idx, uint16_t val)
+ {
++    (void)idx;
+     uint16_t result = 0xFFu;   /* 0xFF 表示落在三个合法区间之外 */
+ 
+     if (val > SWITCH_HIGH - SWITCH_TOLERANCE && val < SWITCH_HIGH + SWITCH_TOLERANCE)
+@@ -124,28 +120,8 @@
+         result = 0;            /* 上挡 */
+     }
+ 
+-    if (idx == 7)                              // ← CH8 = SC, 上档 = 急停
+-    {
+-        /* SC: 合法帧清零计数, 非法帧累加, 达到阈值才判上档 */
+-        if (result != 0xFFu)
+-        {
+-            s_sc_bad_cnt = 0;
+-        }
+-        else
+-        {
+-            if (s_sc_bad_cnt < 0xFFu)
+-                s_sc_bad_cnt++;
+-
+-            result = (s_sc_bad_cnt >= SC_BAD_FRAME_THRESHOLD) ? FS_RC_SW_UP
+-                                                              : FS_RC_SW_MID;
+-        }
+-    }
+-    else if (result == 0xFFu)
+-    {
+-        /* 其他开关: 非法值维持原来的默认中档 */
+-        result = FS_RC_SW_MID;
+-    }
+-
++    /* Navigation requires two explicitly valid MID switches. An invalid raw
++     * switch value stays 0xFF and immediately removes motion authorization. */
+     return result;
+ }
+ 
+@@ -212,8 +188,11 @@
+  */
+ static void FS_RemoteControlRxCallback()
+ {
+-    DaemonReload(rc_daemon_instance);         // 先喂狗
+-    fs_to_rc(rc_usart_instance->recv_buff); // 进行协议解析
++    const uint8_t *p = rc_usart_instance->recv_buff;
++    if (rc_usart_instance->last_rx_size != SBUS_FRAME_SIZE || p[0] != 0x0f || p[24] != 0x00 || (p[23] & 0x0c)) { fs_valid_seen=0; return; }
++    fs_to_rc(p);
++    fs_valid_tick=HAL_GetTick(); fs_valid_seen=1;
++    DaemonReload(rc_daemon_instance);
+ }
+ 
+ /**
+@@ -282,7 +261,7 @@
+ }
+ 
+ uint8_t FS_RemoteControlIsOnline(){
+-    if (rc_init_flag)
++    if (rc_init_flag && fs_valid_seen && (uint32_t)(HAL_GetTick()-fs_valid_tick) <= 100u)
+         return DaemonIsOnline(rc_daemon_instance);
+     return 0;
+ }

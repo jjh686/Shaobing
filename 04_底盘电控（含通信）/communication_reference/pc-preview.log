@@ -1,0 +1,3 @@
+[INFO] [1794390753.946125581] [chassis.chassis_comm]: SP vision virtual serial: /dev/pts/3 (this node owns physical USB)
+[INFO] [1794390753.946257636] [chassis.chassis_comm]: Chassis route=2, connect=0; no motion until feedback handshake, enable and new cmd_vel
+[INFO] [1794390759.624739501] [rclcpp]: signal_handler(SIGINT/SIGTERM)

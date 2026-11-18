@@ -1,0 +1,11 @@
+{
+  "chassis": {
+    "uid": "002A003B3034470F31353233",
+    "CAN": "CAN2 to gimbal CAN1; CAN1 motors"
+  },
+  "gimbal": {
+    "uid": "0032003C3533470536363032",
+    "CAN": "CAN1 to chassis CAN2",
+    "USB": "0483:00ca RM Nav Convert SP"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "source": "/home/wangjiaming/桌面/C_Board_Flash_20261116/源码与测试工程",
+  "target": "/home/wangjiaming/桌面/DiPan_Board",
+  "backup": "/home/wangjiaming/桌面/DiPan_Board/logs/同步方向修正前备份-20261117-183016",
+  "copied_files": [
+    "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_config.h",
+    "tests/test_chain.c",
+    "communication_reference/pc/motor_test.py",
+    "tests/test_motor_test.py"
+  ],
+  "flashed": false,
+  "build_complete": true,
+  "completed_at": "2026-11-17T18:45:55.741848+08:00",
+  "chassis_signs": {
+    "vx": 1,
+    "vy": -1,
+    "wz": -1
+  },
+  "build_targets": [
+    "chassis",
+    "gimbal"
+  ],
+  "source_files_match_verified_version": 815,
+  "bin_images_match_verified_version": true,
+  "host_test_executables_passed": 7,
+  "fifo_regression_passed": true,
+  "usb_pty_tests_passed": 4,
+  "motor_pty_tests_passed": 7,
+  "hardware_accessed": false,
+  "physical_directions_verified": false,
+  "release_folder": "/home/wangjiaming/桌面/DiPan_Board/release/方向修正版-20261117",
+  "readme": "/home/wangjiaming/桌面/DiPan_Board/当前烧录说明.md",
+  "firmware": {
+    "chassis": {
+      "DiPan_Board.elf": {
+        "sha256": "9388dafe0ece71279d1898c48af4f43cae73935bef21cf5fa5c27f6360494ad5",
+        "bytes": 1289668
+      },
+      "DiPan_Board.hex": {
+        "sha256": "3c491bbc68e4757d4c4d0c4351b7bb8edb25bd4c4bcd38e2b228f85e1d579953",
+        "bytes": 207705
+      },
+      "DiPan_Board.bin": {
+        "sha256": "836afb0bba3b26ecdb8bf9be9435a3619fd0c2cb36b5c613fd7587880e6d752e",
+        "bytes": 73816
+      }
+    },
+    "gimbal": {
+      "Gimbal_USB_CAN1.elf": {
+        "sha256": "cd5f30b41f19a99bc635cd15a90e44fb91da904ed5deaaac6c1d51f46e39da32",
+        "bytes": 1416712
+      },
+      "Gimbal_USB_CAN1.hex": {
+        "sha256": "161039d651df38c7b3d44dd36d8f7861613f28198f86a94edb3a11e800e64344",
+        "bytes": 270962
+      },
+      "Gimbal_USB_CAN1.bin": {
+        "sha256": "b1685396cf8b5d2f4f0e38961874d467e907bab95b7cb0e51d7b3e386b8d63c7",
+        "bytes": 96328
+      }
+    }
+  }
+}

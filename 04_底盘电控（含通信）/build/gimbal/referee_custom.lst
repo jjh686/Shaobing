@@ -1,0 +1,228 @@
+ARM GAS  /tmp/cccchR5t.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"referee_custom.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.CustomDataRefresh,"ax",%progbits
+  18              		.align	1
+  19              		.global	CustomDataRefresh
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	CustomDataRefresh:
+  27              	.LFB280:
+  28              		.file 1 "modules/referee/referee_custom.c"
+   1:modules/referee/referee_custom.c **** /**
+   2:modules/referee/referee_custom.c ****  * @file referee_custom.c
+   3:modules/referee/referee_custom.c ****  * @author LHXY (cjy719@hnu.edu.cn)
+   4:modules/referee/referee_custom.c ****  * @brief 用以实现图传链路机器人发送功能，主要是自定义控制器
+   5:modules/referee/referee_custom.c ****  * @version 0.1
+   6:modules/referee/referee_custom.c ****  * @date 2026-03-27
+   7:modules/referee/referee_custom.c ****  * 
+   8:modules/referee/referee_custom.c ****  * @copyright Copyright (c) 2026
+   9:modules/referee/referee_custom.c ****  * 
+  10:modules/referee/referee_custom.c ****  */
+  11:modules/referee/referee_custom.c **** #include "referee_vt.h"
+  12:modules/referee/referee_custom.c **** #include "string.h"
+  13:modules/referee/referee_custom.c **** #include "crc_ref.h"
+  14:modules/referee/referee_custom.c **** #include "stdio.h"
+  15:modules/referee/referee_custom.c **** #include "referee_custom.h"
+  16:modules/referee/referee_custom.c **** 
+  17:modules/referee/referee_custom.c **** static Robot_Custom_ReFresh_t Robot_Custom_ReFresh_data; // 机器人自定义控制器数据
+  18:modules/referee/referee_custom.c **** int VT_Seq = 0;
+  19:modules/referee/referee_custom.c **** /************************************************机器人推送数据*****************************
+  20:modules/referee/referee_custom.c **** void CustomDataRefresh(robot2custom_data_t Robot_Data)
+  21:modules/referee/referee_custom.c **** {
+  29              		.loc 1 21 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 32, pretend = 16, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 84B0     		sub	sp, sp, #16
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36 0002 38B5     		push	{r3, r4, r5, lr}
+  37              	.LCFI1:
+ARM GAS  /tmp/cccchR5t.s 			page 2
+
+
+  38              		.cfi_def_cfa_offset 32
+  39              		.cfi_offset 3, -32
+  40              		.cfi_offset 4, -28
+  41              		.cfi_offset 5, -24
+  42              		.cfi_offset 14, -20
+  43 0004 04AC     		add	r4, sp, #16
+  44 0006 84E80F00 		stm	r4, {r0, r1, r2, r3}
+  22:modules/referee/referee_custom.c ****     uint8_t temp_datalength =  Robot_Custom_Data_LEN; // 自定义控制器数据长度
+  45              		.loc 1 22 5 view .LVU1
+  46              	.LVL0:
+  23:modules/referee/referee_custom.c **** 
+  24:modules/referee/referee_custom.c **** 	Robot_Custom_ReFresh_data.FrameHeader.SOF = REFEREE_SOF;
+  47              		.loc 1 24 2 view .LVU2
+  48              		.loc 1 24 44 is_stmt 0 view .LVU3
+  49 000a 214C     		ldr	r4, .L4
+  50 000c A523     		movs	r3, #165
+  51 000e 2370     		strb	r3, [r4]
+  25:modules/referee/referee_custom.c **** 	Robot_Custom_ReFresh_data.FrameHeader.DataLength = temp_datalength;
+  52              		.loc 1 25 2 is_stmt 1 view .LVU4
+  53              		.loc 1 25 51 is_stmt 0 view .LVU5
+  54 0010 1E23     		movs	r3, #30
+  55 0012 6370     		strb	r3, [r4, #1]
+  56 0014 0023     		movs	r3, #0
+  57 0016 A370     		strb	r3, [r4, #2]
+  26:modules/referee/referee_custom.c **** 	Robot_Custom_ReFresh_data.FrameHeader.Seq = VT_Seq;
+  58              		.loc 1 26 2 is_stmt 1 view .LVU6
+  59              		.loc 1 26 44 is_stmt 0 view .LVU7
+  60 0018 1E4D     		ldr	r5, .L4+4
+  61 001a 2B68     		ldr	r3, [r5]
+  62 001c E370     		strb	r3, [r4, #3]
+  27:modules/referee/referee_custom.c **** 	Robot_Custom_ReFresh_data.FrameHeader.CRC8 = Get_CRC8_Check_Sum((uint8_t *)&Robot_Custom_ReFresh_d
+  63              		.loc 1 27 2 is_stmt 1 view .LVU8
+  64              		.loc 1 27 47 is_stmt 0 view .LVU9
+  65 001e FF22     		movs	r2, #255
+  66 0020 0421     		movs	r1, #4
+  67 0022 2046     		mov	r0, r4
+  68 0024 FFF7FEFF 		bl	Get_CRC8_Check_Sum
+  69              	.LVL1:
+  70              		.loc 1 27 45 view .LVU10
+  71 0028 2071     		strb	r0, [r4, #4]
+  28:modules/referee/referee_custom.c **** 
+  29:modules/referee/referee_custom.c **** 	Robot_Custom_ReFresh_data.CmdID = ID_robot2custom;
+  72              		.loc 1 29 2 is_stmt 1 view .LVU11
+  73              		.loc 1 29 34 is_stmt 0 view .LVU12
+  74 002a 0923     		movs	r3, #9
+  75 002c 6371     		strb	r3, [r4, #5]
+  76 002e 0323     		movs	r3, #3
+  77 0030 A371     		strb	r3, [r4, #6]
+  30:modules/referee/referee_custom.c **** 
+  31:modules/referee/referee_custom.c **** 	Robot_Custom_ReFresh_data.Controller_Data = Robot_Data;
+  78              		.loc 1 31 2 is_stmt 1 view .LVU13
+  79              		.loc 1 31 44 is_stmt 0 view .LVU14
+  80 0032 0DF1100C 		add	ip, sp, #16
+  81 0036 BCE80F00 		ldmia	ip!, {r0, r1, r2, r3}
+  82 003a C4F80700 		str	r0, [r4, #7]	@ unaligned
+  83 003e C4F80B10 		str	r1, [r4, #11]	@ unaligned
+  84 0042 C4F80F20 		str	r2, [r4, #15]	@ unaligned
+ARM GAS  /tmp/cccchR5t.s 			page 3
+
+
+  85 0046 C4F81330 		str	r3, [r4, #19]	@ unaligned
+  86 004a BCE80700 		ldmia	ip!, {r0, r1, r2}
+  87 004e C4F81700 		str	r0, [r4, #23]	@ unaligned
+  88 0052 C4F81B10 		str	r1, [r4, #27]	@ unaligned
+  89 0056 C4F81F20 		str	r2, [r4, #31]	@ unaligned
+  90 005a BCF80030 		ldrh	r3, [ip]	@ unaligned
+  91 005e A4F82330 		strh	r3, [r4, #35]	@ unaligned
+  32:modules/referee/referee_custom.c **** 
+  33:modules/referee/referee_custom.c **** 	Robot_Custom_ReFresh_data.frametail = Get_CRC16_Check_Sum((uint8_t *)&Robot_Custom_ReFresh_data, L
+  92              		.loc 1 33 2 is_stmt 1 view .LVU15
+  93              		.loc 1 33 40 is_stmt 0 view .LVU16
+  94 0062 4FF6FF72 		movw	r2, #65535
+  95 0066 2521     		movs	r1, #37
+  96 0068 2046     		mov	r0, r4
+  97 006a FFF7FEFF 		bl	Get_CRC16_Check_Sum
+  98              	.LVL2:
+  99              		.loc 1 33 38 view .LVU17
+ 100 006e A4F82500 		strh	r0, [r4, #37]	@ unaligned
+  34:modules/referee/referee_custom.c **** 
+  35:modules/referee/referee_custom.c **** 	VT_Custom_RefereeSend((uint8_t *)&Robot_Custom_ReFresh_data, LEN_HEADER + LEN_CMDID + temp_datalen
+ 101              		.loc 1 35 2 is_stmt 1 view .LVU18
+ 102 0072 2721     		movs	r1, #39
+ 103 0074 2046     		mov	r0, r4
+ 104 0076 FFF7FEFF 		bl	VT_Custom_RefereeSend
+ 105              	.LVL3:
+  36:modules/referee/referee_custom.c **** 	VT_Seq++;                                // 包序号+1
+ 106              		.loc 1 36 2 view .LVU19
+ 107              		.loc 1 36 8 is_stmt 0 view .LVU20
+ 108 007a 2B68     		ldr	r3, [r5]
+ 109 007c 0133     		adds	r3, r3, #1
+ 110 007e 2B60     		str	r3, [r5]
+  37:modules/referee/referee_custom.c **** 	if (VT_Seq > 255) {
+ 111              		.loc 1 37 2 is_stmt 1 view .LVU21
+ 112              		.loc 1 37 5 is_stmt 0 view .LVU22
+ 113 0080 FF2B     		cmp	r3, #255
+ 114 0082 01DD     		ble	.L1
+  38:modules/referee/referee_custom.c **** 		VT_Seq = 0;
+ 115              		.loc 1 38 3 is_stmt 1 view .LVU23
+ 116              		.loc 1 38 10 is_stmt 0 view .LVU24
+ 117 0084 0022     		movs	r2, #0
+ 118 0086 2A60     		str	r2, [r5]
+ 119              	.L1:
+  39:modules/referee/referee_custom.c **** 	}
+  40:modules/referee/referee_custom.c **** }...
+ 120              		.loc 1 40 1 view .LVU25
+ 121 0088 BDE83840 		pop	{r3, r4, r5, lr}
+ 122              	.LCFI2:
+ 123              		.cfi_restore 14
+ 124              		.cfi_restore 5
+ 125              		.cfi_restore 4
+ 126              		.cfi_restore 3
+ 127              		.cfi_def_cfa_offset 16
+ 128 008c 04B0     		add	sp, sp, #16
+ 129              	.LCFI3:
+ 130              		.cfi_def_cfa_offset 0
+ 131 008e 7047     		bx	lr
+ 132              	.L5:
+ARM GAS  /tmp/cccchR5t.s 			page 4
+
+
+ 133              		.align	2
+ 134              	.L4:
+ 135 0090 00000000 		.word	.LANCHOR0
+ 136 0094 00000000 		.word	.LANCHOR1
+ 137              		.cfi_endproc
+ 138              	.LFE280:
+ 140              		.global	VT_Seq
+ 141              		.section	.bss.Robot_Custom_ReFresh_data,"aw",%nobits
+ 142              		.align	2
+ 143              		.set	.LANCHOR0,. + 0
+ 146              	Robot_Custom_ReFresh_data:
+ 147 0000 00000000 		.space	39
+ 147      00000000 
+ 147      00000000 
+ 147      00000000 
+ 147      00000000 
+ 148              		.section	.bss.VT_Seq,"aw",%nobits
+ 149              		.align	2
+ 150              		.set	.LANCHOR1,. + 0
+ 153              	VT_Seq:
+ 154 0000 00000000 		.space	4
+ 155              		.text
+ 156              	.Letext0:
+ 157              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 158              		.file 3 "modules/referee/referee_protocol.h"
+ 159              		.file 4 "modules/referee/referee_custom.h"
+ 160              		.file 5 "modules/referee/crc_ref.h"
+ 161              		.file 6 "modules/referee/referee_vt.h"
+ARM GAS  /tmp/cccchR5t.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 referee_custom.c
+     /tmp/cccchR5t.s:18     .text.CustomDataRefresh:0000000000000000 $t
+     /tmp/cccchR5t.s:26     .text.CustomDataRefresh:0000000000000000 CustomDataRefresh
+     /tmp/cccchR5t.s:135    .text.CustomDataRefresh:0000000000000090 $d
+     /tmp/cccchR5t.s:153    .bss.VT_Seq:0000000000000000 VT_Seq
+     /tmp/cccchR5t.s:142    .bss.Robot_Custom_ReFresh_data:0000000000000000 $d
+     /tmp/cccchR5t.s:146    .bss.Robot_Custom_ReFresh_data:0000000000000000 Robot_Custom_ReFresh_data
+     /tmp/cccchR5t.s:149    .bss.VT_Seq:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+Get_CRC8_Check_Sum
+Get_CRC16_Check_Sum
+VT_Custom_RefereeSend

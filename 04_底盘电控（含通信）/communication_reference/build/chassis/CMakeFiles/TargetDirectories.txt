@@ -1,0 +1,3 @@
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/build/chassis/CMakeFiles/basic_framework.elf.dir
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/build/chassis/CMakeFiles/edit_cache.dir
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/build/chassis/CMakeFiles/rebuild_cache.dir

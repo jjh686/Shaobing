@@ -1,0 +1,6 @@
+{
+  "gimbal": "/home/wangjiaming/桌面/test_basic_framework_tracking_v1",
+  "chassis_original": "/home/wangjiaming/桌面/RM_2026_9_19-sentry/basic_framework",
+  "chassis_derived_from_previous_adapter": "/home/wangjiaming/桌面/c_board_nav_relay_20261111/chassis_firmware",
+  "navigation": "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/src/rm_chassis_comm"
+}

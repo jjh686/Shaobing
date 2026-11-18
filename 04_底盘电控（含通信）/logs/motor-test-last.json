@@ -1,0 +1,26 @@
+{
+  "port": "/dev/ttyACM0",
+  "direction": "forward",
+  "duration": 1.0,
+  "speed": 0.05,
+  "passed": true,
+  "stop_confirmed": true,
+  "ready_ACK": 50,
+  "active_ACK": 50,
+  "stop_ACK": 30,
+  "last_feedback": {
+    "uptime": 569502,
+    "sequence": 114,
+    "status": 73,
+    "fault": 0,
+    "session": 2481962808,
+    "vx": -0.0010000000474974513,
+    "vy": 0.0,
+    "wz": -0.004000000189989805
+  },
+  "frames": {
+    "SP": 522,
+    "gimbal": 130,
+    "feedback": 130
+  }
+}

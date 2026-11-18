@@ -1,0 +1,565 @@
+ARM GAS  /tmp/ccNGJ6O4.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"servo_motor.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.DecodeServo,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	DecodeServo:
+  26              	.LFB244:
+  27              		.file 1 "modules/motor/servo_motor/servo_motor.c"
+   1:modules/motor/servo_motor/servo_motor.c **** #include "servo_motor.h"
+   2:modules/motor/servo_motor/servo_motor.c **** #include "stdlib.h"
+   3:modules/motor/servo_motor/servo_motor.c **** #include "memory.h"
+   4:modules/motor/servo_motor/servo_motor.c **** #include "bsp_log.h"
+   5:modules/motor/servo_motor/servo_motor.c **** uint8_t servo_angle_read[6]={0x55 ,0x55 ,0x04, 0x15 ,0x01 ,0x01 ,};
+   6:modules/motor/servo_motor/servo_motor.c **** uint8_t servo_angle_write[16]={0x55 ,0x55, 0x08, 0x03, 0x01 ,0xF4 ,0x01 ,0x01 ,0x20 ,0x03,0x55 ,0x5
+   7:modules/motor/servo_motor/servo_motor.c **** uint8_t servo_unload[6]={0x55,0x55,0x04,0x14,0x01,0x01};
+   8:modules/motor/servo_motor/servo_motor.c **** 
+   9:modules/motor/servo_motor/servo_motor.c **** /*第二版*/
+  10:modules/motor/servo_motor/servo_motor.c **** static ServoInstance *servo_motor_instance[SERVO_MOTOR_CNT];
+  11:modules/motor/servo_motor/servo_motor.c **** static uint8_t servo_idx = 0; // register servo_idx,是该文件的全局舵机索引,在注册时�
+  12:modules/motor/servo_motor/servo_motor.c **** static void DecodeServo();
+  13:modules/motor/servo_motor/servo_motor.c **** // 通过此函数注册一个舵机
+  14:modules/motor/servo_motor/servo_motor.c **** ServoInstance *ServoInit(Servo_Init_Config_s *Servo_Init_Config)
+  15:modules/motor/servo_motor/servo_motor.c **** {
+  16:modules/motor/servo_motor/servo_motor.c ****     ServoInstance *servo = (ServoInstance *)malloc(sizeof(ServoInstance));
+  17:modules/motor/servo_motor/servo_motor.c ****     memset(servo, 0, sizeof(ServoInstance));
+  18:modules/motor/servo_motor/servo_motor.c ****     USART_Init_Config_s config;
+  19:modules/motor/servo_motor/servo_motor.c ****     servo->servo_type = Servo_Init_Config->servo_type;
+  20:modules/motor/servo_motor/servo_motor.c ****     switch (Servo_Init_Config->servo_type)
+  21:modules/motor/servo_motor/servo_motor.c ****     {
+  22:modules/motor/servo_motor/servo_motor.c ****     case Bus_Servo:
+  23:modules/motor/servo_motor/servo_motor.c ****         config.module_callback = DecodeServo;
+  24:modules/motor/servo_motor/servo_motor.c ****         config.recv_buff_size = Servo_MAX_BUFF;
+  25:modules/motor/servo_motor/servo_motor.c ****         config.usart_handle = Servo_Init_Config->_handle;
+  26:modules/motor/servo_motor/servo_motor.c ****         servo->usart_instance = USARTRegister(&config);
+  27:modules/motor/servo_motor/servo_motor.c ****         break;
+  28:modules/motor/servo_motor/servo_motor.c ****     case PWM_Servo:
+  29:modules/motor/servo_motor/servo_motor.c ****         servo->pwm_instance = PWMRegister(&Servo_Init_Config->pwm_init_config);
+  30:modules/motor/servo_motor/servo_motor.c ****         break;
+  31:modules/motor/servo_motor/servo_motor.c ****     default:
+ARM GAS  /tmp/ccNGJ6O4.s 			page 2
+
+
+  32:modules/motor/servo_motor/servo_motor.c ****         LOGERROR("Servo type error");
+  33:modules/motor/servo_motor/servo_motor.c ****         break;
+  34:modules/motor/servo_motor/servo_motor.c ****     }
+  35:modules/motor/servo_motor/servo_motor.c ****     servo->servo_id = Servo_Init_Config->servo_id;
+  36:modules/motor/servo_motor/servo_motor.c ****     servo_idx++;
+  37:modules/motor/servo_motor/servo_motor.c ****     servo_motor_instance[servo->servo_id] = servo;
+  38:modules/motor/servo_motor/servo_motor.c **** 
+  39:modules/motor/servo_motor/servo_motor.c ****     return servo;
+  40:modules/motor/servo_motor/servo_motor.c **** }
+  41:modules/motor/servo_motor/servo_motor.c **** //@todo PWM舵机的角度设置需要根据相应定时器PWM等参数进行计算(是否需要规
+  42:modules/motor/servo_motor/servo_motor.c **** void ServoSetAngle(ServoInstance *servo, float angle)
+  43:modules/motor/servo_motor/servo_motor.c **** {
+  44:modules/motor/servo_motor/servo_motor.c **** 
+  45:modules/motor/servo_motor/servo_motor.c ****     switch (servo->servo_type)
+  46:modules/motor/servo_motor/servo_motor.c ****     {
+  47:modules/motor/servo_motor/servo_motor.c ****     case Bus_Servo:
+  48:modules/motor/servo_motor/servo_motor.c ****         servo_angle_write[8] = (uint16_t)angle&0xff;
+  49:modules/motor/servo_motor/servo_motor.c ****         servo_angle_write[9] = (uint16_t)angle>>8;
+  50:modules/motor/servo_motor/servo_motor.c ****         USARTSend(servo->usart_instance, servo_angle_write, 16, USART_TRANSFER_DMA);
+  51:modules/motor/servo_motor/servo_motor.c ****        // USARTSend(servo->usart_instance, servo_angle_read, 6, USART_TRANSFER_DMA);
+  52:modules/motor/servo_motor/servo_motor.c ****         break;
+  53:modules/motor/servo_motor/servo_motor.c ****     case PWM_Servo:
+  54:modules/motor/servo_motor/servo_motor.c ****         servo->angle = angle;
+  55:modules/motor/servo_motor/servo_motor.c ****         PWMSetDutyRatio(servo->pwm_instance, angle);
+  56:modules/motor/servo_motor/servo_motor.c ****         break;
+  57:modules/motor/servo_motor/servo_motor.c ****     default:
+  58:modules/motor/servo_motor/servo_motor.c ****         break;
+  59:modules/motor/servo_motor/servo_motor.c ****     }
+  60:modules/motor/servo_motor/servo_motor.c **** }
+  61:modules/motor/servo_motor/servo_motor.c **** 
+  62:modules/motor/servo_motor/servo_motor.c **** //@todo 只读取了角度 还有电压，动作是否完成等 且只支持一个串口
+  63:modules/motor/servo_motor/servo_motor.c **** static void DecodeServo()
+  64:modules/motor/servo_motor/servo_motor.c **** {
+  28              		.loc 1 64 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  65:modules/motor/servo_motor/servo_motor.c ****     for (uint8_t i = 0; i < servo_idx; i++)
+  33              		.loc 1 65 5 view .LVU1
+  34              	.LBB2:
+  35              		.loc 1 65 10 view .LVU2
+  36              	.LVL0:
+  37              		.loc 1 65 18 is_stmt 0 view .LVU3
+  38 0000 0023     		movs	r3, #0
+  39              		.loc 1 65 5 view .LVU4
+  40 0002 06E0     		b	.L2
+  41              	.LVL1:
+  42              	.L6:
+  66:modules/motor/servo_motor/servo_motor.c ****     {
+  67:modules/motor/servo_motor/servo_motor.c ****         if (servo_motor_instance[i]->servo_type == Bus_Servo)
+  68:modules/motor/servo_motor/servo_motor.c ****         {
+  69:modules/motor/servo_motor/servo_motor.c ****             if (servo_motor_instance[i]->usart_instance->recv_buff[0] == Servo_Frame_First && servo
+  70:modules/motor/servo_motor/servo_motor.c ****             {
+  71:modules/motor/servo_motor/servo_motor.c ****                 if (servo_motor_instance[i]->usart_instance->recv_buff[3] == 21)
+  72:modules/motor/servo_motor/servo_motor.c ****                 {
+  73:modules/motor/servo_motor/servo_motor.c ****                     servo_motor_instance[i]->recv_angle = (servo_motor_instance[i]->usart_instance-
+ARM GAS  /tmp/ccNGJ6O4.s 			page 3
+
+
+  43              		.loc 1 73 21 is_stmt 1 view .LVU5
+  44              		.loc 1 73 110 is_stmt 0 view .LVU6
+  45 0004 C879     		ldrb	r0, [r1, #7]	@ zero_extendqisi2
+  46              		.loc 1 73 171 view .LVU7
+  47 0006 8979     		ldrb	r1, [r1, #6]	@ zero_extendqisi2
+  48              		.loc 1 73 119 view .LVU8
+  49 0008 41EA0021 		orr	r1, r1, r0, lsl #8
+  50              		.loc 1 73 57 view .LVU9
+  51 000c 1181     		strh	r1, [r2, #8]	@ movhi
+  52              	.L3:
+  65:modules/motor/servo_motor/servo_motor.c ****     for (uint8_t i = 0; i < servo_idx; i++)
+  53              		.loc 1 65 40 is_stmt 1 discriminator 2 view .LVU10
+  65:modules/motor/servo_motor/servo_motor.c ****     for (uint8_t i = 0; i < servo_idx; i++)
+  54              		.loc 1 65 41 is_stmt 0 discriminator 2 view .LVU11
+  55 000e 0133     		adds	r3, r3, #1
+  56              	.LVL2:
+  65:modules/motor/servo_motor/servo_motor.c ****     for (uint8_t i = 0; i < servo_idx; i++)
+  57              		.loc 1 65 41 discriminator 2 view .LVU12
+  58 0010 DBB2     		uxtb	r3, r3
+  59              	.LVL3:
+  60              	.L2:
+  65:modules/motor/servo_motor/servo_motor.c ****     for (uint8_t i = 0; i < servo_idx; i++)
+  61              		.loc 1 65 25 is_stmt 1 discriminator 1 view .LVU13
+  65:modules/motor/servo_motor/servo_motor.c ****     for (uint8_t i = 0; i < servo_idx; i++)
+  62              		.loc 1 65 27 is_stmt 0 discriminator 1 view .LVU14
+  63 0012 0B4A     		ldr	r2, .L7
+  64 0014 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+  65:modules/motor/servo_motor/servo_motor.c ****     for (uint8_t i = 0; i < servo_idx; i++)
+  65              		.loc 1 65 5 discriminator 1 view .LVU15
+  66 0016 9A42     		cmp	r2, r3
+  67 0018 10D9     		bls	.L5
+  67:modules/motor/servo_motor/servo_motor.c ****         {
+  68              		.loc 1 67 9 is_stmt 1 view .LVU16
+  67:modules/motor/servo_motor/servo_motor.c ****         {
+  69              		.loc 1 67 33 is_stmt 0 view .LVU17
+  70 001a 0A4A     		ldr	r2, .L7+4
+  71 001c 52F82320 		ldr	r2, [r2, r3, lsl #2]
+  67:modules/motor/servo_motor/servo_motor.c ****         {
+  72              		.loc 1 67 36 view .LVU18
+  73 0020 117D     		ldrb	r1, [r2, #20]	@ zero_extendqisi2
+  67:modules/motor/servo_motor/servo_motor.c ****         {
+  74              		.loc 1 67 12 view .LVU19
+  75 0022 0129     		cmp	r1, #1
+  76 0024 F3D1     		bne	.L3
+  69:modules/motor/servo_motor/servo_motor.c ****             {
+  77              		.loc 1 69 13 is_stmt 1 view .LVU20
+  69:modules/motor/servo_motor/servo_motor.c ****             {
+  78              		.loc 1 69 40 is_stmt 0 view .LVU21
+  79 0026 1169     		ldr	r1, [r2, #16]
+  69:modules/motor/servo_motor/servo_motor.c ****             {
+  80              		.loc 1 69 92 view .LVU22
+  81 0028 B1F800C0 		ldrh	ip, [r1]
+  69:modules/motor/servo_motor/servo_motor.c ****             {
+  82              		.loc 1 69 16 view .LVU23
+  83 002c 45F25550 		movw	r0, #21845
+  84 0030 8445     		cmp	ip, r0
+  85 0032 ECD1     		bne	.L3
+ARM GAS  /tmp/ccNGJ6O4.s 			page 4
+
+
+  71:modules/motor/servo_motor/servo_motor.c ****                 {
+  86              		.loc 1 71 17 is_stmt 1 view .LVU24
+  71:modules/motor/servo_motor/servo_motor.c ****                 {
+  87              		.loc 1 71 71 is_stmt 0 view .LVU25
+  88 0034 C878     		ldrb	r0, [r1, #3]	@ zero_extendqisi2
+  71:modules/motor/servo_motor/servo_motor.c ****                 {
+  89              		.loc 1 71 20 view .LVU26
+  90 0036 1528     		cmp	r0, #21
+  91 0038 E9D1     		bne	.L3
+  92 003a E3E7     		b	.L6
+  93              	.L5:
+  94              	.LBE2:
+  74:modules/motor/servo_motor/servo_motor.c ****                 }
+  75:modules/motor/servo_motor/servo_motor.c ****             }
+  76:modules/motor/servo_motor/servo_motor.c ****         }
+  77:modules/motor/servo_motor/servo_motor.c ****     }
+  78:modules/motor/servo_motor/servo_motor.c **** }
+  95              		.loc 1 78 1 view .LVU27
+  96 003c 7047     		bx	lr
+  97              	.L8:
+  98 003e 00BF     		.align	2
+  99              	.L7:
+ 100 0040 00000000 		.word	.LANCHOR1
+ 101 0044 00000000 		.word	.LANCHOR0
+ 102              		.cfi_endproc
+ 103              	.LFE244:
+ 105              		.section	.text.ServoInit,"ax",%progbits
+ 106              		.align	1
+ 107              		.global	ServoInit
+ 108              		.syntax unified
+ 109              		.thumb
+ 110              		.thumb_func
+ 111              		.fpu fpv4-sp-d16
+ 113              	ServoInit:
+ 114              	.LVL4:
+ 115              	.LFB242:
+  15:modules/motor/servo_motor/servo_motor.c ****     ServoInstance *servo = (ServoInstance *)malloc(sizeof(ServoInstance));
+ 116              		.loc 1 15 1 is_stmt 1 view -0
+ 117              		.cfi_startproc
+ 118              		@ args = 0, pretend = 0, frame = 16
+ 119              		@ frame_needed = 0, uses_anonymous_args = 0
+  15:modules/motor/servo_motor/servo_motor.c ****     ServoInstance *servo = (ServoInstance *)malloc(sizeof(ServoInstance));
+ 120              		.loc 1 15 1 is_stmt 0 view .LVU29
+ 121 0000 30B5     		push	{r4, r5, lr}
+ 122              	.LCFI0:
+ 123              		.cfi_def_cfa_offset 12
+ 124              		.cfi_offset 4, -12
+ 125              		.cfi_offset 5, -8
+ 126              		.cfi_offset 14, -4
+ 127 0002 85B0     		sub	sp, sp, #20
+ 128              	.LCFI1:
+ 129              		.cfi_def_cfa_offset 32
+ 130 0004 0546     		mov	r5, r0
+  16:modules/motor/servo_motor/servo_motor.c ****     memset(servo, 0, sizeof(ServoInstance));
+ 131              		.loc 1 16 5 is_stmt 1 view .LVU30
+  16:modules/motor/servo_motor/servo_motor.c ****     memset(servo, 0, sizeof(ServoInstance));
+ 132              		.loc 1 16 45 is_stmt 0 view .LVU31
+ARM GAS  /tmp/ccNGJ6O4.s 			page 5
+
+
+ 133 0006 1820     		movs	r0, #24
+ 134              	.LVL5:
+  16:modules/motor/servo_motor/servo_motor.c ****     memset(servo, 0, sizeof(ServoInstance));
+ 135              		.loc 1 16 45 view .LVU32
+ 136 0008 FFF7FEFF 		bl	malloc
+ 137              	.LVL6:
+ 138 000c 0446     		mov	r4, r0
+ 139              	.LVL7:
+  17:modules/motor/servo_motor/servo_motor.c ****     USART_Init_Config_s config;
+ 140              		.loc 1 17 5 is_stmt 1 view .LVU33
+ 141 000e 0023     		movs	r3, #0
+ 142 0010 0360     		str	r3, [r0]	@ unaligned
+ 143 0012 4360     		str	r3, [r0, #4]	@ unaligned
+ 144 0014 8360     		str	r3, [r0, #8]	@ unaligned
+ 145 0016 C360     		str	r3, [r0, #12]	@ unaligned
+ 146 0018 0361     		str	r3, [r0, #16]	@ unaligned
+ 147 001a 4361     		str	r3, [r0, #20]	@ unaligned
+  18:modules/motor/servo_motor/servo_motor.c ****     servo->servo_type = Servo_Init_Config->servo_type;
+ 148              		.loc 1 18 5 view .LVU34
+  19:modules/motor/servo_motor/servo_motor.c ****     switch (Servo_Init_Config->servo_type)
+ 149              		.loc 1 19 5 view .LVU35
+  19:modules/motor/servo_motor/servo_motor.c ****     switch (Servo_Init_Config->servo_type)
+ 150              		.loc 1 19 42 is_stmt 0 view .LVU36
+ 151 001c 2B7E     		ldrb	r3, [r5, #24]	@ zero_extendqisi2
+  19:modules/motor/servo_motor/servo_motor.c ****     switch (Servo_Init_Config->servo_type)
+ 152              		.loc 1 19 23 view .LVU37
+ 153 001e 0375     		strb	r3, [r0, #20]
+  20:modules/motor/servo_motor/servo_motor.c ****     {
+ 154              		.loc 1 20 5 is_stmt 1 view .LVU38
+ 155 0020 012B     		cmp	r3, #1
+ 156 0022 0ED0     		beq	.L10
+ 157 0024 022B     		cmp	r3, #2
+ 158 0026 18D0     		beq	.L11
+ 159              	.LVL8:
+ 160              	.L12:
+  35:modules/motor/servo_motor/servo_motor.c ****     servo_idx++;
+ 161              		.loc 1 35 5 view .LVU39
+  35:modules/motor/servo_motor/servo_motor.c ****     servo_idx++;
+ 162              		.loc 1 35 40 is_stmt 0 view .LVU40
+ 163 0028 95F82020 		ldrb	r2, [r5, #32]	@ zero_extendqisi2
+  35:modules/motor/servo_motor/servo_motor.c ****     servo_idx++;
+ 164              		.loc 1 35 21 view .LVU41
+ 165 002c 2270     		strb	r2, [r4]
+  36:modules/motor/servo_motor/servo_motor.c ****     servo_motor_instance[servo->servo_id] = servo;
+ 166              		.loc 1 36 5 is_stmt 1 view .LVU42
+  36:modules/motor/servo_motor/servo_motor.c ****     servo_motor_instance[servo->servo_id] = servo;
+ 167              		.loc 1 36 14 is_stmt 0 view .LVU43
+ 168 002e 0D49     		ldr	r1, .L14
+ 169 0030 0B78     		ldrb	r3, [r1]	@ zero_extendqisi2
+ 170 0032 0133     		adds	r3, r3, #1
+ 171 0034 0B70     		strb	r3, [r1]
+  37:modules/motor/servo_motor/servo_motor.c **** 
+ 172              		.loc 1 37 5 is_stmt 1 view .LVU44
+  37:modules/motor/servo_motor/servo_motor.c **** 
+ 173              		.loc 1 37 43 is_stmt 0 view .LVU45
+ 174 0036 0C4B     		ldr	r3, .L14+4
+ 175 0038 43F82240 		str	r4, [r3, r2, lsl #2]
+ARM GAS  /tmp/ccNGJ6O4.s 			page 6
+
+
+  39:modules/motor/servo_motor/servo_motor.c **** }
+ 176              		.loc 1 39 5 is_stmt 1 view .LVU46
+  40:modules/motor/servo_motor/servo_motor.c **** //@todo PWM舵机的角度设置需要根据相应定时器PWM等参数进行计算(是否需要规
+ 177              		.loc 1 40 1 is_stmt 0 view .LVU47
+ 178 003c 2046     		mov	r0, r4
+ 179 003e 05B0     		add	sp, sp, #20
+ 180              	.LCFI2:
+ 181              		.cfi_remember_state
+ 182              		.cfi_def_cfa_offset 12
+ 183              		@ sp needed
+ 184 0040 30BD     		pop	{r4, r5, pc}
+ 185              	.LVL9:
+ 186              	.L10:
+ 187              	.LCFI3:
+ 188              		.cfi_restore_state
+  23:modules/motor/servo_motor/servo_motor.c ****         config.recv_buff_size = Servo_MAX_BUFF;
+ 189              		.loc 1 23 9 is_stmt 1 view .LVU48
+  23:modules/motor/servo_motor/servo_motor.c ****         config.recv_buff_size = Servo_MAX_BUFF;
+ 190              		.loc 1 23 32 is_stmt 0 view .LVU49
+ 191 0042 0A4B     		ldr	r3, .L14+8
+ 192 0044 0393     		str	r3, [sp, #12]
+  24:modules/motor/servo_motor/servo_motor.c ****         config.usart_handle = Servo_Init_Config->_handle;
+ 193              		.loc 1 24 9 is_stmt 1 view .LVU50
+  24:modules/motor/servo_motor/servo_motor.c ****         config.usart_handle = Servo_Init_Config->_handle;
+ 194              		.loc 1 24 31 is_stmt 0 view .LVU51
+ 195 0046 0A23     		movs	r3, #10
+ 196 0048 8DF80430 		strb	r3, [sp, #4]
+  25:modules/motor/servo_motor/servo_motor.c ****         servo->usart_instance = USARTRegister(&config);
+ 197              		.loc 1 25 9 is_stmt 1 view .LVU52
+  25:modules/motor/servo_motor/servo_motor.c ****         servo->usart_instance = USARTRegister(&config);
+ 198              		.loc 1 25 48 is_stmt 0 view .LVU53
+ 199 004c EB69     		ldr	r3, [r5, #28]
+  25:modules/motor/servo_motor/servo_motor.c ****         servo->usart_instance = USARTRegister(&config);
+ 200              		.loc 1 25 29 view .LVU54
+ 201 004e 0293     		str	r3, [sp, #8]
+  26:modules/motor/servo_motor/servo_motor.c ****         break;
+ 202              		.loc 1 26 9 is_stmt 1 view .LVU55
+  26:modules/motor/servo_motor/servo_motor.c ****         break;
+ 203              		.loc 1 26 33 is_stmt 0 view .LVU56
+ 204 0050 01A8     		add	r0, sp, #4
+ 205              	.LVL10:
+  26:modules/motor/servo_motor/servo_motor.c ****         break;
+ 206              		.loc 1 26 33 view .LVU57
+ 207 0052 FFF7FEFF 		bl	USARTRegister
+ 208              	.LVL11:
+  26:modules/motor/servo_motor/servo_motor.c ****         break;
+ 209              		.loc 1 26 31 view .LVU58
+ 210 0056 2061     		str	r0, [r4, #16]
+  27:modules/motor/servo_motor/servo_motor.c ****     case PWM_Servo:
+ 211              		.loc 1 27 9 is_stmt 1 view .LVU59
+ 212 0058 E6E7     		b	.L12
+ 213              	.LVL12:
+ 214              	.L11:
+  29:modules/motor/servo_motor/servo_motor.c ****         break;
+ 215              		.loc 1 29 9 view .LVU60
+  29:modules/motor/servo_motor/servo_motor.c ****         break;
+ 216              		.loc 1 29 31 is_stmt 0 view .LVU61
+ARM GAS  /tmp/ccNGJ6O4.s 			page 7
+
+
+ 217 005a 2846     		mov	r0, r5
+ 218              	.LVL13:
+  29:modules/motor/servo_motor/servo_motor.c ****         break;
+ 219              		.loc 1 29 31 view .LVU62
+ 220 005c FFF7FEFF 		bl	PWMRegister
+ 221              	.LVL14:
+  29:modules/motor/servo_motor/servo_motor.c ****         break;
+ 222              		.loc 1 29 29 view .LVU63
+ 223 0060 E060     		str	r0, [r4, #12]
+  30:modules/motor/servo_motor/servo_motor.c ****     default:
+ 224              		.loc 1 30 9 is_stmt 1 view .LVU64
+ 225 0062 E1E7     		b	.L12
+ 226              	.L15:
+ 227              		.align	2
+ 228              	.L14:
+ 229 0064 00000000 		.word	.LANCHOR1
+ 230 0068 00000000 		.word	.LANCHOR0
+ 231 006c 00000000 		.word	DecodeServo
+ 232              		.cfi_endproc
+ 233              	.LFE242:
+ 235              		.section	.text.ServoSetAngle,"ax",%progbits
+ 236              		.align	1
+ 237              		.global	ServoSetAngle
+ 238              		.syntax unified
+ 239              		.thumb
+ 240              		.thumb_func
+ 241              		.fpu fpv4-sp-d16
+ 243              	ServoSetAngle:
+ 244              	.LVL15:
+ 245              	.LFB243:
+  43:modules/motor/servo_motor/servo_motor.c **** 
+ 246              		.loc 1 43 1 view -0
+ 247              		.cfi_startproc
+ 248              		@ args = 0, pretend = 0, frame = 0
+ 249              		@ frame_needed = 0, uses_anonymous_args = 0
+  43:modules/motor/servo_motor/servo_motor.c **** 
+ 250              		.loc 1 43 1 is_stmt 0 view .LVU66
+ 251 0000 08B5     		push	{r3, lr}
+ 252              	.LCFI4:
+ 253              		.cfi_def_cfa_offset 8
+ 254              		.cfi_offset 3, -8
+ 255              		.cfi_offset 14, -4
+  45:modules/motor/servo_motor/servo_motor.c ****     {
+ 256              		.loc 1 45 5 is_stmt 1 view .LVU67
+  45:modules/motor/servo_motor/servo_motor.c ****     {
+ 257              		.loc 1 45 18 is_stmt 0 view .LVU68
+ 258 0002 037D     		ldrb	r3, [r0, #20]	@ zero_extendqisi2
+  45:modules/motor/servo_motor/servo_motor.c ****     {
+ 259              		.loc 1 45 5 view .LVU69
+ 260 0004 012B     		cmp	r3, #1
+ 261 0006 02D0     		beq	.L17
+ 262 0008 022B     		cmp	r3, #2
+ 263 000a 0FD0     		beq	.L18
+ 264              	.LVL16:
+ 265              	.L16:
+  60:modules/motor/servo_motor/servo_motor.c **** 
+ 266              		.loc 1 60 1 view .LVU70
+ARM GAS  /tmp/ccNGJ6O4.s 			page 8
+
+
+ 267 000c 08BD     		pop	{r3, pc}
+ 268              	.LVL17:
+ 269              	.L17:
+  48:modules/motor/servo_motor/servo_motor.c ****         servo_angle_write[9] = (uint16_t)angle>>8;
+ 270              		.loc 1 48 9 is_stmt 1 view .LVU71
+  48:modules/motor/servo_motor/servo_motor.c ****         servo_angle_write[9] = (uint16_t)angle>>8;
+ 271              		.loc 1 48 32 is_stmt 0 view .LVU72
+ 272 000e BCEEC00A 		vcvt.u32.f32	s0, s0
+ 273              	.LVL18:
+  48:modules/motor/servo_motor/servo_motor.c ****         servo_angle_write[9] = (uint16_t)angle>>8;
+ 274              		.loc 1 48 32 view .LVU73
+ 275 0012 10EE103A 		vmov	r3, s0	@ int
+ 276 0016 9BB2     		uxth	r3, r3
+  48:modules/motor/servo_motor/servo_motor.c ****         servo_angle_write[9] = (uint16_t)angle>>8;
+ 277              		.loc 1 48 30 view .LVU74
+ 278 0018 0749     		ldr	r1, .L21
+ 279 001a 0B72     		strb	r3, [r1, #8]
+  49:modules/motor/servo_motor/servo_motor.c ****         USARTSend(servo->usart_instance, servo_angle_write, 16, USART_TRANSFER_DMA);
+ 280              		.loc 1 49 9 is_stmt 1 view .LVU75
+  49:modules/motor/servo_motor/servo_motor.c ****         USARTSend(servo->usart_instance, servo_angle_write, 16, USART_TRANSFER_DMA);
+ 281              		.loc 1 49 30 is_stmt 0 view .LVU76
+ 282 001c 1B0A     		lsrs	r3, r3, #8
+ 283 001e 4B72     		strb	r3, [r1, #9]
+  50:modules/motor/servo_motor/servo_motor.c ****        // USARTSend(servo->usart_instance, servo_angle_read, 6, USART_TRANSFER_DMA);
+ 284              		.loc 1 50 9 is_stmt 1 view .LVU77
+ 285 0020 0323     		movs	r3, #3
+ 286 0022 1022     		movs	r2, #16
+ 287 0024 0069     		ldr	r0, [r0, #16]
+ 288              	.LVL19:
+  50:modules/motor/servo_motor/servo_motor.c ****        // USARTSend(servo->usart_instance, servo_angle_read, 6, USART_TRANSFER_DMA);
+ 289              		.loc 1 50 9 is_stmt 0 view .LVU78
+ 290 0026 FFF7FEFF 		bl	USARTSend
+ 291              	.LVL20:
+  52:modules/motor/servo_motor/servo_motor.c ****     case PWM_Servo:
+ 292              		.loc 1 52 9 is_stmt 1 view .LVU79
+ 293 002a EFE7     		b	.L16
+ 294              	.LVL21:
+ 295              	.L18:
+  54:modules/motor/servo_motor/servo_motor.c ****         PWMSetDutyRatio(servo->pwm_instance, angle);
+ 296              		.loc 1 54 9 view .LVU80
+  54:modules/motor/servo_motor/servo_motor.c ****         PWMSetDutyRatio(servo->pwm_instance, angle);
+ 297              		.loc 1 54 22 is_stmt 0 view .LVU81
+ 298 002c 80ED010A 		vstr.32	s0, [r0, #4]
+  55:modules/motor/servo_motor/servo_motor.c ****         break;
+ 299              		.loc 1 55 9 is_stmt 1 view .LVU82
+ 300 0030 C068     		ldr	r0, [r0, #12]
+ 301              	.LVL22:
+  55:modules/motor/servo_motor/servo_motor.c ****         break;
+ 302              		.loc 1 55 9 is_stmt 0 view .LVU83
+ 303 0032 FFF7FEFF 		bl	PWMSetDutyRatio
+ 304              	.LVL23:
+  56:modules/motor/servo_motor/servo_motor.c ****     default:
+ 305              		.loc 1 56 9 is_stmt 1 view .LVU84
+  60:modules/motor/servo_motor/servo_motor.c **** 
+ 306              		.loc 1 60 1 is_stmt 0 view .LVU85
+ 307 0036 E9E7     		b	.L16
+ 308              	.L22:
+ARM GAS  /tmp/ccNGJ6O4.s 			page 9
+
+
+ 309              		.align	2
+ 310              	.L21:
+ 311 0038 00000000 		.word	.LANCHOR2
+ 312              		.cfi_endproc
+ 313              	.LFE243:
+ 315              		.global	servo_unload
+ 316              		.global	servo_angle_write
+ 317              		.global	servo_angle_read
+ 318              		.section	.bss.servo_idx,"aw",%nobits
+ 319              		.set	.LANCHOR1,. + 0
+ 322              	servo_idx:
+ 323 0000 00       		.space	1
+ 324              		.section	.bss.servo_motor_instance,"aw",%nobits
+ 325              		.align	2
+ 326              		.set	.LANCHOR0,. + 0
+ 329              	servo_motor_instance:
+ 330 0000 00000000 		.space	28
+ 330      00000000 
+ 330      00000000 
+ 330      00000000 
+ 330      00000000 
+ 331              		.section	.data.servo_angle_read,"aw"
+ 332              		.align	2
+ 335              	servo_angle_read:
+ 336 0000 55550415 		.ascii	"UU\004\025\001\001"
+ 336      0101
+ 337              		.section	.data.servo_angle_write,"aw"
+ 338              		.align	2
+ 339              		.set	.LANCHOR2,. + 0
+ 342              	servo_angle_write:
+ 343 0000 55550803 		.ascii	"UU\010\003\001\364\001\001 \003UU\004\025\001\001"
+ 343      01F40101 
+ 343      20035555 
+ 343      04150101 
+ 344              		.section	.data.servo_unload,"aw"
+ 345              		.align	2
+ 348              	servo_unload:
+ 349 0000 55550414 		.ascii	"UU\004\024\001\001"
+ 349      0101
+ 350              		.text
+ 351              	.Letext0:
+ 352              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 353              		.file 3 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 354              		.file 4 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 355              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 356              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h"
+ 357              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 358              		.file 8 "bsp/pwm/bsp_pwm.h"
+ 359              		.file 9 "bsp/usart/bsp_usart.h"
+ 360              		.file 10 "modules/motor/servo_motor/servo_motor.h"
+ 361              		.file 11 "/usr/include/newlib/stdlib.h"
+ARM GAS  /tmp/ccNGJ6O4.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 servo_motor.c
+     /tmp/ccNGJ6O4.s:18     .text.DecodeServo:0000000000000000 $t
+     /tmp/ccNGJ6O4.s:25     .text.DecodeServo:0000000000000000 DecodeServo
+     /tmp/ccNGJ6O4.s:100    .text.DecodeServo:0000000000000040 $d
+     /tmp/ccNGJ6O4.s:106    .text.ServoInit:0000000000000000 $t
+     /tmp/ccNGJ6O4.s:113    .text.ServoInit:0000000000000000 ServoInit
+     /tmp/ccNGJ6O4.s:229    .text.ServoInit:0000000000000064 $d
+     /tmp/ccNGJ6O4.s:236    .text.ServoSetAngle:0000000000000000 $t
+     /tmp/ccNGJ6O4.s:243    .text.ServoSetAngle:0000000000000000 ServoSetAngle
+     /tmp/ccNGJ6O4.s:311    .text.ServoSetAngle:0000000000000038 $d
+     /tmp/ccNGJ6O4.s:348    .data.servo_unload:0000000000000000 servo_unload
+     /tmp/ccNGJ6O4.s:342    .data.servo_angle_write:0000000000000000 servo_angle_write
+     /tmp/ccNGJ6O4.s:335    .data.servo_angle_read:0000000000000000 servo_angle_read
+     /tmp/ccNGJ6O4.s:322    .bss.servo_idx:0000000000000000 servo_idx
+     /tmp/ccNGJ6O4.s:323    .bss.servo_idx:0000000000000000 $d
+     /tmp/ccNGJ6O4.s:325    .bss.servo_motor_instance:0000000000000000 $d
+     /tmp/ccNGJ6O4.s:329    .bss.servo_motor_instance:0000000000000000 servo_motor_instance
+     /tmp/ccNGJ6O4.s:332    .data.servo_angle_read:0000000000000000 $d
+     /tmp/ccNGJ6O4.s:338    .data.servo_angle_write:0000000000000000 $d
+     /tmp/ccNGJ6O4.s:345    .data.servo_unload:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+malloc
+USARTRegister
+PWMRegister
+USARTSend
+PWMSetDutyRatio

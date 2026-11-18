@@ -1,0 +1,518 @@
+ARM GAS  /tmp/ccjeTxbz.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"auto_aim_boot.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.WaitFor,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	WaitFor:
+  26              	.LVL0:
+  27              	.LFB273:
+  28              		.file 1 "application/cmd/auto_aim_boot.c"
+   1:application/cmd/auto_aim_boot.c **** /* [USB_SP 上电自瞄 新增 开始]
+   2:application/cmd/auto_aim_boot.c ****  * CMD的可选自主目标来源：不读取遥控器，不修改电机环路或机械限位。
+   3:application/cmd/auto_aim_boot.c ****  * 上电先回传mode1请求视觉；电脑未启动时一直等待，不锁死在遥控解锁流�
+   4:application/cmd/auto_aim_boot.c ****  */
+   5:application/cmd/auto_aim_boot.c **** #include "auto_aim_boot.h"
+   6:application/cmd/auto_aim_boot.c **** #include "gimbal.h"
+   7:application/cmd/auto_aim_boot.c **** #include "robot_comm.h" /* [USB_SP 通信整理] 不直接依赖USB驱动。 */
+   8:application/cmd/auto_aim_boot.c **** 
+   9:application/cmd/auto_aim_boot.c **** volatile uint8_t gimbal_auto_aim_enabled = 1;
+  10:application/cmd/auto_aim_boot.c **** volatile AutoAimBootState gimbal_auto_aim_state = AUTO_AIM_WAIT_HARDWARE;
+  11:application/cmd/auto_aim_boot.c **** 
+  12:application/cmd/auto_aim_boot.c **** static uint8_t stream_started, holding;
+  13:application/cmd/auto_aim_boot.c **** static uint32_t stable_since, stream_session;
+  14:application/cmd/auto_aim_boot.c **** static float hold_yaw, hold_pitch;
+  15:application/cmd/auto_aim_boot.c **** 
+  16:application/cmd/auto_aim_boot.c **** void AutoAimBootInit(void)
+  17:application/cmd/auto_aim_boot.c **** {
+  18:application/cmd/auto_aim_boot.c ****     gimbal_auto_aim_enabled = 1;
+  19:application/cmd/auto_aim_boot.c ****     gimbal_auto_aim_state = AUTO_AIM_WAIT_HARDWARE;
+  20:application/cmd/auto_aim_boot.c ****     stream_started = holding = 0;
+  21:application/cmd/auto_aim_boot.c ****     stable_since = stream_session = 0;
+  22:application/cmd/auto_aim_boot.c ****     hold_yaw = hold_pitch = 0;
+  23:application/cmd/auto_aim_boot.c **** }
+  24:application/cmd/auto_aim_boot.c **** 
+  25:application/cmd/auto_aim_boot.c **** /* 所有等待/停止路径都撤销本次使能；恢复时必须重新积累有效帧时间。 *
+  26:application/cmd/auto_aim_boot.c **** static void WaitFor(AutoAimBootState state)
+  27:application/cmd/auto_aim_boot.c **** {
+  29              		.loc 1 27 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /tmp/ccjeTxbz.s 			page 2
+
+
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  28:application/cmd/auto_aim_boot.c ****     stream_started = holding = 0;
+  34              		.loc 1 28 5 view .LVU1
+  35              		.loc 1 28 30 is_stmt 0 view .LVU2
+  36 0000 0023     		movs	r3, #0
+  37 0002 034A     		ldr	r2, .L2
+  38 0004 1370     		strb	r3, [r2]
+  39              		.loc 1 28 20 view .LVU3
+  40 0006 034A     		ldr	r2, .L2+4
+  41 0008 1370     		strb	r3, [r2]
+  29:application/cmd/auto_aim_boot.c ****     gimbal_auto_aim_state = state;
+  42              		.loc 1 29 5 is_stmt 1 view .LVU4
+  43              		.loc 1 29 27 is_stmt 0 view .LVU5
+  44 000a 034B     		ldr	r3, .L2+8
+  45 000c 1870     		strb	r0, [r3]
+  30:application/cmd/auto_aim_boot.c **** }
+  46              		.loc 1 30 1 view .LVU6
+  47 000e 7047     		bx	lr
+  48              	.L3:
+  49              		.align	2
+  50              	.L2:
+  51 0010 00000000 		.word	.LANCHOR0
+  52 0014 00000000 		.word	.LANCHOR1
+  53 0018 00000000 		.word	.LANCHOR2
+  54              		.cfi_endproc
+  55              	.LFE273:
+  57              		.section	.text.AutoAimBootInit,"ax",%progbits
+  58              		.align	1
+  59              		.global	AutoAimBootInit
+  60              		.syntax unified
+  61              		.thumb
+  62              		.thumb_func
+  63              		.fpu fpv4-sp-d16
+  65              	AutoAimBootInit:
+  66              	.LFB272:
+  17:application/cmd/auto_aim_boot.c ****     gimbal_auto_aim_enabled = 1;
+  67              		.loc 1 17 1 is_stmt 1 view -0
+  68              		.cfi_startproc
+  69              		@ args = 0, pretend = 0, frame = 0
+  70              		@ frame_needed = 0, uses_anonymous_args = 0
+  71              		@ link register save eliminated.
+  18:application/cmd/auto_aim_boot.c ****     gimbal_auto_aim_state = AUTO_AIM_WAIT_HARDWARE;
+  72              		.loc 1 18 5 view .LVU8
+  18:application/cmd/auto_aim_boot.c ****     gimbal_auto_aim_state = AUTO_AIM_WAIT_HARDWARE;
+  73              		.loc 1 18 29 is_stmt 0 view .LVU9
+  74 0000 0123     		movs	r3, #1
+  75 0002 094A     		ldr	r2, .L5
+  76 0004 1370     		strb	r3, [r2]
+  19:application/cmd/auto_aim_boot.c ****     stream_started = holding = 0;
+  77              		.loc 1 19 5 is_stmt 1 view .LVU10
+  19:application/cmd/auto_aim_boot.c ****     stream_started = holding = 0;
+  78              		.loc 1 19 27 is_stmt 0 view .LVU11
+  79 0006 094A     		ldr	r2, .L5+4
+  80 0008 1370     		strb	r3, [r2]
+  20:application/cmd/auto_aim_boot.c ****     stable_since = stream_session = 0;
+  81              		.loc 1 20 5 is_stmt 1 view .LVU12
+ARM GAS  /tmp/ccjeTxbz.s 			page 3
+
+
+  20:application/cmd/auto_aim_boot.c ****     stable_since = stream_session = 0;
+  82              		.loc 1 20 30 is_stmt 0 view .LVU13
+  83 000a 0023     		movs	r3, #0
+  84 000c 084A     		ldr	r2, .L5+8
+  85 000e 1370     		strb	r3, [r2]
+  20:application/cmd/auto_aim_boot.c ****     stable_since = stream_session = 0;
+  86              		.loc 1 20 20 view .LVU14
+  87 0010 084A     		ldr	r2, .L5+12
+  88 0012 1370     		strb	r3, [r2]
+  21:application/cmd/auto_aim_boot.c ****     hold_yaw = hold_pitch = 0;
+  89              		.loc 1 21 5 is_stmt 1 view .LVU15
+  21:application/cmd/auto_aim_boot.c ****     hold_yaw = hold_pitch = 0;
+  90              		.loc 1 21 35 is_stmt 0 view .LVU16
+  91 0014 084A     		ldr	r2, .L5+16
+  92 0016 1360     		str	r3, [r2]
+  21:application/cmd/auto_aim_boot.c ****     hold_yaw = hold_pitch = 0;
+  93              		.loc 1 21 18 view .LVU17
+  94 0018 084A     		ldr	r2, .L5+20
+  95 001a 1360     		str	r3, [r2]
+  22:application/cmd/auto_aim_boot.c **** }
+  96              		.loc 1 22 5 is_stmt 1 view .LVU18
+  22:application/cmd/auto_aim_boot.c **** }
+  97              		.loc 1 22 27 is_stmt 0 view .LVU19
+  98 001c 0023     		movs	r3, #0
+  99 001e 084A     		ldr	r2, .L5+24
+ 100 0020 1360     		str	r3, [r2]	@ float
+  22:application/cmd/auto_aim_boot.c **** }
+ 101              		.loc 1 22 14 view .LVU20
+ 102 0022 084A     		ldr	r2, .L5+28
+ 103 0024 1360     		str	r3, [r2]	@ float
+  23:application/cmd/auto_aim_boot.c **** 
+ 104              		.loc 1 23 1 view .LVU21
+ 105 0026 7047     		bx	lr
+ 106              	.L6:
+ 107              		.align	2
+ 108              	.L5:
+ 109 0028 00000000 		.word	.LANCHOR3
+ 110 002c 00000000 		.word	.LANCHOR2
+ 111 0030 00000000 		.word	.LANCHOR0
+ 112 0034 00000000 		.word	.LANCHOR1
+ 113 0038 00000000 		.word	.LANCHOR4
+ 114 003c 00000000 		.word	.LANCHOR5
+ 115 0040 00000000 		.word	.LANCHOR6
+ 116 0044 00000000 		.word	.LANCHOR7
+ 117              		.cfi_endproc
+ 118              	.LFE272:
+ 120              		.section	.text.AutoAimBootUpdate,"ax",%progbits
+ 121              		.align	1
+ 122              		.global	AutoAimBootUpdate
+ 123              		.syntax unified
+ 124              		.thumb
+ 125              		.thumb_func
+ 126              		.fpu fpv4-sp-d16
+ 128              	AutoAimBootUpdate:
+ 129              	.LVL1:
+ 130              	.LFB274:
+  31:application/cmd/auto_aim_boot.c **** 
+ARM GAS  /tmp/ccjeTxbz.s 			page 4
+
+
+  32:application/cmd/auto_aim_boot.c **** void AutoAimBootUpdate(Gimbal_Ctrl_Cmd_s *command)
+  33:application/cmd/auto_aim_boot.c **** {
+ 131              		.loc 1 33 1 is_stmt 1 view -0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 88
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135              		.loc 1 33 1 is_stmt 0 view .LVU23
+ 136 0000 30B5     		push	{r4, r5, lr}
+ 137              	.LCFI0:
+ 138              		.cfi_def_cfa_offset 12
+ 139              		.cfi_offset 4, -12
+ 140              		.cfi_offset 5, -8
+ 141              		.cfi_offset 14, -4
+ 142 0002 97B0     		sub	sp, sp, #92
+ 143              	.LCFI1:
+ 144              		.cfi_def_cfa_offset 104
+ 145 0004 0446     		mov	r4, r0
+  34:application/cmd/auto_aim_boot.c ****     GimbalState state;
+ 146              		.loc 1 34 5 is_stmt 1 view .LVU24
+  35:application/cmd/auto_aim_boot.c ****     Vision_Recv_s rx = {0};
+ 147              		.loc 1 35 5 view .LVU25
+ 148              		.loc 1 35 19 is_stmt 0 view .LVU26
+ 149 0006 2C22     		movs	r2, #44
+ 150 0008 0021     		movs	r1, #0
+ 151 000a 01A8     		add	r0, sp, #4
+ 152              	.LVL2:
+ 153              		.loc 1 35 19 view .LVU27
+ 154 000c FFF7FEFF 		bl	memset
+ 155              	.LVL3:
+  36:application/cmd/auto_aim_boot.c ****     GimbalGetState(&state);
+ 156              		.loc 1 36 5 is_stmt 1 view .LVU28
+ 157 0010 0CA8     		add	r0, sp, #48
+ 158 0012 FFF7FEFF 		bl	GimbalGetState
+ 159              	.LVL4:
+  37:application/cmd/auto_aim_boot.c ****     int have = RobotCommGetVisionCommand(&rx);
+ 160              		.loc 1 37 5 view .LVU29
+ 161              		.loc 1 37 16 is_stmt 0 view .LVU30
+ 162 0016 01A8     		add	r0, sp, #4
+ 163 0018 FFF7FEFF 		bl	RobotCommGetVisionCommand
+ 164              	.LVL5:
+  38:application/cmd/auto_aim_boot.c ****     uint32_t now = HAL_GetTick();
+ 165              		.loc 1 38 5 is_stmt 1 view .LVU31
+ 166              		.loc 1 38 20 is_stmt 0 view .LVU32
+ 167 001c FFF7FEFF 		bl	HAL_GetTick
+ 168              	.LVL6:
+  39:application/cmd/auto_aim_boot.c ****     int selected = GIMBAL_VISION_ENABLE && gimbal_auto_aim_enabled;
+ 169              		.loc 1 39 5 is_stmt 1 view .LVU33
+ 170              		.loc 1 39 41 is_stmt 0 view .LVU34
+ 171 0020 1D4B     		ldr	r3, .L21
+ 172 0022 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 173              	.LVL7:
+  40:application/cmd/auto_aim_boot.c **** 
+  41:application/cmd/auto_aim_boot.c ****     /* 请求计算不等待电脑命令，避免双方互相等候；安装门控为0仍可联调�
+  42:application/cmd/auto_aim_boot.c ****      * 电机故障时停止请求控制，但姿态回传仍由RobotCommUpdate持续提供。
+  43:application/cmd/auto_aim_boot.c ****      */
+  44:application/cmd/auto_aim_boot.c ****     RobotCommSetVisionMode(selected && state.pose_valid && !state.driver_fault ? 1 : 0);
+ 174              		.loc 1 44 5 is_stmt 1 view .LVU35
+ARM GAS  /tmp/ccjeTxbz.s 			page 5
+
+
+ 175              		.loc 1 44 84 is_stmt 0 view .LVU36
+ 176 0024 03F0FF05 		and	r5, r3, #255
+ 177 0028 3BB1     		cbz	r3, .L15
+ 178              		.loc 1 44 45 discriminator 1 view .LVU37
+ 179 002a 9DF85430 		ldrb	r3, [sp, #84]	@ zero_extendqisi2
+ 180              	.LVL8:
+ 181              		.loc 1 44 37 discriminator 1 view .LVU38
+ 182 002e 13B3     		cbz	r3, .L16
+ 183              		.loc 1 44 66 discriminator 3 view .LVU39
+ 184 0030 9DF85630 		ldrb	r3, [sp, #86]	@ zero_extendqisi2
+ 185              		.loc 1 44 84 discriminator 3 view .LVU40
+ 186 0034 0BB3     		cbz	r3, .L17
+ 187              		.loc 1 44 84 view .LVU41
+ 188 0036 0020     		movs	r0, #0
+ 189 0038 00E0     		b	.L8
+ 190              	.LVL9:
+ 191              	.L15:
+ 192              		.loc 1 44 84 view .LVU42
+ 193 003a 0020     		movs	r0, #0
+ 194              	.LVL10:
+ 195              	.L8:
+ 196              		.loc 1 44 5 discriminator 8 view .LVU43
+ 197 003c FFF7FEFF 		bl	RobotCommSetVisionMode
+ 198              	.LVL11:
+  45:application/cmd/auto_aim_boot.c ****     *command = (Gimbal_Ctrl_Cmd_s){.gimbal_mode = GIMBAL_ZERO_FORCE};
+ 199              		.loc 1 45 5 is_stmt 1 discriminator 8 view .LVU44
+ 200              		.loc 1 45 14 is_stmt 0 discriminator 8 view .LVU45
+ 201 0040 0023     		movs	r3, #0
+ 202 0042 2360     		str	r3, [r4]	@ unaligned
+ 203 0044 6360     		str	r3, [r4, #4]	@ unaligned
+ 204 0046 A360     		str	r3, [r4, #8]	@ unaligned
+ 205 0048 2373     		strb	r3, [r4, #12]
+  46:application/cmd/auto_aim_boot.c ****     if (state.pose_valid) {
+ 206              		.loc 1 46 5 is_stmt 1 discriminator 8 view .LVU46
+ 207              		.loc 1 46 14 is_stmt 0 discriminator 8 view .LVU47
+ 208 004a 9DF85430 		ldrb	r3, [sp, #84]	@ zero_extendqisi2
+ 209              		.loc 1 46 8 discriminator 8 view .LVU48
+ 210 004e 1BB1     		cbz	r3, .L9
+  47:application/cmd/auto_aim_boot.c ****         command->yaw = state.yaw_continuous;
+ 211              		.loc 1 47 9 is_stmt 1 view .LVU49
+ 212              		.loc 1 47 22 is_stmt 0 view .LVU50
+ 213 0050 119B     		ldr	r3, [sp, #68]	@ float
+ 214 0052 2360     		str	r3, [r4]	@ unaligned
+  48:application/cmd/auto_aim_boot.c ****         command->pitch = state.pose.pitch;
+ 215              		.loc 1 48 9 is_stmt 1 view .LVU51
+ 216              		.loc 1 48 24 is_stmt 0 view .LVU52
+ 217 0054 0D9B     		ldr	r3, [sp, #52]	@ float
+ 218 0056 6360     		str	r3, [r4, #4]	@ unaligned
+ 219              	.L9:
+  49:application/cmd/auto_aim_boot.c ****     }
+  50:application/cmd/auto_aim_boot.c **** 
+  51:application/cmd/auto_aim_boot.c ****     if (!selected) { WaitFor(AUTO_AIM_DISABLED); return; }
+ 220              		.loc 1 51 5 is_stmt 1 view .LVU53
+ 221              		.loc 1 51 8 is_stmt 0 view .LVU54
+ 222 0058 8DB1     		cbz	r5, .L19
+  52:application/cmd/auto_aim_boot.c ****     /* 不自动清除驱动器锁存故障；检修后复位C板即可重新走自主启动。 */
+  53:application/cmd/auto_aim_boot.c ****     if (state.driver_fault) { WaitFor(AUTO_AIM_DRIVER_FAULT); return; }
+ARM GAS  /tmp/ccjeTxbz.s 			page 6
+
+
+ 223              		.loc 1 53 5 is_stmt 1 view .LVU55
+ 224              		.loc 1 53 14 is_stmt 0 view .LVU56
+ 225 005a 9DF85630 		ldrb	r3, [sp, #86]	@ zero_extendqisi2
+ 226              		.loc 1 53 8 view .LVU57
+ 227 005e 93B9     		cbnz	r3, .L20
+  54:application/cmd/auto_aim_boot.c ****     if (!state.pose_valid || !state.motors_ready) {
+ 228              		.loc 1 54 5 is_stmt 1 view .LVU58
+ 229              		.loc 1 54 15 is_stmt 0 view .LVU59
+ 230 0060 9DF85430 		ldrb	r3, [sp, #84]	@ zero_extendqisi2
+ 231              		.loc 1 54 8 view .LVU60
+ 232 0064 13B1     		cbz	r3, .L13
+ 233              		.loc 1 54 36 discriminator 1 view .LVU61
+ 234 0066 9DF85530 		ldrb	r3, [sp, #85]	@ zero_extendqisi2
+ 235              		.loc 1 54 27 discriminator 1 view .LVU62
+ 236 006a 83B9     		cbnz	r3, .L14
+ 237              	.L13:
+  55:application/cmd/auto_aim_boot.c ****         WaitFor(AUTO_AIM_WAIT_HARDWARE); return;
+ 238              		.loc 1 55 9 is_stmt 1 view .LVU63
+ 239 006c 0120     		movs	r0, #1
+ 240 006e FFF7FEFF 		bl	WaitFor
+ 241              	.LVL12:
+ 242              		.loc 1 55 42 view .LVU64
+ 243              	.L7:
+  56:application/cmd/auto_aim_boot.c ****     }
+  57:application/cmd/auto_aim_boot.c ****     if (!GIMBAL_INSTALLATION_CONFIRMED) {
+  58:application/cmd/auto_aim_boot.c ****         WaitFor(AUTO_AIM_INSTALLATION_BLOCKED); return;
+  59:application/cmd/auto_aim_boot.c ****     }
+  60:application/cmd/auto_aim_boot.c ****     if (!RobotCommUsbIsConfigured()) { WaitFor(AUTO_AIM_WAIT_USB); return; }
+  61:application/cmd/auto_aim_boot.c ****     if (!have || (uint32_t)(now - rx.received_tick) > VISION_RX_TIMEOUT_MS) {
+  62:application/cmd/auto_aim_boot.c ****         WaitFor(AUTO_AIM_WAIT_COMMAND); return;
+  63:application/cmd/auto_aim_boot.c ****     }
+  64:application/cmd/auto_aim_boot.c **** 
+  65:application/cmd/auto_aim_boot.c ****     /* 超时、停用、硬件不健康或USB重新枚举后，重新等连续有效输入。
+  66:application/cmd/auto_aim_boot.c ****      * 会话代数能识别两个CMD周期之间发生的拔插，不沿用旧目标。
+  67:application/cmd/auto_aim_boot.c ****      * 时间差使用无符号减法，兼容HAL毫秒计时回绕。
+  68:application/cmd/auto_aim_boot.c ****      */
+  69:application/cmd/auto_aim_boot.c ****     if (!stream_started || stream_session != rx.session) {
+  70:application/cmd/auto_aim_boot.c ****         stream_started = 1;
+  71:application/cmd/auto_aim_boot.c ****         stream_session = rx.session;
+  72:application/cmd/auto_aim_boot.c ****         stable_since = now;
+  73:application/cmd/auto_aim_boot.c ****         holding = 0;
+  74:application/cmd/auto_aim_boot.c ****     }
+  75:application/cmd/auto_aim_boot.c ****     if ((uint32_t)(now - stable_since) < GIMBAL_AUTO_AIM_SETTLE_MS) {
+  76:application/cmd/auto_aim_boot.c ****         gimbal_auto_aim_state = AUTO_AIM_SETTLING;
+  77:application/cmd/auto_aim_boot.c ****         return;
+  78:application/cmd/auto_aim_boot.c ****     }
+  79:application/cmd/auto_aim_boot.c **** 
+  80:application/cmd/auto_aim_boot.c ****     if (rx.mode != 0) {
+  81:application/cmd/auto_aim_boot.c ****         /* mode1/2均只提供云台角度；发射始终由CMD公共尾部强制关闭。 */
+  82:application/cmd/auto_aim_boot.c ****         holding = 0;
+  83:application/cmd/auto_aim_boot.c ****         command->yaw = rx.yaw;
+  84:application/cmd/auto_aim_boot.c ****         command->pitch = rx.pitch;
+  85:application/cmd/auto_aim_boot.c ****         command->gimbal_mode = GIMBAL_VISION_MODE;
+  86:application/cmd/auto_aim_boot.c ****         gimbal_auto_aim_state = AUTO_AIM_TRACKING;
+  87:application/cmd/auto_aim_boot.c ****     } else {
+  88:application/cmd/auto_aim_boot.c ****         /* mode0表示没有有效目标。在进入等待时锁定实测姿态，不能跟随零�
+  89:application/cmd/auto_aim_boot.c ****          * 之后固定该目标做保持，而非每周期随动修改目标。
+ARM GAS  /tmp/ccjeTxbz.s 			page 7
+
+
+  90:application/cmd/auto_aim_boot.c ****          */
+  91:application/cmd/auto_aim_boot.c ****         if (!holding) {
+  92:application/cmd/auto_aim_boot.c ****             hold_yaw = state.yaw_continuous;
+  93:application/cmd/auto_aim_boot.c ****             hold_pitch = state.pose.pitch;
+  94:application/cmd/auto_aim_boot.c ****             holding = 1;
+  95:application/cmd/auto_aim_boot.c ****         }
+  96:application/cmd/auto_aim_boot.c ****         command->yaw = hold_yaw;
+  97:application/cmd/auto_aim_boot.c ****         command->pitch = hold_pitch;
+  98:application/cmd/auto_aim_boot.c ****         command->gimbal_mode = GIMBAL_GYRO_MODE;
+  99:application/cmd/auto_aim_boot.c ****         gimbal_auto_aim_state = AUTO_AIM_HOLD;
+ 100:application/cmd/auto_aim_boot.c ****     }
+ 101:application/cmd/auto_aim_boot.c **** }
+ 244              		.loc 1 101 1 is_stmt 0 view .LVU65
+ 245 0072 17B0     		add	sp, sp, #92
+ 246              	.LCFI2:
+ 247              		.cfi_remember_state
+ 248              		.cfi_def_cfa_offset 12
+ 249              		@ sp needed
+ 250 0074 30BD     		pop	{r4, r5, pc}
+ 251              	.LVL13:
+ 252              	.L16:
+ 253              	.LCFI3:
+ 254              		.cfi_restore_state
+  44:application/cmd/auto_aim_boot.c ****     *command = (Gimbal_Ctrl_Cmd_s){.gimbal_mode = GIMBAL_ZERO_FORCE};
+ 255              		.loc 1 44 84 view .LVU66
+ 256 0076 0020     		movs	r0, #0
+ 257 0078 E0E7     		b	.L8
+ 258              	.L17:
+ 259 007a 0120     		movs	r0, #1
+ 260 007c DEE7     		b	.L8
+ 261              	.L19:
+  51:application/cmd/auto_aim_boot.c ****     /* 不自动清除驱动器锁存故障；检修后复位C板即可重新走自主启动。 */
+ 262              		.loc 1 51 22 is_stmt 1 discriminator 1 view .LVU67
+ 263 007e 0020     		movs	r0, #0
+ 264 0080 FFF7FEFF 		bl	WaitFor
+ 265              	.LVL14:
+  51:application/cmd/auto_aim_boot.c ****     /* 不自动清除驱动器锁存故障；检修后复位C板即可重新走自主启动。 */
+ 266              		.loc 1 51 50 discriminator 1 view .LVU68
+ 267 0084 F5E7     		b	.L7
+ 268              	.L20:
+  53:application/cmd/auto_aim_boot.c ****     if (!state.pose_valid || !state.motors_ready) {
+ 269              		.loc 1 53 31 discriminator 1 view .LVU69
+ 270 0086 0720     		movs	r0, #7
+ 271 0088 FFF7FEFF 		bl	WaitFor
+ 272              	.LVL15:
+  53:application/cmd/auto_aim_boot.c ****     if (!state.pose_valid || !state.motors_ready) {
+ 273              		.loc 1 53 63 discriminator 1 view .LVU70
+ 274 008c F1E7     		b	.L7
+ 275              	.L14:
+  57:application/cmd/auto_aim_boot.c ****         WaitFor(AUTO_AIM_INSTALLATION_BLOCKED); return;
+ 276              		.loc 1 57 5 view .LVU71
+  58:application/cmd/auto_aim_boot.c ****     }
+ 277              		.loc 1 58 9 view .LVU72
+ 278 008e 0820     		movs	r0, #8
+ 279 0090 FFF7FEFF 		bl	WaitFor
+ 280              	.LVL16:
+  58:application/cmd/auto_aim_boot.c ****     }
+ARM GAS  /tmp/ccjeTxbz.s 			page 8
+
+
+ 281              		.loc 1 58 49 view .LVU73
+ 282 0094 EDE7     		b	.L7
+ 283              	.L22:
+ 284 0096 00BF     		.align	2
+ 285              	.L21:
+ 286 0098 00000000 		.word	.LANCHOR3
+ 287              		.cfi_endproc
+ 288              	.LFE274:
+ 290              		.global	gimbal_auto_aim_state
+ 291              		.global	gimbal_auto_aim_enabled
+ 292              		.section	.bss.hold_pitch,"aw",%nobits
+ 293              		.align	2
+ 294              		.set	.LANCHOR6,. + 0
+ 297              	hold_pitch:
+ 298 0000 00000000 		.space	4
+ 299              		.section	.bss.hold_yaw,"aw",%nobits
+ 300              		.align	2
+ 301              		.set	.LANCHOR7,. + 0
+ 304              	hold_yaw:
+ 305 0000 00000000 		.space	4
+ 306              		.section	.bss.holding,"aw",%nobits
+ 307              		.set	.LANCHOR0,. + 0
+ 310              	holding:
+ 311 0000 00       		.space	1
+ 312              		.section	.bss.stable_since,"aw",%nobits
+ 313              		.align	2
+ 314              		.set	.LANCHOR5,. + 0
+ 317              	stable_since:
+ 318 0000 00000000 		.space	4
+ 319              		.section	.bss.stream_session,"aw",%nobits
+ 320              		.align	2
+ 321              		.set	.LANCHOR4,. + 0
+ 324              	stream_session:
+ 325 0000 00000000 		.space	4
+ 326              		.section	.bss.stream_started,"aw",%nobits
+ 327              		.set	.LANCHOR1,. + 0
+ 330              	stream_started:
+ 331 0000 00       		.space	1
+ 332              		.section	.data.gimbal_auto_aim_enabled,"aw"
+ 333              		.set	.LANCHOR3,. + 0
+ 336              	gimbal_auto_aim_enabled:
+ 337 0000 01       		.byte	1
+ 338              		.section	.data.gimbal_auto_aim_state,"aw"
+ 339              		.set	.LANCHOR2,. + 0
+ 342              	gimbal_auto_aim_state:
+ 343 0000 01       		.byte	1
+ 344              		.text
+ 345              	.Letext0:
+ 346              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 347              		.file 3 "modules/master_machine/master_process.h"
+ 348              		.file 4 "application/robot_def.h"
+ 349              		.file 5 "application/cmd/auto_aim_boot.h"
+ 350              		.file 6 "application/gimbal/gimbal_math.h"
+ 351              		.file 7 "application/gimbal/gimbal.h"
+ 352              		.file 8 "application/communication/robot_comm.h"
+ 353              		.file 9 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 354              		.file 10 "<built-in>"
+ARM GAS  /tmp/ccjeTxbz.s 			page 9
+
+
+ARM GAS  /tmp/ccjeTxbz.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 auto_aim_boot.c
+     /tmp/ccjeTxbz.s:18     .text.WaitFor:0000000000000000 $t
+     /tmp/ccjeTxbz.s:25     .text.WaitFor:0000000000000000 WaitFor
+     /tmp/ccjeTxbz.s:51     .text.WaitFor:0000000000000010 $d
+     /tmp/ccjeTxbz.s:58     .text.AutoAimBootInit:0000000000000000 $t
+     /tmp/ccjeTxbz.s:65     .text.AutoAimBootInit:0000000000000000 AutoAimBootInit
+     /tmp/ccjeTxbz.s:109    .text.AutoAimBootInit:0000000000000028 $d
+     /tmp/ccjeTxbz.s:121    .text.AutoAimBootUpdate:0000000000000000 $t
+     /tmp/ccjeTxbz.s:128    .text.AutoAimBootUpdate:0000000000000000 AutoAimBootUpdate
+     /tmp/ccjeTxbz.s:286    .text.AutoAimBootUpdate:0000000000000098 $d
+     /tmp/ccjeTxbz.s:342    .data.gimbal_auto_aim_state:0000000000000000 gimbal_auto_aim_state
+     /tmp/ccjeTxbz.s:336    .data.gimbal_auto_aim_enabled:0000000000000000 gimbal_auto_aim_enabled
+     /tmp/ccjeTxbz.s:293    .bss.hold_pitch:0000000000000000 $d
+     /tmp/ccjeTxbz.s:297    .bss.hold_pitch:0000000000000000 hold_pitch
+     /tmp/ccjeTxbz.s:300    .bss.hold_yaw:0000000000000000 $d
+     /tmp/ccjeTxbz.s:304    .bss.hold_yaw:0000000000000000 hold_yaw
+     /tmp/ccjeTxbz.s:310    .bss.holding:0000000000000000 holding
+     /tmp/ccjeTxbz.s:311    .bss.holding:0000000000000000 $d
+     /tmp/ccjeTxbz.s:313    .bss.stable_since:0000000000000000 $d
+     /tmp/ccjeTxbz.s:317    .bss.stable_since:0000000000000000 stable_since
+     /tmp/ccjeTxbz.s:320    .bss.stream_session:0000000000000000 $d
+     /tmp/ccjeTxbz.s:324    .bss.stream_session:0000000000000000 stream_session
+     /tmp/ccjeTxbz.s:330    .bss.stream_started:0000000000000000 stream_started
+     /tmp/ccjeTxbz.s:331    .bss.stream_started:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+memset
+GimbalGetState
+RobotCommGetVisionCommand
+HAL_GetTick
+RobotCommSetVisionMode

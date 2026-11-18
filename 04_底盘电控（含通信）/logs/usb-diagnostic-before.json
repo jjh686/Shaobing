@@ -1,0 +1,19 @@
+{
+  "bytes": 54589,
+  "sent_STOP": 226,
+  "session": 1631623793,
+  "frames": {
+    "SP": 1001,
+    "gimbal": 251
+  },
+  "examples": {
+    "SP": "535001f211433f1509f03d7a4cf1bca2de223fe347b03ff182c53bb3f247be5a65fa3c0000f0410000a8ad",
+    "gimbal": "5a2822ebe7df07000102000000000000719a4061e7df0700e4df070000000000000000000000000000000000e7eb",
+    "joint_last": {
+      "sequence": 225,
+      "session": 1631623793,
+      "command_received_ms": 521068
+    }
+  },
+  "hardware_can_proven": false
+}

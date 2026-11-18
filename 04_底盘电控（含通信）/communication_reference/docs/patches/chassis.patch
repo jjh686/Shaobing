@@ -1,0 +1,1123 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -31,7 +31,7 @@
+ add_compile_options(-pipe ${MCU_FLAGS} -Wall -fmessage-length=0 # basic options
+                     -ffunction-sections -fdata-sections -fno-common # optimize options 
+                     )
+-add_link_options(-pipe ${MCU_FLAGS} -T${LINKER_SCRIPT} -Wl,--no-warn-rwx-segments # close RWX warning
++add_link_options(-pipe ${MCU_FLAGS} -T${LINKER_SCRIPT}
+                  -lm -lc -lnosys # lib options
+                  -Wl,--gc-sections -flto -specs=nano.specs -specs=nosys.specs # optimize options
+                  -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map -Wl,--cref -Wl,--print-memory-usage # map options
+@@ -112,4 +112,4 @@
+     COMMENT "Building hex & bin file..."
+     COMMENT "EXCUTABLE SIZE:"
+     COMMAND ${SIZE} ${PROJECT_NAME}.elf
+-  )+  )
+--- a/Src/can.c
++++ b/Src/can.c
+@@ -77,9 +77,9 @@
+   hcan2.Init.TimeSeg1 = CAN_BS1_10TQ;
+   hcan2.Init.TimeSeg2 = CAN_BS2_3TQ;
+   hcan2.Init.TimeTriggeredMode = DISABLE;
+-  hcan2.Init.AutoBusOff = DISABLE;
++  hcan2.Init.AutoBusOff = ENABLE;
+   hcan2.Init.AutoWakeUp = DISABLE;
+-  hcan2.Init.AutoRetransmission = ENABLE;
++  hcan2.Init.AutoRetransmission = DISABLE;
+   hcan2.Init.ReceiveFifoLocked = DISABLE;
+   hcan2.Init.TransmitFifoPriority = ENABLE;
+   if (HAL_CAN_Init(&hcan2) != HAL_OK)
+--- a/application/chassis/chassis.c
++++ b/application/chassis/chassis.c
+@@ -12,6 +12,7 @@
+  */
+ 
+ #include "chassis.h"
++#include "nav_can_adapter.h"
+ #include "robot_def.h"
+ #include "power_control.h"
+ #include "super_cap.h"
+@@ -35,7 +36,7 @@
+ #ifdef CHASSIS_BOARD // 如果是底盘板,使用板载IMU获取底盘转动角速度
+ #include "can_comm.h"
+ #include "ins_task.h"
+-static CANCommInstance *chasiss_can_comm; // 双板通信CAN comm
++/* Replaced by NavCan adapter in this isolated firmware. */
+ attitude_t *Chassis_IMU_data;
+ #endif // CHASSIS_BOARD
+ #ifdef ONE_BOARD
+@@ -126,6 +127,7 @@
+     chassis_motor_config.can_init_config.tx_id = 3;
+     chassis_motor_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+     motor_rb = PowerControlInit(&chassis_motor_config);
++    DJIMotorStop(motor_lf); DJIMotorStop(motor_rf); DJIMotorStop(motor_lb); DJIMotorStop(motor_rb);
+ 
+     referee_data = UITaskInit(&huart6, &ui_data); // 裁判系统初始化,会同时初始化UI
+ 
+@@ -149,19 +151,7 @@
+ 
+     // 发布订阅初始化,如果为双板,则需要can comm来传递消息
+ #ifdef CHASSIS_BOARD
+-    Chassis_IMU_data = INS_Init(); // 底盘IMU初始化
+-
+-    CANComm_Init_Config_s comm_conf = {
+-        .can_config = {
+-            .can_handle = &hcan2,
+-            .tx_id = 0x311,
+-            .rx_id = 0x312,
+-        },
+-        .recv_data_len = sizeof(Chassis_Ctrl_Cmd_s),
+-        .send_data_len = sizeof(Chassis_Upload_Data_s),
+-        .daemon_count = 10, // 100ms 收不到判离线 (daemon 任务 100Hz)
+-    };
+-    chasiss_can_comm = CANCommInit(&comm_conf); // can comm初始化
++    NavCanInit(); // USB relay endpoint on CAN2, no chassis IMU requirement
+ #endif                                          // CHASSIS_BOARD
+ 
+ #ifdef ONE_BOARD // 单板控制整车,则通过pubsub来传递消息
+@@ -314,8 +304,8 @@
+     const float aps_2_mps = PI2 * (RADIUS_WHEEL / 1000.0f) /
+                             (RPM_2_ANGLE_PER_SEC * REDUCTION_RATIO_WHEEL * 60.0f);
+ 
+-    chassis_feedback_data.real_vx = vx_aps * OMNI_KX * aps_2_mps;
+-    chassis_feedback_data.real_vy = vy_aps * OMNI_KY * aps_2_mps;
++    chassis_feedback_data.real_vx = vx_aps * aps_2_mps;
++    chassis_feedback_data.real_vy = vy_aps * aps_2_mps;
+     /* wz 不能复用伪单位 wz_aps, 直接用平均轮速换算: ω = v_wheel / r0 */
+     chassis_feedback_data.real_wz = (lf + rf + lb + rb) * 0.25f * aps_2_mps /
+                                     (OMNI_R0 / 1000.0f) * RAD_2_DEGREE;
+@@ -332,15 +322,10 @@
+ #if defined(ONE_BOARD)
+     SubGetMessage(chassis_sub, &chassis_cmd_recv);
+ #elif defined(CHASSIS_BOARD)
+-    chassis_cmd_recv = *(Chassis_Ctrl_Cmd_s *)CANCommGet(chasiss_can_comm);
+-    if (!CANCommIsOnline(chasiss_can_comm))
+-    {
+-        /* 滑环松了/云台板没上电: 立即零力, 防止按最后一帧乱跑 */
+-        chassis_cmd_recv.chassis_mode = CHASSIS_ZERO_FORCE;
+-        chassis_cmd_recv.vx = 0.0f;
+-        chassis_cmd_recv.vy = 0.0f;
+-        chassis_cmd_recv.wz = 0.0f;
+-    }
++    int nav_motors_online = motor_lf->feed_cnt && motor_rf->feed_cnt && motor_lb->feed_cnt && motor_rb->feed_cnt &&
++        DaemonIsOnline(motor_lf->daemon) && DaemonIsOnline(motor_rf->daemon) &&
++        DaemonIsOnline(motor_lb->daemon) && DaemonIsOnline(motor_rb->daemon);
++    NavCanCommand(&chassis_cmd_recv, nav_motors_online);
+ #endif
+ 
+     /* 姿态指令: 真正发 0x0120 的 UITask 在本板, 所以在这里转给 referee 模块 */
+@@ -468,6 +453,6 @@
+     PubPushMessage(chassis_pub, (void *)&chassis_feedback_data);
+ #endif
+ #ifdef CHASSIS_BOARD
+-    CANCommSend(chasiss_can_comm, (void *)&chassis_feedback_data);
++    NavCanFeedback(&chassis_feedback_data, nav_motors_online);
+ #endif // CHASSIS_BOARD
+ }--- a/application/robot_def.h
++++ b/application/robot_def.h
+@@ -18,8 +18,8 @@
+ 
+ /* 开发板类型定义,烧录时注意不要弄错对应功能;修改定义后需要重新编译,只能存在一个定义! */
+ // #define ONE_BOARD // 单板控制整车
+-// #define CHASSIS_BOARD //底盘板
+-#define GIMBAL_BOARD  //云台板
++#define CHASSIS_BOARD // Navigation relay chassis endpoint
++// #define GIMBAL_BOARD
+ 
+ #define VISION_USE_VCP  // 使用虚拟串口发送视觉数据
+ // #define VISION_USE_UART // 使用串口发送视觉数据
+--- a/application/robot_task.h
++++ b/application/robot_task.h
+@@ -35,8 +35,8 @@
+  */
+ void OSTaskInit()
+ {
+-    osThreadDef(instask, StartINSTASK, osPriorityAboveNormal, 0, 1024);
+-    insTaskHandle = osThreadCreate(osThread(instask), NULL); // 由于是阻塞读取传感器,为姿态解算设置较高优先级,确保以1khz的频率执行
++    /* Standalone navigation chassis test: no INS dependency. */
++    /* insTask not created; no IMU calibration before communication. */ // 由于是阻塞读取传感器,为姿态解算设置较高优先级,确保以1khz的频率执行
+     // // 后续修改为读取传感器数据准备好的中断处理,
+ 
+     osThreadDef(motortask, StartMOTORTASK, osPriorityNormal, 0, 256);
+--- a/bsp/can/bsp_can.c
++++ b/bsp/can/bsp_can.c
+@@ -190,6 +190,7 @@
+     while (HAL_CAN_GetRxFifoFillLevel(_hcan, fifox)) // FIFO不为空,有可能在其他中断时有多帧数据进入
+     {
+         HAL_CAN_GetRxMessage(_hcan, fifox, &rxconf, can_rx_buff); // 从FIFO中获取数据
++        if (rxconf.IDE != CAN_ID_STD || rxconf.RTR != CAN_RTR_DATA || rxconf.DLC > 8) continue;
+         for (size_t i = 0; i < idx; ++i)
+         { // 两者相等说明这是要找的实例
+             if (_hcan == can_instance[i]->can_handle && rxconf.StdId == can_instance[i]->rx_id)
+--- a/bsp/usart/bsp_usart.c
++++ b/bsp/usart/bsp_usart.c
+@@ -107,6 +107,7 @@
+         { // call the callback function if it is not NULL
+             if (usart_instance[i]->module_callback != NULL)
+             {
++                usart_instance[i]->last_rx_size = Size;
+                 usart_instance[i]->module_callback();
+                 memset(usart_instance[i]->recv_buff, 0,
+                        usart_instance[i]->recv_buff_size);   // 清满, 防止半帧残留
+@@ -137,4 +138,4 @@
+             return;
+         }
+     }
+-}+}
+--- a/bsp/usart/bsp_usart.h
++++ b/bsp/usart/bsp_usart.h
+@@ -25,6 +25,7 @@
+ {
+     uint8_t recv_buff[USART_RXBUFF_LIMIT]; // 预先定义的最大buff大小,如果太小请修改USART_RXBUFF_LIMIT
+     uint8_t recv_buff_size;                // 模块接收一包数据的大小
++    uint16_t last_rx_size;                // Actual DMA/IDLE length for strict SBUS validation
+     UART_HandleTypeDef *usart_handle;      // 实例对应的usart_handle
+     usart_module_callback module_callback; // 解析收到的数据的回调函数
+ } USARTInstance;
+--- a/modules/motor/servo_motor/servo_motor.h
++++ b/modules/motor/servo_motor/servo_motor.h
+@@ -3,7 +3,7 @@
+ 
+ #include "main.h"
+ #include "tim.h"
+-#include <stdint-gcc.h>
++#include <stdint.h>
+ #include "bsp_pwm.h"
+ #include "bsp_usart.h"
+ 
+@@ -42,4 +42,4 @@
+ 
+ ServoInstance *ServoInit(Servo_Init_Config_s *Servo_Init_Config);
+ void ServoSetAngle(ServoInstance *servo, float angle);
+-#endif // SERVO_MOTOR_H+#endif // SERVO_MOTOR_H
+--- /dev/null
++++ b/modules/nav_conversion/LICENSE.rm_chassis_comm
+@@ -0,0 +1,202 @@
++
++                                 Apache License
++                           Version 2.0, January 2004
++                        http://www.apache.org/licenses/
++
++   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
++
++   1. Definitions.
++
++      "License" shall mean the terms and conditions for use, reproduction,
++      and distribution as defined by Sections 1 through 9 of this document.
++
++      "Licensor" shall mean the copyright owner or entity authorized by
++      the copyright owner that is granting the License.
++
++      "Legal Entity" shall mean the union of the acting entity and all
++      other entities that control, are controlled by, or are under common
++      control with that entity. For the purposes of this definition,
++      "control" means (i) the power, direct or indirect, to cause the
++      direction or management of such entity, whether by contract or
++      otherwise, or (ii) ownership of fifty percent (50%) or more of the
++      outstanding shares, or (iii) beneficial ownership of such entity.
++
++      "You" (or "Your") shall mean an individual or Legal Entity
++      exercising permissions granted by this License.
++
++      "Source" form shall mean the preferred form for making modifications,
++      including but not limited to software source code, documentation
++      source, and configuration files.
++
++      "Object" form shall mean any form resulting from mechanical
++      transformation or translation of a Source form, including but
++      not limited to compiled object code, generated documentation,
++      and conversions to other media types.
++
++      "Work" shall mean the work of authorship, whether in Source or
++      Object form, made available under the License, as indicated by a
++      copyright notice that is included in or attached to the work
++      (an example is provided in the Appendix below).
++
++      "Derivative Works" shall mean any work, whether in Source or Object
++      form, that is based on (or derived from) the Work and for which the
++      editorial revisions, annotations, elaborations, or other modifications
++      represent, as a whole, an original work of authorship. For the purposes
++      of this License, Derivative Works shall not include works that remain
++      separable from, or merely link (or bind by name) to the interfaces of,
++      the Work and Derivative Works thereof.
++
++      "Contribution" shall mean any work of authorship, including
++      the original version of the Work and any modifications or additions
++      to that Work or Derivative Works thereof, that is intentionally
++      submitted to Licensor for inclusion in the Work by the copyright owner
++      or by an individual or Legal Entity authorized to submit on behalf of
++      the copyright owner. For the purposes of this definition, "submitted"
++      means any form of electronic, verbal, or written communication sent
++      to the Licensor or its representatives, including but not limited to
++      communication on electronic mailing lists, source code control systems,
++      and issue tracking systems that are managed by, or on behalf of, the
++      Licensor for the purpose of discussing and improving the Work, but
++      excluding communication that is conspicuously marked or otherwise
++      designated in writing by the copyright owner as "Not a Contribution."
++
++      "Contributor" shall mean Licensor and any individual or Legal Entity
++      on behalf of whom a Contribution has been received by Licensor and
++      subsequently incorporated within the Work.
++
++   2. Grant of Copyright License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      copyright license to reproduce, prepare Derivative Works of,
++      publicly display, publicly perform, sublicense, and distribute the
++      Work and such Derivative Works in Source or Object form.
++
++   3. Grant of Patent License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      (except as stated in this section) patent license to make, have made,
++      use, offer to sell, sell, import, and otherwise transfer the Work,
++      where such license applies only to those patent claims licensable
++      by such Contributor that are necessarily infringed by their
++      Contribution(s) alone or by combination of their Contribution(s)
++      with the Work to which such Contribution(s) was submitted. If You
++      institute patent litigation against any entity (including a
++      cross-claim or counterclaim in a lawsuit) alleging that the Work
++      or a Contribution incorporated within the Work constitutes direct
++      or contributory patent infringement, then any patent licenses
++      granted to You under this License for that Work shall terminate
++      as of the date such litigation is filed.
++
++   4. Redistribution. You may reproduce and distribute copies of the
++      Work or Derivative Works thereof in any medium, with or without
++      modifications, and in Source or Object form, provided that You
++      meet the following conditions:
++
++      (a) You must give any other recipients of the Work or
++          Derivative Works a copy of this License; and
++
++      (b) You must cause any modified files to carry prominent notices
++          stating that You changed the files; and
++
++      (c) You must retain, in the Source form of any Derivative Works
++          that You distribute, all copyright, patent, trademark, and
++          attribution notices from the Source form of the Work,
++          excluding those notices that do not pertain to any part of
++          the Derivative Works; and
++
++      (d) If the Work includes a "NOTICE" text file as part of its
++          distribution, then any Derivative Works that You distribute must
++          include a readable copy of the attribution notices contained
++          within such NOTICE file, excluding those notices that do not
++          pertain to any part of the Derivative Works, in at least one
++          of the following places: within a NOTICE text file distributed
++          as part of the Derivative Works; within the Source form or
++          documentation, if provided along with the Derivative Works; or,
++          within a display generated by the Derivative Works, if and
++          wherever such third-party notices normally appear. The contents
++          of the NOTICE file are for informational purposes only and
++          do not modify the License. You may add Your own attribution
++          notices within Derivative Works that You distribute, alongside
++          or as an addendum to the NOTICE text from the Work, provided
++          that such additional attribution notices cannot be construed
++          as modifying the License.
++
++      You may add Your own copyright statement to Your modifications and
++      may provide additional or different license terms and conditions
++      for use, reproduction, or distribution of Your modifications, or
++      for any such Derivative Works as a whole, provided Your use,
++      reproduction, and distribution of the Work otherwise complies with
++      the conditions stated in this License.
++
++   5. Submission of Contributions. Unless You explicitly state otherwise,
++      any Contribution intentionally submitted for inclusion in the Work
++      by You to the Licensor shall be under the terms and conditions of
++      this License, without any additional terms or conditions.
++      Notwithstanding the above, nothing herein shall supersede or modify
++      the terms of any separate license agreement you may have executed
++      with Licensor regarding such Contributions.
++
++   6. Trademarks. This License does not grant permission to use the trade
++      names, trademarks, service marks, or product names of the Licensor,
++      except as required for reasonable and customary use in describing the
++      origin of the Work and reproducing the content of the NOTICE file.
++
++   7. Disclaimer of Warranty. Unless required by applicable law or
++      agreed to in writing, Licensor provides the Work (and each
++      Contributor provides its Contributions) on an "AS IS" BASIS,
++      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
++      implied, including, without limitation, any warranties or conditions
++      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
++      PARTICULAR PURPOSE. You are solely responsible for determining the
++      appropriateness of using or redistributing the Work and assume any
++      risks associated with Your exercise of permissions under this License.
++
++   8. Limitation of Liability. In no event and under no legal theory,
++      whether in tort (including negligence), contract, or otherwise,
++      unless required by applicable law (such as deliberate and grossly
++      negligent acts) or agreed to in writing, shall any Contributor be
++      liable to You for damages, including any direct, indirect, special,
++      incidental, or consequential damages of any character arising as a
++      result of this License or out of the use or inability to use the
++      Work (including but not limited to damages for loss of goodwill,
++      work stoppage, computer failure or malfunction, or any and all
++      other commercial damages or losses), even if such Contributor
++      has been advised of the possibility of such damages.
++
++   9. Accepting Warranty or Additional Liability. While redistributing
++      the Work or Derivative Works thereof, You may choose to offer,
++      and charge a fee for, acceptance of support, warranty, indemnity,
++      or other liability obligations and/or rights consistent with this
++      License. However, in accepting such obligations, You may act only
++      on Your own behalf and on Your sole responsibility, not on behalf
++      of any other Contributor, and only if You agree to indemnify,
++      defend, and hold each Contributor harmless for any liability
++      incurred by, or claims asserted against, such Contributor by reason
++      of your accepting any such warranty or additional liability.
++
++   END OF TERMS AND CONDITIONS
++
++   APPENDIX: How to apply the Apache License to your work.
++
++      To apply the Apache License to your work, attach the following
++      boilerplate notice, with the fields enclosed by brackets "[]"
++      replaced with your own identifying information. (Don't include
++      the brackets!)  The text should be enclosed in the appropriate
++      comment syntax for the file format. We also recommend that a
++      file or class name and description of purpose be included on the
++      same "printed page" as the copyright notice for easier
++      identification within third-party archives.
++
++   Copyright [yyyy] [name of copyright owner]
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++   you may not use this file except in compliance with the License.
++   You may obtain a copy of the License at
++
++       http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing, software
++   distributed under the License is distributed on an "AS IS" BASIS,
++   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++   See the License for the specific language governing permissions and
++   limitations under the License.
+--- /dev/null
++++ b/modules/nav_conversion/gimbal_protocol.c
+@@ -0,0 +1,31 @@
++#include "rm_chassis_comm/gimbal_protocol.h"
++#include <math.h>
++#include <float.h>
++#include <string.h>
++typedef char rm_gimbal_binary32_required[(sizeof(float)==4&&FLT_RADIX==2&&FLT_MANT_DIG==24&&FLT_MAX_EXP==128)?1:-1];
++static uint8_t c8(const uint8_t*p,size_t n){uint8_t c=255;for(size_t i=0;i<n;i++){c^=p[i];for(unsigned b=0;b<8;b++)c=(uint8_t)((c>>1)^((c&1)?0x8c:0));}return c;}
++static uint16_t c16(const uint8_t*p,size_t n){uint16_t c=65535;for(size_t i=0;i<n;i++){c^=p[i];for(unsigned b=0;b<8;b++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0));}return c;}
++static uint16_t r16(const uint8_t*p){return (uint16_t)(p[0]|((uint16_t)p[1]<<8));}
++static uint32_t r32(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);}
++static void w16(uint8_t*p,uint16_t x){p[0]=(uint8_t)x;p[1]=(uint8_t)(x>>8);}
++static void w32(uint8_t*p,uint32_t x){for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(x>>(8*i));}
++static float rf(const uint8_t*p){uint32_t x=r32(p);float f;memcpy(&f,&x,4);return f;}
++static void wf(uint8_t*p,float f){uint32_t x;memcpy(&x,&f,4);w32(p,x);}
++static int valid(const rm_gimbal_t*g){return g&&g->route==2&&!(g->status&~15u)&&
++ (uint32_t)(g->uptime_ms-g->sample_ms)==g->sample_age_ms&&g->sample_age_ms<=500&&
++ isfinite(g->yaw)&&isfinite(g->pitch)&&isfinite(g->yaw_rate)&&isfinite(g->pitch_rate)&&
++ fabsf(g->yaw)<=3.141593f&&fabsf(g->pitch)<=3.141593f&&
++ (!(g->status&RM_GIMBAL_YAW_VALID)?(g->yaw==0&&g->yaw_rate==0):1)&&
++ (!(g->status&RM_GIMBAL_PITCH_VALID)?(g->pitch==0&&g->pitch_rate==0):1);}
++int rm_encode_gimbal(const rm_gimbal_t*g,uint8_t out[RM_GIMBAL_FRAME_SIZE]){
++ if(!out||!valid(g))return 0;
++ memset(out,0,RM_GIMBAL_FRAME_SIZE);out[0]=0x5a;out[1]=40;out[2]=RM_ID_GIMBAL;out[3]=c8(out,3);
++ w32(out+4,g->uptime_ms);out[8]=1;out[9]=g->route;w16(out+10,g->sequence);w16(out+12,g->status);
++ w16(out+14,g->sample_age_ms);w32(out+16,g->session);w32(out+20,g->sample_ms);w32(out+24,g->command_received_ms);
++ wf(out+28,g->yaw);wf(out+32,g->pitch);wf(out+36,g->yaw_rate);wf(out+40,g->pitch_rate);w16(out+44,c16(out,44));return 1;}
++int rm_decode_gimbal(const uint8_t*p,size_t n,rm_gimbal_t*out){rm_gimbal_t g;
++ if(!p||!out||n!=RM_GIMBAL_FRAME_SIZE||p[0]!=0x5a||p[1]!=40||p[2]!=RM_ID_GIMBAL||p[3]!=c8(p,3)||p[8]!=1||r16(p+44)!=c16(p,44))return 0;
++ g.uptime_ms=r32(p+4);g.route=p[9];g.sequence=r16(p+10);g.status=r16(p+12);g.sample_age_ms=r16(p+14);g.session=r32(p+16);
++ g.sample_ms=r32(p+20);g.command_received_ms=r32(p+24);g.yaw=rf(p+28);g.pitch=rf(p+32);g.yaw_rate=rf(p+36);g.pitch_rate=rf(p+40);
++ if(!valid(&g))return 0;
++ *out=g;return 1;}
+--- /dev/null
++++ b/modules/nav_conversion/mcu_link.c
+@@ -0,0 +1,74 @@
++#include "rm_chassis_comm/mcu_link.h"
++#include <math.h>
++#include <string.h>
++static bool safe(const rm_mcu_link_t*l){return l->ready&&!l->estop&&!l->manual&&!l->fault_mask;}
++void rm_mcu_init(rm_mcu_link_t*l,uint8_t route){if(!l)return;
++ memset(l,0,sizeof(*l));
++ l->route=route;
++ l->requires_stop=true;}
++void rm_mcu_set_safety(rm_mcu_link_t*l,bool ready,bool estop,bool manual,uint16_t fault){if(!l)return;
++ l->ready=ready;
++ l->estop=estop;
++ l->manual=manual;
++ l->fault_mask=fault;
++ if(!safe(l)){l->active=false;
++ l->requires_stop=true;}}
++void rm_mcu_get_output(rm_mcu_link_t*l,uint32_t now,rm_output_t*out){if(!out)return;
++ memset(out,0,sizeof(*out));
++ if(!l)return;
++ if(l->active&&(uint32_t)(now-l->received_ms)>=l->command.ttl_ms){l->active=false;
++ l->requires_stop=true;
++ l->timed_out=true;}
++ if(!safe(l)){l->active=false;
++ l->requires_stop=true;}
++ if(l->active&&!l->requires_stop){out->enabled=true;
++ out->vx=l->command.vx;
++ out->vy=l->command.vy;
++ out->wz=l->command.wz;}}
++int rm_mcu_receive(rm_mcu_link_t*l,const uint8_t*p,size_t n,uint32_t now){rm_command_t c;rm_output_t ignored;uint16_t diff;
++ if(!l||!rm_decode_command(p,n,&c)||c.route!=l->route)return 0;
++ rm_mcu_get_output(l,now,&ignored); /* Expiry is enforced even if output polling was delayed. */
++ if(!(c.flags&RM_FLAG_ENABLE)){
++  /* STOP always removes output. A replay from this session must not roll the
++   * sequence baseline backwards or unlock a timeout/safety latch. */
++  l->active=false;
++  if(l->ack_valid&&c.session==l->command.session){
++    diff=(uint16_t)(c.sequence-l->command.sequence);
++    if(!diff||diff>=32768u){l->requires_stop=true;return 0;}
++  }
++  l->command=c;
++ l->received_ms=now;
++ l->ack_valid=true;
++ l->active=false;
++ l->timed_out=false;
++  l->requires_stop=!safe(l);
++ return 1;
++ }
++ if(!l->ack_valid||l->requires_stop||!safe(l)||c.session!=l->command.session)return 0;
++ diff=(uint16_t)(c.sequence-l->command.sequence);
++ if(!diff||diff>=32768u)return 0;
++ l->command=c;
++ l->received_ms=now;
++ l->active=true;
++ l->timed_out=false;
++ return 1;}
++void rm_mcu_feedback(rm_mcu_link_t*l,uint32_t now,bool valid,float x,float y,float z,rm_feedback_t*out){rm_output_t current;
++ if(!l||!out)return;
++ rm_mcu_get_output(l,now,&current);
++ memset(out,0,sizeof(*out));
++ out->uptime_ms=now;
++ out->route=l->route;
++ out->session=l->ack_valid?l->command.session:0u;
++ out->sequence=l->ack_valid?l->command.sequence:0;
++ out->fault_mask=l->fault_mask;
++ if(l->ready)out->status|=RM_STATUS_READY;
++ if(current.enabled)out->status|=RM_STATUS_ACTIVE;
++ if(l->estop)out->status|=RM_STATUS_ESTOP;
++ if(l->manual)out->status|=RM_STATUS_MANUAL;
++ if(l->timed_out)out->status|=RM_STATUS_TIMEOUT;
++ if(l->ack_valid)out->status|=RM_STATUS_ACK_VALID;
++ if(valid&&isfinite(x)&&isfinite(y)&&isfinite(z)&&fabsf(x)<=20&&fabsf(y)<=20&&fabsf(z)<=100){
++  out->status|=RM_STATUS_MEASURED;
++ out->vx=x;
++ out->vy=y;
++ out->wz=z;}}
+--- /dev/null
++++ b/modules/nav_conversion/nav_can.c
+@@ -0,0 +1,98 @@
++#include "nav_can.h"
++#include <math.h>
++#include <string.h>
++static void w16(uint8_t *p,uint16_t v) { p[0]=(uint8_t)v;p[1]=(uint8_t)(v>>8); }
++static void w32(uint8_t *p,uint32_t v) { for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i)); }
++static uint16_t r16(const uint8_t *p) { return (uint16_t)p[0]|((uint16_t)p[1]<<8); }
++static int32_t s16(const uint8_t *p) { uint16_t v=r16(p);return v>=32768?(int32_t)v-65536:v; }
++static uint32_t r32(const uint8_t *p) { return (uint32_t)r16(p)|((uint32_t)r16(p+2)<<16); }
++uint16_t nc_crc(const uint8_t *p,unsigned n)
++{
++    uint16_t c=0xffff;
++    while(n--) { c^=*p++;for(unsigned i=0;i<8;i++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0)); }
++    return c;
++}
++static void seal(nc_group_t *g,uint32_t uptime,uint16_t seq)
++{
++    uint8_t bytes[20];memcpy(bytes,g->data,16);w32(bytes+16,uptime);
++    w32(g->data[2],uptime);w16(g->data[2]+4,nc_crc(bytes,sizeof(bytes)));w16(g->data[2]+6,seq);
++}
++static bool sealed(const nc_group_t *g)
++{
++    uint8_t bytes[20];memcpy(bytes,g->data,16);memcpy(bytes+16,g->data[2],4);
++    return r16(g->data[2]+6)==r16(g->data[0]+4) && r16(g->data[2]+4)==nc_crc(bytes,20);
++}
++static bool command_ok(const rm_command_t *c)
++{
++    uint8_t test[RM_FRAME_SIZE];
++    return c && c->route==2 && rm_encode_command(c,test) &&
++        c->ttl_ms<=NC_MAX_TTL_MS && hypotf(c->vx,c->vy)<=0.300001f && fabsf(c->wz)<=0.500001f;
++}
++static void velocity(uint8_t *p,float vx,float vy,float wz,bool feedback)
++{
++    float v[3]={vx,vy,wz};
++    for(unsigned i=0;i<3;i++) {
++        /* Commands round toward zero so quantization cannot increase speed. */
++        int32_t q=(int32_t)(feedback?roundf(v[i]*1000.0f):truncf(v[i]*1000.0f));
++        w16(p+2*i,(uint16_t)q);
++    }
++}
++bool nc_command_group(const rm_command_t *c,nc_group_t *g)
++{
++    if(!g||!command_ok(c))return false;
++    memset(g,0,sizeof(*g));g->base=NC_COMMAND_BASE;
++    w32(g->data[0],c->session);w16(g->data[0]+4,c->sequence);w16(g->data[0]+6,c->ttl_ms);
++    velocity(g->data[1],c->vx,c->vy,c->wz,false);w16(g->data[1]+6,NC_VERSION|c->flags);
++    seal(g,c->uptime_ms,c->sequence);return true;
++}
++bool nc_command_decode(const nc_group_t *g,rm_command_t *c)
++{
++    if(!g||!c||g->base!=NC_COMMAND_BASE||!sealed(g)||(r16(g->data[1]+6)&0xff00)!=NC_VERSION)return false;
++    rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0]+4);
++    value.ttl_ms=r16(g->data[0]+6);value.flags=r16(g->data[1]+6)&255;
++    value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/1000.0f;
++    value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
++}
++bool nc_feedback_group(const rm_feedback_t *f,nc_group_t *g)
++{
++    uint8_t bytes[RM_FRAME_SIZE];
++    if(!g||!f||f->route!=2||!rm_encode_feedback(f,bytes)||fabsf(f->wz)>32.767f)return false;
++    memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
++    w32(g->data[0],f->session);w16(g->data[0]+4,f->sequence);w16(g->data[0]+6,NC_VERSION|f->status);
++    velocity(g->data[1],f->vx,f->vy,f->wz,true);w16(g->data[1]+6,f->fault_mask);
++    seal(g,f->uptime_ms,f->sequence);return true;
++}
++bool nc_feedback_decode(const nc_group_t *g,rm_feedback_t *f)
++{
++    if(!g||!f||g->base!=NC_FEEDBACK_BASE||!sealed(g)||(r16(g->data[0]+6)&0xff00)!=NC_VERSION)return false;
++    rm_feedback_t value={0};uint8_t bytes[RM_FRAME_SIZE];value.route=2;
++    value.session=r32(g->data[0]);value.sequence=r16(g->data[0]+4);value.status=r16(g->data[0]+6)&255;
++    value.vx=s16(g->data[1])/1000.0f;value.vy=s16(g->data[1]+2)/1000.0f;value.wz=s16(g->data[1]+4)/1000.0f;
++    value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
++    if(!rm_encode_feedback(&value,bytes))return false;
++    *f=value;return true;
++}
++bool nc_rx_push(nc_rx_t *r,uint16_t base,uint32_t id,bool extended,bool rtr,unsigned dlc,
++                const uint8_t *bytes,uint32_t now,nc_group_t *out)
++{
++    if(!r||!out||id<base||id>base+2u)return false;
++    if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
++    if(id==base){r->active=1;r->next=0;r->started_ms=now;r->group.base=base;}
++    if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return false;}
++    memcpy(r->group.data[r->next++],bytes,8);
++    if(r->next!=3)return false;
++    r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
++}
++bool nc_tx_start(nc_tx_t *t,const nc_group_t *g,uint32_t now)
++{
++    if(!t||!g||t->active)return false;
++    t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
++}
++bool nc_tx_peek(nc_tx_t *t,uint32_t now,uint16_t *id,uint8_t bytes[8])
++{
++    if(!t||!id||!bytes)return false;
++    if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
++    if(!t->active)return false;
++    *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
++}
++void nc_tx_commit(nc_tx_t *t){if(t&&t->active&&++t->next==3)t->active=0;}
+--- /dev/null
++++ b/modules/nav_conversion/nav_can.h
+@@ -0,0 +1,30 @@
++#ifndef NAV_CAN_H
++#define NAV_CAN_H
++#include "rm_chassis_comm/protocol.h"
++#include <stdbool.h>
++#define NC_COMMAND_BASE 0x330u
++#define NC_FEEDBACK_BASE 0x338u
++#define NC_VERSION 0x0100u
++#define NC_GROUP_MS 10u
++#define NC_TX_MS 8u
++#define NC_MAX_TTL_MS 150u
++#define NC_FAULT_LOCK 0x0001u
++#define NC_FAULT_RC 0x0002u
++#define NC_FAULT_MOTOR 0x0004u
++#define NC_FAULT_UNITS 0x0008u
++#define NC_FAULT_RX 0x0010u
++typedef struct { uint8_t data[3][8]; uint16_t base; } nc_group_t;
++typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_rx_t;
++typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_tx_t;
++uint16_t nc_crc(const uint8_t *,unsigned);
++bool nc_command_group(const rm_command_t *,nc_group_t *);
++bool nc_command_decode(const nc_group_t *,rm_command_t *);
++bool nc_feedback_group(const rm_feedback_t *,nc_group_t *);
++bool nc_feedback_decode(const nc_group_t *,rm_feedback_t *);
++/* Unrelated CAN IDs leave receiver intact. Relevant malformed traffic aborts it. */
++bool nc_rx_push(nc_rx_t *,uint16_t base,uint32_t id,bool extended,bool rtr,
++                unsigned dlc,const uint8_t *,uint32_t now,nc_group_t *);
++bool nc_tx_start(nc_tx_t *,const nc_group_t *,uint32_t now);
++bool nc_tx_peek(nc_tx_t *,uint32_t now,uint16_t *id,uint8_t bytes[8]);
++void nc_tx_commit(nc_tx_t *);
++#endif
+--- /dev/null
++++ b/modules/nav_conversion/nav_can_hal.h
+@@ -0,0 +1,32 @@
++#ifndef NAV_CAN_HAL_H
++#define NAV_CAN_HAL_H
++#include "nav_can.h"
++#include "bsp_can.h"
++/* Own the hardware mailboxes until completion as well as the software group.
++ * NART alone cannot remove a frame waiting for a busy bus to become idle. */
++/* Each board selects its local controller; the wire protocol is identical. */
++typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;} nch_tx_t;
++static inline void nch_reset(nch_tx_t *s)
++{
++    if(s->mailboxes)HAL_CAN_AbortTxRequest(s->can,s->mailboxes);
++    s->tx.active=0;
++}
++static inline void nch_pump(nch_tx_t *s,uint32_t now)
++{
++    uint32_t pending=0;
++    for(uint32_t bit=1;bit<=4;bit<<=1)
++        if((s->mailboxes&bit)&&HAL_CAN_IsTxMessagePending(s->can,bit))pending|=bit;
++    s->mailboxes=pending;
++    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){nch_reset(s);return;}
++    uint8_t bytes[8];uint16_t id;uint32_t mailbox;
++    CAN_TxHeaderTypeDef h={0};h.IDE=CAN_ID_STD;h.RTR=CAN_RTR_DATA;h.DLC=8;
++    while(HAL_CAN_GetTxMailboxesFreeLevel(s->can)&&nc_tx_peek(&s->tx,now,&id,bytes)){
++        h.StdId=id;
++        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK)break;
++        s->mailboxes|=mailbox;nc_tx_commit(&s->tx);
++    }
++}
++static inline bool nch_busy(const nch_tx_t *s){return s->mailboxes||s->tx.active;}
++static inline bool nch_start(nch_tx_t *s,const nc_group_t *g,uint32_t now)
++{return !nch_busy(s)&&nc_tx_start(&s->tx,g,now);}
++#endif
+--- /dev/null
++++ b/modules/nav_conversion/nav_gateway.c
+@@ -0,0 +1,24 @@
++#include "nav_gateway.h"
++#include <string.h>
++void ng_init(nav_gateway_t *g)
++{
++    memset(g,0,sizeof(*g));rm_mcu_init(&g->gate,2);
++    /* This gate enforces transport/session freshness only. Actual RC/actuator
++     * authorization is independently evaluated by the chassis board. */
++    rm_mcu_set_safety(&g->gate,true,false,false,0);
++}
++bool ng_command(nav_gateway_t *g,const uint8_t usb[RM_FRAME_SIZE],uint32_t received,
++                uint32_t now,nc_group_t *out)
++{
++    rm_command_t c;uint8_t normalized[RM_FRAME_SIZE];
++    if(!g||!out||!rm_decode_command(usb,RM_FRAME_SIZE,&c)||c.route!=2)return false;
++    uint32_t age=now-received;
++    if(age>NC_GROUP_MS)return false; /* No stale queue replay, including STOP ACK. */
++    if(c.flags&RM_FLAG_ENABLE){
++        if(c.ttl_ms>NC_MAX_TTL_MS||c.ttl_ms<age+NC_GROUP_MS+20u)return false;
++        c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
++    }
++    if(!nc_command_group(&c,out)||!rm_encode_command(&c,normalized))return false;
++    if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
++    g->command_received_ms=received;return true;
++}
+--- /dev/null
++++ b/modules/nav_conversion/nav_gateway.h
+@@ -0,0 +1,9 @@
++#ifndef NAV_GATEWAY_H
++#define NAV_GATEWAY_H
++#include "nav_can.h"
++#include "rm_chassis_comm/mcu_link.h"
++typedef struct {rm_mcu_link_t gate;uint32_t command_received_ms;} nav_gateway_t;
++void ng_init(nav_gateway_t *);
++bool ng_command(nav_gateway_t *,const uint8_t usb[RM_FRAME_SIZE],uint32_t received,
++                uint32_t now,nc_group_t *);
++#endif
+--- /dev/null
++++ b/modules/nav_conversion/nav_usb_mux.c
+@@ -0,0 +1,29 @@
++#include "nav_usb_mux.h"
++#include "nav_can.h"
++#include <string.h>
++static void drop(nav_mux_t *m,unsigned n){m->used-=n;memmove(m->bytes,m->bytes+n,m->used);}
++void nav_mux_push(nav_mux_t *m,uint8_t byte,uint32_t now,nav_usb_frame_fn callback,void *context)
++{
++    if((uint32_t)(now-m->last_ms)>50)m->used=0;
++    m->last_ms=now;if(m->used==sizeof(m->bytes))drop(m,1);
++    if(!m->used)m->first_ms=now;
++    m->bytes[m->used++]=byte;
++    while(m->used){
++        unsigned n=0;
++        if(m->bytes[0]=='S'){
++            if(m->used<2)return;
++            if(m->bytes[1]=='P')n=29;
++        }else if(m->bytes[0]==0x5a){
++            if(m->used<3)return;
++            if(m->bytes[1]==28&&m->bytes[2]==RM_ID_COMMAND)n=34;
++        }
++        if(!n){drop(m,1);continue;}
++        if(m->used<n)return;
++        rm_command_t command;
++        bool valid=n==29?nc_crc(m->bytes,27)==((uint16_t)m->bytes[27]|((uint16_t)m->bytes[28]<<8)):
++            rm_decode_command(m->bytes,34,&command);
++        if(!valid){drop(m,1);continue;}
++        if(callback)callback(m->bytes,n,m->first_ms,context);
++        drop(m,n);
++    }
++}
+--- /dev/null
++++ b/modules/nav_conversion/nav_usb_mux.h
+@@ -0,0 +1,11 @@
++#ifndef NAV_USB_MUX_H
++#define NAV_USB_MUX_H
++#include <stdint.h>
++#include <stddef.h>
++#include "rm_chassis_comm/protocol.h"
++typedef struct {uint8_t bytes[64];unsigned used;uint32_t last_ms,first_ms;} nav_mux_t;
++typedef void (*nav_usb_frame_fn)(const uint8_t *,unsigned,uint32_t,void *);
++/* Direction PC -> board only: SP=29, navigation=34. A valid whole frame is
++ * consumed before scanning payload bytes for a new header. */
++void nav_mux_push(nav_mux_t *,uint8_t,uint32_t,nav_usb_frame_fn,void *);
++#endif
+--- /dev/null
++++ b/modules/nav_conversion/protocol.c
+@@ -0,0 +1,65 @@
++#include "rm_chassis_comm/protocol.h"
++#include <float.h>
++#include <math.h>
++#include <string.h>
++#if FLT_RADIX != 2 || FLT_MANT_DIG != 24 || FLT_MAX_EXP != 128
++#error IEEE754 binary32 float required
++#endif
++typedef char rm_float_must_be_four_bytes[(sizeof(float)==4)?1:-1];
++static uint8_t crc8(const uint8_t *p,size_t n){uint8_t c=255;size_t i;unsigned b;
++ for(i=0;i<n;i++){c^=p[i];for(b=0;b<8;b++)c=(uint8_t)((c>>1)^((c&1)?0x8c:0));}return c;}
++static uint16_t crc16(const uint8_t *p,size_t n){uint16_t c=65535;size_t i;unsigned b;
++ for(i=0;i<n;i++){c^=p[i];for(b=0;b<8;b++)c=(uint16_t)((c>>1)^((c&1)?0x8408:0));}return c;}
++static uint16_t u16(const uint8_t*p){return (uint16_t)(p[0]|((uint16_t)p[1]<<8));}
++static uint32_t u32(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);}
++static void w16(uint8_t*p,uint16_t v){p[0]=(uint8_t)v;p[1]=(uint8_t)(v>>8);}
++static void w32(uint8_t*p,uint32_t v){unsigned i;for(i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i));}
++static float f32(const uint8_t*p){uint32_t v=u32(p);float f;
++ memcpy(&f,&v,4);
++ return f;}
++static void wf32(uint8_t*p,float f){uint32_t v;
++ memcpy(&v,&f,4);w32(p,v);}
++static int route_ok(uint8_t r){return r==1||r==2;}
++static int velocity_ok(float x,float y,float z){return isfinite(x)&&isfinite(y)&&isfinite(z)&&fabsf(x)<=20&&fabsf(y)<=20&&fabsf(z)<=100;}
++static int frame_ok(const uint8_t*p,size_t n){return p&&n==RM_FRAME_SIZE&&p[0]==0x5a&&p[1]==28&&
++ (p[2]==RM_ID_COMMAND||p[2]==RM_ID_FEEDBACK)&&p[3]==crc8(p,3)&&u16(p+32)==crc16(p,32);}
++static int command_ok(const rm_command_t*c){return c&&route_ok(c->route)&&c->session&&!(c->flags&~RM_FLAG_ENABLE)&&
++ velocity_ok(c->vx,c->vy,c->wz)&&((c->flags&RM_FLAG_ENABLE)?(c->ttl_ms>=20&&c->ttl_ms<=250):
++ (c->ttl_ms==0&&c->vx==0&&c->vy==0&&c->wz==0));}
++static int feedback_ok(const rm_feedback_t*f){return f&&route_ok(f->route)&&(!(f->status&RM_STATUS_ACK_VALID)||f->session)&&!(f->status&~127u)&&
++ velocity_ok(f->vx,f->vy,f->wz)&&((f->status&RM_STATUS_MEASURED)||(f->vx==0&&f->vy==0&&f->wz==0));}
++static void base(uint8_t*p,uint8_t id,uint32_t uptime,uint8_t route,uint16_t seq,uint16_t a,uint16_t b,uint32_t session,float x,float y,float z){
++ memset(p,0,RM_FRAME_SIZE);p[0]=0x5a;p[1]=28;p[2]=id;p[3]=crc8(p,3);w32(p+4,uptime);p[8]=1;p[9]=route;
++ w16(p+10,seq);w16(p+12,a);w16(p+14,b);w32(p+16,session);wf32(p+20,x);wf32(p+24,y);wf32(p+28,z);w16(p+32,crc16(p,32));}
++int rm_encode_command(const rm_command_t*c,uint8_t out[RM_FRAME_SIZE]){if(!out||!command_ok(c))return 0;
++ base(out,RM_ID_COMMAND,c->uptime_ms,c->route,c->sequence,c->ttl_ms,c->flags,c->session,c->vx,c->vy,c->wz);
++ return 1;}
++int rm_decode_command(const uint8_t*p,size_t n,rm_command_t*out){rm_command_t c;
++ if(!out||!frame_ok(p,n)||p[2]!=RM_ID_COMMAND||p[8]!=1)return 0;
++ c.uptime_ms=u32(p+4);c.route=p[9];c.sequence=u16(p+10);c.ttl_ms=u16(p+12);c.flags=u16(p+14);c.session=u32(p+16);
++ c.vx=f32(p+20);c.vy=f32(p+24);c.wz=f32(p+28);
++ if(!command_ok(&c))return 0;
++ *out=c;
++ return 1;}
++int rm_encode_feedback(const rm_feedback_t*f,uint8_t out[RM_FRAME_SIZE]){if(!out||!feedback_ok(f))return 0;
++ base(out,RM_ID_FEEDBACK,f->uptime_ms,f->route,f->sequence,f->status,f->fault_mask,f->session,f->vx,f->vy,f->wz);
++ return 1;}
++int rm_decode_feedback(const uint8_t*p,size_t n,rm_feedback_t*out){rm_feedback_t f;
++ if(!out||!frame_ok(p,n)||p[2]!=RM_ID_FEEDBACK||p[8]!=1)return 0;
++ f.uptime_ms=u32(p+4);f.route=p[9];f.sequence=u16(p+10);f.status=u16(p+12);f.fault_mask=u16(p+14);f.session=u32(p+16);
++ f.vx=f32(p+20);f.vy=f32(p+24);f.wz=f32(p+28);
++ if(!feedback_ok(&f))return 0;
++ *out=f;
++ return 1;}
++void rm_parser_init(rm_parser_t*p){if(p)p->used=0;}
++int rm_parser_push(rm_parser_t*p,uint8_t b,uint8_t out[RM_FRAME_SIZE]){if(!p||!out)return 0;
++ if(p->used>=RM_FRAME_SIZE)p->used=0;
++ p->data[p->used++]=b;
++ while(p->used){
++  if(p->data[0]!=0x5a||(p->used>=2&&p->data[1]!=28)||(p->used>=3&&p->data[2]!=RM_ID_COMMAND&&p->data[2]!=RM_ID_FEEDBACK)||
++    (p->used>=4&&p->data[3]!=crc8(p->data,3))){memmove(p->data,p->data+1,--p->used);continue;}
++  if(p->used<RM_FRAME_SIZE)return 0;
++  if(frame_ok(p->data,p->used)){memcpy(out,p->data,RM_FRAME_SIZE);p->used=0;
++ return 1;}
++  memmove(p->data,p->data+1,--p->used);
++ }return 0;}
+--- /dev/null
++++ b/modules/nav_conversion/rm_chassis_comm/gimbal_protocol.h
+@@ -0,0 +1,25 @@
++#ifndef RM_GIMBAL_PROTOCOL_H
++#define RM_GIMBAL_PROTOCOL_H
++#include <stdint.h>
++#include <stddef.h>
++#ifdef __cplusplus
++extern "C" {
++#endif
++#define RM_GIMBAL_FRAME_SIZE 46u
++#define RM_ID_GIMBAL 0x22u
++#define RM_GIMBAL_YAW_VALID 1u
++#define RM_GIMBAL_PITCH_VALID 2u
++#define RM_GIMBAL_CALIBRATED 4u
++#define RM_GIMBAL_FAULT 8u
++typedef struct {
++ uint32_t uptime_ms,sample_ms,command_received_ms,session;
++ uint16_t sequence,status,sample_age_ms;
++ uint8_t route;
++ float yaw,pitch,yaw_rate,pitch_rate;
++} rm_gimbal_t;
++int rm_encode_gimbal(const rm_gimbal_t*,uint8_t out[RM_GIMBAL_FRAME_SIZE]);
++int rm_decode_gimbal(const uint8_t*,size_t,rm_gimbal_t*);
++#ifdef __cplusplus
++}
++#endif
++#endif
+--- /dev/null
++++ b/modules/nav_conversion/rm_chassis_comm/mcu_link.h
+@@ -0,0 +1,20 @@
++#ifndef RM_CHASSIS_COMM_MCU_LINK_H
++#define RM_CHASSIS_COMM_MCU_LINK_H
++#include <stdbool.h>
++#include "rm_chassis_comm/protocol.h"
++#ifdef __cplusplus
++extern "C" {
++#endif
++typedef struct {bool enabled;float vx,vy,wz;} rm_output_t;
++/* Single-owner API: caller serializes receive/safety/output/feedback across tasks/ISRs. */
++typedef struct {uint8_t route;bool ready,estop,manual,ack_valid,requires_stop,active,timed_out;
++ uint16_t fault_mask;uint32_t received_ms;rm_command_t command;} rm_mcu_link_t;
++void rm_mcu_init(rm_mcu_link_t*,uint8_t route);
++int rm_mcu_receive(rm_mcu_link_t*,const uint8_t*,size_t,uint32_t now_ms);
++void rm_mcu_set_safety(rm_mcu_link_t*,bool ready,bool estop,bool manual,uint16_t fault_mask);
++void rm_mcu_get_output(rm_mcu_link_t*,uint32_t now_ms,rm_output_t*);
++void rm_mcu_feedback(rm_mcu_link_t*,uint32_t now_ms,bool measured_valid,float vx,float vy,float wz,rm_feedback_t*);
++#ifdef __cplusplus
++}
++#endif
++#endif
+--- /dev/null
++++ b/modules/nav_conversion/rm_chassis_comm/protocol.h
+@@ -0,0 +1,37 @@
++#ifndef RM_CHASSIS_COMM_PROTOCOL_H
++#define RM_CHASSIS_COMM_PROTOCOL_H
++#include <stddef.h>
++#include <stdint.h>
++#ifdef __cplusplus
++extern "C" {
++#endif
++#define RM_FRAME_SIZE 34
++#define RM_PROTOCOL_VERSION 1
++#define RM_ID_COMMAND 0x20
++#define RM_ID_FEEDBACK 0x21
++#define RM_FLAG_ENABLE 1u
++#define RM_STATUS_READY 1u
++#define RM_STATUS_ACTIVE 2u
++#define RM_STATUS_ESTOP 4u
++#define RM_STATUS_MEASURED 8u
++#define RM_STATUS_TIMEOUT 16u
++#define RM_STATUS_MANUAL 32u
++#define RM_STATUS_ACK_VALID 64u
++/* New proposed payload; not binary-compatible with existing PolarBear firmware.
++ * vx/vy in m/s, wz in rad/s; ROS body convention x forward, y left, z up.
++ * len includes uptime: 28. Explicit little-endian integers / IEEE754 binary32. */
++typedef struct {uint32_t uptime_ms,session;uint16_t sequence,ttl_ms,flags;
++ uint8_t route;float vx,vy,wz;} rm_command_t;
++typedef struct {uint32_t uptime_ms,session;uint16_t sequence,status,fault_mask;
++ uint8_t route;float vx,vy,wz;} rm_feedback_t;
++typedef struct {uint8_t data[RM_FRAME_SIZE];size_t used;} rm_parser_t;
++int rm_encode_command(const rm_command_t*,uint8_t out[RM_FRAME_SIZE]);
++int rm_decode_command(const uint8_t*,size_t,rm_command_t*);
++int rm_encode_feedback(const rm_feedback_t*,uint8_t out[RM_FRAME_SIZE]);
++int rm_decode_feedback(const uint8_t*,size_t,rm_feedback_t*);
++void rm_parser_init(rm_parser_t*);
++int rm_parser_push(rm_parser_t*,uint8_t,uint8_t out[RM_FRAME_SIZE]);
++#ifdef __cplusplus
++}
++#endif
++#endif
+--- /dev/null
++++ b/modules/nav_relay/nav_can_adapter.c
+@@ -0,0 +1,85 @@
++#include "nav_can_adapter.h"
++#include "nav_relay_config.h"
++#include "nav_can.h"
++#include "rm_chassis_comm/mcu_link.h"
++#include "bsp_can.h"
++#include "nav_can_hal.h"
++#include "remote_control.h"
++#include <math.h>
++#include <string.h>
++typedef struct {uint8_t bytes[8],dlc;uint16_t id;uint32_t tick;} packet_t;
++static packet_t incoming[16];static volatile uint8_t head,tail,overrun;
++static FS_RC_ctrl_t *rc;static nc_rx_t receiver;
++static nch_tx_t sender={.can=&hcan2}; /* Chassis board keeps CAN2. */
++static rm_mcu_link_t link;static uint32_t feedback_ms;static uint8_t rx_fault;
++volatile uint32_t nav_can_received,nav_can_accepted,nav_can_errors;
++static bool selected(void)
++{
++    return FS_RemoteControlIsOnline()&&rc[TEMP].channel[6]==FS_RC_SW_MID&&rc[TEMP].channel[7]==FS_RC_SW_MID;
++}
++static uint16_t faults(bool motors)
++{
++    return (!NAV_RELAY_ALLOW_MOTION?NC_FAULT_LOCK:0)|(!NAV_AXES_VERIFIED?NC_FAULT_UNITS:0)|
++        (!selected()?NC_FAULT_RC:0)|(!motors?NC_FAULT_MOTOR:0)|(rx_fault?NC_FAULT_RX:0);
++}
++static void safety(bool motors)
++{
++    uint16_t f=faults(motors);
++    rm_mcu_set_safety(&link,f==0,!FS_RemoteControlIsOnline(),!selected(),f);
++}
++static void receive(CANInstance *can)
++{
++    uint8_t next=(head+1)%16;
++    if(next==tail){overrun=1;nav_can_errors++;return;}
++    memcpy(incoming[head].bytes,can->rx_buff,8);incoming[head].dlc=can->rx_len;
++    incoming[head].id=(uint16_t)can->rx_id;incoming[head].tick=HAL_GetTick();__DMB();head=next;nav_can_received++;
++}
++void NavCanInit(void)
++{
++    rm_mcu_init(&link,2);rc=FS_RemoteControlInit(&huart3);
++    for(unsigned i=0;i<3;i++){
++        CAN_Init_Config_s c={.can_handle=&hcan2,.tx_id=NC_FEEDBACK_BASE+i,
++            .rx_id=NC_COMMAND_BASE+i,.can_module_callback=receive};CANRegister(&c);
++    }
++}
++void NavCanCommand(Chassis_Ctrl_Cmd_s *out,int motors_online)
++{
++    uint32_t now=HAL_GetTick();
++    if(overrun){
++        uint32_t irq=__get_PRIMASK();__disable_irq();tail=head;overrun=0;__set_PRIMASK(irq);
++        receiver.active=0;rx_fault=1;
++    }
++    safety(motors_online);
++    while(tail!=head){
++        packet_t p=incoming[tail];__DMB();tail=(tail+1)%16;
++        nc_group_t group;rm_command_t command;uint8_t usb[RM_FRAME_SIZE];
++        if((uint32_t)(now-p.tick)>NC_GROUP_MS){receiver.active=0;rx_fault=1;continue;}
++        if(!nc_rx_push(&receiver,NC_COMMAND_BASE,p.id,false,false,p.dlc,p.bytes,p.tick,&group))continue;
++        if(!nc_command_decode(&group,&command)){nav_can_errors++;continue;}
++        if(!(command.flags&RM_FLAG_ENABLE)){rx_fault=0;safety(motors_online);}
++        if(rm_encode_command(&command,usb)&&rm_mcu_receive(&link,usb,sizeof(usb),receiver.started_ms))nav_can_accepted++;
++    }
++    safety(motors_online);rm_output_t current;rm_mcu_get_output(&link,now,&current);
++    memset(out,0,sizeof(*out));out->chassis_mode=CHASSIS_ZERO_FORCE;
++    if(!current.enabled)return;
++    const float aps_to_mps=6.28318530718f*(RADIUS_WHEEL/1000.0f)/(360.0f*REDUCTION_RATIO_WHEEL);
++    out->vx=current.vx*NAV_RELAY_VX_SIGN/aps_to_mps;
++    out->vy=current.vy*NAV_RELAY_VY_SIGN/aps_to_mps;
++    out->wz=current.wz*NAV_RELAY_WZ_SIGN/(1000.0f*0.01745329252f*aps_to_mps);
++    out->offset_angle=0;out->chassis_speed_buff=100;out->chassis_mode=CHASSIS_NO_FOLLOW;
++}
++static void pump(uint32_t now)
++{
++    nch_pump(&sender,now);
++}
++void NavCanFeedback(const Chassis_Upload_Data_s *measured,int motors_online)
++{
++    uint32_t now=HAL_GetTick();pump(now);
++    if((uint32_t)(now-feedback_ms)<20)return;
++    feedback_ms=now;safety(motors_online);
++    float vx=measured->real_vx*NAV_RELAY_VX_SIGN,vy=measured->real_vy*NAV_RELAY_VY_SIGN;
++    float wz=measured->real_wz*0.01745329252f*NAV_RELAY_WZ_SIGN;
++    bool valid=motors_online&&isfinite(vx)&&isfinite(vy)&&isfinite(wz)&&fabsf(vx)<=20&&fabsf(vy)<=20&&fabsf(wz)<=32.767f;
++    rm_feedback_t f;rm_mcu_feedback(&link,now,valid,vx,vy,wz,&f);nc_group_t group;
++    if(nc_feedback_group(&f,&group)&&nch_start(&sender,&group,now))pump(now);
++}
+--- /dev/null
++++ b/modules/nav_relay/nav_can_adapter.h
+@@ -0,0 +1,7 @@
++#ifndef NAV_CAN_ADAPTER_H
++#define NAV_CAN_ADAPTER_H
++#include "robot_def.h"
++void NavCanInit(void);
++void NavCanCommand(Chassis_Ctrl_Cmd_s *,int motors_online);
++void NavCanFeedback(const Chassis_Upload_Data_s *,int motors_online);
++#endif
+--- /dev/null
++++ b/modules/nav_relay/nav_relay_config.h
+@@ -0,0 +1,13 @@
++#ifndef NAV_RELAY_CONFIG_H
++#define NAV_RELAY_CONFIG_H
++#ifndef NAV_RELAY_ALLOW_MOTION
++#define NAV_RELAY_ALLOW_MOTION 0
++#endif
++#ifndef NAV_AXES_VERIFIED
++#define NAV_AXES_VERIFIED 0
++#endif
++/* Defaults are theoretical; verify ROS x forward, y left, yaw CCW on real wheels. */
++#define NAV_RELAY_VX_SIGN 1.0f
++#define NAV_RELAY_VY_SIGN 1.0f
++#define NAV_RELAY_WZ_SIGN 1.0f
++#endif
+--- a/modules/remote/remote_control.c
++++ b/modules/remote/remote_control.c
+@@ -18,6 +18,8 @@
+ // 遥控器数据
+ static RC_ctrl_t rc_ctrl[2];     //[0]:当前数据TEMP,[1]:上一次的数据LAST.用于按键持续按下和切换的判断
+ static FS_RC_ctrl_t fs_rc_ctrl[2]; //[0]:当前数据TEMP,[1]:上一次的数据LAST.用于按键持续按下和切换的判断
++static volatile uint8_t fs_valid_seen;
++static volatile uint32_t fs_valid_tick;
+ static uint8_t rc_init_flag = 0; // 遥控器初始化标志位
+ 
+ // 遥控器拥有的串口实例,因为遥控器是单例,所以这里只有一个,就不封装了
+@@ -95,13 +97,6 @@
+     memcpy(&rc_ctrl[LAST], &rc_ctrl[TEMP], sizeof(RC_ctrl_t)); // 保存上一次的数据,用于按键持续按下和切换的判断
+ }
+ 
+-/* SC(CH8) 异常值连续确认: 连续 N 帧都非法才按上档(急停)处理
+- * 3 帧 × 14ms(SBUS 70Hz) ≈ 42ms, 既能挡单帧误码, 急停响应也不迟钝 */
+-#define SC_BAD_FRAME_THRESHOLD      3u
+-
+-/* 连续非法帧计数, 仅 fs_to_rc 内部使用 */
+-static uint8_t s_sc_bad_cnt  = 0;
+-
+ /**
+  * @brief 把 SBUS 原始开关值映射为 0(上)/1(中)/2(下), 非法值按规则兜底
+  * @param idx  channel 下标, 6=SB(CH7), 7=SC(CH8), 8/9=备用
+@@ -109,6 +104,7 @@
+  */
+ static uint16_t fs_map_switch(uint8_t idx, uint16_t val)
+ {
++    (void)idx;
+     uint16_t result = 0xFFu;   /* 0xFF 表示落在三个合法区间之外 */
+ 
+     if (val > SWITCH_HIGH - SWITCH_TOLERANCE && val < SWITCH_HIGH + SWITCH_TOLERANCE)
+@@ -124,28 +120,8 @@
+         result = 0;            /* 上挡 */
+     }
+ 
+-    if (idx == 7)                              // ← CH8 = SC, 上档 = 急停
+-    {
+-        /* SC: 合法帧清零计数, 非法帧累加, 达到阈值才判上档 */
+-        if (result != 0xFFu)
+-        {
+-            s_sc_bad_cnt = 0;
+-        }
+-        else
+-        {
+-            if (s_sc_bad_cnt < 0xFFu)
+-                s_sc_bad_cnt++;
+-
+-            result = (s_sc_bad_cnt >= SC_BAD_FRAME_THRESHOLD) ? FS_RC_SW_UP
+-                                                              : FS_RC_SW_MID;
+-        }
+-    }
+-    else if (result == 0xFFu)
+-    {
+-        /* 其他开关: 非法值维持原来的默认中档 */
+-        result = FS_RC_SW_MID;
+-    }
+-
++    /* Navigation requires two explicitly valid MID switches. An invalid raw
++     * switch value stays 0xFF and immediately removes motion authorization. */
+     return result;
+ }
+ 
+@@ -212,8 +188,11 @@
+  */
+ static void FS_RemoteControlRxCallback()
+ {
+-    DaemonReload(rc_daemon_instance);         // 先喂狗
+-    fs_to_rc(rc_usart_instance->recv_buff); // 进行协议解析
++    const uint8_t *p = rc_usart_instance->recv_buff;
++    if (rc_usart_instance->last_rx_size != SBUS_FRAME_SIZE || p[0] != 0x0f || p[24] != 0x00 || (p[23] & 0x0c)) { fs_valid_seen=0; return; }
++    fs_to_rc(p);
++    fs_valid_tick=HAL_GetTick(); fs_valid_seen=1;
++    DaemonReload(rc_daemon_instance);
+ }
+ 
+ /**
+@@ -282,7 +261,7 @@
+ }
+ 
+ uint8_t FS_RemoteControlIsOnline(){
+-    if (rc_init_flag)
++    if (rc_init_flag && fs_valid_seen && (uint32_t)(HAL_GetTick()-fs_valid_tick) <= 100u)
+         return DaemonIsOnline(rc_daemon_instance);
+     return 0;
+ }

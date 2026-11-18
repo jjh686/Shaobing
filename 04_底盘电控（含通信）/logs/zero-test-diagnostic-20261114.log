@@ -1,0 +1,3 @@
+诊断：云台已解析本轮 USB 命令；底盘 CAN 回复未通过验收，需检查 CAN 状态和底盘固件。
+链路统计：{"port": "/dev/ttyACM0", "enabled": false, "passed": false, "session": 691233987, "sent_STOP": 228, "fresh_chassis_ACK": 0, "error": "未获得持续的新鲜底盘 STOP ACK（有效 0 帧）", "USB_bytes": 54543, "frames": {"SP": 1001, "gimbal": 250, "feedback": 0}, "last_gimbal": {"uptime": 1256014, "sequence": 227, "session": 691233987, "command_received_ms": 1256014}, "diagnosis": "云台已解析本轮 USB 命令；底盘 CAN 回复未通过验收，需检查 CAN 状态和底盘固件。"}
+FAIL: 未获得持续的新鲜底盘 STOP ACK（有效 0 帧）

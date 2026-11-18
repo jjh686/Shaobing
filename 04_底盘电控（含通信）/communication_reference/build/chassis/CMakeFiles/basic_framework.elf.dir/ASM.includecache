@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/chassis_firmware/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
+intrinsics.h
+-
+machine.h
+-
+
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/chassis_firmware/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
+../Config/SEGGER_RTT_Conf.h
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/chassis_firmware/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
+stdlib.h
+-
+stdarg.h
+-
+
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/chassis_firmware/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT_ASM_ARMv7M.s
+SEGGER_RTT.h
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/chassis_firmware/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
+
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111/chassis_firmware/startup_stm32f407xx.s
+

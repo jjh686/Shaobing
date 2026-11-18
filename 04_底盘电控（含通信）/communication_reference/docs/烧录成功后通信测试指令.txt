@@ -1,0 +1,253 @@
+【2026-11-12 当前入口与最新结果】
+2026-11-11 23:34 真实双板STOP测试已PASS：250帧新鲜底盘ACK，ENABLE=0、fault=15。
+下面“0 ACK/尚未通过”等段落属于此前的排查记录，不是最新通信结论。
+本轮未烧录或读回验证板内固件哈希。
+本车现在优先使用“底盘固定雷达、云台只中转”模式。
+完整当前命令文件：
+/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/底盘导航启动与联调指令-20261112.txt
+
+可直接执行STOP测试（不用PORT变量）：
+bash /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/run.sh zero /dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00
+
+退出STOP测试后，当前导航入口：
+bash /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/run.sh chassis_navigation /dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00 use_rviz:=true
+
+默认保持禁止运动；示例地图需替换成实际场地同批map.yaml/map.pcd。
+============================================================
+以下保留此前通信操作与历史烧录排查说明：
+
+烧录成功后的通信测试指令（小电脑USB→云台CAN1→底盘CAN2）
+====================================================================
+
+适用目录：
+/home/wangjiaming/桌面/c_board_nav_gateway_20261111
+
+测试目标：
+小电脑 USB → 云台 C 板应用 USB → 云台 C 板 CAN1 → 底盘 C 板 CAN2
+底盘 C 板再通过 CAN1 连接 C620 和 M3508。
+
+2026-11-11 接口调整：
+- 当前交付固件要求云台 CAN1 接底盘 CAN2；两端均 1 Mbps。
+- USB 协议、CAN 消息字段和以下测试指令不变；route=2 表示经云台转发，不是 CAN2 端口号。
+- 原先烧入云台的 CAN2 版本需要重烧 CAN1 版本。最新烧录结果见 docs/云台CAN1到底盘CAN2改动说明.md。
+- CAN1 新版已编译并通过软件测试，本轮尚未重烧；下载器芯片查询报 CMD_INFO failed，需先恢复并确认所接板子身份。
+- 云台 CAN1 专用于板间通信；云台电机通道已改为云台 CAN2，仍禁用输出，本次无需接电机。
+
+接口调整前的现场记录（不能代表当前新固件验收）：
+- 云台板 gimbal_nav_converter.elf 已实际写入、Verified OK，并复位。
+- 云台 USB 产品：0483:00ca / RM Nav Convert SP。
+- 本轮实际路径：/dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00
+- 当前映射 /dev/ttyACM1；请优先使用上述 by-id 路径，ACM 编号可能变化。
+- 5 秒 STOP 测试：FAIL，有效底盘 ACK 0 帧，尚未通过双向 CAN 通信验收。
+- 底盘板本轮未烧录；底盘固件版本、CAN2 接线和供电仍需确认。
+
+重要安全要求：
+1. 测试前断开电机主电源；只保留 C 板和小电脑的正确供电。
+2. CAN 接线确认：云台 CAN1 H 对底盘 CAN2 H，云台 CAN1 L 对底盘 CAN2 L，GND 对 GND。
+3. 云台 USB 必须是云台 C 板自身的应用 Micro-USB 数据口，不能接 MuseLab/CMSIS-DAP 下载器的 USB。
+4. 每个物理串口只能由一个程序打开。先关闭旧的串口助手、旧 ROS 节点、自瞄程序和其他测试脚本。
+5. 本次固件默认禁止电机运动。以下零速测试只发送 STOP，不会主动让轮子转动。
+6. 本次通信验收只使用 STOP 和诊断命令，电机主电源全程保持断开。
+7. 两块板必须分别烧录对应固件，才能完成双向 ACK 测试。
+
+一、检查电脑识别到的 USB 设备
+--------------------------------
+
+在终端执行：
+
+ls -l /dev/serial/by-id/
+lsusb
+
+识别规则：
+- 云台应用固件应显示类似产品名：RM Nav Convert SP
+- MuseLab 下载器显示：CMSIS-DAP-MuseLab
+- CMSIS-DAP-MuseLab 是下载器，不是通信串口，不能作为 run.sh 的端口参数。
+
+如果不知道具体设备名，可执行：
+
+for p in /dev/serial/by-id/*; do
+  [ -e "$p" ] || continue
+  echo "===== $p ====="
+  udevadm info -q property -n "$p" | grep -E 'ID_VENDOR_ID|ID_MODEL_ID|ID_MODEL=|ID_SERIAL='
+done
+
+把实际的云台应用串口保存为变量（请将下面占位符替换为真实路径）：
+
+PORT="/dev/serial/by-id/实际云台C板设备名"
+echo "$PORT"
+
+本轮这块云台板可直接复制（更换板子后重新识别）：
+
+PORT="/dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00"
+
+检查是否选中了本次云台固件（VID:PID=0483:00ca，产品名 RM Nav Convert SP）：
+
+python3 /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/check_port.py "$PORT"
+
+通过时输出真实的 /dev/ttyACM... 路径；失败时先修复设备选择，再执行下文。
+PORT 变量只对当前终端有效，新开终端执行带 "$PORT" 的命令前要重新设置该变量。
+
+二、先做 5 秒零速度双向通信测试（推荐第一步）
+------------------------------------------------
+
+该测试会：
+- 以 50 Hz 从小电脑向云台板发送 STOP；
+- 云台板解析后通过云台 CAN1 转给底盘板 CAN2；
+- 底盘板回传 ACK、状态和故障信息；
+- 检查 ACK 的 session、sequence、uptime 是否连续；
+- 全程 ENABLE=0，不发送运动速度。
+
+执行：
+
+cd /home/wangjiaming/桌面/c_board_nav_gateway_20261111
+bash pc/run.sh zero "$PORT"
+
+也可以直接使用绝对路径：
+
+bash /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/run.sh zero "$PORT"
+
+成功标志：
+
+PASS: ... 帧新鲜底盘 STOP ACK；全程 ENABLE=0。
+
+终端中每行 JSON 反馈的主要字段：
+- status：底盘状态位
+- fault：底盘故障位
+- session：本次通信会话号
+- sequence：命令序号
+- uptime：底盘运行时间
+
+fault 是可以相加的位掩码：
+- 位值 1（LOCK）：默认运动锁，预期结果。
+- 位值 2（RC）：遥控器离线或档位未满足。
+- 位值 4（MOTOR）：电机反馈不完整，断开电机供电时可能出现。
+- 位值 8（UNITS）：轴向/单位未完成实车确认，预期结果。
+- 位值 16（RX）：接收队列溢出或排队超时，需要检查通信负载和处理时延。
+例如 fault=15 表示 LOCK+RC+MOTOR+UNITS 同时存在。
+这些故障位不会否定 USB→CAN→底盘的通信链路；必须重点看是否有持续 ACK 和最后的 PASS。
+
+三、零速度测试失败时的排查顺序
+--------------------------------
+
+1. 没有 /dev/serial/by-id/：
+   - 检查云台板供电、USB 数据线、BOOT 是否处于正常 Flash 启动；
+   - 确认烧录的是 gimbal_nav_converter 固件；
+   - 重新拔插云台板自身 USB。
+
+2. 报“设备固件不匹配”：
+   - 传入了下载器端口或旧 C 板端口；
+   - 重新执行 ls -l /dev/serial/by-id/，选择产品名为 RM Nav Convert SP 的端口。
+
+3. 报“USB 已断开”或“USB 写入超时”：
+   - 更换 USB 数据线或电脑 USB 口；
+   - 关闭占用该串口的其他程序；
+   - 确认只保留一个 ROS/测试进程。
+
+4. USB 能识别但没有新鲜底盘 ACK：
+   - 检查两块板是否分别烧录了正确固件；
+   - 检查云台 CAN1 对底盘 CAN2 的 H/H、L/L、GND/GND；
+   - 检查云台 CAN1 和底盘 CAN2 波特率均为 1 Mbps；
+   - 检查 CAN 终端电阻：两个物理末端各一个 120 欧姆；整条总线断电后测 H/L 间通常约 60 欧姆，不能带电测电阻；
+   - 确认云台用 CAN1、底盘用 CAN2，且没有把电源脚接到信号线上；
+   - 检查底盘板是否已供电、是否已经复位。
+
+四、启动 ROS 车体系通信节点
+--------------------------------
+
+只有 zero 测试出现 PASS 后才执行。先确保 zero 脚本已经退出：
+
+cd /home/wangjiaming/桌面/c_board_nav_gateway_20261111
+bash pc/run.sh comm "$PORT"
+
+该命令配置：
+- ROS 命名空间：/chassis
+- 速度输入：/chassis/manual_body_cmd_vel
+- route：2（USB 经云台 CAN 转发）
+- 默认 enabled=false
+- 发送频率：50 Hz
+- 速度上限：线速度 0.3 m/s，角速度 0.5 rad/s
+- 反馈超时：250 ms
+
+另开终端查看通信诊断：
+
+每个新终端先加载下面的环境；echo 是持续命令，用 Ctrl+C 退出再运行下一条。
+
+source '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/scripts/local_env.sh'
+ros2 topic echo /chassis/diagnostics
+
+查看底盘回传的实测速度：
+
+ros2 topic echo /chassis/measured_velocity
+
+电机没有有效反馈时，此话题可能没有消息，这是正常限制；先以 STOP ACK 和 diagnostics 判断链路。
+
+查看当前节点和话题：
+
+ros2 node list
+ros2 topic list | grep chassis
+
+诊断中重点查看：
+- message
+- route
+- enabled
+- fault_mask
+- decoded_feedback
+- feedback_age_ms
+- gimbal_status
+- frame_ready
+
+通信正常但默认锁定时，通常会看到：
+- message 中有“Waiting for actual chassis READY/STOP ACK”或“Ready, disabled”
+- fault_mask 含 LOCK/UNITS 等故障
+- decoded_feedback 持续增加
+- feedback_age_ms 持续刷新并小于 250；一直是 unknown 表示尚未收到本会话认可的底盘反馈
+- enabled=false、route=2
+
+单看 decoded_feedback 计数不足以判断会话匹配，需结合 feedback_age_ms 和 zero 测试的 PASS。
+comm 模式不要求云台几何门控，frame_ready=false 或 gimbal_status=0 是当前未标定状态，不能单独判为 CAN 故障。
+
+五、当前测试范围和待确认项
+--------------------------------------------------------
+
+当前交付固件默认：
+- 底盘 NAV_RELAY_ALLOW_MOTION=0
+- 底盘 NAV_AXES_VERIFIED=0
+- 云台 GIMBAL_INSTALLATION_CONFIRMED=0
+
+这份 TXT 用于烧录后的基础通信验收，不包含电机使能和非零速度指令。
+待确认：两板的实际烧录和校验结果、板间 CAN 终端与针序、遥控器接收协议和通道、电机 ID 和轮向、轮径/减速比/轴距/轮距、云台相对底盘的关节零位与安装几何。
+底盘台架运动测试需先完成底盘侧确认并重新编译烧录；完整导航还需完成云台关节和几何标定。
+
+六、启动完整新导航（最后一步）
+--------------------------------
+
+完整导航会占用同一物理 USB，不能与 zero 或 comm 并行运行：
+
+bash /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/run.sh navigation "$PORT"
+
+当前云台关节零位和安装几何尚未完成，完整导航会因 frame_ready/gimbal 状态门控而禁止运动。这不表示基础 USB/CAN 通信失败；先以 zero 测试和 /chassis/diagnostics 为准。
+
+七、关闭测试
+--------------
+
+保持 comm 节点运行，在已加载环境的另一个终端先取消使能：
+
+ros2 service call /chassis/set_enabled std_srvs/srv/SetBool '{data: false}'
+
+收到响应后，在 comm 所在终端按 Ctrl+C 退出，再退出其他 echo 命令。
+若只运行了 zero，它约 5 秒后自动退出，不需要调用 ROS 服务。
+最后断开各板供电再拆线；不要带电插拔 CAN 线。
+
+测试结论记录模板：
+- 云台 USB 设备路径：
+- 云台固件产品名：
+- 底盘 ACK 是否持续：
+- zero 测试是否 PASS：
+- fault_mask：
+- decoded_feedback：
+- 云台 CAN1 对底盘 CAN2 的 H/L/GND 是否正确：
+- ROS diagnostics message：
+- 是否执行过非零速度：是 / 否
+- 备注：
+
+

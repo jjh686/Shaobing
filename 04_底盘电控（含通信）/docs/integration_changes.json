@@ -1,0 +1,254 @@
+{
+  "project": "/home/wangjiaming/桌面/DiPan_Board",
+  "baseline": "/home/wangjiaming/桌面/DiPan_Board/docs/source_copies_manifest.json",
+  "generated_at_utc": "2026-11-12T14:56:10.203802+00:00",
+  "copies": [
+    {
+      "path": "/home/wangjiaming/桌面/DiPan_Board/chassis_driver",
+      "changes": [
+        {
+          "path": ".vscode/launch.json",
+          "change": "modified",
+          "before_sha256": "02102adec2d6bb1dab9c151bd6e196d8ba7bc4ab6e34e8377de2d7822ce31585",
+          "after_sha256": "8a62cb7169ddc52eb9f9a620ad40f92b358aa242dbdc1b0f64132e7a07d6b226",
+          "bytes": 450
+        },
+        {
+          "path": ".vscode/settings.json",
+          "change": "modified",
+          "before_sha256": "5806d57ad686e5d73da2c448ab01b31bc87254a7bcf1a0cb9e93b559d8f224b8",
+          "after_sha256": "5631b5c5577de7acc8ae35022efccdbdc270ff833c613324540785161f980f9e",
+          "bytes": 127
+        },
+        {
+          "path": ".vscode/tasks.json",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "701070ae5c71a2a2a89e3d0f7cea6fbaf040fce198273c4b7f0533f4b873c64f",
+          "bytes": 551
+        },
+        {
+          "path": "basic_framework/.vscode/launch.json",
+          "change": "modified",
+          "before_sha256": "7f9a50efcb03b2166b784f4cb02181c15502e9c34853f172913e6a7735f33df1",
+          "after_sha256": "be8b0d5c016ea2bf00a89dee4ce4e33b525cb3cc69f443ffdd7e00e0b05e79d2",
+          "bytes": 456
+        },
+        {
+          "path": "basic_framework/.vscode/settings.json",
+          "change": "modified",
+          "before_sha256": "b3d73808b208f248ae51a276c3e0e6b0f7a80eb4c4dc9a3498f455807dbde180",
+          "after_sha256": "1c3c0d83fdaf640d845cf9863bcdeb843994909083dc9cc94aac9c778cf249bb",
+          "bytes": 114
+        },
+        {
+          "path": "basic_framework/.vscode/tasks.json",
+          "change": "modified",
+          "before_sha256": "2432c924a23476eeb3e90c160b1b35eeb658716abd9d76a11864cf830fc9b113",
+          "after_sha256": "ba11a54df662ce382eac3598fc5640b6d66014e68b52c8b051c3b22971ff9c44",
+          "bytes": 557
+        },
+        {
+          "path": "basic_framework/CMakeLists.txt",
+          "change": "modified",
+          "before_sha256": "fa1d7f2d5532fe07f3a270f08626a77e8073e95dc9eb1b5ec8869f4e1b4aaead",
+          "after_sha256": "51a8462b48df095ef149fcdc75000610d75df802be1028abe9c3779f3cdd6ddc",
+          "bytes": 4774
+        },
+        {
+          "path": "basic_framework/Src/can.c",
+          "change": "modified",
+          "before_sha256": "d1db39b383a6f753e896a3fdfffaf93332bb15cd3f4a5fcba3dc4f2ce6ef386d",
+          "after_sha256": "3be6107620f11f5120b8938e05b9a172a34c12896a976268f6414b0bb845a34f",
+          "bytes": 6285
+        },
+        {
+          "path": "basic_framework/application/chassis/chassis.c",
+          "change": "modified",
+          "before_sha256": "60e153fa91f4663187b784c1065b0560be97ed2232a76f579526af4b784c3fc9",
+          "after_sha256": "50093f288e5cc9e765ee6f21447b1aa0850612dc36bd463f72333200b1accff2",
+          "bytes": 20398
+        },
+        {
+          "path": "basic_framework/application/robot_def.h",
+          "change": "modified",
+          "before_sha256": "a75bc5ba779f7a2ad8bc250d18cbf026876c8fcb3bec096183158d2c785b55ce",
+          "after_sha256": "760a60211092899f921253cbcf46b153dd1801e24f3de17ac046d0f46cf3f2ef",
+          "bytes": 8129
+        },
+        {
+          "path": "basic_framework/application/robot_task.h",
+          "change": "modified",
+          "before_sha256": "c599f972ae398fe8f814ccb71b3dbc0bd5493ba1c40ac93cabbfb9f7cb298130",
+          "after_sha256": "60ac3e1cd80690fbea54c15cd9f6af94b73b535a8a0255d2104c6bf4ba0c3205",
+          "bytes": 4441
+        },
+        {
+          "path": "basic_framework/bsp/can/bsp_can.c",
+          "change": "modified",
+          "before_sha256": "46d828274e625f7b675becb8fa45b608467649df3901e6e935d5c35fbcc750c6",
+          "after_sha256": "67409b5a80fe8524d23af84abf89d20d7aef2121825a5e0592b53e1d29c3f984",
+          "bytes": 12953
+        },
+        {
+          "path": "basic_framework/bsp/can/bsp_can.h",
+          "change": "modified",
+          "before_sha256": "5ecfc7e99dd991513dc173823f5e88de469a54c892cdf9a8bc05caf9e663141d",
+          "after_sha256": "65174fd852ea4a9434cf04cec44c3e5a50d9050c791b9e076f8d4e922d44420a",
+          "bytes": 3424
+        },
+        {
+          "path": "basic_framework/bsp/usart/bsp_usart.c",
+          "change": "modified",
+          "before_sha256": "fabe77690f09d49d450b100a27e7160ca5a77f58231b8f77e281fedceeafe98a",
+          "after_sha256": "88285a50dee85e5a3b567eff5fade2d2003f3fdb70cbaa4baeebb6231cc59147",
+          "bytes": 5690
+        },
+        {
+          "path": "basic_framework/bsp/usart/bsp_usart.h",
+          "change": "modified",
+          "before_sha256": "f39a5acd152ade6ddf45631699fb8086168c5ba9765e33bf19c18519d988721e",
+          "after_sha256": "577147a6ce6ef4ecac52758c1d10be0641deb393c974ea647ddda72cd46f1688",
+          "bytes": 2860
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/README.md",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "d91e06fc1abf3469254d32a095993630e9fd4c3e6dc56b48725d02922fe11678",
+          "bytes": 3247
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/chassis_comm.c",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "37ca8f24e890d3fb67c92130a746432814f064295fc8ae333b4e14944e312508",
+          "bytes": 2765
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/chassis_comm.h",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "088b05682369a6ff81b997f75c068ee3d712f2385bebf8d21c869f0e15bd70d0",
+          "bytes": 1090
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/chassis_comm_config.h",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "10be366f6b5239de41a471a2ff3df5b56e8f4ae796df35bc31abd1f76bcedc2c",
+          "bytes": 833
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/chassis_comm_port.c",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "3fb0b47410ad553564eb70aebb37d8432c3a020dbc8dd2db69421532fdfaf21d",
+          "bytes": 4355
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/chassis_comm_port.h",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "5947f5de9ec244ab054d80abb7439633c4d1a9286ea03d43703c72feec7cfca6",
+          "bytes": 650
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/protocol/mcu_link.c",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "39db3b374919e9a8e5aeac1170916a83a634ac48496241065d0af65748b060a0",
+          "bytes": 2936
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/protocol/nav_can.c",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "80c0be2fc69d7bf5e5d4c01bcbeff99d6fabb71f2b9a5cd636543e475af2ac66",
+          "bytes": 4864
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/protocol/nav_can.h",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "85746aec1c2176803940b93a730b3bcc2bee2ca07b005277d5372bf3cbd7e495",
+          "bytes": 1330
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/protocol/nav_can_hal.h",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "2745cc92df229b6f0691d7f37d635d6738345e2dec988e9efa6ec5e54aad9361",
+          "bytes": 1423
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/protocol/protocol.c",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "9b81a3cc49c942c183bccd82280ab188101c460b9f95a970733e9c08986b1b58",
+          "bytes": 4279
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/mcu_link.h",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "a5ba9c7f380833848181cd4912215a6c003e848ad0d45535c625958447f61612",
+          "bytes": 951
+        },
+        {
+          "path": "basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/protocol.h",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "8194d6ce720fce9f6c860c6c686b0224eba4585996d170b40c4702a28ea040fa",
+          "bytes": 1488
+        },
+        {
+          "path": "basic_framework/modules/motor/servo_motor/servo_motor.h",
+          "change": "modified",
+          "before_sha256": "5c65d83d0e186fad21b2fc8ff5a3ddf32ca30580ef2f56c8af9d545de58bfd2c",
+          "after_sha256": "03394fe7fa2a6e52fb3de25c374ced31d1178b62fa5d8427b89eaeecf513aa70",
+          "bytes": 1010
+        },
+        {
+          "path": "basic_framework/modules/remote/remote_control.c",
+          "change": "modified",
+          "before_sha256": "ef0e8998f1f7575da6509d98f2e31673aef431ad73c6df0747dfdd761f5247c9",
+          "after_sha256": "4ae03153fc8bfb4231881cbc0a6080c3e62b5356cc2bb58c2c6b3651f860b35e",
+          "bytes": 11486
+        }
+      ],
+      "changed_file_count": 30,
+      "final_file_count": 574
+    },
+    {
+      "path": "/home/wangjiaming/桌面/DiPan_Board/communication_reference",
+      "changes": [
+        {
+          "path": "gimbal_firmware/application/communication/nav_gateway_port.c",
+          "change": "modified",
+          "before_sha256": "4af47a7dc7f7a4eae568e5eb75769e40a6d7ff27019686ce224139a8069eb427",
+          "after_sha256": "cd4849b41ac13739a236535f1bb76e9938c1f3c491a3b2f1497eb630c35b5714",
+          "bytes": 3883
+        },
+        {
+          "path": "gimbal_firmware/bsp/can/bsp_can.c",
+          "change": "modified",
+          "before_sha256": "ecf263ea0a12d44950e3813cd253d7aa4596874e193c35511ce51da359498451",
+          "after_sha256": "d3dadd1fa7a34d40227e1f0a4626f67056fb7ecdd11b095af09f8d08b7d4fa18",
+          "bytes": 12945
+        },
+        {
+          "path": "gimbal_firmware/bsp/can/bsp_can.h",
+          "change": "modified",
+          "before_sha256": "5ecfc7e99dd991513dc173823f5e88de469a54c892cdf9a8bc05caf9e663141d",
+          "after_sha256": "65174fd852ea4a9434cf04cec44c3e5a50d9050c791b9e076f8d4e922d44420a",
+          "bytes": 3424
+        }
+      ],
+      "changed_file_count": 3,
+      "final_file_count": 2063
+    }
+  ],
+  "originals_modified": false,
+  "hard_links_shared_with_originals": []
+}

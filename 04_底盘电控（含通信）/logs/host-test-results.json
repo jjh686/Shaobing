@@ -1,0 +1,43 @@
+{
+  "hardware_accessed": false,
+  "variants": "Explicit locked=0/0 and enabled=1/1 host simulations; ARM configuration is recorded separately",
+  "tests": [
+    {
+      "name": "remote_can",
+      "exit_code": 0,
+      "output": "PASS remote CAN: channel encoding, CRC, order/drop/DLC/age, duplicate, sequence/tick wrap, source age, lost link, CH10 stop, fault generation, reconnect/rearm"
+    },
+    {
+      "name": "protocol",
+      "exit_code": 0,
+      "output": "PASS protocol: typed CAN fields, CRC/order/version/DLC/EXT/RTR/drop/timeout, quantization, wrap, BUSY expiry, session STOP, USB SP mux"
+    },
+    {
+      "name": "can_hal",
+      "exit_code": 0,
+      "output": "PASS independent CAN1/CAN2 hardware mailboxes: in-flight group blocks replacement, expiry aborts only the owning bus, USB reset abort"
+    },
+    {
+      "name": "core_locked",
+      "exit_code": 0,
+      "output": "PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap"
+    },
+    {
+      "name": "chain_locked",
+      "exit_code": 0,
+      "output": "PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+    },
+    {
+      "name": "core_enabled_simulation",
+      "exit_code": 0,
+      "output": "PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap"
+    },
+    {
+      "name": "chain_enabled_simulation",
+      "exit_code": 0,
+      "output": "PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs\nPASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+    }
+  ],
+  "passed": true,
+  "duration_seconds": 2.4498309140035417
+}

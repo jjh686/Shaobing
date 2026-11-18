@@ -1,0 +1,223 @@
+ARM GAS  /tmp/cch3SHxy.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"bsp_usb.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.USBInit,"ax",%progbits
+  18              		.align	1
+  19              		.global	USBInit
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	USBInit:
+  27              	.LFB243:
+  28              		.file 1 "bsp/usb/bsp_usb.c"
+   1:bsp/usb/bsp_usb.c **** /**
+   2:bsp/usb/bsp_usb.c ****  * @file bsp_usb.c
+   3:bsp/usb/bsp_usb.c ****  * @author your name (you@domain.com)
+   4:bsp/usb/bsp_usb.c ****  * @brief usb是单例bsp,因此不保存实例
+   5:bsp/usb/bsp_usb.c ****  * @version 0.1
+   6:bsp/usb/bsp_usb.c ****  * @date 2023-02-09
+   7:bsp/usb/bsp_usb.c ****  *
+   8:bsp/usb/bsp_usb.c ****  * @copyright Copyright (c) 2023
+   9:bsp/usb/bsp_usb.c ****  *
+  10:bsp/usb/bsp_usb.c ****  */
+  11:bsp/usb/bsp_usb.c **** 
+  12:bsp/usb/bsp_usb.c **** #include "bsp_usb.h"
+  13:bsp/usb/bsp_usb.c **** #include "bsp_log.h"
+  14:bsp/usb/bsp_usb.c **** #include "bsp_dwt.h"
+  15:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 01 开始] 长度化USB接收回调与配置状态查询、传播发送结果。 
+  16:bsp/usb/bsp_usb.c **** extern USBD_HandleTypeDef hUsbDeviceFS;
+  17:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 01 结束] */
+  18:bsp/usb/bsp_usb.c **** 
+  19:bsp/usb/bsp_usb.c **** static uint8_t *bsp_usb_rx_buffer; // 接收到的数据会被放在这里,buffer size为2048
+  20:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 02 开始] 长度化USB接收回调与配置状态查询、传播发送结果。 
+  21:bsp/usb/bsp_usb.c **** // Full-speed endpoint packets are <=64 bytes; application frames are a byte stream.
+  22:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 02 结束] */
+  23:bsp/usb/bsp_usb.c **** 
+  24:bsp/usb/bsp_usb.c **** uint8_t *USBInit(USB_Init_Config_s usb_conf)
+  25:bsp/usb/bsp_usb.c **** {
+  29              		.loc 1 25 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 8
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 00B5     		push	{lr}
+ARM GAS  /tmp/cch3SHxy.s 			page 2
+
+
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 14, -4
+  37 0002 83B0     		sub	sp, sp, #12
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 16
+  40 0004 02AB     		add	r3, sp, #8
+  41 0006 03E90300 		stmdb	r3, {r0, r1}
+  26:bsp/usb/bsp_usb.c ****     // usb的软件复位(模拟拔插)在usbd_conf.c中的HAL_PCD_MspInit()中
+  27:bsp/usb/bsp_usb.c ****     bsp_usb_rx_buffer = CDCInitRxbufferNcallback(usb_conf.tx_cbk, usb_conf.rx_cbk); // 获取接收
+  42              		.loc 1 27 5 view .LVU1
+  43              		.loc 1 27 25 is_stmt 0 view .LVU2
+  44 000a FFF7FEFF 		bl	CDCInitRxbufferNcallback
+  45              	.LVL0:
+  46              		.loc 1 27 23 view .LVU3
+  47 000e 024B     		ldr	r3, .L3
+  48 0010 1860     		str	r0, [r3]
+  28:bsp/usb/bsp_usb.c ****     // usb的接收回调函数会在这里被设置,并将数据保存在bsp_usb_rx_buffer中
+  29:bsp/usb/bsp_usb.c ****     LOGINFO("USB init success");
+  49              		.loc 1 29 32 is_stmt 1 view .LVU4
+  30:bsp/usb/bsp_usb.c ****     return bsp_usb_rx_buffer;
+  50              		.loc 1 30 5 view .LVU5
+  31:bsp/usb/bsp_usb.c **** }
+  51              		.loc 1 31 1 is_stmt 0 view .LVU6
+  52 0012 03B0     		add	sp, sp, #12
+  53              	.LCFI2:
+  54              		.cfi_def_cfa_offset 4
+  55              		@ sp needed
+  56 0014 5DF804FB 		ldr	pc, [sp], #4
+  57              	.L4:
+  58              		.align	2
+  59              	.L3:
+  60 0018 00000000 		.word	.LANCHOR0
+  61              		.cfi_endproc
+  62              	.LFE243:
+  64              		.section	.text.USBTransmit,"ax",%progbits
+  65              		.align	1
+  66              		.global	USBTransmit
+  67              		.syntax unified
+  68              		.thumb
+  69              		.thumb_func
+  70              		.fpu fpv4-sp-d16
+  72              	USBTransmit:
+  73              	.LVL1:
+  74              	.LFB244:
+  32:bsp/usb/bsp_usb.c **** 
+  33:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 03 开始] 长度化USB接收回调与配置状态查询、传播发送结果。 
+  34:bsp/usb/bsp_usb.c **** uint8_t USBTransmit(uint8_t *buffer, uint16_t len)
+  35:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 03 结束] */
+  36:bsp/usb/bsp_usb.c **** {
+  75              		.loc 1 36 1 is_stmt 1 view -0
+  76              		.cfi_startproc
+  77              		@ args = 0, pretend = 0, frame = 0
+  78              		@ frame_needed = 0, uses_anonymous_args = 0
+  79              		.loc 1 36 1 is_stmt 0 view .LVU8
+  80 0000 08B5     		push	{r3, lr}
+  81              	.LCFI3:
+ARM GAS  /tmp/cch3SHxy.s 			page 3
+
+
+  82              		.cfi_def_cfa_offset 8
+  83              		.cfi_offset 3, -8
+  84              		.cfi_offset 14, -4
+  37:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 04 开始] 长度化USB接收回调与配置状态查询、传播发送结果。 
+  38:bsp/usb/bsp_usb.c ****     return CDC_Transmit_FS(buffer, len);
+  85              		.loc 1 38 5 is_stmt 1 view .LVU9
+  86              		.loc 1 38 12 is_stmt 0 view .LVU10
+  87 0002 FFF7FEFF 		bl	CDC_Transmit_FS
+  88              	.LVL2:
+  39:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 04 结束] */
+  40:bsp/usb/bsp_usb.c **** }
+  89              		.loc 1 40 1 view .LVU11
+  90 0006 08BD     		pop	{r3, pc}
+  91              		.cfi_endproc
+  92              	.LFE244:
+  94              		.section	.text.USBIsConfigured,"ax",%progbits
+  95              		.align	1
+  96              		.global	USBIsConfigured
+  97              		.syntax unified
+  98              		.thumb
+  99              		.thumb_func
+ 100              		.fpu fpv4-sp-d16
+ 102              	USBIsConfigured:
+ 103              	.LFB245:
+  41:bsp/usb/bsp_usb.c **** /* [USB_SP 修改 05 开始] 长度化USB接收回调与配置状态查询、传播发送结果。 
+  42:bsp/usb/bsp_usb.c **** 
+  43:bsp/usb/bsp_usb.c **** uint8_t USBIsConfigured(void)
+  44:bsp/usb/bsp_usb.c **** {
+ 104              		.loc 1 44 1 is_stmt 1 view -0
+ 105              		.cfi_startproc
+ 106              		@ args = 0, pretend = 0, frame = 0
+ 107              		@ frame_needed = 0, uses_anonymous_args = 0
+ 108              		@ link register save eliminated.
+  45:bsp/usb/bsp_usb.c ****     return hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED && hUsbDeviceFS.pClassData != NULL;
+ 109              		.loc 1 45 5 view .LVU13
+ 110              		.loc 1 45 24 is_stmt 0 view .LVU14
+ 111 0000 074B     		ldr	r3, .L13
+ 112 0002 93F89C32 		ldrb	r3, [r3, #668]	@ zero_extendqisi2
+ 113 0006 DBB2     		uxtb	r3, r3
+ 114              		.loc 1 45 60 view .LVU15
+ 115 0008 032B     		cmp	r3, #3
+ 116 000a 01D0     		beq	.L11
+ 117 000c 0020     		movs	r0, #0
+ 118 000e 7047     		bx	lr
+ 119              	.L11:
+ 120              		.loc 1 45 75 discriminator 1 view .LVU16
+ 121 0010 034B     		ldr	r3, .L13
+ 122 0012 D3F8BC32 		ldr	r3, [r3, #700]
+ 123              		.loc 1 45 60 discriminator 1 view .LVU17
+ 124 0016 0BB1     		cbz	r3, .L12
+ 125              		.loc 1 45 60 view .LVU18
+ 126 0018 0120     		movs	r0, #1
+  46:bsp/usb/bsp_usb.c **** }
+ 127              		.loc 1 46 1 view .LVU19
+ 128 001a 7047     		bx	lr
+ 129              	.L12:
+  45:bsp/usb/bsp_usb.c ****     return hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED && hUsbDeviceFS.pClassData != NULL;
+ARM GAS  /tmp/cch3SHxy.s 			page 4
+
+
+ 130              		.loc 1 45 60 view .LVU20
+ 131 001c 0020     		movs	r0, #0
+ 132 001e 7047     		bx	lr
+ 133              	.L14:
+ 134              		.align	2
+ 135              	.L13:
+ 136 0020 00000000 		.word	hUsbDeviceFS
+ 137              		.cfi_endproc
+ 138              	.LFE245:
+ 140              		.section	.bss.bsp_usb_rx_buffer,"aw",%nobits
+ 141              		.align	2
+ 142              		.set	.LANCHOR0,. + 0
+ 145              	bsp_usb_rx_buffer:
+ 146 0000 00000000 		.space	4
+ 147              		.text
+ 148              	.Letext0:
+ 149              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 150              		.file 3 "Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h"
+ 151              		.file 4 "Inc/usbd_cdc_if.h"
+ 152              		.file 5 "bsp/usb/bsp_usb.h"
+ARM GAS  /tmp/cch3SHxy.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 bsp_usb.c
+     /tmp/cch3SHxy.s:18     .text.USBInit:0000000000000000 $t
+     /tmp/cch3SHxy.s:26     .text.USBInit:0000000000000000 USBInit
+     /tmp/cch3SHxy.s:60     .text.USBInit:0000000000000018 $d
+     /tmp/cch3SHxy.s:65     .text.USBTransmit:0000000000000000 $t
+     /tmp/cch3SHxy.s:72     .text.USBTransmit:0000000000000000 USBTransmit
+     /tmp/cch3SHxy.s:95     .text.USBIsConfigured:0000000000000000 $t
+     /tmp/cch3SHxy.s:102    .text.USBIsConfigured:0000000000000000 USBIsConfigured
+     /tmp/cch3SHxy.s:136    .text.USBIsConfigured:0000000000000020 $d
+     /tmp/cch3SHxy.s:141    .bss.bsp_usb_rx_buffer:0000000000000000 $d
+     /tmp/cch3SHxy.s:145    .bss.bsp_usb_rx_buffer:0000000000000000 bsp_usb_rx_buffer
+
+UNDEFINED SYMBOLS
+CDCInitRxbufferNcallback
+CDC_Transmit_FS
+hUsbDeviceFS

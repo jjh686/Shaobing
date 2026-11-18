@@ -1,0 +1,105 @@
+{
+  "passed": true,
+  "scope": "Software build, regression, source and image integrity only",
+  "verified_at_utc": "2026-11-12T14:56:10.568451+00:00",
+  "independent_copies": true,
+  "changed_files": {
+    "chassis_driver": 30,
+    "communication_reference": 3
+  },
+  "protocol_identical": [
+    {
+      "path": "mcu_link.c",
+      "identical": true
+    },
+    {
+      "path": "nav_can.c",
+      "identical": true
+    },
+    {
+      "path": "nav_can.h",
+      "identical": true
+    },
+    {
+      "path": "nav_can_hal.h",
+      "identical": true
+    },
+    {
+      "path": "protocol.c",
+      "identical": true
+    },
+    {
+      "path": "rm_chassis_comm/mcu_link.h",
+      "identical": true
+    },
+    {
+      "path": "rm_chassis_comm/protocol.h",
+      "identical": true
+    }
+  ],
+  "compiled_chassis_macros": {
+    "CHASSIS_COMM_H": "",
+    "CHASSIS_COMM_REMOTE_UART": "huart3",
+    "CHASSIS_COMM_AXES_VERIFIED": "0",
+    "CHASSIS_COMM_CONFIG_H": "",
+    "CHASSIS_COMM_CAN_HANDLE": "hcan2",
+    "CHASSIS_COMM_WZ_SIGN": "1.0f",
+    "CHASSIS_COMM_RX_QUEUE_SIZE": "16u",
+    "CHASSIS_COMM_ALLOW_MOTION": "0",
+    "CHASSIS_COMM_ROUTE": "2u",
+    "CHASSIS_COMM_VX_SIGN": "1.0f",
+    "CHASSIS_COMM_FEEDBACK_PERIOD_MS": "20u",
+    "CHASSIS_COMM_VY_SIGN": "1.0f",
+    "CHASSIS_COMM_USE_INS": "0"
+  },
+  "host_tests_passed": 6,
+  "fifo_regression_passed": true,
+  "source_matches_build": true,
+  "artifacts": [
+    {
+      "file": "DiPan_Board.elf",
+      "sha256": "34d99f874e52958ec08cbc5535a02d2e4bf4272c14f9fe3e3332fe67497c8f19",
+      "bytes": 1294428,
+      "passed": true
+    },
+    {
+      "file": "DiPan_Board.hex",
+      "sha256": "b58676a04d1900c9ad0cf7351de1f09d8ef05f343d188c81e54bd8835fb278be",
+      "bytes": 206228,
+      "passed": true
+    },
+    {
+      "file": "DiPan_Board.bin",
+      "sha256": "735d4fcf01cbe4567c740234edce8057d73249a1322ce3b68bcfd2884dcd85d5",
+      "bytes": 73292,
+      "passed": true
+    },
+    {
+      "file": "Gimbal_USB_CAN1.elf",
+      "sha256": "34531e90c763f21313c32f4588be06f084dc1bc4c63191f3d8510ac4b9dccc19",
+      "bytes": 1395268,
+      "passed": true
+    },
+    {
+      "file": "Gimbal_USB_CAN1.hex",
+      "sha256": "1c13f0658648b2980ad61cc0fe78da40f5e3ac77b48a9bba602a6599fb91123a",
+      "bytes": 263995,
+      "passed": true
+    },
+    {
+      "file": "Gimbal_USB_CAN1.bin",
+      "sha256": "d90ffb1a226579691bcfe629c1e47925d05f4ace56b362c7d09f34ef2fc0d046",
+      "bytes": 93852,
+      "passed": true
+    }
+  ],
+  "motion_enabled": false,
+  "flashed": false,
+  "hardware_accessed_for_build_and_tests": false,
+  "earlier_hardware_diagnostic": {
+    "usb_two_way_observed": true,
+    "chassis_stop_ack_frames": 0,
+    "record": "logs/usb-diagnostic-before.json"
+  },
+  "hardware_can_validated_after_fix": false
+}

@@ -1,0 +1,25 @@
+{
+  "source": "/home/wangjiaming/桌面/DiPan_Board",
+  "target": "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）",
+  "backup": "/home/wangjiaming/桌面/现用底盘替换备份/20261118-154048/04_底盘电控（含通信）",
+  "copied_file_count": 3583,
+  "flashed": false,
+  "verified_source_files": 829,
+  "source_code_identical": true,
+  "both_arm_builds_passed": true,
+  "both_bins_identical_to_source": true,
+  "software_tests": {
+    "host_c": 7,
+    "fifo_regression": "passed; legacy negative case expected failure",
+    "usb_pty": 4,
+    "motor_pty": 7,
+    "passed": true
+  },
+  "hardware_validated": false,
+  "migration_changes": [
+    "tools/build_gimbal.sh relative BUILD_DIR supports spaces",
+    "README.md migration entry",
+    ".vscode/tasks.json companion build task",
+    "../00_代码分类说明.md pairing clarification"
+  ]
+}

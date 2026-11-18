@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "originals": [
+    {
+      "path": "/home/wangjiaming/桌面/RM_2026_9_19-sentry",
+      "checked_files": 560,
+      "differences": [],
+      "unchanged": true
+    },
+    {
+      "path": "/home/wangjiaming/桌面/c_board_nav_gateway_20261111",
+      "checked_files": 2063,
+      "differences": [],
+      "unchanged": true
+    }
+  ]
+}

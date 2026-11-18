@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-11-14T21:45:30.261759+08:00",
+  "resolved": false,
+  "cause_scope": "云台遥控源故障代数持续变化导致底盘撤销导航许可；具体SBUS原因未确认",
+  "channel_mapping_observed": true,
+  "navigation_was_observed_enabled": true,
+  "motion_command_sent": false,
+  "firmware_changed": false,
+  "user_choice": "暂不换SWD到云台，先保存诊断结果",
+  "initial_switch_samples": 16,
+  "mid_samples": 11,
+  "mid_permitted_samples": 4,
+  "mid_source_generation_start": 41,
+  "mid_source_generation_end": 45,
+  "zero_test_ACK": 250,
+  "report": "/home/wangjiaming/桌面/DiPan_Board/docs/fault2_遥控许可掉线诊断-20261114.md"
+}

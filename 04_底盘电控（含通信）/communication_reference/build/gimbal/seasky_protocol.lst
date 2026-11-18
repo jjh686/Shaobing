@@ -1,0 +1,913 @@
+ARM GAS  /tmp/ccYPduAz.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"seasky_protocol.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.CRC8_Check_Sum,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	CRC8_Check_Sum:
+  26              	.LVL0:
+  27              	.LFB243:
+  28              		.file 1 "modules/master_machine/seasky_protocol.c"
+   1:modules/master_machine/seasky_protocol.c **** /**
+   2:modules/master_machine/seasky_protocol.c ****  * @file seasky_protocol.c
+   3:modules/master_machine/seasky_protocol.c ****  * @author Liu Wei
+   4:modules/master_machine/seasky_protocol.c ****  * @author modified by Neozng
+   5:modules/master_machine/seasky_protocol.c ****  * @brief 湖南大学RoBoMatster串口通信协议
+   6:modules/master_machine/seasky_protocol.c ****  * @version 0.1
+   7:modules/master_machine/seasky_protocol.c ****  * @date 2022-11-03
+   8:modules/master_machine/seasky_protocol.c ****  *
+   9:modules/master_machine/seasky_protocol.c ****  * @copyright Copyright (c) 2022
+  10:modules/master_machine/seasky_protocol.c ****  *
+  11:modules/master_machine/seasky_protocol.c ****  */
+  12:modules/master_machine/seasky_protocol.c **** 
+  13:modules/master_machine/seasky_protocol.c **** #include "seasky_protocol.h"
+  14:modules/master_machine/seasky_protocol.c **** #include "crc8.h"
+  15:modules/master_machine/seasky_protocol.c **** #include "crc16.h"
+  16:modules/master_machine/seasky_protocol.c **** #include "memory.h"
+  17:modules/master_machine/seasky_protocol.c **** 
+  18:modules/master_machine/seasky_protocol.c **** /*获取CRC8校验码*/
+  19:modules/master_machine/seasky_protocol.c **** uint8_t Get_CRC8_Check(uint8_t *pchMessage,uint16_t dwLength)
+  20:modules/master_machine/seasky_protocol.c **** {
+  21:modules/master_machine/seasky_protocol.c ****     return crc_8(pchMessage,dwLength);
+  22:modules/master_machine/seasky_protocol.c **** }
+  23:modules/master_machine/seasky_protocol.c **** /*检验CRC8数据段*/
+  24:modules/master_machine/seasky_protocol.c **** static uint8_t CRC8_Check_Sum(uint8_t *pchMessage, uint16_t dwLength)
+  25:modules/master_machine/seasky_protocol.c **** {
+  29              		.loc 1 25 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  26:modules/master_machine/seasky_protocol.c ****     uint8_t ucExpected = 0;
+ARM GAS  /tmp/ccYPduAz.s 			page 2
+
+
+  33              		.loc 1 26 5 view .LVU1
+  27:modules/master_machine/seasky_protocol.c ****     if ((pchMessage == 0) || (dwLength <= 2))
+  34              		.loc 1 27 5 view .LVU2
+  35              		.loc 1 27 8 is_stmt 0 view .LVU3
+  36 0000 90B1     		cbz	r0, .L3
+  25:modules/master_machine/seasky_protocol.c ****     uint8_t ucExpected = 0;
+  37              		.loc 1 25 1 discriminator 1 view .LVU4
+  38 0002 38B5     		push	{r3, r4, r5, lr}
+  39              	.LCFI0:
+  40              		.cfi_def_cfa_offset 16
+  41              		.cfi_offset 3, -16
+  42              		.cfi_offset 4, -12
+  43              		.cfi_offset 5, -8
+  44              		.cfi_offset 14, -4
+  45 0004 0C46     		mov	r4, r1
+  46 0006 0546     		mov	r5, r0
+  47              		.loc 1 27 27 discriminator 1 view .LVU5
+  48 0008 0229     		cmp	r1, #2
+  49 000a 01D8     		bhi	.L9
+  28:modules/master_machine/seasky_protocol.c ****         return 0;
+  50              		.loc 1 28 16 view .LVU6
+  51 000c 0020     		movs	r0, #0
+  52              	.LVL1:
+  53              	.L2:
+  29:modules/master_machine/seasky_protocol.c ****     ucExpected = crc_8(pchMessage, dwLength - 1);
+  30:modules/master_machine/seasky_protocol.c ****     return (ucExpected == pchMessage[dwLength - 1]);
+  31:modules/master_machine/seasky_protocol.c **** }
+  54              		.loc 1 31 1 view .LVU7
+  55 000e 38BD     		pop	{r3, r4, r5, pc}
+  56              	.LVL2:
+  57              	.L9:
+  29:modules/master_machine/seasky_protocol.c ****     ucExpected = crc_8(pchMessage, dwLength - 1);
+  58              		.loc 1 29 5 is_stmt 1 view .LVU8
+  29:modules/master_machine/seasky_protocol.c ****     ucExpected = crc_8(pchMessage, dwLength - 1);
+  59              		.loc 1 29 18 is_stmt 0 view .LVU9
+  60 0010 0139     		subs	r1, r1, #1
+  61              	.LVL3:
+  29:modules/master_machine/seasky_protocol.c ****     ucExpected = crc_8(pchMessage, dwLength - 1);
+  62              		.loc 1 29 18 view .LVU10
+  63 0012 89B2     		uxth	r1, r1
+  64 0014 FFF7FEFF 		bl	crc_8
+  65              	.LVL4:
+  30:modules/master_machine/seasky_protocol.c **** }
+  66              		.loc 1 30 5 is_stmt 1 view .LVU11
+  30:modules/master_machine/seasky_protocol.c **** }
+  67              		.loc 1 30 37 is_stmt 0 view .LVU12
+  68 0018 2C44     		add	r4, r4, r5
+  69 001a 14F8013C 		ldrb	r3, [r4, #-1]	@ zero_extendqisi2
+  30:modules/master_machine/seasky_protocol.c **** }
+  70              		.loc 1 30 24 view .LVU13
+  71 001e 8342     		cmp	r3, r0
+  72 0020 14BF     		ite	ne
+  73 0022 0020     		movne	r0, #0
+  74              	.LVL5:
+  30:modules/master_machine/seasky_protocol.c **** }
+  75              		.loc 1 30 24 view .LVU14
+  76 0024 0120     		moveq	r0, #1
+ARM GAS  /tmp/ccYPduAz.s 			page 3
+
+
+  77 0026 F2E7     		b	.L2
+  78              	.LVL6:
+  79              	.L3:
+  80              	.LCFI1:
+  81              		.cfi_def_cfa_offset 0
+  82              		.cfi_restore 3
+  83              		.cfi_restore 4
+  84              		.cfi_restore 5
+  85              		.cfi_restore 14
+  28:modules/master_machine/seasky_protocol.c ****         return 0;
+  86              		.loc 1 28 16 view .LVU15
+  87 0028 0020     		movs	r0, #0
+  88              	.LVL7:
+  89              		.loc 1 31 1 view .LVU16
+  90 002a 7047     		bx	lr
+  91              		.cfi_endproc
+  92              	.LFE243:
+  94              		.section	.text.protocol_heade_Check,"ax",%progbits
+  95              		.align	1
+  96              		.syntax unified
+  97              		.thumb
+  98              		.thumb_func
+  99              		.fpu fpv4-sp-d16
+ 101              	protocol_heade_Check:
+ 102              	.LVL8:
+ 103              	.LFB246:
+  32:modules/master_machine/seasky_protocol.c **** 
+  33:modules/master_machine/seasky_protocol.c **** /*获取CRC16校验码*/
+  34:modules/master_machine/seasky_protocol.c **** uint16_t Get_CRC16_Check(uint8_t *pchMessage,uint32_t dwLength)
+  35:modules/master_machine/seasky_protocol.c **** {
+  36:modules/master_machine/seasky_protocol.c ****     return crc_16(pchMessage,dwLength);
+  37:modules/master_machine/seasky_protocol.c **** }
+  38:modules/master_machine/seasky_protocol.c **** 
+  39:modules/master_machine/seasky_protocol.c **** /*检验CRC16数据段*/
+  40:modules/master_machine/seasky_protocol.c **** static uint16_t CRC16_Check_Sum(uint8_t *pchMessage, uint32_t dwLength)
+  41:modules/master_machine/seasky_protocol.c **** {
+  42:modules/master_machine/seasky_protocol.c ****     uint16_t wExpected = 0;
+  43:modules/master_machine/seasky_protocol.c ****     if ((pchMessage == 0) || (dwLength <= 2))
+  44:modules/master_machine/seasky_protocol.c ****     {
+  45:modules/master_machine/seasky_protocol.c ****         return 0;
+  46:modules/master_machine/seasky_protocol.c ****     }
+  47:modules/master_machine/seasky_protocol.c ****     wExpected = crc_16(pchMessage, dwLength - 2);
+  48:modules/master_machine/seasky_protocol.c ****     return (((wExpected & 0xff) == pchMessage[dwLength - 2]) && (((wExpected >> 8) & 0xff) == pchMe
+  49:modules/master_machine/seasky_protocol.c **** }
+  50:modules/master_machine/seasky_protocol.c **** 
+  51:modules/master_machine/seasky_protocol.c **** /*检验数据帧头*/
+  52:modules/master_machine/seasky_protocol.c **** static uint8_t protocol_heade_Check(protocol_rm_struct *pro, uint8_t *rx_buf)
+  53:modules/master_machine/seasky_protocol.c **** {
+ 104              		.loc 1 53 1 is_stmt 1 view -0
+ 105              		.cfi_startproc
+ 106              		@ args = 0, pretend = 0, frame = 0
+ 107              		@ frame_needed = 0, uses_anonymous_args = 0
+ 108              		.loc 1 53 1 is_stmt 0 view .LVU18
+ 109 0000 38B5     		push	{r3, r4, r5, lr}
+ 110              	.LCFI2:
+ 111              		.cfi_def_cfa_offset 16
+ 112              		.cfi_offset 3, -16
+ARM GAS  /tmp/ccYPduAz.s 			page 4
+
+
+ 113              		.cfi_offset 4, -12
+ 114              		.cfi_offset 5, -8
+ 115              		.cfi_offset 14, -4
+  54:modules/master_machine/seasky_protocol.c ****     if (rx_buf[0] == PROTOCOL_CMD_ID)
+ 116              		.loc 1 54 5 is_stmt 1 view .LVU19
+ 117              		.loc 1 54 15 is_stmt 0 view .LVU20
+ 118 0002 0B78     		ldrb	r3, [r1]	@ zero_extendqisi2
+ 119              		.loc 1 54 8 view .LVU21
+ 120 0004 A52B     		cmp	r3, #165
+ 121 0006 01D0     		beq	.L14
+  55:modules/master_machine/seasky_protocol.c ****     {
+  56:modules/master_machine/seasky_protocol.c ****         pro->header.sof = rx_buf[0];
+  57:modules/master_machine/seasky_protocol.c ****         if (CRC8_Check_Sum(&rx_buf[0], 4))
+  58:modules/master_machine/seasky_protocol.c ****         {
+  59:modules/master_machine/seasky_protocol.c ****             pro->header.data_length = (rx_buf[2] << 8) | rx_buf[1];
+  60:modules/master_machine/seasky_protocol.c ****             pro->header.crc_check = rx_buf[3];
+  61:modules/master_machine/seasky_protocol.c ****             pro->cmd_id = (rx_buf[5] << 8) | rx_buf[4];
+  62:modules/master_machine/seasky_protocol.c ****             return 1;
+  63:modules/master_machine/seasky_protocol.c ****         }
+  64:modules/master_machine/seasky_protocol.c ****     }
+  65:modules/master_machine/seasky_protocol.c ****     return 0;
+ 122              		.loc 1 65 12 view .LVU22
+ 123 0008 0020     		movs	r0, #0
+ 124              	.LVL9:
+ 125              	.L11:
+  66:modules/master_machine/seasky_protocol.c **** }
+ 126              		.loc 1 66 1 view .LVU23
+ 127 000a 38BD     		pop	{r3, r4, r5, pc}
+ 128              	.LVL10:
+ 129              	.L14:
+ 130              		.loc 1 66 1 view .LVU24
+ 131 000c 0546     		mov	r5, r0
+ 132 000e 0C46     		mov	r4, r1
+  56:modules/master_machine/seasky_protocol.c ****         if (CRC8_Check_Sum(&rx_buf[0], 4))
+ 133              		.loc 1 56 9 is_stmt 1 view .LVU25
+  56:modules/master_machine/seasky_protocol.c ****         if (CRC8_Check_Sum(&rx_buf[0], 4))
+ 134              		.loc 1 56 25 is_stmt 0 view .LVU26
+ 135 0010 0370     		strb	r3, [r0]
+  57:modules/master_machine/seasky_protocol.c ****         {
+ 136              		.loc 1 57 9 is_stmt 1 view .LVU27
+  57:modules/master_machine/seasky_protocol.c ****         {
+ 137              		.loc 1 57 13 is_stmt 0 view .LVU28
+ 138 0012 0421     		movs	r1, #4
+ 139              	.LVL11:
+  57:modules/master_machine/seasky_protocol.c ****         {
+ 140              		.loc 1 57 13 view .LVU29
+ 141 0014 2046     		mov	r0, r4
+ 142              	.LVL12:
+  57:modules/master_machine/seasky_protocol.c ****         {
+ 143              		.loc 1 57 13 view .LVU30
+ 144 0016 FFF7FEFF 		bl	CRC8_Check_Sum
+ 145              	.LVL13:
+  57:modules/master_machine/seasky_protocol.c ****         {
+ 146              		.loc 1 57 12 view .LVU31
+ 147 001a 0028     		cmp	r0, #0
+ 148 001c F5D0     		beq	.L11
+  59:modules/master_machine/seasky_protocol.c ****             pro->header.crc_check = rx_buf[3];
+ARM GAS  /tmp/ccYPduAz.s 			page 5
+
+
+ 149              		.loc 1 59 13 is_stmt 1 view .LVU32
+  59:modules/master_machine/seasky_protocol.c ****             pro->header.crc_check = rx_buf[3];
+ 150              		.loc 1 59 46 is_stmt 0 view .LVU33
+ 151 001e A278     		ldrb	r2, [r4, #2]	@ zero_extendqisi2
+  59:modules/master_machine/seasky_protocol.c ****             pro->header.crc_check = rx_buf[3];
+ 152              		.loc 1 59 64 view .LVU34
+ 153 0020 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+  59:modules/master_machine/seasky_protocol.c ****             pro->header.crc_check = rx_buf[3];
+ 154              		.loc 1 59 56 view .LVU35
+ 155 0022 43EA0223 		orr	r3, r3, r2, lsl #8
+  59:modules/master_machine/seasky_protocol.c ****             pro->header.crc_check = rx_buf[3];
+ 156              		.loc 1 59 37 view .LVU36
+ 157 0026 6B80     		strh	r3, [r5, #2]	@ movhi
+  60:modules/master_machine/seasky_protocol.c ****             pro->cmd_id = (rx_buf[5] << 8) | rx_buf[4];
+ 158              		.loc 1 60 13 is_stmt 1 view .LVU37
+  60:modules/master_machine/seasky_protocol.c ****             pro->cmd_id = (rx_buf[5] << 8) | rx_buf[4];
+ 159              		.loc 1 60 35 is_stmt 0 view .LVU38
+ 160 0028 E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 161 002a 2B71     		strb	r3, [r5, #4]
+  61:modules/master_machine/seasky_protocol.c ****             return 1;
+ 162              		.loc 1 61 13 is_stmt 1 view .LVU39
+  61:modules/master_machine/seasky_protocol.c ****             return 1;
+ 163              		.loc 1 61 34 is_stmt 0 view .LVU40
+ 164 002c 6279     		ldrb	r2, [r4, #5]	@ zero_extendqisi2
+  61:modules/master_machine/seasky_protocol.c ****             return 1;
+ 165              		.loc 1 61 52 view .LVU41
+ 166 002e 2379     		ldrb	r3, [r4, #4]	@ zero_extendqisi2
+  61:modules/master_machine/seasky_protocol.c ****             return 1;
+ 167              		.loc 1 61 44 view .LVU42
+ 168 0030 43EA0223 		orr	r3, r3, r2, lsl #8
+  61:modules/master_machine/seasky_protocol.c ****             return 1;
+ 169              		.loc 1 61 25 view .LVU43
+ 170 0034 EB80     		strh	r3, [r5, #6]	@ movhi
+  62:modules/master_machine/seasky_protocol.c ****         }
+ 171              		.loc 1 62 13 is_stmt 1 view .LVU44
+  62:modules/master_machine/seasky_protocol.c ****         }
+ 172              		.loc 1 62 20 is_stmt 0 view .LVU45
+ 173 0036 0120     		movs	r0, #1
+ 174 0038 E7E7     		b	.L11
+ 175              		.cfi_endproc
+ 176              	.LFE246:
+ 178              		.section	.text.CRC16_Check_Sum,"ax",%progbits
+ 179              		.align	1
+ 180              		.syntax unified
+ 181              		.thumb
+ 182              		.thumb_func
+ 183              		.fpu fpv4-sp-d16
+ 185              	CRC16_Check_Sum:
+ 186              	.LVL14:
+ 187              	.LFB245:
+  41:modules/master_machine/seasky_protocol.c ****     uint16_t wExpected = 0;
+ 188              		.loc 1 41 1 is_stmt 1 view -0
+ 189              		.cfi_startproc
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+  42:modules/master_machine/seasky_protocol.c ****     if ((pchMessage == 0) || (dwLength <= 2))
+ 192              		.loc 1 42 5 view .LVU47
+ARM GAS  /tmp/ccYPduAz.s 			page 6
+
+
+  43:modules/master_machine/seasky_protocol.c ****     {
+ 193              		.loc 1 43 5 view .LVU48
+  43:modules/master_machine/seasky_protocol.c ****     {
+ 194              		.loc 1 43 8 is_stmt 0 view .LVU49
+ 195 0000 F0B1     		cbz	r0, .L18
+  41:modules/master_machine/seasky_protocol.c ****     uint16_t wExpected = 0;
+ 196              		.loc 1 41 1 discriminator 1 view .LVU50
+ 197 0002 38B5     		push	{r3, r4, r5, lr}
+ 198              	.LCFI3:
+ 199              		.cfi_def_cfa_offset 16
+ 200              		.cfi_offset 3, -16
+ 201              		.cfi_offset 4, -12
+ 202              		.cfi_offset 5, -8
+ 203              		.cfi_offset 14, -4
+ 204 0004 0C46     		mov	r4, r1
+ 205 0006 0546     		mov	r5, r0
+  43:modules/master_machine/seasky_protocol.c ****     {
+ 206              		.loc 1 43 27 discriminator 1 view .LVU51
+ 207 0008 0229     		cmp	r1, #2
+ 208 000a 01D8     		bhi	.L26
+  45:modules/master_machine/seasky_protocol.c ****     }
+ 209              		.loc 1 45 16 view .LVU52
+ 210 000c 0020     		movs	r0, #0
+ 211              	.LVL15:
+ 212              	.L16:
+  49:modules/master_machine/seasky_protocol.c **** 
+ 213              		.loc 1 49 1 view .LVU53
+ 214 000e 38BD     		pop	{r3, r4, r5, pc}
+ 215              	.LVL16:
+ 216              	.L26:
+  47:modules/master_machine/seasky_protocol.c ****     return (((wExpected & 0xff) == pchMessage[dwLength - 2]) && (((wExpected >> 8) & 0xff) == pchMe
+ 217              		.loc 1 47 5 is_stmt 1 view .LVU54
+  47:modules/master_machine/seasky_protocol.c ****     return (((wExpected & 0xff) == pchMessage[dwLength - 2]) && (((wExpected >> 8) & 0xff) == pchMe
+ 218              		.loc 1 47 17 is_stmt 0 view .LVU55
+ 219 0010 0239     		subs	r1, r1, #2
+ 220              	.LVL17:
+  47:modules/master_machine/seasky_protocol.c ****     return (((wExpected & 0xff) == pchMessage[dwLength - 2]) && (((wExpected >> 8) & 0xff) == pchMe
+ 221              		.loc 1 47 17 view .LVU56
+ 222 0012 89B2     		uxth	r1, r1
+ 223 0014 FFF7FEFF 		bl	crc_16
+ 224              	.LVL18:
+  48:modules/master_machine/seasky_protocol.c **** }
+ 225              		.loc 1 48 5 is_stmt 1 view .LVU57
+  48:modules/master_machine/seasky_protocol.c **** }
+ 226              		.loc 1 48 46 is_stmt 0 view .LVU58
+ 227 0018 2B19     		adds	r3, r5, r4
+  48:modules/master_machine/seasky_protocol.c **** }
+ 228              		.loc 1 48 62 view .LVU59
+ 229 001a C2B2     		uxtb	r2, r0
+ 230 001c 13F8023C 		ldrb	r3, [r3, #-2]	@ zero_extendqisi2
+ 231 0020 9A42     		cmp	r2, r3
+ 232 0022 02D0     		beq	.L27
+ 233 0024 0020     		movs	r0, #0
+ 234              	.LVL19:
+ 235              	.L17:
+  48:modules/master_machine/seasky_protocol.c **** }
+ 236              		.loc 1 48 62 discriminator 6 view .LVU60
+ARM GAS  /tmp/ccYPduAz.s 			page 7
+
+
+ 237 0026 80B2     		uxth	r0, r0
+ 238 0028 F1E7     		b	.L16
+ 239              	.LVL20:
+ 240              	.L27:
+  48:modules/master_machine/seasky_protocol.c **** }
+ 241              		.loc 1 48 84 discriminator 1 view .LVU61
+ 242 002a C0F30F20 		ubfx	r0, r0, #8, #16
+ 243              	.LVL21:
+  48:modules/master_machine/seasky_protocol.c **** }
+ 244              		.loc 1 48 105 discriminator 1 view .LVU62
+ 245 002e 2C44     		add	r4, r4, r5
+ 246              	.LVL22:
+  48:modules/master_machine/seasky_protocol.c **** }
+ 247              		.loc 1 48 62 discriminator 1 view .LVU63
+ 248 0030 14F8013C 		ldrb	r3, [r4, #-1]	@ zero_extendqisi2
+ 249 0034 9842     		cmp	r0, r3
+ 250 0036 01D0     		beq	.L21
+  48:modules/master_machine/seasky_protocol.c **** }
+ 251              		.loc 1 48 62 view .LVU64
+ 252 0038 0020     		movs	r0, #0
+ 253 003a F4E7     		b	.L17
+ 254              	.L21:
+ 255 003c 0120     		movs	r0, #1
+ 256 003e F2E7     		b	.L17
+ 257              	.LVL23:
+ 258              	.L18:
+ 259              	.LCFI4:
+ 260              		.cfi_def_cfa_offset 0
+ 261              		.cfi_restore 3
+ 262              		.cfi_restore 4
+ 263              		.cfi_restore 5
+ 264              		.cfi_restore 14
+  45:modules/master_machine/seasky_protocol.c ****     }
+ 265              		.loc 1 45 16 view .LVU65
+ 266 0040 0020     		movs	r0, #0
+ 267              	.LVL24:
+  49:modules/master_machine/seasky_protocol.c **** 
+ 268              		.loc 1 49 1 view .LVU66
+ 269 0042 7047     		bx	lr
+ 270              		.cfi_endproc
+ 271              	.LFE245:
+ 273              		.section	.text.Get_CRC8_Check,"ax",%progbits
+ 274              		.align	1
+ 275              		.global	Get_CRC8_Check
+ 276              		.syntax unified
+ 277              		.thumb
+ 278              		.thumb_func
+ 279              		.fpu fpv4-sp-d16
+ 281              	Get_CRC8_Check:
+ 282              	.LVL25:
+ 283              	.LFB242:
+  20:modules/master_machine/seasky_protocol.c ****     return crc_8(pchMessage,dwLength);
+ 284              		.loc 1 20 1 is_stmt 1 view -0
+ 285              		.cfi_startproc
+ 286              		@ args = 0, pretend = 0, frame = 0
+ 287              		@ frame_needed = 0, uses_anonymous_args = 0
+  20:modules/master_machine/seasky_protocol.c ****     return crc_8(pchMessage,dwLength);
+ARM GAS  /tmp/ccYPduAz.s 			page 8
+
+
+ 288              		.loc 1 20 1 is_stmt 0 view .LVU68
+ 289 0000 08B5     		push	{r3, lr}
+ 290              	.LCFI5:
+ 291              		.cfi_def_cfa_offset 8
+ 292              		.cfi_offset 3, -8
+ 293              		.cfi_offset 14, -4
+  21:modules/master_machine/seasky_protocol.c **** }
+ 294              		.loc 1 21 5 is_stmt 1 view .LVU69
+  21:modules/master_machine/seasky_protocol.c **** }
+ 295              		.loc 1 21 12 is_stmt 0 view .LVU70
+ 296 0002 FFF7FEFF 		bl	crc_8
+ 297              	.LVL26:
+  22:modules/master_machine/seasky_protocol.c **** /*检验CRC8数据段*/
+ 298              		.loc 1 22 1 view .LVU71
+ 299 0006 08BD     		pop	{r3, pc}
+ 300              		.cfi_endproc
+ 301              	.LFE242:
+ 303              		.section	.text.Get_CRC16_Check,"ax",%progbits
+ 304              		.align	1
+ 305              		.global	Get_CRC16_Check
+ 306              		.syntax unified
+ 307              		.thumb
+ 308              		.thumb_func
+ 309              		.fpu fpv4-sp-d16
+ 311              	Get_CRC16_Check:
+ 312              	.LVL27:
+ 313              	.LFB244:
+  35:modules/master_machine/seasky_protocol.c ****     return crc_16(pchMessage,dwLength);
+ 314              		.loc 1 35 1 is_stmt 1 view -0
+ 315              		.cfi_startproc
+ 316              		@ args = 0, pretend = 0, frame = 0
+ 317              		@ frame_needed = 0, uses_anonymous_args = 0
+  35:modules/master_machine/seasky_protocol.c ****     return crc_16(pchMessage,dwLength);
+ 318              		.loc 1 35 1 is_stmt 0 view .LVU73
+ 319 0000 08B5     		push	{r3, lr}
+ 320              	.LCFI6:
+ 321              		.cfi_def_cfa_offset 8
+ 322              		.cfi_offset 3, -8
+ 323              		.cfi_offset 14, -4
+  36:modules/master_machine/seasky_protocol.c **** }
+ 324              		.loc 1 36 5 is_stmt 1 view .LVU74
+  36:modules/master_machine/seasky_protocol.c **** }
+ 325              		.loc 1 36 12 is_stmt 0 view .LVU75
+ 326 0002 89B2     		uxth	r1, r1
+ 327              	.LVL28:
+  36:modules/master_machine/seasky_protocol.c **** }
+ 328              		.loc 1 36 12 view .LVU76
+ 329 0004 FFF7FEFF 		bl	crc_16
+ 330              	.LVL29:
+  37:modules/master_machine/seasky_protocol.c **** 
+ 331              		.loc 1 37 1 view .LVU77
+ 332 0008 08BD     		pop	{r3, pc}
+ 333              		.cfi_endproc
+ 334              	.LFE244:
+ 336              		.section	.text.get_protocol_send_data,"ax",%progbits
+ 337              		.align	1
+ 338              		.global	get_protocol_send_data
+ARM GAS  /tmp/ccYPduAz.s 			page 9
+
+
+ 339              		.syntax unified
+ 340              		.thumb
+ 341              		.thumb_func
+ 342              		.fpu fpv4-sp-d16
+ 344              	get_protocol_send_data:
+ 345              	.LVL30:
+ 346              	.LFB247:
+  67:modules/master_machine/seasky_protocol.c **** 
+  68:modules/master_machine/seasky_protocol.c **** /*
+  69:modules/master_machine/seasky_protocol.c ****     此函数根据待发送的数据更新数据帧格式以及内容，实现数据的打包操�
+  70:modules/master_machine/seasky_protocol.c ****     后续调用通信接口的发送函数发送tx_buf中的对应数据
+  71:modules/master_machine/seasky_protocol.c **** */
+  72:modules/master_machine/seasky_protocol.c **** void get_protocol_send_data(uint16_t send_id,        // 信号id
+  73:modules/master_machine/seasky_protocol.c ****                             uint16_t flags_register, // 16位寄存器
+  74:modules/master_machine/seasky_protocol.c ****                             float *tx_data,          // 待发送的float数据
+  75:modules/master_machine/seasky_protocol.c ****                             uint8_t float_length,    // float的数据长度
+  76:modules/master_machine/seasky_protocol.c ****                             uint8_t *tx_buf,         // 待发送的数据帧
+  77:modules/master_machine/seasky_protocol.c ****                             uint16_t *tx_buf_len)    // 待发送的数据帧长度
+  78:modules/master_machine/seasky_protocol.c **** {
+ 347              		.loc 1 78 1 is_stmt 1 view -0
+ 348              		.cfi_startproc
+ 349              		@ args = 8, pretend = 0, frame = 0
+ 350              		@ frame_needed = 0, uses_anonymous_args = 0
+ 351              		.loc 1 78 1 is_stmt 0 view .LVU79
+ 352 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 353              	.LCFI7:
+ 354              		.cfi_def_cfa_offset 24
+ 355              		.cfi_offset 4, -24
+ 356              		.cfi_offset 5, -20
+ 357              		.cfi_offset 6, -16
+ 358              		.cfi_offset 7, -12
+ 359              		.cfi_offset 8, -8
+ 360              		.cfi_offset 14, -4
+ 361 0004 8046     		mov	r8, r0
+ 362 0006 0F46     		mov	r7, r1
+ 363 0008 1646     		mov	r6, r2
+ 364 000a 1D46     		mov	r5, r3
+ 365 000c 069C     		ldr	r4, [sp, #24]
+  79:modules/master_machine/seasky_protocol.c ****     static uint16_t crc16;
+ 366              		.loc 1 79 5 is_stmt 1 view .LVU80
+  80:modules/master_machine/seasky_protocol.c ****     static uint16_t data_len;
+ 367              		.loc 1 80 5 view .LVU81
+  81:modules/master_machine/seasky_protocol.c **** 
+  82:modules/master_machine/seasky_protocol.c ****     data_len = float_length * 4 + 2;
+ 368              		.loc 1 82 5 view .LVU82
+ 369              		.loc 1 82 33 is_stmt 0 view .LVU83
+ 370 000e 9B00     		lsls	r3, r3, #2
+ 371              	.LVL31:
+ 372              		.loc 1 82 33 view .LVU84
+ 373 0010 0233     		adds	r3, r3, #2
+ 374              		.loc 1 82 14 view .LVU85
+ 375 0012 224A     		ldr	r2, .L38
+ 376              	.LVL32:
+ 377              		.loc 1 82 14 view .LVU86
+ 378 0014 1380     		strh	r3, [r2]	@ movhi
+  83:modules/master_machine/seasky_protocol.c ****     /*帧头部分*/
+  84:modules/master_machine/seasky_protocol.c ****     tx_buf[0] = PROTOCOL_CMD_ID;
+ARM GAS  /tmp/ccYPduAz.s 			page 10
+
+
+ 379              		.loc 1 84 5 is_stmt 1 view .LVU87
+ 380              		.loc 1 84 15 is_stmt 0 view .LVU88
+ 381 0016 A522     		movs	r2, #165
+ 382 0018 2270     		strb	r2, [r4]
+  85:modules/master_machine/seasky_protocol.c ****     tx_buf[1] = data_len & 0xff;        // 低位在前
+ 383              		.loc 1 85 5 is_stmt 1 view .LVU89
+ 384              		.loc 1 85 15 is_stmt 0 view .LVU90
+ 385 001a 6370     		strb	r3, [r4, #1]
+  86:modules/master_machine/seasky_protocol.c ****     tx_buf[2] = (data_len >> 8) & 0xff; // 低位在前
+ 386              		.loc 1 86 5 is_stmt 1 view .LVU91
+ 387              		.loc 1 86 15 is_stmt 0 view .LVU92
+ 388 001c 1B0A     		lsrs	r3, r3, #8
+ 389 001e A370     		strb	r3, [r4, #2]
+  87:modules/master_machine/seasky_protocol.c ****     tx_buf[3] = crc_8(&tx_buf[0], 3);   // 获取CRC8校验位
+ 390              		.loc 1 87 5 is_stmt 1 view .LVU93
+ 391              		.loc 1 87 17 is_stmt 0 view .LVU94
+ 392 0020 0321     		movs	r1, #3
+ 393              	.LVL33:
+ 394              		.loc 1 87 17 view .LVU95
+ 395 0022 2046     		mov	r0, r4
+ 396              	.LVL34:
+ 397              		.loc 1 87 17 view .LVU96
+ 398 0024 FFF7FEFF 		bl	crc_8
+ 399              	.LVL35:
+ 400              		.loc 1 87 15 view .LVU97
+ 401 0028 E070     		strb	r0, [r4, #3]
+  88:modules/master_machine/seasky_protocol.c **** 
+  89:modules/master_machine/seasky_protocol.c ****     /*数据的信号id*/
+  90:modules/master_machine/seasky_protocol.c ****     tx_buf[4] = send_id & 0xff;
+ 402              		.loc 1 90 5 is_stmt 1 view .LVU98
+ 403              		.loc 1 90 15 is_stmt 0 view .LVU99
+ 404 002a 84F80480 		strb	r8, [r4, #4]
+  91:modules/master_machine/seasky_protocol.c ****     tx_buf[5] = (send_id >> 8) & 0xff;
+ 405              		.loc 1 91 5 is_stmt 1 view .LVU100
+ 406              		.loc 1 91 15 is_stmt 0 view .LVU101
+ 407 002e 4FEA1828 		lsr	r8, r8, #8
+ 408 0032 84F80580 		strb	r8, [r4, #5]
+  92:modules/master_machine/seasky_protocol.c **** 
+  93:modules/master_machine/seasky_protocol.c ****     /*建立16位寄存器*/
+  94:modules/master_machine/seasky_protocol.c ****     tx_buf[6] = flags_register & 0xff;
+ 409              		.loc 1 94 5 is_stmt 1 view .LVU102
+ 410              		.loc 1 94 15 is_stmt 0 view .LVU103
+ 411 0036 A771     		strb	r7, [r4, #6]
+  95:modules/master_machine/seasky_protocol.c ****     tx_buf[7] = (flags_register >> 8) & 0xff;
+ 412              		.loc 1 95 5 is_stmt 1 view .LVU104
+ 413              		.loc 1 95 15 is_stmt 0 view .LVU105
+ 414 0038 3F0A     		lsrs	r7, r7, #8
+ 415 003a E771     		strb	r7, [r4, #7]
+  96:modules/master_machine/seasky_protocol.c **** 
+  97:modules/master_machine/seasky_protocol.c ****     /*float数据段*/
+  98:modules/master_machine/seasky_protocol.c ****     for (int i = 0; i < 4 * float_length; i++)
+ 416              		.loc 1 98 5 is_stmt 1 view .LVU106
+ 417              	.LBB2:
+ 418              		.loc 1 98 10 view .LVU107
+ 419              	.LVL36:
+ 420              		.loc 1 98 14 is_stmt 0 view .LVU108
+ 421 003c 0021     		movs	r1, #0
+ARM GAS  /tmp/ccYPduAz.s 			page 11
+
+
+ 422              		.loc 1 98 5 view .LVU109
+ 423 003e 10E0     		b	.L33
+ 424              	.LVL37:
+ 425              	.L34:
+  99:modules/master_machine/seasky_protocol.c ****     {
+ 100:modules/master_machine/seasky_protocol.c ****         tx_buf[i + 8] = ((uint8_t *)(&tx_data[i / 4]))[i % 4];
+ 426              		.loc 1 100 46 discriminator 3 view .LVU110
+ 427 0040 20F00300 		bic	r0, r0, #3
+ 428              		.loc 1 100 58 discriminator 3 view .LVU111
+ 429 0044 4B42     		rsbs	r3, r1, #0
+ 430 0046 01F0030C 		and	ip, r1, #3
+ 431 004a 03F00303 		and	r3, r3, #3
+ 432 004e 58BF     		it	pl
+ 433 0050 C3F1000C 		rsbpl	ip, r3, #0
+ 434              		.loc 1 100 15 discriminator 3 view .LVU112
+ 435 0054 01F10803 		add	r3, r1, #8
+ 436              		.loc 1 100 55 discriminator 3 view .LVU113
+ 437 0058 3044     		add	r0, r0, r6
+ 438 005a 10F80C20 		ldrb	r2, [r0, ip]	@ zero_extendqisi2
+ 439              		.loc 1 100 23 discriminator 3 view .LVU114
+ 440 005e E254     		strb	r2, [r4, r3]
+  98:modules/master_machine/seasky_protocol.c ****     {
+ 441              		.loc 1 98 43 is_stmt 1 discriminator 3 view .LVU115
+  98:modules/master_machine/seasky_protocol.c ****     {
+ 442              		.loc 1 98 44 is_stmt 0 discriminator 3 view .LVU116
+ 443 0060 0131     		adds	r1, r1, #1
+ 444              	.LVL38:
+ 445              	.L33:
+  98:modules/master_machine/seasky_protocol.c ****     {
+ 446              		.loc 1 98 21 is_stmt 1 discriminator 1 view .LVU117
+  98:modules/master_machine/seasky_protocol.c ****     {
+ 447              		.loc 1 98 5 is_stmt 0 discriminator 1 view .LVU118
+ 448 0062 B1EB850F 		cmp	r1, r5, lsl #2
+ 449 0066 04DA     		bge	.L37
+ 450              		.loc 1 100 9 is_stmt 1 discriminator 3 view .LVU119
+ 451              		.loc 1 100 49 is_stmt 0 discriminator 3 view .LVU120
+ 452 0068 0846     		mov	r0, r1
+ 453 006a 0029     		cmp	r1, #0
+ 454 006c E8DA     		bge	.L34
+ 455 006e C81C     		adds	r0, r1, #3
+ 456 0070 E6E7     		b	.L34
+ 457              	.L37:
+ 458              	.LBE2:
+ 101:modules/master_machine/seasky_protocol.c ****     }
+ 102:modules/master_machine/seasky_protocol.c **** 
+ 103:modules/master_machine/seasky_protocol.c ****     /*整包校验*/
+ 104:modules/master_machine/seasky_protocol.c ****     crc16 = crc_16(&tx_buf[0], data_len + 6);
+ 459              		.loc 1 104 5 is_stmt 1 view .LVU121
+ 460              		.loc 1 104 13 is_stmt 0 view .LVU122
+ 461 0072 0A4D     		ldr	r5, .L38
+ 462 0074 2988     		ldrh	r1, [r5]
+ 463              	.LVL39:
+ 464              		.loc 1 104 13 view .LVU123
+ 465 0076 0631     		adds	r1, r1, #6
+ 466 0078 89B2     		uxth	r1, r1
+ 467 007a 2046     		mov	r0, r4
+ 468 007c FFF7FEFF 		bl	crc_16
+ARM GAS  /tmp/ccYPduAz.s 			page 12
+
+
+ 469              	.LVL40:
+ 470              		.loc 1 104 11 view .LVU124
+ 471 0080 074B     		ldr	r3, .L38+4
+ 472 0082 1880     		strh	r0, [r3]	@ movhi
+ 105:modules/master_machine/seasky_protocol.c ****     tx_buf[data_len + 6] = crc16 & 0xff;
+ 473              		.loc 1 105 5 is_stmt 1 view .LVU125
+ 474              		.loc 1 105 11 is_stmt 0 view .LVU126
+ 475 0084 2B88     		ldrh	r3, [r5]
+ 476 0086 9A1D     		adds	r2, r3, #6
+ 477              		.loc 1 105 26 view .LVU127
+ 478 0088 A054     		strb	r0, [r4, r2]
+ 106:modules/master_machine/seasky_protocol.c ****     tx_buf[data_len + 7] = (crc16 >> 8) & 0xff;
+ 479              		.loc 1 106 5 is_stmt 1 view .LVU128
+ 480              		.loc 1 106 11 is_stmt 0 view .LVU129
+ 481 008a DA1D     		adds	r2, r3, #7
+ 482              		.loc 1 106 26 view .LVU130
+ 483 008c 000A     		lsrs	r0, r0, #8
+ 484 008e A054     		strb	r0, [r4, r2]
+ 107:modules/master_machine/seasky_protocol.c **** 
+ 108:modules/master_machine/seasky_protocol.c ****     *tx_buf_len = data_len + 8;
+ 485              		.loc 1 108 5 is_stmt 1 view .LVU131
+ 486              		.loc 1 108 28 is_stmt 0 view .LVU132
+ 487 0090 0833     		adds	r3, r3, #8
+ 488              		.loc 1 108 17 view .LVU133
+ 489 0092 079A     		ldr	r2, [sp, #28]
+ 490 0094 1380     		strh	r3, [r2]	@ movhi
+ 109:modules/master_machine/seasky_protocol.c **** }
+ 491              		.loc 1 109 1 view .LVU134
+ 492 0096 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 493              	.LVL41:
+ 494              	.L39:
+ 495              		.loc 1 109 1 view .LVU135
+ 496 009a 00BF     		.align	2
+ 497              	.L38:
+ 498 009c 00000000 		.word	.LANCHOR0
+ 499 00a0 00000000 		.word	.LANCHOR1
+ 500              		.cfi_endproc
+ 501              	.LFE247:
+ 503              		.section	.text.get_protocol_info,"ax",%progbits
+ 504              		.align	1
+ 505              		.global	get_protocol_info
+ 506              		.syntax unified
+ 507              		.thumb
+ 508              		.thumb_func
+ 509              		.fpu fpv4-sp-d16
+ 511              	get_protocol_info:
+ 512              	.LVL42:
+ 513              	.LFB248:
+ 110:modules/master_machine/seasky_protocol.c **** /*
+ 111:modules/master_machine/seasky_protocol.c ****     此函数用于处理接收数据，
+ 112:modules/master_machine/seasky_protocol.c ****     返回数据内容的id
+ 113:modules/master_machine/seasky_protocol.c **** */
+ 114:modules/master_machine/seasky_protocol.c **** uint16_t get_protocol_info(uint8_t *rx_buf,          // 接收到的原始数据
+ 115:modules/master_machine/seasky_protocol.c ****                            uint16_t *flags_register, // 接收数据的16位寄存器地址
+ 116:modules/master_machine/seasky_protocol.c ****                            uint8_t *rx_data)         // 接收的float数据存储地址
+ 117:modules/master_machine/seasky_protocol.c **** {
+ 514              		.loc 1 117 1 is_stmt 1 view -0
+ARM GAS  /tmp/ccYPduAz.s 			page 13
+
+
+ 515              		.cfi_startproc
+ 516              		@ args = 0, pretend = 0, frame = 0
+ 517              		@ frame_needed = 0, uses_anonymous_args = 0
+ 518              		.loc 1 117 1 is_stmt 0 view .LVU137
+ 519 0000 70B5     		push	{r4, r5, r6, lr}
+ 520              	.LCFI8:
+ 521              		.cfi_def_cfa_offset 16
+ 522              		.cfi_offset 4, -16
+ 523              		.cfi_offset 5, -12
+ 524              		.cfi_offset 6, -8
+ 525              		.cfi_offset 14, -4
+ 526 0002 0446     		mov	r4, r0
+ 527 0004 0D46     		mov	r5, r1
+ 528 0006 1646     		mov	r6, r2
+ 118:modules/master_machine/seasky_protocol.c ****     // 放在静态区,避免反复申请栈上空间
+ 119:modules/master_machine/seasky_protocol.c ****     static protocol_rm_struct pro;
+ 529              		.loc 1 119 5 is_stmt 1 view .LVU138
+ 120:modules/master_machine/seasky_protocol.c ****     static uint16_t date_length;
+ 530              		.loc 1 120 5 view .LVU139
+ 121:modules/master_machine/seasky_protocol.c **** 
+ 122:modules/master_machine/seasky_protocol.c ****     if (protocol_heade_Check(&pro, rx_buf))
+ 531              		.loc 1 122 5 view .LVU140
+ 532              		.loc 1 122 9 is_stmt 0 view .LVU141
+ 533 0008 0146     		mov	r1, r0
+ 534              	.LVL43:
+ 535              		.loc 1 122 9 view .LVU142
+ 536 000a 1048     		ldr	r0, .L45
+ 537              	.LVL44:
+ 538              		.loc 1 122 9 view .LVU143
+ 539 000c FFF7FEFF 		bl	protocol_heade_Check
+ 540              	.LVL45:
+ 541              		.loc 1 122 8 view .LVU144
+ 542 0010 08B9     		cbnz	r0, .L44
+ 123:modules/master_machine/seasky_protocol.c ****     {
+ 124:modules/master_machine/seasky_protocol.c ****         date_length = OFFSET_BYTE + pro.header.data_length;
+ 125:modules/master_machine/seasky_protocol.c ****         if (CRC16_Check_Sum(&rx_buf[0], date_length))
+ 126:modules/master_machine/seasky_protocol.c ****         {
+ 127:modules/master_machine/seasky_protocol.c ****             *flags_register = (rx_buf[7] << 8) | rx_buf[6];
+ 128:modules/master_machine/seasky_protocol.c ****             memcpy(rx_data, rx_buf + 8, pro.header.data_length - 2);
+ 129:modules/master_machine/seasky_protocol.c ****             return pro.cmd_id;
+ 130:modules/master_machine/seasky_protocol.c ****         }
+ 131:modules/master_machine/seasky_protocol.c ****     }
+ 132:modules/master_machine/seasky_protocol.c ****     return 0;
+ 543              		.loc 1 132 12 view .LVU145
+ 544 0012 0020     		movs	r0, #0
+ 545              	.LVL46:
+ 546              	.L41:
+ 133:modules/master_machine/seasky_protocol.c **** }
+ 547              		.loc 1 133 1 view .LVU146
+ 548 0014 70BD     		pop	{r4, r5, r6, pc}
+ 549              	.LVL47:
+ 550              	.L44:
+ 124:modules/master_machine/seasky_protocol.c ****         if (CRC16_Check_Sum(&rx_buf[0], date_length))
+ 551              		.loc 1 124 9 is_stmt 1 view .LVU147
+ 124:modules/master_machine/seasky_protocol.c ****         if (CRC16_Check_Sum(&rx_buf[0], date_length))
+ 552              		.loc 1 124 47 is_stmt 0 view .LVU148
+ 553 0016 0D4B     		ldr	r3, .L45
+ARM GAS  /tmp/ccYPduAz.s 			page 14
+
+
+ 554 0018 5B88     		ldrh	r3, [r3, #2]
+ 124:modules/master_machine/seasky_protocol.c ****         if (CRC16_Check_Sum(&rx_buf[0], date_length))
+ 555              		.loc 1 124 35 view .LVU149
+ 556 001a 0833     		adds	r3, r3, #8
+ 557 001c 99B2     		uxth	r1, r3
+ 124:modules/master_machine/seasky_protocol.c ****         if (CRC16_Check_Sum(&rx_buf[0], date_length))
+ 558              		.loc 1 124 21 view .LVU150
+ 559 001e 0C4B     		ldr	r3, .L45+4
+ 560 0020 1980     		strh	r1, [r3]	@ movhi
+ 125:modules/master_machine/seasky_protocol.c ****         {
+ 561              		.loc 1 125 9 is_stmt 1 view .LVU151
+ 125:modules/master_machine/seasky_protocol.c ****         {
+ 562              		.loc 1 125 13 is_stmt 0 view .LVU152
+ 563 0022 2046     		mov	r0, r4
+ 564 0024 FFF7FEFF 		bl	CRC16_Check_Sum
+ 565              	.LVL48:
+ 125:modules/master_machine/seasky_protocol.c ****         {
+ 566              		.loc 1 125 12 view .LVU153
+ 567 0028 0028     		cmp	r0, #0
+ 568 002a F3D0     		beq	.L41
+ 127:modules/master_machine/seasky_protocol.c ****             memcpy(rx_data, rx_buf + 8, pro.header.data_length - 2);
+ 569              		.loc 1 127 13 is_stmt 1 view .LVU154
+ 127:modules/master_machine/seasky_protocol.c ****             memcpy(rx_data, rx_buf + 8, pro.header.data_length - 2);
+ 570              		.loc 1 127 38 is_stmt 0 view .LVU155
+ 571 002c E279     		ldrb	r2, [r4, #7]	@ zero_extendqisi2
+ 127:modules/master_machine/seasky_protocol.c ****             memcpy(rx_data, rx_buf + 8, pro.header.data_length - 2);
+ 572              		.loc 1 127 56 view .LVU156
+ 573 002e A379     		ldrb	r3, [r4, #6]	@ zero_extendqisi2
+ 127:modules/master_machine/seasky_protocol.c ****             memcpy(rx_data, rx_buf + 8, pro.header.data_length - 2);
+ 574              		.loc 1 127 48 view .LVU157
+ 575 0030 43EA0223 		orr	r3, r3, r2, lsl #8
+ 127:modules/master_machine/seasky_protocol.c ****             memcpy(rx_data, rx_buf + 8, pro.header.data_length - 2);
+ 576              		.loc 1 127 29 view .LVU158
+ 577 0034 2B80     		strh	r3, [r5]	@ movhi
+ 128:modules/master_machine/seasky_protocol.c ****             return pro.cmd_id;
+ 578              		.loc 1 128 13 is_stmt 1 view .LVU159
+ 128:modules/master_machine/seasky_protocol.c ****             return pro.cmd_id;
+ 579              		.loc 1 128 51 is_stmt 0 view .LVU160
+ 580 0036 054D     		ldr	r5, .L45
+ 581              	.LVL49:
+ 128:modules/master_machine/seasky_protocol.c ****             return pro.cmd_id;
+ 582              		.loc 1 128 51 view .LVU161
+ 583 0038 6A88     		ldrh	r2, [r5, #2]
+ 128:modules/master_machine/seasky_protocol.c ****             return pro.cmd_id;
+ 584              		.loc 1 128 13 view .LVU162
+ 585 003a 023A     		subs	r2, r2, #2
+ 586 003c 04F10801 		add	r1, r4, #8
+ 587 0040 3046     		mov	r0, r6
+ 588 0042 FFF7FEFF 		bl	memcpy
+ 589              	.LVL50:
+ 129:modules/master_machine/seasky_protocol.c ****         }
+ 590              		.loc 1 129 13 is_stmt 1 view .LVU163
+ 129:modules/master_machine/seasky_protocol.c ****         }
+ 591              		.loc 1 129 23 is_stmt 0 view .LVU164
+ 592 0046 E888     		ldrh	r0, [r5, #6]
+ 593 0048 E4E7     		b	.L41
+ 594              	.L46:
+ARM GAS  /tmp/ccYPduAz.s 			page 15
+
+
+ 595 004a 00BF     		.align	2
+ 596              	.L45:
+ 597 004c 00000000 		.word	.LANCHOR2
+ 598 0050 00000000 		.word	.LANCHOR3
+ 599              		.cfi_endproc
+ 600              	.LFE248:
+ 602              		.section	.bss.crc16.2,"aw",%nobits
+ 603              		.align	1
+ 604              		.set	.LANCHOR1,. + 0
+ 607              	crc16.2:
+ 608 0000 0000     		.space	2
+ 609              		.section	.bss.data_len.3,"aw",%nobits
+ 610              		.align	1
+ 611              		.set	.LANCHOR0,. + 0
+ 614              	data_len.3:
+ 615 0000 0000     		.space	2
+ 616              		.section	.bss.date_length.0,"aw",%nobits
+ 617              		.align	1
+ 618              		.set	.LANCHOR3,. + 0
+ 621              	date_length.0:
+ 622 0000 0000     		.space	2
+ 623              		.section	.bss.pro.1,"aw",%nobits
+ 624              		.align	2
+ 625              		.set	.LANCHOR2,. + 0
+ 628              	pro.1:
+ 629 0000 00000000 		.space	10
+ 629      00000000 
+ 629      0000
+ 630              		.text
+ 631              	.Letext0:
+ 632              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 633              		.file 3 "/usr/include/newlib/sys/_stdint.h"
+ 634              		.file 4 "modules/master_machine/seasky_protocol.h"
+ 635              		.file 5 "modules/algorithm/crc8.h"
+ 636              		.file 6 "modules/algorithm/crc16.h"
+ 637              		.file 7 "<built-in>"
+ARM GAS  /tmp/ccYPduAz.s 			page 16
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 seasky_protocol.c
+     /tmp/ccYPduAz.s:18     .text.CRC8_Check_Sum:0000000000000000 $t
+     /tmp/ccYPduAz.s:25     .text.CRC8_Check_Sum:0000000000000000 CRC8_Check_Sum
+     /tmp/ccYPduAz.s:95     .text.protocol_heade_Check:0000000000000000 $t
+     /tmp/ccYPduAz.s:101    .text.protocol_heade_Check:0000000000000000 protocol_heade_Check
+     /tmp/ccYPduAz.s:179    .text.CRC16_Check_Sum:0000000000000000 $t
+     /tmp/ccYPduAz.s:185    .text.CRC16_Check_Sum:0000000000000000 CRC16_Check_Sum
+     /tmp/ccYPduAz.s:274    .text.Get_CRC8_Check:0000000000000000 $t
+     /tmp/ccYPduAz.s:281    .text.Get_CRC8_Check:0000000000000000 Get_CRC8_Check
+     /tmp/ccYPduAz.s:304    .text.Get_CRC16_Check:0000000000000000 $t
+     /tmp/ccYPduAz.s:311    .text.Get_CRC16_Check:0000000000000000 Get_CRC16_Check
+     /tmp/ccYPduAz.s:337    .text.get_protocol_send_data:0000000000000000 $t
+     /tmp/ccYPduAz.s:344    .text.get_protocol_send_data:0000000000000000 get_protocol_send_data
+     /tmp/ccYPduAz.s:498    .text.get_protocol_send_data:000000000000009c $d
+     /tmp/ccYPduAz.s:504    .text.get_protocol_info:0000000000000000 $t
+     /tmp/ccYPduAz.s:511    .text.get_protocol_info:0000000000000000 get_protocol_info
+     /tmp/ccYPduAz.s:597    .text.get_protocol_info:000000000000004c $d
+     /tmp/ccYPduAz.s:603    .bss.crc16.2:0000000000000000 $d
+     /tmp/ccYPduAz.s:607    .bss.crc16.2:0000000000000000 crc16.2
+     /tmp/ccYPduAz.s:610    .bss.data_len.3:0000000000000000 $d
+     /tmp/ccYPduAz.s:614    .bss.data_len.3:0000000000000000 data_len.3
+     /tmp/ccYPduAz.s:617    .bss.date_length.0:0000000000000000 $d
+     /tmp/ccYPduAz.s:621    .bss.date_length.0:0000000000000000 date_length.0
+     /tmp/ccYPduAz.s:624    .bss.pro.1:0000000000000000 $d
+     /tmp/ccYPduAz.s:628    .bss.pro.1:0000000000000000 pro.1
+
+UNDEFINED SYMBOLS
+crc_8
+crc_16
+memcpy

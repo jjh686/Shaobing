@@ -1,0 +1,1 @@
+/* Host tests inject a coherent quaternion snapshot instead of running QEKF. */

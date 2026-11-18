@@ -1,0 +1,35 @@
+$ bash tools/build_chassis.sh
+Recorded chassis image hashes and build source configuration
+   text	   data	    bss	    dec	    hex	filename
+  72912	    896	  77024	 150832	  24d30	/home/wangjiaming/桌面/DiPan_Board/artifacts/DiPan_Board.elf
+Built chassis firmware: /home/wangjiaming/桌面/DiPan_Board/artifacts/DiPan_Board.elf (not flashed)
+
+$ bash tools/build_gimbal.sh
+Recorded gimbal image hashes and build source configuration
+   text	   data	    bss	    dec	    hex	filename
+  95120	   1184	  78520	 174824	  2aae8	/home/wangjiaming/桌面/DiPan_Board/artifacts/Gimbal_USB_CAN1.elf
+Built companion gateway: /home/wangjiaming/桌面/DiPan_Board/artifacts/Gimbal_USB_CAN1.elf (not flashed)
+
+$ bash tools/test.sh
+PASS remote CAN: channel encoding, CRC, order/drop/DLC/age, duplicate, sequence/tick wrap, source age, lost link, CH10 stop, fault generation, reconnect/rearm
+PASS protocol: typed CAN fields, CRC/order/version/DLC/EXT/RTR/drop/timeout, quantization, wrap, BUSY expiry, session STOP, USB SP mux
+PASS independent CAN1/CAN2 hardware mailboxes: in-flight group blocks replacement, expiry aborts only the owning bus, USB reset abort
+PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap
+PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect
+PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap
+PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs
+PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect
+PASS 7 host test executables; no hardware accessed
+PASS legacy_alternating: expected STOP ACK failure reproduced
+PASS fixed_single_fifo: corrected round trips passed
+....
+----------------------------------------------------------------------
+Ran 4 tests in 3.039s
+
+OK
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 22.408s
+
+OK
+

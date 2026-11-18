@@ -1,0 +1,204 @@
+{
+  "purpose": "read_only_source_baseline_not_firmware_verification",
+  "created_at": "2026-11-07T21:11:03.695955+08:00",
+  "files": [
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/application/gimbal/gimbal.c",
+      "sha256": "e7556f980cf20a8c003314522e4255a6995a5622a4b016fab70a897e3b84810e",
+      "size": 8553,
+      "mtime_ns": 1793194533004003836
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/application/gimbal/gimbal_math.c",
+      "sha256": "be36e1d366b3df330c2a5fb05c3c1f1586aaa854edd05a28e306d66b9ba94eb7",
+      "size": 3197,
+      "mtime_ns": 1793194533004003836
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/application/gimbal/gimbal_config.h",
+      "sha256": "99779f6285d16823d30f5fefbd6acf33171ec655f7912ce35474acd76a7fb2c6",
+      "size": 3664,
+      "mtime_ns": 1793545409610952150
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/application/cmd/auto_aim_boot.c",
+      "sha256": "6e530239d6f22d59527c06156599953c51e4631cbcecd46ff2b217faf78937ad",
+      "size": 3860,
+      "mtime_ns": 1793545409610952150
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/application/cmd/robot_cmd.c",
+      "sha256": "befb5307dfd4d4910d02a6402ded5addc491644a6f9823a5205f2cb376024c82",
+      "size": 11697,
+      "mtime_ns": 1793545409610952150
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/application/robot.c",
+      "sha256": "e531fe806f1a19da7b3118dc880b9e799fbf6434d167314fd8d065d61a58e1b0",
+      "size": 1690,
+      "mtime_ns": 1793194533005003859
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/application/robot_task.h",
+      "sha256": "d2e538e8f6c524c7268780a346c57251c788f4a15d294cafe003551f8d9d02e6",
+      "size": 5028,
+      "mtime_ns": 1793194533008003926
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/modules/algorithm/controller.c",
+      "sha256": "9a4ab2daae6ad203c71f446891ebac923b50253107124caca59d49b240672397",
+      "size": 7076,
+      "mtime_ns": 1793194533015004083
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/modules/algorithm/controller.h",
+      "sha256": "76c75d94c53aadfdf771ce1bd2d2e5470e6d1a4be68bdeec9ca4d8affd14368f",
+      "size": 3663,
+      "mtime_ns": 1792589217000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/modules/motor/DJImotor/dji_motor.c",
+      "sha256": "ad77d187e1de01d52430d6e1cfa85a3e5ae83764a022005ad18c218c8a4aa6cc",
+      "size": 19133,
+      "mtime_ns": 1793194533034004508
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/modules/master_machine/master_process.c",
+      "sha256": "83e5718d067edf324b65bd6e8592606d5334e2debddd368a72f942fcbf93d320",
+      "size": 5634,
+      "mtime_ns": 1793194533029004396
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/modules/master_machine/sp_protocol.h",
+      "sha256": "ffc7694a790a8e8e987aae07b9c1f9f03cd984d761082d431fd6fe69759db143",
+      "size": 1847,
+      "mtime_ns": 1793194533030004419
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/bsp/dwt/bsp_dwt.c",
+      "sha256": "5a59f3b7325ef4b4e6a992a368e89ef31742d6a9e7f2577f3ae183a62030f671",
+      "size": 3279,
+      "mtime_ns": 1792589216000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/Makefile",
+      "sha256": "90227050e05d55e3c80d14a2353a9b892b4eaef52745a8b741ec0261130d2baa",
+      "size": 11916,
+      "mtime_ns": 1793545442170429309
+    },
+    {
+      "path": "/home/wangjiaming/下载/codex/新云台/basic_framework/build/basic_framework.elf",
+      "sha256": "cefaaf64ba18a18038d4e2ebabacaa06eee3e43539fb330af20f5419bd551b71",
+      "size": 1316948,
+      "mtime_ns": 1793627463478318267
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Task/Src/Control_Task.c",
+      "sha256": "3fdd719d856ff53c646e8b7920e0ee926dad25dc815b8998736462734ca5febf",
+      "size": 10235,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Task/Src/CAN_Task.c",
+      "sha256": "13a7dfd8adda8324646103fc93e3a0e2a3938056f79be34c3d7bdff307d79405",
+      "size": 4535,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Task/Src/MiniPC_Task.c",
+      "sha256": "7bf9c81ebce6a06e398e0449fb205409b5120d0069a854012a8df0d4c327b854",
+      "size": 3413,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Task/Src/Shoot.c",
+      "sha256": "6b64f214842d5e112f247acdb512e75121a82fdbfcdd03119b809849dfaa90e3",
+      "size": 7598,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Task/Src/INS_Task.c",
+      "sha256": "023032f33c0b64f85b16af2862c75f91fd9a1aafa8f1e4786015cd4ad8d110c4",
+      "size": 6085,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Components/Controller/Src/PID.c",
+      "sha256": "b971d0e42304831f9d858483a686367d3cf967641e1c684ac84df7ef0149e06e",
+      "size": 5124,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Components/Device/Src/MiniPC.c",
+      "sha256": "e356fcb037dcd36f6e46ee8ed6bfa26814c0e53e7f8c9ef0cf6e5b72b84a61cf",
+      "size": 5023,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/Components/Device/Src/Motor.c",
+      "sha256": "4ec6f5f05e2785c866b377d2405c87823242b21461ca3d1e4c58060c079a4fd2",
+      "size": 13808,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/gimbal/USB_DEVICE/App/usbd_cdc_if.c",
+      "sha256": "65f11624c260d4fc138de7698eb45c0c869293290b417cb6e4ccaf4153eb2a31",
+      "size": 9005,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/chassis/COD_H7_Template/Task/Src/Control_Task.c",
+      "sha256": "c90dd22ae61f43dbcff9529bc8edee867d334b9493ab781ae8a29dcddd5b6235",
+      "size": 46002,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/chassis/COD_H7_Template/Task/Src/CAN_Task.c",
+      "sha256": "146e35c1414911b329ba3d73dab882415fc6cbd623bfe9d555c906374fe036e0",
+      "size": 8311,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/chassis/COD_H7_Template/BSP/Src/bsp_can.c",
+      "sha256": "d84ef6e19122ab09979c87779619973378aaf3ebc7618c7c8e430e4ae39eebc2",
+      "size": 12013,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/chassis/COD_H7_Template/Algorithm/Src/pid.c",
+      "sha256": "773dc1bb9e234b3a0de665a842b7d61898f204e0bd4cb456b54d6c936e179696",
+      "size": 5103,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/rmcod2026_-sentry-dev/chassis/COD_H7_Template/Device/Src/Motor.c",
+      "sha256": "42fc6c87c1993b76fd68629a3781018b2c0689050a6115b294345828c4f1cf46",
+      "size": 7875,
+      "mtime_ns": 1775049868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/sp_vision_25-main/configs/live_usb_sp.yaml",
+      "sha256": "876f9d8fcca211aad8fed5d4a7cd64c4617a3eacf2cf8f3a81f95c873dd64773",
+      "size": 3889,
+      "mtime_ns": 1793199186325357458
+    },
+    {
+      "path": "/home/wangjiaming/下载/sp_vision_25-main/tasks/auto_aim/solver.cpp",
+      "sha256": "55281b4c23c19ebff1e49a90c59f8d451be85fe848e8267dadcac47ff09a76a3",
+      "size": 10915,
+      "mtime_ns": 1786596868000000000
+    },
+    {
+      "path": "/home/wangjiaming/下载/sp_vision_25-main/tests/auto_aim_test.cpp",
+      "sha256": "06decbd34f47315e038d33258a43488542acb8de7103a2a5c417404d5ce9b9e8",
+      "size": 32855,
+      "mtime_ns": 1793200859405311090
+    },
+    {
+      "path": "/home/wangjiaming/下载/sp_vision_25-main/io/gimbal/sp_link.cpp",
+      "sha256": "f6b785a77226b6cc14adecb9c2dc850b76431c2c205b8f0993a53c1165ff4b69",
+      "size": 9520,
+      "mtime_ns": 1793198705374220416
+    }
+  ]
+}

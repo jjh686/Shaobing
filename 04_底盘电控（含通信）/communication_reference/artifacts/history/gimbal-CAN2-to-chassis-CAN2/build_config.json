@@ -1,0 +1,17 @@
+{
+  "built_at": "2026-11-11T17:57:17.111961+08:00",
+  "compiler": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
+  "defaults": {
+    "NAV_RELAY_ALLOW_MOTION": 0,
+    "NAV_AXES_VERIFIED": 0,
+    "GIMBAL_INSTALLATION_CONFIRMED": 0,
+    "NAV_JOINT_CALIBRATED": 0
+  },
+  "gimbal": "STM32F407 / CAN2 1Mbps / USB 0483:00ca RM Nav Convert SP",
+  "chassis": "STM32F407 / CAN2 1Mbps / CAN1 M3508 IDs LF1 RF2 LB4 RB3",
+  "binaries": {
+    "gimbal_nav_converter.bin": "dff96fb552c3e4924b79227be7803b50ec26643836d4de2bffb2c6c0d82016f0",
+    "chassis_nav_can.bin": "48be4fa3e59781757a0e31e7002fe6941b77466e3355afb42eb41465fe1a05bb"
+  },
+  "note": "Build output only; this script does not flash hardware or validate physical navigation."
+}

@@ -1,0 +1,12 @@
+PASS protocol: typed CAN fields, CRC/order/version/DLC/EXT/RTR/drop/timeout, quantization, wrap, BUSY expiry, session STOP, USB SP mux
+PASS CAN hardware mailbox ownership: in-flight group blocks replacement, expiry aborts all queued frames, USB reset abort
+PASS PC codec: 10000 command/feedback comparisons against actual MCU C codec; atomic SP/nav stream
+PASS zero tester over PTY: disabled STOP only, fresh chassis ACK, default motion-lock faults accepted
+PASS actual two-board ports: 10000 software USB/CAN round trips, STOP/ACK, motion lock, SI units, RC/motor loss, TTL, stale queue, overflow, USB BUSY/disconnect
+PASS actual two-board ports: 10000 software USB/CAN round trips, STOP/ACK, motion lock, SI units, RC/motor loss, TTL, stale queue, overflow, USB BUSY/disconnect
+gimbal speed PI: 14 test groups passed
+DJI speed-controller routing tests passed
+gimbal adapter: commissioning lock keeps both motors stopped
+gimbal adapter: 7 integration test groups passed
+robot communication: 7 test groups passed (legacy API)
+robot communication: 7 test groups passed (unified API)
