@@ -313,6 +313,7 @@ uint8_t FS_RemoteControlGetSnapshot(FS_RC_ctrl_t *snapshot)
     __disable_irq();
     *snapshot = fs_rc_ctrl[TEMP];
     snapshot->fault_generation = fs_fault_generation;
+    snapshot->received_ms = fs_last_valid_tick;
     uint8_t online = FS_RemoteControlIsOnline();
     __set_PRIMASK(primask);
     return online;

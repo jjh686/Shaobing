@@ -14,6 +14,7 @@
 #include "motor_task.h"
 #include "referee_task.h"
 #include "robot_comm.h" /* [USB_SP 通信整理] 应用层通信总入口。 */
+#include "nav_gateway_port.h" /* [NAV] 云台C板 CAN1 <-> 底盘C板 CAN2 板间链路。 */
 #include "daemon.h"
 #include "HT04.h"
 #include "buzzer.h"
@@ -25,12 +26,14 @@ osThreadId robotTaskHandle;
 osThreadId motorTaskHandle;
 osThreadId daemonTaskHandle;
 osThreadId uiTaskHandle;
+osThreadId navCommTaskHandle;
 
 void StartINSTASK(void const *argument);
 void StartMOTORTASK(void const *argument);
 void StartDAEMONTASK(void const *argument);
 void StartROBOTTASK(void const *argument);
 void StartUITASK(void const *argument);
+void StartNAVCOMMTASK(void const *argument);
 
 /**
  * @brief 初始化机器人任务,所有持续运行的任务都在这里初始化
@@ -50,6 +53,10 @@ void OSTaskInit()
 
     osThreadDef(robottask, StartROBOTTASK, osPriorityNormal, 0, 1024);
     robotTaskHandle = osThreadCreate(osThread(robottask), NULL);
+
+    /* [NAV] 板间通信独立任务，1ms 周期（发送组包、反馈解码、遥控转发）。 */
+    osThreadDef(navcommtask, StartNAVCOMMTASK, osPriorityNormal, 0, 512);
+    navCommTaskHandle = osThreadCreate(osThread(navcommtask), NULL);
 
 /* [USB_SP 修改 02 开始] INS后更新一致云台反馈并定频回传SP；仅云台构建不启动UI。 */
     if (!GIMBAL_ONLY_BUILD) {
@@ -135,6 +142,17 @@ __attribute__((noreturn)) void StartROBOTTASK(void const *argument)
         if (robot_dt > 5)
             LOGERROR("[freeRTOS] ROBOT core Task is being DELAY! dt = [%f]", &robot_dt);
         osDelay(5);
+    }
+}
+
+__attribute__((noreturn)) void StartNAVCOMMTASK(void const *argument)
+{
+    (void)argument;
+    LOGINFO("[freeRTOS] NAV communication Task Start");
+    for (;;)
+    {
+        NavGatewayTask();
+        osDelay(1);
     }
 }
 

@@ -2,8 +2,11 @@
  * 云台C板应用层通信总文件：USB命令接收、命令快照、会话、在线状态、姿态回传。
  * 从master_process.c迁入，保留SP 29/43字节、rad单位、超时和发送节流行为。
  * SP编解码仍在sp_protocol.c，USB硬件收发仍由bsp_usb/usbd_cdc_if负责。
+ * [NAV] USB 只有一个接收者：DispatchUsb 按帧长把 SP 命令与导航整帧分流。
  */
 #include "robot_comm.h"
+#include "nav_usb_mux.h"
+#include "nav_gateway_port.h"
 #include "bsp_usb.h"
 #include "ins_task.h"
 #include "gimbal_config.h"
@@ -12,6 +15,7 @@
 
 /* 一、接收状态。USB接收回调是解析器和命令数据的唯一写入者。 */
 static SP_Parser parser;
+static nav_mux_t usb_mux;
 static Vision_Recv_s recv_data;
 static uint8_t *rx_buffer;
 static volatile uint8_t command_valid, requested_mode;
@@ -36,6 +40,12 @@ static void OnCommand(const SP_Command *command, void *context)
     command_valid = 1;
 }
 
+static void DispatchUsb(const uint8_t *bytes,unsigned length,uint32_t received,void *context)
+{
+    (void)context;
+    if(length==SP_COMMAND_SIZE) SP_ParserFeed(&parser,bytes,length,OnCommand,NULL);
+    else NavGatewayReceive(bytes,length,received);
+}
 static void DecodeVision(uint16_t length)
 {
     /* USB初始化/反初始化通过零长度回调通知新会话，不沿用残帧或旧命令。 */
@@ -43,15 +53,19 @@ static void DecodeVision(uint16_t length)
         ++recv_data.session;
         command_valid = 0;
         SP_ParserInit(&parser);
+        memset(&usb_mux,0,sizeof(usb_mux));NavGatewayReset();
         return;
     }
-    SP_ParserFeed(&parser, rx_buffer, length, OnCommand, NULL);
+    uint32_t now=HAL_GetTick();
+    for(unsigned i=0;i<length;i++)nav_mux_push(&usb_mux,rx_buffer[i],now,DispatchUsb,NULL);
 }
 
 /* 二、通信初始化。保持原RobotCMDInit中的初始化顺序，不重复注册USB回调。 */
 Vision_Recv_s *RobotCommInit(void)
 {
     SP_ParserInit(&parser);
+    memset(&usb_mux,0,sizeof(usb_mux));
+    NavGatewayInit();
     memset(&recv_data, 0, sizeof(recv_data));
     command_valid = requested_mode = 0;
     USB_Init_Config_s config = {.rx_cbk = DecodeVision, .tx_cbk = NULL};
@@ -123,7 +137,6 @@ void RobotCommUpdate(void)
     else if (result != USBD_OK) ++tx_fail_count;
 }
 
-/* 后续扩展：导航接入/底盘CAN中转先约定协议，再通过此模块对接。
- * 当前没有注册额外CAN ID，也没有增加转发任务或更改既有控制路径。
- */
+/* USB has one owner: DispatchUsb separates SP and navigation whole frames.
+ * Navigation conversion/forwarding runs in its independent normal-priority task. */
 /* [USB_SP 通信整理 结束] */

@@ -28,7 +28,7 @@ static CAN_Send_FIFO_s CAN1_Send_FIFO, CAN2_Send_FIFO; // CAN发送队列，每�
  *
  * @param _instance can instance owned by specific module
  */
-static void CANAddFilter(CANInstance *_instance)
+static void CANAddFilter(CANInstance *_instance, CAN_RxFifoPolicy_e policy)
 {
     CAN_FilterTypeDef can_filter_conf = {0};
     static uint8_t can1_filter_idx = 0, can2_filter_idx = 14; // 0-13给can1用,14-27给can2用
@@ -42,8 +42,19 @@ static void CANAddFilter(CANInstance *_instance)
         can_filter_conf.FilterFIFOAssignment = (can2_filter_idx & 1) ? CAN_RX_FIFO0 : CAN_RX_FIFO1;              // 奇数编号的模块会被分配到FIFO0,偶数编号的模块会被分配到FIFO1
     }
 
+    /* A multipart group must never cross RX FIFOs: IRQ servicing can reorder them. */
+    if (policy == CAN_RX_FIFO_POLICY_FIFO0) {
+        can_filter_conf.FilterFIFOAssignment = CAN_RX_FIFO0;
+    } else if (policy == CAN_RX_FIFO_POLICY_FIFO1) {
+        can_filter_conf.FilterFIFOAssignment = CAN_RX_FIFO1;
+    }
+
     can_filter_conf.SlaveStartFilterBank = 14;                                                                // 从第14个过滤器开始配置从机过滤器(在STM32的BxCAN控制器中CAN2是CAN1的从机)
+    /* 16-bit IDLIST mode holds TWO ids per bank. Leaving FilterIdHigh at 0 made the
+     * filter also accept STDID 0x000 (e.g. DM motor master feedback), which polluted
+     * the board-to-board link counters. Mirror the id into both slots. */
     can_filter_conf.FilterIdLow = _instance->rx_id << 5;                                                      // 过滤器寄存器的低16位,因为使用STDID,所以只有低11位有效,高5位要填0
+    can_filter_conf.FilterIdHigh = _instance->rx_id << 5;                                                     // 高16位的第二个ID同样填,避免额外放行0x000
     can_filter_conf.FilterBank = _instance->can_handle == &hcan1 ? (can1_filter_idx++) : (can2_filter_idx++); // 根据can_handle判断是CAN1还是CAN2,然后自增
     can_filter_conf.FilterActivation = CAN_FILTER_ENABLE;                                                     // 启用过滤器
 
@@ -156,7 +167,7 @@ CANInstance *CANRegister(CAN_Init_Config_s *config)
     instance->can_module_callback = config->can_module_callback;
     instance->id = config->id;
 
-    CANAddFilter(instance);         // 添加CAN过滤器规则
+    CANAddFilter(instance, config->rx_fifo_policy);         // 添加CAN过滤器规则
     can_instance[idx++] = instance; // 将实例保存到can_instance中
 
     return instance; // 返回can实例指针

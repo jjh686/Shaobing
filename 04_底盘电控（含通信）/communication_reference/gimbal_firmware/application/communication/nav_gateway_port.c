@@ -53,6 +53,21 @@ volatile uint32_t nav_usb_received,nav_can_groups,nav_feedback_received,nav_gate
  * HAL ErrorCode alone stays zero unless CAN error notifications are enabled. */
 volatile uint32_t nav_can_esr,nav_can_tsr,nav_can_rx_frames,nav_can_decode_errors;
 volatile uint32_t nav_can_task_ticks;
+volatile uint32_t nav_command_tx_mailbox_loaded_frames,nav_command_tx_addtx_errors;
+volatile uint32_t nav_command_tx_timeout_groups,nav_command_tx_aborted_groups;
+volatile uint32_t nav_remote_tx_mailbox_loaded_frames,nav_remote_tx_addtx_errors;
+volatile uint32_t nav_remote_tx_timeout_groups,nav_remote_tx_aborted_groups;
+static void update_tx_debug(void)
+{
+    nav_command_tx_mailbox_loaded_frames=sender.tx_mailbox_loaded_frames;
+    nav_command_tx_addtx_errors=sender.tx_addtx_errors;
+    nav_command_tx_timeout_groups=sender.tx_timeout_groups;
+    nav_command_tx_aborted_groups=sender.tx_aborted_groups;
+    nav_remote_tx_mailbox_loaded_frames=remote_sender.tx_mailbox_loaded_frames;
+    nav_remote_tx_addtx_errors=remote_sender.tx_addtx_errors;
+    nav_remote_tx_timeout_groups=remote_sender.tx_timeout_groups;
+    nav_remote_tx_aborted_groups=remote_sender.tx_aborted_groups;
+}
 static void can_receive(CANInstance *can)
 {
     nav_can_rx_frames++;
@@ -89,6 +104,7 @@ void NavGatewayTask(void)
     nav_can_task_ticks=now;
     /* RC transport runs independently of USB connection / navigation sessions. */
     forward_remote(now);
+    update_tx_debug();
 #ifndef CHASSIS_COMM_HOST_TEST
     nav_can_esr=hcan1.Instance->ESR;
     nav_can_tsr=hcan1.Instance->TSR;
@@ -96,7 +112,7 @@ void NavGatewayTask(void)
     if(reset_requested||!USBIsConfigured()){
         uint32_t irq=__get_PRIMASK();__disable_irq();qh=qt=rh=rt=0;reset_requested=0;__set_PRIMASK(irq);
         ng_init(&gateway);memset(&receiver,0,sizeof(receiver));nch_reset(&sender);pending_valid=0;
-        if(!USBIsConfigured())return;
+        if(!USBIsConfigured()){update_tx_debug();return;}
     }
     pump(now);
     while(qt!=qh){
@@ -120,6 +136,7 @@ void NavGatewayTask(void)
      * buffers and arbitrates with the original high-priority SP status sender. */
     if(pending_valid){
         if((uint32_t)(now-pending_ms)>NC_GROUP_MS||USBTransmit(pending,sizeof(pending))==USBD_OK)pending_valid=0;
+        update_tx_debug();
         return;
     }
     if(gateway.gate.ack_valid&&(uint32_t)(now-joint_ms)>=20){
@@ -133,4 +150,5 @@ void NavGatewayTask(void)
         uint8_t frame[RM_GIMBAL_FRAME_SIZE];
         if(rm_encode_gimbal(&g,frame))USBTransmit(frame,sizeof(frame));
     }
+    update_tx_debug();
 }

@@ -127,6 +127,7 @@ typedef struct
     int16_t channel[10];  // 右侧水平拨杆
 /* [USB_SP 修改 01 开始] 新增SBUS故障代数与一致快照接口；原遥控结构/映射仍在。 */
     uint32_t fault_generation; /* Snapshot retains faults between CMD polls. */
+    uint32_t received_ms; /* Last real valid SBUS frame, not a CAN polling time. */
 /* [USB_SP 修改 01 结束] */
 
     struct

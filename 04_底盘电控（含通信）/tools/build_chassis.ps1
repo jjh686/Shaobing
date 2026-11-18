@@ -110,5 +110,13 @@ foreach ($ext in @("elf", "hex", "bin")) {
     Copy-Item $from (Join-Path $artifacts "DiPan_Board.$ext") -Force
 }
 
+# Debuggers (EmberProbe) cannot open this project through its CJK path, so keep an
+# ASCII-only copy one level above the board folders. _flash/ is the debug entry.
+$flash = Join-Path (Split-Path -Parent $root) "_flash"
+New-Item -ItemType Directory -Force $flash | Out-Null
+Copy-Item (Join-Path $artifacts "DiPan_Board.elf") $flash -Force
+Copy-Item (Join-Path $artifacts "DiPan_Board.hex") $flash -Force
+
 arm-none-eabi-size (Join-Path $artifacts "DiPan_Board.elf")
 Write-Host "Built chassis firmware: $(Join-Path $artifacts 'DiPan_Board.elf') (not flashed)"
+Write-Host "Published for debugger: $(Join-Path $flash 'DiPan_Board.elf')"

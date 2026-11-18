@@ -6,7 +6,7 @@
 #define NC_FEEDBACK_BASE 0x338u
 #define NC_VERSION 0x0100u
 #define NC_GROUP_MS 10u
-#define NC_TX_MS 8u
+#define NC_TX_MS 20u
 #define NC_MAX_TTL_MS 150u
 #define NC_FAULT_LOCK 0x0001u
 #define NC_FAULT_RC 0x0002u

@@ -28,6 +28,13 @@ typedef struct _
 } CANInstance;
 #pragma pack()
 
+/* AUTO preserves legacy balancing; ordered multipart protocols select one FIFO. */
+typedef enum {
+    CAN_RX_FIFO_POLICY_AUTO = 0,
+    CAN_RX_FIFO_POLICY_FIFO0 = 1,
+    CAN_RX_FIFO_POLICY_FIFO1 = 2,
+} CAN_RxFifoPolicy_e;
+
 /* CAN实例初始化结构体,将此结构体指针传入注册函数 */
 typedef struct
 {
@@ -35,6 +42,7 @@ typedef struct
     uint32_t tx_id;                             // 发送id
     uint32_t rx_id;                             // 接收id
     void (*can_module_callback)(CANInstance *); // 处理接收数据的回调函数
+    CAN_RxFifoPolicy_e rx_fifo_policy;          // 0保持原有奇偶分配;多帧整包协议须指定单一FIFO
     void *id;                                   // 拥有can实例的模块地址,用于区分不同的模块(如果有需要的话),如果不需要可以不传入
 } CAN_Init_Config_s;
 

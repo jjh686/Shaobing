@@ -50,7 +50,10 @@ static void CANAddFilter(CANInstance *_instance, CAN_RxFifoPolicy_e policy)
     }
 
     can_filter_conf.SlaveStartFilterBank = 14;                                                                // 从第14个过滤器开始配置从机过滤器(在STM32的BxCAN控制器中CAN2是CAN1的从机)
+    /* 16-bit IDLIST mode holds TWO ids per bank. Leaving FilterIdHigh at 0 made the
+     * filter also accept STDID 0x000, which polluted the board-to-board counters. */
     can_filter_conf.FilterIdLow = _instance->rx_id << 5;                                                      // 过滤器寄存器的低16位,因为使用STDID,所以只有低11位有效,高5位要填0
+    can_filter_conf.FilterIdHigh = _instance->rx_id << 5;                                                     // 高16位的第二个ID同样填,避免额外放行0x000
     can_filter_conf.FilterBank = _instance->can_handle == &hcan1 ? (can1_filter_idx++) : (can2_filter_idx++); // 根据can_handle判断是CAN1还是CAN2,然后自增
     can_filter_conf.FilterActivation = CAN_FILTER_ENABLE;                                                     // 启用过滤器
 

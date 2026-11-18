@@ -27,6 +27,35 @@ volatile uint32_t chassis_comm_rx_overruns;
 volatile uint32_t chassis_comm_decode_errors;
 volatile uint32_t chassis_comm_can_esr, chassis_comm_can_tsr;
 volatile uint32_t chassis_comm_task_ticks, chassis_comm_feedback_groups;
+volatile uint32_t chassis_nav_rx_frames, chassis_remote_rx_frames;
+volatile uint32_t chassis_feedback_tx_mailbox_loaded_frames;
+volatile uint32_t chassis_feedback_tx_addtx_errors;
+volatile uint32_t chassis_feedback_tx_timeout_groups;
+volatile uint32_t chassis_feedback_tx_aborted_groups;
+/* Self-healing guard: nch_pump() aborts the software group but a frame already on the
+ * wire keeps its request bit set, which latches nch_busy() forever and stops the
+ * feedback stream. Release the mask after NC_TX_STALL_MS. */
+#define NC_TX_STALL_MS 500u
+volatile uint32_t chassis_feedback_tx_stall_recoveries;
+static uint32_t feedback_stall_since;
+static void recover_stalled_feedback_tx(uint32_t now)
+{
+    if (!nch_busy(&sender)) { feedback_stall_since = 0; return; }
+    if (!feedback_stall_since) { feedback_stall_since = now ? now : 1u; return; }
+    if ((uint32_t)(now - feedback_stall_since) > NC_TX_STALL_MS) {
+        chassis_feedback_tx_stall_recoveries++;
+        nch_reset(&sender);
+        feedback_stall_since = 0;
+    }
+}
+
+static void update_feedback_tx_debug(void)
+{
+    chassis_feedback_tx_mailbox_loaded_frames=sender.tx_mailbox_loaded_frames;
+    chassis_feedback_tx_addtx_errors=sender.tx_addtx_errors;
+    chassis_feedback_tx_timeout_groups=sender.tx_timeout_groups;
+    chassis_feedback_tx_aborted_groups=sender.tx_aborted_groups;
+}
 
 static ChassisCommSafety read_safety(int motors_online)
 {
@@ -49,6 +78,8 @@ static ChassisCommSafety read_safety(int motors_online)
 /* ISR only copies a frame. Decode/safety/control are owned by the chassis task. */
 static void receive_can(CANInstance *can)
 {
+    if(can->rx_id>=NC_COMMAND_BASE&&can->rx_id<=NC_COMMAND_BASE+2u)chassis_nav_rx_frames++;
+    else if(can->rx_id>=RC_CAN_BASE&&can->rx_id<=RC_CAN_BASE+2u)chassis_remote_rx_frames++;
     const uint8_t next = (head + 1u) % CHASSIS_COMM_RX_QUEUE_SIZE;
     if (next == tail) {
         overrun = 1;
@@ -136,7 +167,9 @@ void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
 void ChassisCommPortFeedback(const Chassis_Upload_Data_s *measured, int motors_online)
 {
     const uint32_t now = HAL_GetTick();
+    recover_stalled_feedback_tx(now);
     nch_pump(&sender, now);
+    update_feedback_tx_debug();
     if ((uint32_t)(now - feedback_ms) < CHASSIS_COMM_FEEDBACK_PERIOD_MS) {
         return;
     }
@@ -152,4 +185,5 @@ void ChassisCommPortFeedback(const Chassis_Upload_Data_s *measured, int motors_o
         chassis_comm_feedback_groups++;
         nch_pump(&sender, now);
     }
+    update_feedback_tx_debug();
 }

@@ -153,7 +153,9 @@
 #define GIMBAL_OUTPUT_LIMIT 20000.0f
 /* DM-J4310 pitch, MIT torque-only transport. Match the motor's saved ranges.
  * These do not change the IMU/vision coordinate system or the PI gain units. */
-#define GIMBAL_PITCH_DM_CAN_HANDLE (&hcan1)
+/* Real sentry wiring: pitch DM4310 is on CAN2; CAN1 is reserved for the
+ * inter-board link to the chassis (0x330~332 / 0x338~33A / 0x340~342). */
+#define GIMBAL_PITCH_DM_CAN_HANDLE (&hcan2)
 #define GIMBAL_PITCH_DM_CAN_ID 0x002u
 #define GIMBAL_PITCH_DM_MASTER_ID 0x000u
 #define GIMBAL_PITCH_DM_P_MAX 3.14159f

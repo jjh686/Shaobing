@@ -94,15 +94,17 @@ if ($LASTEXITCODE -ne 0) { throw "cmake configure failed" }
 & $cmake --build $build -j 4
 if ($LASTEXITCODE -ne 0) { throw "cmake build failed" }
 
-# EmberProbe ignores flash targets inside build/, so publish a copy under artifacts/
-# (same convention as 04_底盘电控). .gitignore re-includes artifacts/*.elf on purpose.
-$artifacts = Join-Path $root "artifacts"
-New-Item -ItemType Directory -Force $artifacts | Out-Null
-foreach ($ext in @("elf", "hex", "bin")) {
+arm-none-eabi-size (Join-Path $build "basic_framework.elf")
+
+# EmberProbe cannot open ELF files whose path contains CJK characters, so the only
+# published flash/debug artifact is the ASCII copy under <repo>/_flash. Everything
+# inside this project (build/) stays as plain build output and is not advertised.
+$flash = Join-Path (Split-Path -Parent $root) "_flash"
+New-Item -ItemType Directory -Force $flash | Out-Null
+foreach ($ext in @("elf", "hex")) {
     $from = Join-Path $build "basic_framework.$ext"
-    if (Test-Path $from) { Copy-Item $from (Join-Path $artifacts "Gimbal_USB_CAN1.$ext") -Force }
+    if (Test-Path $from) { Copy-Item $from (Join-Path $flash "Gimbal_USB_CAN1.$ext") -Force }
 }
 
-arm-none-eabi-size (Join-Path $build "basic_framework.elf")
 Write-Host "Built gimbal firmware: $(Join-Path $root 'build\basic_framework.elf') (not flashed)"
-Write-Host "Published for EmberProbe: $(Join-Path $artifacts 'Gimbal_USB_CAN1.elf')"
+Write-Host "Published for flash/debug: $(Join-Path $flash 'Gimbal_USB_CAN1.elf')"

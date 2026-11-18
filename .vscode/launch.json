@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "云台 C 板 (EmberProbe)",
+      "type": "emberprobe",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/05_云台",
+      "executable": "${workspaceFolder}/_flash/Gimbal_USB_CAN1.elf",
+      "servertype": "openocd",
+      "runToEntryPoint": "main",
+      "rtos": "FreeRTOS"
+    },
+    {
+      "name": "底盘 C 板 (EmberProbe)",
+      "type": "emberprobe",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/04_底盘电控（含通信）/chassis_driver/basic_framework",
+      "executable": "${workspaceFolder}/_flash/DiPan_Board.elf",
+      "servertype": "openocd",
+      "runToEntryPoint": "main",
+      "rtos": "FreeRTOS"
+    }
+  ]
+}
