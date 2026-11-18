@@ -38,15 +38,6 @@
         "${workspaceFolder}/./tools/test.sh"
       ],
       "problemMatcher": []
-    },
-    {
-      "label": "DiPan_Board: build companion gimbal gateway",
-      "type": "process",
-      "command": "bash",
-      "args": [
-        "${workspaceFolder}/tools/build_gimbal.sh"
-      ],
-      "problemMatcher": []
     }
   ]
 }
