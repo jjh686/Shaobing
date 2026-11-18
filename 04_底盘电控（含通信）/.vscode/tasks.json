@@ -3,11 +3,27 @@
   "tasks": [
     {
       "label": "DiPan_Board: build chassis",
-      "type": "process",
+      "type": "shell",
       "command": "bash",
       "args": [
         "${workspaceFolder}/./tools/build_chassis.sh"
       ],
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}/./tools/build_chassis.ps1"
+        ]
+      },
+      "linux": {
+        "command": "bash",
+        "args": [
+          "${workspaceFolder}/./tools/build_chassis.sh"
+        ]
+      },
       "group": {
         "kind": "build",
         "isDefault": true

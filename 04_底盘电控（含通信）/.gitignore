@@ -1,0 +1,4 @@
+# Windows build trees only.
+# build/chassis 与 build/gimbal 是仓库里已提交的 Linux 构建树，不受这些规则影响。
+build/chassis-win/
+build/gimbal-win/

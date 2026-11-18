@@ -52,3 +52,9 @@ build
 .vscode/.cortex-debug.peripherals.state.json
 .vscode/.cortex-debug.registers.state.json
 *.jdebug*
+
+# 烧录产物目录：留给 EmberProbe 扫描，别被上面的 *.elf 等规则忽略
+!artifacts/
+!artifacts/*.elf
+!artifacts/*.hex
+!artifacts/*.bin

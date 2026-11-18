@@ -27,8 +27,8 @@
             },
             "windows": {
                 "armToolchainPath": "D:/msys64/ucrt64/bin",
-                "gdbPath": "D:/msys64/ucrt64/bin/gdb-multiarch.exe",
-                "serverpath": "D:/msys64/ucrt64/bin/openocd.exe"
+                "gdbPath": "D:/MSYS2/mingw64/bin/gdb-multiarch.exe",
+                "serverpath": "D:/MSYS2/mingw64/bin/openocd.exe"
             }
         },
         {
@@ -58,8 +58,8 @@
             },
             "windows": {
                 "armToolchainPath": "D:/msys64/ucrt64/bin",
-                "gdbPath": "D:/msys64/ucrt64/bin/gdb-multiarch.exe",
-                "serverpath": "D:/msys64/ucrt64/bin/openocd.exe"
+                "gdbPath": "D:/MSYS2/mingw64/bin/gdb-multiarch.exe",
+                "serverpath": "D:/MSYS2/mingw64/bin/openocd.exe"
             }
         },
         {
@@ -83,8 +83,8 @@
             },
             "windows": {
                 "armToolchainPath": "D:/msys64/ucrt64/bin",
-                "gdbPath": "D:/msys64/ucrt64/bin/gdb-multiarch.exe",
-                "serverpath": "D:/msys64/ucrt64/bin/openocd.exe"
+                "gdbPath": "D:/MSYS2/mingw64/bin/gdb-multiarch.exe",
+                "serverpath": "D:/MSYS2/mingw64/bin/openocd.exe"
             }
         }
     ]

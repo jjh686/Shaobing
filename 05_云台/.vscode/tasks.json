@@ -13,6 +13,29 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             },
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder}/tools/build.ps1"
+                ],
+                "options": {
+                    "cwd": "${workspaceFolder}"
+                }
+            },
+            "linux": {
+                "command": "make",
+                "args": [
+                    "-j16",
+                    "all"
+                ],
+                "options": {
+                    "cwd": "${workspaceFolder}"
+                }
+            },
             "problemMatcher": [
                 "$gcc"
             ],
