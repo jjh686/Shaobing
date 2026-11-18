@@ -1,3 +1,0 @@
-# PUSO_DAPLink (CMSIS-DAP): USB bulk (v2) and HID (v1).
-SUBSYSTEM=="usb", ATTR{idVendor}=="1234", ATTR{idProduct}=="5678", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-KERNEL=="hidraw*", ATTRS{idVendor}=="1234", ATTRS{idProduct}=="5678", MODE="0660", GROUP="plugdev", TAG+="uaccess"
