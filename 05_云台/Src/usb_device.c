@@ -64,7 +64,20 @@ USBD_HandleTypeDef hUsbDeviceFS;
 void MX_USB_DEVICE_Init(void)
 {
   /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
-
+  /* Force a real D+ disconnect before PCD assigns the USB alternate function.
+   * This runs from StartDefaultTask, with interrupts and HAL ticks available.
+   * A board reset/reflash can then enumerate without cycling the motor supply.
+   */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
+  GPIO_InitTypeDef disconnect_gpio = {0};
+  disconnect_gpio.Pin = GPIO_PIN_12;
+  disconnect_gpio.Mode = GPIO_MODE_OUTPUT_PP;
+  disconnect_gpio.Pull = GPIO_NOPULL;
+  disconnect_gpio.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &disconnect_gpio);
+  HAL_Delay(30);
+  /* USBD_Init -> HAL_PCD_MspInit restores PA11/PA12 to USB AF10. */
   /* USER CODE END USB_DEVICE_Init_PreTreatment */
 
   /* Init Device Library, add supported class and start the library. */
