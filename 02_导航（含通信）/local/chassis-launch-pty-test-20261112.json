@@ -1,0 +1,90 @@
+{
+  "test": "actual chassis_navigation launch with PTY",
+  "hardware_accessed": false,
+  "ros_domain_id": 96,
+  "ros_localhost_only": true,
+  "steps": [
+    {
+      "step": "default STOP and enable rejected without feedback",
+      "passed": true,
+      "frames": 5
+    },
+    {
+      "step": "launch profile, real remap, static lidar TF and no gimbal dependencies",
+      "passed": true,
+      "diagnostics": {
+        "route": "2",
+        "frame_id": "base_footprint",
+        "use_stamped_commands": "false",
+        "require_gimbal_state": "false",
+        "require_frame_ready": "false",
+        "enabled": "false"
+      },
+      "nodes": [
+        "chassis_comm",
+        "chassis_lidar_mount"
+      ],
+      "subscription_topics": [
+        "/chassis_launch_pty_14631/cmd_vel_nav2_result",
+        "/chassis_launch_pty_14631/frame_ready",
+        "/chassis_launch_pty_14631/unused_cmd_vel_stamped",
+        "/parameter_events"
+      ]
+    },
+    {
+      "step": "no cached velocity; original unremapped cmd_vel ignored",
+      "passed": true
+    },
+    {
+      "step": "Nav2 Twist -> route2 wire limits and TTL",
+      "passed": true,
+      "sample": {
+        "at": 4936.396241209,
+        "flags": 1,
+        "ttl_ms": 146,
+        "vx": 0.18000000715255737,
+        "vy": 0.23999999463558197,
+        "wz": 0.5
+      },
+      "linear_norm": 0.30000000000000016
+    },
+    {
+      "step": "150ms input watchdog emits STOP",
+      "passed": true,
+      "observed_stop_after_last_publish_ms": 145.22190500065335
+    },
+    {
+      "step": "250ms feedback watchdog and no automatic enable after recovery",
+      "passed": true,
+      "observed_stop_after_last_feedback_ms": 254.72801699925185
+    },
+    {
+      "step": "MANUAL takeover stops, rejects enable, and recovery remains disabled",
+      "passed": true,
+      "observed_stop_ms": 19.898055999874487
+    },
+    {
+      "step": "explicit disable emits zero STOP despite continuing Nav2 input",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "command": [
+    "ros2",
+    "launch",
+    "rm_chassis_comm",
+    "chassis_navigation.launch.py",
+    "namespace:=chassis_launch_pty_14631",
+    "connect:=true",
+    "serial_port:=/dev/pts/1",
+    "start_navigation:=false",
+    "start_lidar:=false",
+    "mounting_config:=/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/measured_mounting.yaml",
+    "nav_params:=/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/chassis_nav2_params.yaml"
+  ],
+  "launch_exit_code_after_sigint": 0,
+  "frames_received": 157,
+  "measured_messages": 132,
+  "launch_log": "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/chassis-launch-pty-test-20261112.log",
+  "duration_s": 4.030017981000128
+}

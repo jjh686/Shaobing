@@ -1,0 +1,114 @@
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rclcpp: 16.0.21 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 3.1.9 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.9 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.9 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 6.1.4 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found geometry_msgs: 4.9.2 (/opt/ros/humble/share/geometry_msgs/cmake)
+-- Found std_srvs: 4.9.2 (/opt/ros/humble/share/std_srvs/cmake)
+-- Found diagnostic_msgs: 4.9.2 (/opt/ros/humble/share/diagnostic_msgs/cmake)
+-- Found sensor_msgs: 4.9.2 (/opt/ros/humble/share/sensor_msgs/cmake)
+-- Found tf2_ros: 0.25.24 (/opt/ros/humble/share/tf2_ros/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/rm_chassis_comm
+Consolidate compiler generated dependencies of target chassis_protocol
+Consolidate compiler generated dependencies of target sentry_frame_bridge
+[ 26%] Built target chassis_protocol
+[ 33%] Built target sentry_frame_bridge
+[ 36%] Building CXX object CMakeFiles/test_frame_math.dir/test/test_frame_math.cpp.o
+[ 40%] Building CXX object CMakeFiles/test_gimbal_clock.dir/test/test_gimbal_clock.cpp.o
+[ 43%] Linking CXX executable test_gimbal_clock
+[ 46%] Linking CXX executable test_frame_math
+[ 46%] Built target test_gimbal_clock
+[ 46%] Built target test_frame_math
+[ 50%] Building CXX object CMakeFiles/test_sentry_ros.dir/test/test_sentry_ros.cpp.o
+Consolidate compiler generated dependencies of target chassis_node
+[ 56%] Built target chassis_node
+[ 60%] Building C object CMakeFiles/test_protocol.dir/test/test_protocol.c.o
+[ 63%] Linking C executable test_protocol
+[ 63%] Built target test_protocol
+[ 66%] Building C object CMakeFiles/test_mcu.dir/test/test_mcu.c.o
+[ 70%] Linking C executable test_mcu
+[ 70%] Built target test_mcu
+[ 73%] Building C object CMakeFiles/test_can.dir/test/test_can.c.o
+[ 76%] Linking C executable test_can
+[ 76%] Built target test_can
+[ 80%] Building C object CMakeFiles/test_port.dir/test/test_port.c.o
+[ 83%] Linking C executable test_port
+[ 83%] Built target test_port
+[ 86%] Building C object CMakeFiles/test_gimbal_protocol.dir/test/test_gimbal_protocol.c.o
+[ 90%] Linking C executable test_gimbal_protocol
+[ 90%] Built target test_gimbal_protocol
+[ 93%] Building CXX object CMakeFiles/test_mux.dir/test/test_mux.cpp.o
+[ 96%] Linking CXX executable test_mux
+[ 96%] Built target test_mux
+[100%] Linking CXX executable test_sentry_ros
+[100%] Built target test_sentry_ros
+Internal ctest changing into directory: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/rm_chassis_comm
+Test project /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/rm_chassis_comm
+    Start 1: chassis_protocol
+1/9 Test #1: chassis_protocol .................   Passed    0.00 sec
+    Start 2: chassis_mcu
+2/9 Test #2: chassis_mcu ......................   Passed    0.00 sec
+    Start 3: chassis_can
+3/9 Test #3: chassis_can ......................   Passed    0.00 sec
+    Start 4: chassis_port
+4/9 Test #4: chassis_port .....................   Passed    0.00 sec
+    Start 5: chassis_gimbal_protocol
+5/9 Test #5: chassis_gimbal_protocol ..........   Passed    0.00 sec
+    Start 6: chassis_mux
+6/9 Test #6: chassis_mux ......................   Passed    0.00 sec
+    Start 7: chassis_frame_math
+7/9 Test #7: chassis_frame_math ...............   Passed    0.00 sec
+    Start 8: chassis_gimbal_clock
+8/9 Test #8: chassis_gimbal_clock .............   Passed    0.00 sec
+    Start 9: sentry_ros_pty
+9/9 Test #9: sentry_ros_pty ...................   Passed    2.86 sec
+
+100% tests passed, 0 tests failed out of 9
+
+Total Test time (real) =   2.87 sec
+-- Found ament_cmake_auto: 1.3.14 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rosidl_generator_c: 3.1.9 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.9 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.9 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 6.1.4 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found eigen3_cmake_module: 0.1.1 (/opt/ros/humble/share/eigen3_cmake_module/cmake)
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/fake_vel_transform
+Consolidate compiler generated dependencies of target fake_vel_transform_node
+Consolidate compiler generated dependencies of target fake_vel_transform
+[ 33%] Built target fake_vel_transform_node
+[ 66%] Built target fake_vel_transform
+[ 83%] Building CXX object CMakeFiles/test_sentry_stamped.dir/test_sentry_stamped.cpp.o
+[100%] Linking CXX executable test_sentry_stamped
+[100%] Built target test_sentry_stamped
+Internal ctest changing into directory: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/fake_vel_transform
+Test project /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/fake_vel_transform
+    Start 1: sentry_stamped_source
+1/1 Test #1: sentry_stamped_source ............   Passed    1.81 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   1.81 sec
+FAIL route 1 frames 2 last (1, 3356317455) measurements 2 diag: diagnostic_msgs.msg.DiagnosticArray(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=1794365178, nanosec=428840084), frame_id=''), status=[diagnostic_msgs.msg.DiagnosticStatus(level=b'\x01', name='/chassis_test_14039_1/chassis_comm', message='Waiting for actual chassis READY/STOP ACK', hardware_id='/dev/pts/0', values=[diagnostic_msgs.msg.KeyValue(key='route', value='1'), diagnostic_msgs.msg.KeyValue(key='enabled', value='false'), diagnostic_msgs.msg.KeyValue(key='session', value='3356317455'), diagnostic_msgs.msg.KeyValue(key='fault_mask', value='unknown'), diagnostic_msgs.msg.KeyValue(key='received_bytes', value='0'), diagnostic_msgs.msg.KeyValue(key='decoded_feedback', value='0'), diagnostic_msgs.msg.KeyValue(key='decoded_gimbal', value='0'), diagnostic_msgs.msg.KeyValue(key='gimbal_status', value='0'), diagnostic_msgs.msg.KeyValue(key='gimbal_fresh', value='false'), diagnostic_msgs.msg.KeyValue(key='gimbal_clock_uncertainty_ms', value='0.000000'), diagnostic_msgs.msg.KeyValue(key='frame_ready', value='false'), diagnostic_msgs.msg.KeyValue(key='feedback_age_ms', value='unknown')])]) log: [INFO] [1794365178.423707744] [chassis_test_14039_1.chassis_comm]: Chassis route=1, connect=1; no motion until feedback handshake, enable and new cmd_vel
+[INFO] [1794365178.428789257] [chassis_test_14039_1.chassis_comm]: USB connected; STOP handshake only, chassis remains disabled
+
+FAIL route 2 frames 2 last (1, 725928697) measurements 2 diag: diagnostic_msgs.msg.DiagnosticArray(header=std_msgs.msg.Header(stamp=builtin_interfaces.msg.Time(sec=1794365178, nanosec=601237767), frame_id=''), status=[diagnostic_msgs.msg.DiagnosticStatus(level=b'\x01', name='/chassis_test_14039_2/chassis_comm', message='Waiting for actual chassis READY/STOP ACK', hardware_id='/dev/pts/0', values=[diagnostic_msgs.msg.KeyValue(key='route', value='2'), diagnostic_msgs.msg.KeyValue(key='enabled', value='false'), diagnostic_msgs.msg.KeyValue(key='session', value='725928697'), diagnostic_msgs.msg.KeyValue(key='fault_mask', value='unknown'), diagnostic_msgs.msg.KeyValue(key='received_bytes', value='0'), diagnostic_msgs.msg.KeyValue(key='decoded_feedback', value='0'), diagnostic_msgs.msg.KeyValue(key='decoded_gimbal', value='0'), diagnostic_msgs.msg.KeyValue(key='gimbal_status', value='0'), diagnostic_msgs.msg.KeyValue(key='gimbal_fresh', value='false'), diagnostic_msgs.msg.KeyValue(key='gimbal_clock_uncertainty_ms', value='0.000000'), diagnostic_msgs.msg.KeyValue(key='frame_ready', value='false'), diagnostic_msgs.msg.KeyValue(key='feedback_age_ms', value='unknown')])]) log: [INFO] [1794365178.595991524] [chassis_test_14039_2.chassis_comm]: SP vision virtual serial: /dev/pts/1 (this node owns physical USB)
+[INFO] [1794365178.596108968] [chassis_test_14039_2.chassis_comm]: Chassis route=2, connect=1; no motion until feedback handshake, enable and new cmd_vel
+[INFO] [1794365178.601187362] [chassis_test_14039_2.chassis_comm]: USB connected; STOP handshake only, chassis remains disabled
+
+FAILED_ROUTES [(1, 'AssertionError', "The 'x' field must be of type 'float'"), (2, 'AssertionError', "The 'x' field must be of type 'float'")]

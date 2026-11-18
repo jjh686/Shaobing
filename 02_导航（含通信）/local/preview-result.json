@@ -1,0 +1,39 @@
+{
+  "diagnostics": 9,
+  "stop_frames": 379,
+  "frame_ready_false": 1524,
+  "lidar_static_tf": {
+    "parent": "base_footprint",
+    "xyz": [
+      0.0,
+      0.0,
+      0.2
+    ]
+  },
+  "yaw_dynamic_tf": 0,
+  "last_diagnostic": {
+    "route": "2",
+    "enabled": "false",
+    "session": "655944977",
+    "fault_mask": "unknown",
+    "received_bytes": "0",
+    "decoded_feedback": "0",
+    "decoded_gimbal": "0",
+    "gimbal_status": "0",
+    "gimbal_fresh": "false",
+    "gimbal_clock_uncertainty_ms": "0.000000",
+    "frame_ready": "false",
+    "feedback_age_ms": "unknown"
+  },
+  "package_prefixes": {
+    "rm_chassis_comm": "/home/wangjiaming/.local/share/rm_sentry_nav_20261110/install/rm_chassis_comm",
+    "fake_vel_transform": "/home/wangjiaming/.local/share/rm_sentry_nav_20261110/install/fake_vel_transform",
+    "pb2025_nav_bringup": "/home/wangjiaming/.local/share/rm_sentry_nav_20261110/install/pb2025_nav_bringup",
+    "livox_ros_driver2": "/tmp/pb2025_nav_install/livox_ros_driver2"
+  },
+  "namespaced_tf_publishers": [
+    "sentry_frame_bridge"
+  ],
+  "passed": true,
+  "launch_exit_code": 0
+}

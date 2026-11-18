@@ -1,0 +1,56 @@
+Open On-Chip Debugger 0.11.0
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+Info : CMSIS-DAP: SWD  Supported
+Info : CMSIS-DAP: JTAG Supported
+Info : CMSIS-DAP: FW Version = 125036-170636
+Info : CMSIS-DAP: Serial# = 4E575257-004264AB��
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 0 SWDIO/TMS = 1 TDI = 1 TDO = 1 nTRST = 0 nRESET = 0
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 100 kHz
+Info : SWD DPIDR 0x2ba01477
+Info : stm32f4x.cpu: hardware has 6 breakpoints, 4 watchpoints
+Info : gdb port disabled
+INITIAL_STATE running
+IDCODE 0xe0042000: 100f6413 
+
+UID 0x1fff7a10: 002a003b 3034470f 31353233 
+
+FLASH_SIZE 0x1fff7a22: 0400 
+
+VECTORS 0x08000000: 20000670 08000229 08000efd 08000e79 
+
+target halted due to debug-request, current mode: Thread 
+xPSR: 0x01000000 pc: 0x08001070 msp: 0x20000670
+HALTED_STATE halted
+PC pc (/32): 0x08001070
+
+LR lr (/32): 0x0800108d
+
+MSP msp (/32): 0x20000670
+
+PSP psp (/32): 0x00000000
+
+SCB_ICSR 0xe000ed04: 00000000 
+
+SCB_FAULTS 0xe000ed28: 00000000 00000000 00000000 e000edf8 e000edf8 00000000 00000030 
+
+RCC 0x40023800: 03037e83 04402a06 0000940a 
+
+RCC_AHB2ENR 0x40023834: 00000000 
+
+GPIOA_MODE 0x40020000: a8000000 
+
+GPIOA_AFRH 0x40020024: 00000000 
+
+USB_GOTGCTL 0x50000000: 00000000 
+
+USB_GCCFG 0x50000038: 00000000 
+
+USB_DCFG_DCTL_DSTS 0x50000800: 00000000 00000000 00000000 
+
+RESUME_RESULT 
+FINAL_STATE running
+shutdown command invoked

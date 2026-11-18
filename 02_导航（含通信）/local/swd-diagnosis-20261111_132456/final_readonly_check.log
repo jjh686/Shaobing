@@ -1,0 +1,26 @@
+Open On-Chip Debugger 0.11.0
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+Info : CMSIS-DAP: SWD  Supported
+Info : CMSIS-DAP: JTAG Supported
+Info : CMSIS-DAP: FW Version = 125036-170636
+Info : CMSIS-DAP: Serial# = 4E575257-004264AB`
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 0 SWDIO/TMS = 1 TDI = 1 TDO = 1 nTRST = 0 nRESET = 0
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 50 kHz
+Info : SWD DPIDR 0x2ba01477
+Info : stm32f4x.cpu: hardware has 6 breakpoints, 4 watchpoints
+Info : gdb port disabled
+INITIAL_STATE running
+USB_INTERRUPT_VECTOR 0x08000140: 08000243 08000243 08000243 08000243 08000243 08000243 08000243 08000243 
+
+USB_CLOCK 0x40023834: 00000000 
+
+USB_GPIO_MODE 0x40020000: a8000000 
+
+USB_GPIO_AFRH 0x40020024: 00000000 
+
+FINAL_STATE running
+shutdown command invoked

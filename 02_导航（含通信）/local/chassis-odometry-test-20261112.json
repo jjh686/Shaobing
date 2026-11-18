@@ -1,0 +1,234 @@
+{
+  "test": "sensor_scan_generation odometry twist regression",
+  "hardware_accessed": false,
+  "ros_domain_id": 98,
+  "ros_localhost_only": true,
+  "steps": [
+    {
+      "step": "first sample initializes baseline with zero velocity",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "world +Y at yaw 90 degrees becomes body +X using stamp dt",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        2.0,
+        4.440892098500626e-16,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        2.0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "velocity uses header interval despite different wall interval",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.10000000000000009,
+        1.3877787807814457e-17,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0.1,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "new parent-frame baseline before yaw wrap",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "yaw crosses plus/minus pi with quaternion sign flip on short path",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.1745329251994322
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0.17453292519943295
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "equivalent quaternion sign change produces no angular spike",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "new parent-frame baseline before repeated stamp",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "repeated stamp produces zero velocity and resets baseline",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "motion after repeated stamp uses reset pose/time baseline",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.5000000000000004,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "backward stamp produces zero velocity and resets baseline",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "motion after backward stamp uses reset pose/time baseline",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.4999999999999982,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "different parent frame starts a zero-velocity baseline",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "step": "new parent-frame baseline supports subsequent velocity",
+      "passed": true,
+      "twist_x_y_z_wz": [
+        0.4999999999999716,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_x_y_z_wz": [
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "tolerance": 0.025
+    }
+  ],
+  "passed": true,
+  "samples_sent": 13,
+  "samples_received": 13,
+  "node_exit_code_after_sigint": -9,
+  "node_log": "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/chassis-odometry-test-20261112.log"
+}

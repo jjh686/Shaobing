@@ -1,0 +1,15 @@
+# User measurements and axis confirmation, 2026-11-10.
+# Radar is fixed to the chassis: +X forward, +Y left, +Z up; no protrusions.
+configured: true
+parent_frame: base_footprint
+child_frame: front_mid360
+# Origin: chassis center projected to the ground; x forward, y left, z up.
+translation_m: [0.0, 0.0, 0.20]  # Radar coordinate origin, 20 cm above ground.
+# Nominal level mounting specified by the user. Static IMU check showed ~1 deg tilt.
+rotation_rpy_rad: [0.0, 0.0, 0.0]  # [roll, pitch, yaw], radians.
+# 30 cm from chassis center to each outer edge, counterclockwise.
+footprint_xy_m:
+  - [0.30, 0.30]
+  - [-0.30, 0.30]
+  - [-0.30, -0.30]
+  - [0.30, -0.30]

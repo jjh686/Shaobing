@@ -1,0 +1,46 @@
+Mapping output: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/local/maps/20261111_114550
+[INFO] [launch]: All log files can be found below /home/wangjiaming/.local/share/rm_sentry_nav_20261110/log/ros/2026-11-11-11-45-50-812368-wangjiaming-NUC11PAHi7-20314
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [pointlio_mapping-1]: process started with pid [20347]
+[INFO] [static_transform_publisher-2]: process started with pid [20349]
+[INFO] [static_transform_publisher-3]: process started with pid [20351]
+[INFO] [pointcloud_to_laserscan_node-4]: process started with pid [20353]
+[INFO] [sync_slam_toolbox_node-5]: process started with pid [20355]
+[INFO] [python3-6]: process started with pid [20357]
+[static_transform_publisher-3] [INFO] [1794368750.906342290] [mid360_test_body_tf]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'aft_mapped' to 'body'
+[static_transform_publisher-2] [INFO] [1794368750.910656980] [mid360_test_map_tf]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'map' to 'camera_init'
+[sync_slam_toolbox_node-5] [INFO] [1794368750.913850508] [slam_toolbox]: Node using stack size 40000000
+[pointcloud_to_laserscan_node-4] [INFO] [1794368750.915704859] [mid360_test_scan]: Got a subscriber to laserscan, starting pointcloud subscriber
+[sync_slam_toolbox_node-5] [INFO] [1794368750.933925631] [slam_toolbox]: Using solver plugin solver_plugins::CeresSolver
+[sync_slam_toolbox_node-5] [INFO] [1794368750.934061536] [slam_toolbox]: CeresSolver: Using SCHUR_JACOBI preconditioner.
+[sync_slam_toolbox_node-5] [INFO] [1794368751.013415133] [slam_toolbox]: Message Filter dropping message: frame 'aft_mapped' at time 1794368751.010 for reason 'discarding message because the queue is full'
+[sync_slam_toolbox_node-5] Info: clipped range threshold to be within minimum and maximum range!
+[sync_slam_toolbox_node-5] Registering sensor: [Custom Described Lidar]
+[python3-6] [INFO] [1794368751.186857747] [mid360_test_recorder]: Map output: /home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-pipeline-br_svv2o
+[python3-6] [INFO] [1794368751.441127943] [mid360_test_recorder]: Saved 160 points to /home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-pipeline-br_svv2o; 2D map saved: True
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [python3-6]: sending signal 'SIGINT' to process[python3-6]
+[INFO] [sync_slam_toolbox_node-5]: sending signal 'SIGINT' to process[sync_slam_toolbox_node-5]
+[INFO] [pointcloud_to_laserscan_node-4]: sending signal 'SIGINT' to process[pointcloud_to_laserscan_node-4]
+[INFO] [static_transform_publisher-3]: sending signal 'SIGINT' to process[static_transform_publisher-3]
+[INFO] [static_transform_publisher-2]: sending signal 'SIGINT' to process[static_transform_publisher-2]
+[INFO] [pointlio_mapping-1]: sending signal 'SIGINT' to process[pointlio_mapping-1]
+[sync_slam_toolbox_node-5] [INFO] [1794368754.033653764] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[pointcloud_to_laserscan_node-4] [INFO] [1794368754.034110952] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[static_transform_publisher-3] [INFO] [1794368754.034585088] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[static_transform_publisher-2] [INFO] [1794368754.035483198] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[pointlio_mapping-1] [WARN] [1794368754.035714625] [laserMapping]: catch sig 2
+[INFO] [pointcloud_to_laserscan_node-4]: process has finished cleanly [pid 20353]
+[INFO] [static_transform_publisher-3]: process has finished cleanly [pid 20351]
+[INFO] [static_transform_publisher-2]: process has finished cleanly [pid 20349]
+[INFO] [sync_slam_toolbox_node-5]: process has finished cleanly [pid 20355]
+[pointlio_mapping-1] lidar_type: 1
+[pointlio_mapping-1] ~~~~/home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/src/pb2025_sentry_nav/point_lio/ file opened
+[INFO] [pointlio_mapping-1]: process has finished cleanly [pid 20347]
+[INFO] [python3-6]: process has finished cleanly [pid 20357]

@@ -1,0 +1,27 @@
+{
+  "point_count": 2,
+  "voxel_size_m": 0.1,
+  "registered_frames": 1,
+  "cloud_frame": "camera_init",
+  "bounds_m": {
+    "min": [
+      0.009999999776482582,
+      0.0,
+      0.30000001192092896
+    ],
+    "max": [
+      1.0,
+      0.019999999552965164,
+      0.5
+    ]
+  },
+  "voxel_limit_reached": false,
+  "occupancy_grid_saved": true,
+  "grid": {
+    "width": 3,
+    "height": 2,
+    "resolution_m": 0.05,
+    "known_cells": 5,
+    "occupied_cells": 2
+  }
+}

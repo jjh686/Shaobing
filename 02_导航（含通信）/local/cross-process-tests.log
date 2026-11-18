@@ -1,0 +1,2 @@
+PASS route 1 : handshake, enable, limits, TTL, invalid cmd, replay, manual, SP proxy
+PASS route 2 : handshake, enable, limits, TTL, invalid cmd, replay, manual, SP proxy

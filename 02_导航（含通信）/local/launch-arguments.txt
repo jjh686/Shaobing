@@ -1,0 +1,41 @@
+Arguments (pass arguments as '<name>:=<value>'):
+
+    'namespace':
+        no description given
+        (default: 'red_standard_robot1')
+
+    'connect':
+        no description given
+        (default: 'false')
+
+    'serial_port':
+        no description given
+        (default: '/dev/ttyACM0')
+
+    'frame_config':
+        no description given
+        (default: '/home/wangjiaming/.local/share/rm_sentry_nav_20261110/install/rm_chassis_comm/share/rm_chassis_comm/config/sentry_real.yaml')
+
+    'cmd_vel_topic':
+        no description given
+        (default: 'cmd_vel_gimbal_stamped')
+
+    'start_navigation':
+        no description given
+        (default: 'false')
+
+    'map':
+        no description given
+        (default: '')
+
+    'prior_pcd_file':
+        no description given
+        (default: '')
+
+    'nav_params':
+        no description given
+        (default: '')
+
+    'use_rviz':
+        no description given
+        (default: 'false')

@@ -1,0 +1,121 @@
+{
+  "namespace": "",
+  "duration_seconds": 2.0,
+  "note": "Read-only observer; no velocity, goals or enable requests published.",
+  "topics": {
+    "livox/imu": {
+      "count": 0
+    },
+    "livox/lidar/pointcloud": {
+      "count": 0
+    },
+    "cloud_registered": {
+      "count": 0
+    },
+    "registered_scan": {
+      "count": 0
+    },
+    "odometry": {
+      "count": 0
+    },
+    "aft_mapped_to_init": {
+      "count": 0
+    },
+    "mid360_test/scan": {
+      "count": 0
+    },
+    "map": {
+      "count": 5,
+      "max_gap_seconds": 0.5000902450001377,
+      "timestamp_regressions": 0,
+      "repeated_timestamps": 3,
+      "stamp_ns": 1794368751438236183,
+      "frame": "map",
+      "grid_size": [
+        80,
+        80
+      ],
+      "resolution_m": 0.05000000074505806,
+      "received_hz": 2.5291912552323024,
+      "last_arrival_age_seconds": 0.45260086500002217,
+      "last_stamp_age_seconds": 2.452817467
+    },
+    "gimbal_joint_state": {
+      "count": 0
+    },
+    "cmd_vel_gimbal_stamped": {
+      "count": 0
+    },
+    "cmd_vel_body": {
+      "count": 0
+    },
+    "diagnostics": {
+      "count": 0
+    },
+    "frame_ready": {
+      "count": 0
+    }
+  },
+  "tf": {
+    "map <- camera_init": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion_xyzw": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "stamp_ns": 0
+    },
+    "camera_init <- aft_mapped": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion_xyzw": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "stamp_ns": 0
+    },
+    "aft_mapped <- body": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion_xyzw": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "stamp_ns": 0
+    }
+  },
+  "lifecycle": {
+    "map_server": "service unavailable",
+    "controller_server": "service unavailable",
+    "planner_server": "service unavailable",
+    "bt_navigator": "service unavailable"
+  },
+  "nodes": [
+    "/mid360_test_body_tf",
+    "/mid360_test_map_tf",
+    "/mid360_test_recorder",
+    "/mid360_test_scan",
+    "/point_lio",
+    "/sentry_navigation_observer",
+    "/slam_toolbox",
+    "/synthetic_mapping_test",
+    "/transform_listener_impl_567d3336ba10",
+    "/transform_listener_impl_5c7f25c7a6c0"
+  ]
+}

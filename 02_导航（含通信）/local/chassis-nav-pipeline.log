@@ -1,0 +1,324 @@
+[INFO] [launch]: All log files can be found below /home/wangjiaming/.local/share/rm_sentry_nav_20261110/log/ros/2026-11-12-00-48-44-763133-wangjiaming-NUC11PAHi7-16350
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [chassis_node-1]: process started with pid [16387]
+[INFO] [static_transform_publisher-2]: process started with pid [16389]
+[INFO] [pointlio_mapping-3]: process started with pid [16391]
+[INFO] [map_server-4]: process started with pid [16393]
+[INFO] [small_gicp_relocalization_node-5]: process started with pid [16395]
+[INFO] [lifecycle_manager-6]: process started with pid [16397]
+[INFO] [terrainAnalysis-7]: process started with pid [16399]
+[INFO] [terrainAnalysisExt-8]: process started with pid [16401]
+[INFO] [loam_interface_node-9]: process started with pid [16419]
+[INFO] [sensor_scan_generation_node-10]: process started with pid [16425]
+[INFO] [controller_server-11]: process started with pid [16441]
+[INFO] [smoother_server-12]: process started with pid [16445]
+[INFO] [planner_server-13]: process started with pid [16463]
+[INFO] [behavior_server-14]: process started with pid [16477]
+[INFO] [bt_navigator-15]: process started with pid [16483]
+[INFO] [waypoint_follower-16]: process started with pid [16486]
+[INFO] [velocity_smoother-17]: process started with pid [16508]
+[INFO] [lifecycle_manager-18]: process started with pid [16512]
+[chassis_node-1] [INFO] [1794415725.174449461] [red_standard_robot1.chassis_comm]: Chassis route=2, connect=0; no motion until feedback handshake, enable and new cmd_vel
+[static_transform_publisher-2] [INFO] [1794415725.185835658] [red_standard_robot1.chassis_lidar_mount]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.200000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'base_footprint' to 'front_mid360'
+[map_server-4] [0m[INFO] [1794415725.198382125] [red_standard_robot1.map_server]: 
+[map_server-4] 	map_server lifecycle node launched. 
+[map_server-4] 	Waiting on external lifecycle transitions to activate
+[map_server-4] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[map_server-4] [0m[INFO] [1794415725.198503078] [red_standard_robot1.map_server]: Creating[0m
+[map_server-4] [0m[INFO] [1794415725.200128982] [red_standard_robot1.map_server]: Configuring[0m
+[map_server-4] [0m[INFO] [1794415725.200184170] [map_io]: Loading yaml file: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/local/test-artifacts/synthetic-chassis-nav-spmdf5r2/map.yaml[0m
+[map_server-4] [0m[INFO] [1794415725.200399883] [map_io]: resolution: 0.05[0m
+[map_server-4] [0m[INFO] [1794415725.200409259] [map_io]: origin[0]: -5[0m
+[map_server-4] [0m[INFO] [1794415725.200412988] [map_io]: origin[1]: -5[0m
+[map_server-4] [0m[INFO] [1794415725.200416419] [map_io]: origin[2]: 0[0m
+[map_server-4] [0m[INFO] [1794415725.200420179] [map_io]: free_thresh: 0.25[0m
+[map_server-4] [0m[INFO] [1794415725.200423553] [map_io]: occupied_thresh: 0.65[0m
+[map_server-4] [0m[INFO] [1794415725.200427386] [map_io]: mode: trinary[0m
+[map_server-4] [0m[INFO] [1794415725.200431482] [map_io]: negate: 0[0m
+[map_server-4] [0m[INFO] [1794415725.200595704] [map_io]: Loading image_file: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/local/test-artifacts/synthetic-chassis-nav-spmdf5r2/map.pgm[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.168954324] [red_standard_robot1.lifecycle_manager_localization]: Creating[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.172719088] [red_standard_robot1.lifecycle_manager_localization]: [34m[1mCreating and initializing lifecycle service clients[0m[0m[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.189624387] [red_standard_robot1.lifecycle_manager_localization]: [34m[1mStarting managed nodes bringup...[0m[0m[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.189712628] [red_standard_robot1.lifecycle_manager_localization]: [34m[1mConfiguring map_server[0m[0m[0m
+[small_gicp_relocalization_node-5] [0m[INFO] [1794415725.216414725] [red_standard_robot1.small_gicp_relocalization]: Loaded global map with 5661 points[0m
+[planner_server-13] [0m[INFO] [1794415725.221265016] [red_standard_robot1.planner_server]: 
+[planner_server-13] 	planner_server lifecycle node launched. 
+[planner_server-13] 	Waiting on external lifecycle transitions to activate
+[planner_server-13] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[planner_server-13] [0m[INFO] [1794415725.222851622] [red_standard_robot1.planner_server]: Creating[0m
+[map_server-4] [0m[INFO] [1794415725.233609973] [map_io]: Read map /home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/local/test-artifacts/synthetic-chassis-nav-spmdf5r2/map.pgm: 200 X 200 map @ 0.05 m/cell[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.245652822] [red_standard_robot1.lifecycle_manager_localization]: [34m[1mActivating map_server[0m[0m[0m
+[map_server-4] [0m[INFO] [1794415725.246843639] [red_standard_robot1.map_server]: Activating[0m
+[map_server-4] [0m[INFO] [1794415725.247015237] [red_standard_robot1.map_server]: Creating bond (map_server) to lifecycle manager.[0m
+[small_gicp_relocalization_node-5] [0m[INFO] [1794415725.247928180] [red_standard_robot1.small_gicp_relocalization]: odom_to_lidar_odom: translation =   0   0 0.2, rpy = -0  0 -0[0m
+[planner_server-13] [0m[INFO] [1794415725.262462019] [red_standard_robot1.global_costmap.global_costmap]: 
+[planner_server-13] 	global_costmap lifecycle node launched. 
+[planner_server-13] 	Waiting on external lifecycle transitions to activate
+[planner_server-13] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.264281976] [red_standard_robot1.lifecycle_manager_navigation]: Creating[0m
+[planner_server-13] [0m[INFO] [1794415725.264361342] [red_standard_robot1.global_costmap.global_costmap]: Creating Costmap[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.287519796] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mCreating and initializing lifecycle service clients[0m[0m[0m
+[behavior_server-14] [0m[INFO] [1794415725.296941511] [red_standard_robot1.behavior_server]: 
+[behavior_server-14] 	behavior_server lifecycle node launched. 
+[behavior_server-14] 	Waiting on external lifecycle transitions to activate
+[behavior_server-14] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[controller_server-11] [0m[INFO] [1794415725.337877795] [red_standard_robot1.controller_server]: 
+[controller_server-11] 	controller_server lifecycle node launched. 
+[controller_server-11] 	Waiting on external lifecycle transitions to activate
+[controller_server-11] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[controller_server-11] [0m[INFO] [1794415725.354243930] [red_standard_robot1.controller_server]: Creating controller server[0m
+[smoother_server-12] [0m[INFO] [1794415725.357092253] [red_standard_robot1.smoother_server]: 
+[smoother_server-12] 	smoother_server lifecycle node launched. 
+[smoother_server-12] 	Waiting on external lifecycle transitions to activate
+[smoother_server-12] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.359192650] [red_standard_robot1.lifecycle_manager_localization]: Server map_server connected with bond.[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.359241997] [red_standard_robot1.lifecycle_manager_localization]: [34m[1mManaged nodes are active[0m[0m[0m
+[lifecycle_manager-6] [0m[INFO] [1794415725.359252975] [red_standard_robot1.lifecycle_manager_localization]: [34m[1mCreating bond timer...[0m[0m[0m
+[smoother_server-12] [0m[INFO] [1794415725.368682467] [red_standard_robot1.smoother_server]: Creating smoother server[0m
+[velocity_smoother-17] [0m[INFO] [1794415725.389514213] [red_standard_robot1.velocity_smoother]: 
+[velocity_smoother-17] 	velocity_smoother lifecycle node launched. 
+[velocity_smoother-17] 	Waiting on external lifecycle transitions to activate
+[velocity_smoother-17] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[controller_server-11] [0m[INFO] [1794415725.400532354] [red_standard_robot1.local_costmap.local_costmap]: 
+[controller_server-11] 	local_costmap lifecycle node launched. 
+[controller_server-11] 	Waiting on external lifecycle transitions to activate
+[controller_server-11] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[controller_server-11] [0m[INFO] [1794415725.401310280] [red_standard_robot1.local_costmap.local_costmap]: Creating Costmap[0m
+[waypoint_follower-16] [0m[INFO] [1794415725.407745902] [red_standard_robot1.waypoint_follower]: 
+[waypoint_follower-16] 	waypoint_follower lifecycle node launched. 
+[waypoint_follower-16] 	Waiting on external lifecycle transitions to activate
+[waypoint_follower-16] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[waypoint_follower-16] [0m[INFO] [1794415725.408393109] [red_standard_robot1.waypoint_follower]: Creating[0m
+[bt_navigator-15] [0m[INFO] [1794415725.412345205] [red_standard_robot1.bt_navigator]: 
+[bt_navigator-15] 	bt_navigator lifecycle node launched. 
+[bt_navigator-15] 	Waiting on external lifecycle transitions to activate
+[bt_navigator-15] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.[0m
+[bt_navigator-15] [0m[INFO] [1794415725.412492182] [red_standard_robot1.bt_navigator]: Creating[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.441890411] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mStarting managed nodes bringup...[0m[0m[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.441928510] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mConfiguring controller_server[0m[0m[0m
+[controller_server-11] [0m[INFO] [1794415725.442179685] [red_standard_robot1.controller_server]: Configuring controller interface[0m
+[controller_server-11] [0m[INFO] [1794415725.442583016] [red_standard_robot1.controller_server]: getting goal checker plugins..[0m
+[controller_server-11] [0m[INFO] [1794415725.442666730] [red_standard_robot1.controller_server]: Controller frequency set to 20.0000Hz[0m
+[controller_server-11] [0m[INFO] [1794415725.442696364] [red_standard_robot1.local_costmap.local_costmap]: Configuring[0m
+[controller_server-11] [0m[INFO] [1794415725.449219925] [red_standard_robot1.local_costmap.local_costmap]: Using plugin "static_layer"[0m
+[controller_server-11] [0m[INFO] [1794415725.451900882] [red_standard_robot1.local_costmap.local_costmap]: Subscribing to the map topic (/red_standard_robot1/map) with transient local durability[0m
+[controller_server-11] [0m[INFO] [1794415725.452786135] [red_standard_robot1.local_costmap.local_costmap]: Initialized plugin "static_layer"[0m
+[controller_server-11] [0m[INFO] [1794415725.452807187] [red_standard_robot1.local_costmap.local_costmap]: Using plugin "intensity_voxel_layer"[0m
+[controller_server-11] [0m[INFO] [1794415725.453601432] [red_standard_robot1.local_costmap.local_costmap]: Subscribed to Topics: terrain_map[0m
+[controller_server-11] [0m[INFO] [1794415725.459851666] [red_standard_robot1.local_costmap.local_costmap]: Initialized plugin "intensity_voxel_layer"[0m
+[controller_server-11] [0m[INFO] [1794415725.459888817] [red_standard_robot1.local_costmap.local_costmap]: Using plugin "inflation_layer"[0m
+[controller_server-11] [0m[INFO] [1794415725.460349122] [red_standard_robot1.local_costmap.local_costmap]: Initialized plugin "inflation_layer"[0m
+[controller_server-11] [0m[INFO] [1794415725.469088433] [red_standard_robot1.local_costmap.local_costmap]: StaticLayer: Resizing static layer to 200 X 200 at 0.050000 m/pix[0m
+[controller_server-11] [0m[INFO] [1794415725.469371796] [red_standard_robot1.controller_server]: Created progress_checker : progress_checker of type nav2_controller::SimpleProgressChecker[0m
+[controller_server-11] [0m[INFO] [1794415725.470979776] [red_standard_robot1.controller_server]: Created goal checker : general_goal_checker of type nav2_controller::SimpleGoalChecker[0m
+[controller_server-11] [0m[INFO] [1794415725.471834420] [red_standard_robot1.controller_server]: Controller Server has general_goal_checker  goal checkers available.[0m
+[controller_server-11] [0m[INFO] [1794415725.472825828] [red_standard_robot1.controller_server]: Created controller : FollowPath of type pb_omni_pid_pursuit_controller::OmniPidPursuitController[0m
+[controller_server-11] [0m[INFO] [1794415725.478477875] [red_standard_robot1.controller_server]: Controller Server has FollowPath  controllers available.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.486950697] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mConfiguring smoother_server[0m[0m[0m
+[smoother_server-12] [0m[INFO] [1794415725.487113593] [red_standard_robot1.smoother_server]: Configuring smoother server[0m
+[smoother_server-12] [0m[INFO] [1794415725.496116071] [red_standard_robot1.smoother_server]: Created smoother : simple_smoother of type nav2_smoother::SimpleSmoother[0m
+[smoother_server-12] [0m[INFO] [1794415725.496583590] [red_standard_robot1.smoother_server]: Smoother Server has simple_smoother  smoothers available.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.500377688] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mConfiguring planner_server[0m[0m[0m
+[planner_server-13] [0m[INFO] [1794415725.500559891] [red_standard_robot1.planner_server]: Configuring[0m
+[planner_server-13] [0m[INFO] [1794415725.500594456] [red_standard_robot1.global_costmap.global_costmap]: Configuring[0m
+[planner_server-13] [0m[INFO] [1794415725.506059041] [red_standard_robot1.global_costmap.global_costmap]: Using plugin "static_layer"[0m
+[planner_server-13] [0m[INFO] [1794415725.508824827] [red_standard_robot1.global_costmap.global_costmap]: Subscribing to the map topic (/red_standard_robot1/map) with transient local durability[0m
+[planner_server-13] [0m[INFO] [1794415725.509883970] [red_standard_robot1.global_costmap.global_costmap]: Initialized plugin "static_layer"[0m
+[planner_server-13] [0m[INFO] [1794415725.509911482] [red_standard_robot1.global_costmap.global_costmap]: Using plugin "intensity_voxel_layer"[0m
+[planner_server-13] [0m[INFO] [1794415725.511603392] [red_standard_robot1.global_costmap.global_costmap]: Subscribed to Topics: terrain_map_ext[0m
+[planner_server-13] [0m[INFO] [1794415725.513707819] [red_standard_robot1.global_costmap.global_costmap]: Initialized plugin "intensity_voxel_layer"[0m
+[planner_server-13] [0m[INFO] [1794415725.513732577] [red_standard_robot1.global_costmap.global_costmap]: Using plugin "inflation_layer"[0m
+[planner_server-13] [0m[INFO] [1794415725.514077283] [red_standard_robot1.global_costmap.global_costmap]: Initialized plugin "inflation_layer"[0m
+[planner_server-13] [0m[INFO] [1794415725.522170599] [red_standard_robot1.global_costmap.global_costmap]: StaticLayer: Resizing costmap to 200 X 200 at 0.050000 m/pix[0m
+[planner_server-13] [0m[INFO] [1794415725.522557007] [red_standard_robot1.planner_server]: Created global planner plugin GridBased of type nav2_theta_star_planner/ThetaStarPlanner[0m
+[planner_server-13] [0m[INFO] [1794415725.522967472] [red_standard_robot1.planner_server]: Planner Server has GridBased  planners available.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.532452098] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mConfiguring behavior_server[0m[0m[0m
+[behavior_server-14] [0m[INFO] [1794415725.532601901] [red_standard_robot1.behavior_server]: Configuring[0m
+[behavior_server-14] [0m[INFO] [1794415725.539674582] [red_standard_robot1.behavior_server]: Creating behavior plugin spin of type nav2_behaviors/Spin[0m
+[behavior_server-14] [0m[INFO] [1794415725.540341754] [red_standard_robot1.behavior_server]: Configuring spin[0m
+[behavior_server-14] [0m[INFO] [1794415725.544226361] [red_standard_robot1.behavior_server]: Creating behavior plugin backup of type pb_nav2_behaviors/BackUpFreeSpace[0m
+[behavior_server-14] [0m[INFO] [1794415725.545508100] [red_standard_robot1.behavior_server]: Configuring backup[0m
+[behavior_server-14] [0m[INFO] [1794415725.551038713] [red_standard_robot1.behavior_server]: Creating behavior plugin drive_on_heading of type nav2_behaviors/DriveOnHeading[0m
+[behavior_server-14] [0m[INFO] [1794415725.551856557] [red_standard_robot1.behavior_server]: Configuring drive_on_heading[0m
+[behavior_server-14] [0m[INFO] [1794415725.555798763] [red_standard_robot1.behavior_server]: Creating behavior plugin assisted_teleop of type nav2_behaviors/AssistedTeleop[0m
+[behavior_server-14] [0m[INFO] [1794415725.558048749] [red_standard_robot1.behavior_server]: Configuring assisted_teleop[0m
+[behavior_server-14] [0m[INFO] [1794415725.563843736] [red_standard_robot1.behavior_server]: Creating behavior plugin wait of type nav2_behaviors/Wait[0m
+[behavior_server-14] [0m[INFO] [1794415725.564565334] [red_standard_robot1.behavior_server]: Configuring wait[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.567990486] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mConfiguring bt_navigator[0m[0m[0m
+[bt_navigator-15] [0m[INFO] [1794415725.568185552] [red_standard_robot1.bt_navigator]: Configuring[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.616596276] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mConfiguring waypoint_follower[0m[0m[0m
+[waypoint_follower-16] [0m[INFO] [1794415725.616808197] [red_standard_robot1.waypoint_follower]: Configuring[0m
+[waypoint_follower-16] [0m[INFO] [1794415725.628012671] [red_standard_robot1.waypoint_follower]: Created waypoint_task_executor : wait_at_waypoint of type nav2_waypoint_follower::WaitAtWaypoint[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.628818529] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mConfiguring velocity_smoother[0m[0m[0m
+[velocity_smoother-17] [0m[INFO] [1794415725.628991231] [red_standard_robot1.velocity_smoother]: Configuring velocity smoother[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.631686662] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mActivating controller_server[0m[0m[0m
+[controller_server-11] [0m[INFO] [1794415725.631828449] [red_standard_robot1.controller_server]: Activating[0m
+[controller_server-11] [0m[INFO] [1794415725.631856955] [red_standard_robot1.local_costmap.local_costmap]: Activating[0m
+[controller_server-11] [0m[INFO] [1794415725.631865526] [red_standard_robot1.local_costmap.local_costmap]: Checking transform[0m
+[controller_server-11] [0m[INFO] [1794415725.631945394] [red_standard_robot1.local_costmap.local_costmap]: start[0m
+[controller_server-11] [0m[INFO] [1794415725.732862735] [red_standard_robot1.controller_server]: Activating controller: FollowPath of type regulated_pure_pursuit_controller::OmniPidPursuitController[0m
+[controller_server-11] [0m[INFO] [1794415725.732899635] [red_standard_robot1.controller_server]: Creating bond (controller_server) to lifecycle manager.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.836406203] [red_standard_robot1.lifecycle_manager_navigation]: Server controller_server connected with bond.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.836445290] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mActivating smoother_server[0m[0m[0m
+[smoother_server-12] [0m[INFO] [1794415725.836625167] [red_standard_robot1.smoother_server]: Activating[0m
+[smoother_server-12] [0m[INFO] [1794415725.836659487] [red_standard_robot1.smoother_server]: Creating bond (smoother_server) to lifecycle manager.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.939768352] [red_standard_robot1.lifecycle_manager_navigation]: Server smoother_server connected with bond.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415725.939804948] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mActivating planner_server[0m[0m[0m
+[planner_server-13] [0m[INFO] [1794415725.939979101] [red_standard_robot1.planner_server]: Activating[0m
+[planner_server-13] [0m[INFO] [1794415725.940010605] [red_standard_robot1.global_costmap.global_costmap]: Activating[0m
+[planner_server-13] [0m[INFO] [1794415725.940019034] [red_standard_robot1.global_costmap.global_costmap]: Checking transform[0m
+[planner_server-13] [0m[INFO] [1794415725.940108275] [red_standard_robot1.global_costmap.global_costmap]: start[0m
+[planner_server-13] [0m[INFO] [1794415726.190917168] [red_standard_robot1.planner_server]: Activating plugin GridBased of type nav2_theta_star_planner[0m
+[planner_server-13] [0m[INFO] [1794415726.192279521] [red_standard_robot1.planner_server]: Creating bond (planner_server) to lifecycle manager.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.295482331] [red_standard_robot1.lifecycle_manager_navigation]: Server planner_server connected with bond.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.295528096] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mActivating behavior_server[0m[0m[0m
+[behavior_server-14] [0m[INFO] [1794415726.296567253] [red_standard_robot1.behavior_server]: Activating[0m
+[behavior_server-14] [0m[INFO] [1794415726.296596355] [red_standard_robot1.behavior_server]: Activating spin[0m
+[behavior_server-14] [0m[INFO] [1794415726.296609133] [red_standard_robot1.behavior_server]: Activating backup[0m
+[behavior_server-14] [0m[INFO] [1794415726.296619800] [red_standard_robot1.behavior_server]: Activating drive_on_heading[0m
+[behavior_server-14] [0m[INFO] [1794415726.296630067] [red_standard_robot1.behavior_server]: Activating assisted_teleop[0m
+[behavior_server-14] [0m[INFO] [1794415726.296638413] [red_standard_robot1.behavior_server]: Activating wait[0m
+[behavior_server-14] [0m[INFO] [1794415726.296653912] [red_standard_robot1.behavior_server]: Creating bond (behavior_server) to lifecycle manager.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.402209974] [red_standard_robot1.lifecycle_manager_navigation]: Server behavior_server connected with bond.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.402244667] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mActivating bt_navigator[0m[0m[0m
+[bt_navigator-15] [0m[INFO] [1794415726.402444551] [red_standard_robot1.bt_navigator]: Activating[0m
+[bt_navigator-15] [0m[INFO] [1794415726.428564466] [red_standard_robot1.bt_navigator]: Creating bond (bt_navigator) to lifecycle manager.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.531812258] [red_standard_robot1.lifecycle_manager_navigation]: Server bt_navigator connected with bond.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.531846298] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mActivating waypoint_follower[0m[0m[0m
+[waypoint_follower-16] [0m[INFO] [1794415726.532105497] [red_standard_robot1.waypoint_follower]: Activating[0m
+[waypoint_follower-16] [0m[INFO] [1794415726.532140248] [red_standard_robot1.waypoint_follower]: Creating bond (waypoint_follower) to lifecycle manager.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.636128572] [red_standard_robot1.lifecycle_manager_navigation]: Server waypoint_follower connected with bond.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.636255904] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mActivating velocity_smoother[0m[0m[0m
+[velocity_smoother-17] [0m[INFO] [1794415726.636520835] [red_standard_robot1.velocity_smoother]: Activating[0m
+[velocity_smoother-17] [0m[INFO] [1794415726.636588312] [red_standard_robot1.velocity_smoother]: Creating bond (velocity_smoother) to lifecycle manager.[0m
+[controller_server-11] [0m[INFO] [1794415726.651627577] [red_standard_robot1.controller_server]: Received a goal, begin computing control effort.[0m
+[controller_server-11] [0m[INFO] [1794415726.701753740] [red_standard_robot1.controller_server]: Goal was canceled. Stopping the robot.[0m
+[controller_server-11] [0m[INFO] [1794415726.701789738] [red_standard_robot1.controller_server]: [follow_path] [ActionServer] Client requested to cancel the goal. Cancelling.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.740326718] [red_standard_robot1.lifecycle_manager_navigation]: Server velocity_smoother connected with bond.[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.740357802] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mManaged nodes are active[0m[0m[0m
+[lifecycle_manager-18] [0m[INFO] [1794415726.740366870] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mCreating bond timer...[0m[0m[0m
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [lifecycle_manager-18]: sending signal 'SIGINT' to process[lifecycle_manager-18]
+[INFO] [velocity_smoother-17]: sending signal 'SIGINT' to process[velocity_smoother-17]
+[INFO] [waypoint_follower-16]: sending signal 'SIGINT' to process[waypoint_follower-16]
+[INFO] [bt_navigator-15]: sending signal 'SIGINT' to process[bt_navigator-15]
+[INFO] [behavior_server-14]: sending signal 'SIGINT' to process[behavior_server-14]
+[INFO] [planner_server-13]: sending signal 'SIGINT' to process[planner_server-13]
+[INFO] [smoother_server-12]: sending signal 'SIGINT' to process[smoother_server-12]
+[INFO] [controller_server-11]: sending signal 'SIGINT' to process[controller_server-11]
+[INFO] [sensor_scan_generation_node-10]: sending signal 'SIGINT' to process[sensor_scan_generation_node-10]
+[INFO] [loam_interface_node-9]: sending signal 'SIGINT' to process[loam_interface_node-9]
+[INFO] [terrainAnalysisExt-8]: sending signal 'SIGINT' to process[terrainAnalysisExt-8]
+[INFO] [terrainAnalysis-7]: sending signal 'SIGINT' to process[terrainAnalysis-7]
+[INFO] [lifecycle_manager-6]: sending signal 'SIGINT' to process[lifecycle_manager-6]
+[INFO] [small_gicp_relocalization_node-5]: sending signal 'SIGINT' to process[small_gicp_relocalization_node-5]
+[INFO] [map_server-4]: sending signal 'SIGINT' to process[map_server-4]
+[INFO] [pointlio_mapping-3]: sending signal 'SIGINT' to process[pointlio_mapping-3]
+[INFO] [static_transform_publisher-2]: sending signal 'SIGINT' to process[static_transform_publisher-2]
+[INFO] [chassis_node-1]: sending signal 'SIGINT' to process[chassis_node-1]
+[lifecycle_manager-18] [0m[INFO] [1794415727.207298929] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[lifecycle_manager-18] [0m[INFO] [1794415727.207376896] [red_standard_robot1.lifecycle_manager_navigation]: Running Nav2 LifecycleManager rcl preshutdown (lifecycle_manager_navigation)[0m
+[lifecycle_manager-18] [0m[INFO] [1794415727.207397173] [red_standard_robot1.lifecycle_manager_navigation]: [34m[1mTerminating bond timer...[0m[0m[0m
+[velocity_smoother-17] [0m[INFO] [1794415727.209076975] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[velocity_smoother-17] [0m[INFO] [1794415727.209166929] [red_standard_robot1.velocity_smoother]: Running Nav2 LifecycleNode rcl preshutdown (velocity_smoother)[0m
+[velocity_smoother-17] [0m[INFO] [1794415727.209203560] [red_standard_robot1.velocity_smoother]: Deactivating[0m
+[velocity_smoother-17] [0m[INFO] [1794415727.209215597] [red_standard_robot1.velocity_smoother]: Destroying bond (velocity_smoother) to lifecycle manager.[0m
+[waypoint_follower-16] [0m[INFO] [1794415727.211001645] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[waypoint_follower-16] [0m[INFO] [1794415727.211099373] [red_standard_robot1.waypoint_follower]: Running Nav2 LifecycleNode rcl preshutdown (waypoint_follower)[0m
+[waypoint_follower-16] [0m[INFO] [1794415727.211149985] [red_standard_robot1.waypoint_follower]: Deactivating[0m
+[waypoint_follower-16] [0m[INFO] [1794415727.211164274] [red_standard_robot1.waypoint_follower]: Destroying bond (waypoint_follower) to lifecycle manager.[0m
+[bt_navigator-15] [0m[INFO] [1794415727.212940878] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[bt_navigator-15] [0m[INFO] [1794415727.213036353] [red_standard_robot1.bt_navigator]: Running Nav2 LifecycleNode rcl preshutdown (bt_navigator)[0m
+[bt_navigator-15] [0m[INFO] [1794415727.213078520] [red_standard_robot1.bt_navigator]: Deactivating[0m
+[bt_navigator-15] [0m[INFO] [1794415727.213090096] [red_standard_robot1.bt_navigator]: Destroying bond (bt_navigator) to lifecycle manager.[0m
+[behavior_server-14] [0m[INFO] [1794415727.214786333] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[behavior_server-14] [0m[INFO] [1794415727.214902322] [red_standard_robot1.behavior_server]: Running Nav2 LifecycleNode rcl preshutdown (behavior_server)[0m
+[behavior_server-14] [0m[INFO] [1794415727.214947337] [red_standard_robot1.behavior_server]: Deactivating[0m
+[behavior_server-14] [0m[INFO] [1794415727.214979605] [red_standard_robot1.behavior_server]: Destroying bond (behavior_server) to lifecycle manager.[0m
+[planner_server-13] [0m[INFO] [1794415727.216584514] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[planner_server-13] [0m[INFO] [1794415727.216626537] [red_standard_robot1.planner_server]: Running Nav2 LifecycleNode rcl preshutdown (planner_server)[0m
+[planner_server-13] [0m[INFO] [1794415727.216664697] [red_standard_robot1.planner_server]: Deactivating[0m
+[planner_server-13] [0m[INFO] [1794415727.216681810] [red_standard_robot1.global_costmap.global_costmap]: Deactivating[0m
+[smoother_server-12] [0m[INFO] [1794415727.218003581] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[smoother_server-12] [0m[INFO] [1794415727.218070625] [red_standard_robot1.smoother_server]: Running Nav2 LifecycleNode rcl preshutdown (smoother_server)[0m
+[smoother_server-12] [0m[INFO] [1794415727.218110837] [red_standard_robot1.smoother_server]: Deactivating[0m
+[smoother_server-12] [0m[INFO] [1794415727.218123711] [red_standard_robot1.smoother_server]: Destroying bond (smoother_server) to lifecycle manager.[0m
+[velocity_smoother-17] [0m[INFO] [1794415727.219408984] [red_standard_robot1.velocity_smoother]: Cleaning up[0m
+[velocity_smoother-17] [0m[INFO] [1794415727.219440335] [red_standard_robot1.velocity_smoother]: Destroying bond (velocity_smoother) to lifecycle manager.[0m
+[controller_server-11] [0m[INFO] [1794415727.219460819] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[controller_server-11] [0m[INFO] [1794415727.219539555] [red_standard_robot1.controller_server]: Running Nav2 LifecycleNode rcl preshutdown (controller_server)[0m
+[controller_server-11] [0m[INFO] [1794415727.219584900] [red_standard_robot1.controller_server]: Deactivating[0m
+[controller_server-11] [0m[INFO] [1794415727.219599809] [red_standard_robot1.controller_server]: Deactivating controller: FollowPath of type regulated_pure_pursuit_controller::OmniPidPursuitController[0m
+[controller_server-11] [0m[INFO] [1794415727.219617757] [red_standard_robot1.local_costmap.local_costmap]: Deactivating[0m
+[waypoint_follower-16] [0m[INFO] [1794415727.221547726] [red_standard_robot1.waypoint_follower]: Cleaning up[0m
+[sensor_scan_generation_node-10] [0m[INFO] [1794415727.221589533] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[bt_navigator-15] [0m[INFO] [1794415727.223713529] [red_standard_robot1.bt_navigator]: Cleaning up[0m
+[velocity_smoother-17] [0m[INFO] [1794415727.223910541] [red_standard_robot1.velocity_smoother]: Destroying[0m
+[loam_interface_node-9] [0m[INFO] [1794415727.224729714] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[behavior_server-14] [0m[INFO] [1794415727.226165141] [red_standard_robot1.behavior_server]: Cleaning up[0m
+[terrainAnalysisExt-8] [0m[INFO] [1794415727.226721641] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[waypoint_follower-16] [0m[INFO] [1794415727.228590430] [red_standard_robot1.waypoint_follower]: Destroying bond (waypoint_follower) to lifecycle manager.[0m
+[terrainAnalysis-7] [0m[INFO] [1794415727.228921394] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[behavior_server-14] [0m[INFO] [1794415727.229293991] [red_standard_robot1.behavior_server]: Destroying bond (behavior_server) to lifecycle manager.[0m
+[smoother_server-12] [0m[INFO] [1794415727.229559516] [red_standard_robot1.smoother_server]: Cleaning up[0m
+[lifecycle_manager-6] [0m[INFO] [1794415727.232171468] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[lifecycle_manager-6] [0m[INFO] [1794415727.232258963] [red_standard_robot1.lifecycle_manager_localization]: Running Nav2 LifecycleManager rcl preshutdown (lifecycle_manager_localization)[0m
+[lifecycle_manager-6] [0m[INFO] [1794415727.232287874] [red_standard_robot1.lifecycle_manager_localization]: [34m[1mTerminating bond timer...[0m[0m[0m
+[controller_server-11] [0m[INFO] [1794415727.232914229] [red_standard_robot1.controller_server]: Destroying bond (controller_server) to lifecycle manager.[0m
+[small_gicp_relocalization_node-5] [0m[INFO] [1794415727.235385805] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[waypoint_follower-16] [0m[INFO] [1794415727.238260453] [red_standard_robot1.waypoint_follower]: Destroying[0m
+[map_server-4] [0m[INFO] [1794415727.241945182] [rclcpp]: signal_handler(SIGINT/SIGTERM)[0m
+[map_server-4] [0m[INFO] [1794415727.242047112] [red_standard_robot1.map_server]: Running Nav2 LifecycleNode rcl preshutdown (map_server)[0m
+[map_server-4] [0m[INFO] [1794415727.242101426] [red_standard_robot1.map_server]: Deactivating[0m
+[map_server-4] [0m[INFO] [1794415727.242115517] [red_standard_robot1.map_server]: Destroying bond (map_server) to lifecycle manager.[0m
+[controller_server-11] [0m[INFO] [1794415727.243377613] [red_standard_robot1.controller_server]: Cleaning up[0m
+[controller_server-11] [0m[INFO] [1794415727.243493955] [red_standard_robot1.controller_server]: Cleaning up controller: FollowPath of type pb_omni_pid_pursuit_controller::OmniPidPursuitController[0m
+[controller_server-11] [0m[INFO] [1794415727.243543921] [red_standard_robot1.local_costmap.local_costmap]: Cleaning up[0m
+[pointlio_mapping-3] [33m[WARN] [1794415727.245067811] [laserMapping]: catch sig 2[0m
+[static_transform_publisher-2] [INFO] [1794415727.251540139] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[smoother_server-12] [0m[INFO] [1794415727.253797247] [red_standard_robot1.smoother_server]: Destroying bond (smoother_server) to lifecycle manager.[0m
+[lifecycle_manager-6] [0m[INFO] [1794415727.254442508] [red_standard_robot1.lifecycle_manager_localization]: Destroying lifecycle_manager_localization[0m
+[map_server-4] [0m[INFO] [1794415727.256656643] [red_standard_robot1.map_server]: Cleaning up[0m
+[chassis_node-1] [INFO] [1794415727.257967297] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[smoother_server-12] [0m[INFO] [1794415727.261447387] [red_standard_robot1.smoother_server]: Destroying[0m
+[map_server-4] [0m[INFO] [1794415727.264588146] [red_standard_robot1.map_server]: Destroying bond (map_server) to lifecycle manager.[0m
+[map_server-4] [0m[INFO] [1794415727.274525813] [red_standard_robot1.map_server]: Destroying[0m
+[controller_server-11] [0m[INFO] [1794415727.284998099] [red_standard_robot1.controller_server]: Destroying bond (controller_server) to lifecycle manager.[0m
+[behavior_server-14] [0m[INFO] [1794415727.286421924] [red_standard_robot1.behavior_server]: Destroying[0m
+[controller_server-11] [0m[INFO] [1794415727.287860352] [red_standard_robot1.local_costmap.local_costmap]: Destroying[0m
+[controller_server-11] [0m[INFO] [1794415727.297375341] [red_standard_robot1.controller_server]: Destroying[0m
+[lifecycle_manager-18] [0m[INFO] [1794415727.301063643] [red_standard_robot1.lifecycle_manager_navigation]: Destroying lifecycle_manager_navigation[0m
+[bt_navigator-15] [0m[INFO] [1794415727.317087569] [red_standard_robot1.bt_navigator]: Completed Cleaning up[0m
+[bt_navigator-15] [0m[INFO] [1794415727.317148969] [red_standard_robot1.bt_navigator]: Destroying bond (bt_navigator) to lifecycle manager.[0m
+[bt_navigator-15] [0m[INFO] [1794415727.322148611] [red_standard_robot1.bt_navigator]: Destroying[0m
+[planner_server-13] [0m[INFO] [1794415727.341750350] [red_standard_robot1.planner_server]: Deactivating plugin GridBased of type nav2_theta_star_planner[0m
+[planner_server-13] [0m[INFO] [1794415727.341811415] [red_standard_robot1.planner_server]: Destroying bond (planner_server) to lifecycle manager.[0m
+[planner_server-13] [0m[INFO] [1794415727.352007309] [red_standard_robot1.planner_server]: Cleaning up[0m
+[INFO] [velocity_smoother-17]: process has finished cleanly [pid 16508]
+[INFO] [loam_interface_node-9]: process has finished cleanly [pid 16419]
+[planner_server-13] [0m[INFO] [1794415727.366715719] [red_standard_robot1.global_costmap.global_costmap]: Cleaning up[0m
+[planner_server-13] [0m[INFO] [1794415727.368575545] [red_standard_robot1.planner_server]: CleaningUp plugin GridBased of type nav2_theta_star_planner[0m
+[planner_server-13] [0m[INFO] [1794415727.374057844] [red_standard_robot1.planner_server]: Destroying bond (planner_server) to lifecycle manager.[0m
+[INFO] [sensor_scan_generation_node-10]: process has finished cleanly [pid 16425]
+[INFO] [terrainAnalysisExt-8]: process has finished cleanly [pid 16401]
+[planner_server-13] [0m[INFO] [1794415727.381280831] [red_standard_robot1.global_costmap.global_costmap]: Destroying[0m
+[INFO] [waypoint_follower-16]: process has finished cleanly [pid 16486]
+[INFO] [terrainAnalysis-7]: process has finished cleanly [pid 16399]
+[planner_server-13] [0m[INFO] [1794415727.383574590] [red_standard_robot1.planner_server]: Destroying[0m
+[INFO] [lifecycle_manager-6]: process has finished cleanly [pid 16397]
+[pointlio_mapping-3] lidar_type: 1
+[pointlio_mapping-3] ~~~~/home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/src/pb2025_sentry_nav/point_lio/ file opened
+[INFO] [static_transform_publisher-2]: process has finished cleanly [pid 16389]
+[INFO] [smoother_server-12]: process has finished cleanly [pid 16445]
+[INFO] [map_server-4]: process has finished cleanly [pid 16393]
+[INFO] [pointlio_mapping-3]: process has finished cleanly [pid 16391]
+[INFO] [small_gicp_relocalization_node-5]: process has finished cleanly [pid 16395]
+[INFO] [chassis_node-1]: process has finished cleanly [pid 16387]
+[INFO] [behavior_server-14]: process has finished cleanly [pid 16477]
+[INFO] [lifecycle_manager-18]: process has finished cleanly [pid 16512]
+[INFO] [controller_server-11]: process has finished cleanly [pid 16441]
+[INFO] [bt_navigator-15]: process has finished cleanly [pid 16483]
+[INFO] [planner_server-13]: process has finished cleanly [pid 16463]

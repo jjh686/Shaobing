@@ -1,0 +1,66 @@
+{
+  "samples": [
+    {
+      "time": "2026-11-11 13:06:46",
+      "serial_devices": [
+        {
+          "path": "/dev/serial/by-id/usb-muselab-tech.com_CMSIS-DAP-MuseLab_0001A0000002-if00",
+          "target": "/dev/ttyACM0"
+        }
+      ],
+      "network": "enp89s0          DOWN"
+    },
+    {
+      "time": "2026-11-11 13:06:50",
+      "serial_devices": [
+        {
+          "path": "/dev/serial/by-id/usb-muselab-tech.com_CMSIS-DAP-MuseLab_0001A0000002-if00",
+          "target": "/dev/ttyACM0"
+        }
+      ],
+      "network": "enp89s0          DOWN"
+    },
+    {
+      "time": "2026-11-11 13:06:54",
+      "serial_devices": [
+        {
+          "path": "/dev/serial/by-id/usb-muselab-tech.com_CMSIS-DAP-MuseLab_0001A0000002-if00",
+          "target": "/dev/ttyACM0"
+        }
+      ],
+      "network": "enp89s0          DOWN"
+    },
+    {
+      "time": "2026-11-11 13:06:58",
+      "serial_devices": [
+        {
+          "path": "/dev/serial/by-id/usb-muselab-tech.com_CMSIS-DAP-MuseLab_0001A0000002-if00",
+          "target": "/dev/ttyACM0"
+        }
+      ],
+      "network": "enp89s0          DOWN"
+    },
+    {
+      "time": "2026-11-11 13:07:02",
+      "serial_devices": [
+        {
+          "path": "/dev/serial/by-id/usb-muselab-tech.com_CMSIS-DAP-MuseLab_0001A0000002-if00",
+          "target": "/dev/ttyACM0"
+        }
+      ],
+      "network": "enp89s0          DOWN"
+    },
+    {
+      "time": "2026-11-11 13:07:06",
+      "serial_devices": [
+        {
+          "path": "/dev/serial/by-id/usb-muselab-tech.com_CMSIS-DAP-MuseLab_0001A0000002-if00",
+          "target": "/dev/ttyACM0"
+        }
+      ],
+      "network": "enp89s0          DOWN"
+    }
+  ],
+  "physical_serial_opened": false,
+  "commands_sent": false
+}

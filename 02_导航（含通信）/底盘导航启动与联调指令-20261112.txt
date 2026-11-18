@@ -1,0 +1,121 @@
+底盘固定 MID-360S 导航 / 双板通信启动指令
+更新日期：2026-11-12
+链路：小电脑USB→云台C板CAN1→底盘C板CAN2；雷达网线→小电脑enp89s0
+
+当前交付固件禁止运动；本轮未解除锁、未烧录、未执行实车使能。
+以下内容按阶段执行，不要把整份文档一次性粘贴运行。
+每个阶段先退出上一个占用USB/雷达的程序，Ctrl+C停止。
+新开终端中的变量不共享，因此优先给出可直接复制的完整路径。
+所列 by-id 是此前成功通信的云台板，更换板子后先重新查看设备名。
+
+一、电脑端环境检查（不用接C板/雷达）
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/check_environment.sh --profile chassis --output local/chassis-environment-check.json
+bash scripts/run_chassis_nav.sh check
+
+预期：软件节点启动；不打开USB、不启动雷达；Nav2 unconfigured，enabled=false。
+这是启动检查，没有传感器时不会生成新的真实地图。
+如果重复出现黄色 WARN: No accumulated points to process.，表示定位节点没有收到累计点云；
+check 模式故意不启动雷达，因此该提示符合预期，不是编译失败或程序崩溃。
+按Ctrl+C退出；连接并供电雷达后按本文第五节运行sensors；要生成新图按第四节run_mapping.sh。
+不要把重复等待提示当作已完成雷达/定位测试，也不要同时启动两套雷达驱动。
+
+二、先做真实双板 STOP 通信测试（暂不需要雷达）
+
+断开电机主电源，保留两板及小电脑供电；确认云台CAN1连底盘CAN2。
+查看设备：
+
+ls -l /dev/serial/by-id/
+lsusb
+
+此前这块云台应用USB的直接测试命令：
+
+bash /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/run.sh zero /dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00
+
+预期：PASS: ... 帧新鲜底盘 STOP ACK；全程 ENABLE=0。
+fault=15表示LOCK+RC+MOTOR+UNITS，通信可以通过，但当前不具备运动条件。
+CMSIS-DAP是下载器，不能代替云台应用USB。不存在by-id时先修复供电/USB识别。
+
+三、检查ROS到USB的收发（退出上一步后）
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/run_chassis_nav.sh usb /dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00
+
+另开终端看诊断：
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/watch_comm.sh /red_standard_robot1/diagnostics
+
+预期 route=2、frame_id=base_footprint、enabled=false；decoded_feedback持续增长、feedback_age_ms刷新。
+require_gimbal_state=false/require_frame_ready=false是当前底盘模式的正确配置。
+Ready未出现时核对fault、遥控和电机条件，不要仅凭USB connected判定可以运动。
+
+四、只测试雷达、建图（不需要C板）
+
+雷达使用符合铭牌/手册的独立供电，网线接enp89s0；不要接C板3.3V。
+检查地址和连通性：
+
+ip -brief address show enp89s0
+ping -c 3 192.168.1.106
+
+如果网线已插好但电脑没有192.168.1.50：
+
+nmcli connection up 'MID360-192.168.1.50'
+
+启动独立建图：
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/run_mapping.sh
+
+保持雷达和底盘安装关系固定，手动缓慢移动采集环境。另开终端保存：
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/run_mapping.sh --save
+
+成功时地图在本工程local/maps/本次时间目录中，包含map.yaml/map.pgm/map.pcd/summary.json。
+保存成功后再Ctrl+C停止建图；不要同时启动第二套Livox驱动。
+
+五、检查雷达、定位与导航节点（不接USB）
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/run_chassis_nav.sh sensors use_rviz:=true
+
+默认不自动激活Nav2。若需要仅检查定位/导航自动激活，可加 autostart:=true。
+默认使用实验室示例地图；新场地必须用下方方式改成同批真实地图。
+
+六、同时运行雷达、双板通信、Nav2（仍默认不使能）
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/run_chassis_nav.sh navigation /dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00 use_rviz:=true
+
+上面用于示例地图启动检查。换成自己保存的同一批地图时，先把两条路径改为真实文件：
+
+bash scripts/run_chassis_nav.sh navigation /dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00 use_rviz:=true map:=/实际建图目录/map.yaml prior_pcd_file:=/实际建图目录/map.pcd
+
+也可以用统一gateway入口（与上面二选一）：
+
+bash /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/run.sh chassis_navigation /dev/serial/by-id/usb-YueLuEmbedded_RM_Nav_Convert_SP_315F326E3034-if00 use_rviz:=true
+
+注意：pc/run.sh navigation 和 scripts/run_sentry.sh 是原完整云台方案，本阶段不使用。
+RViz应看到地图、点云、底盘坐标与定位；定位完成后才选择空旷区域短距离目标。
+目标可产生规划/速度，但交付固件运动锁和电脑enabled=false会阻止车动。
+RViz关闭会结束对应导航启动；需连续运行时不要误关闭该窗口。
+
+七、只读记录运行状态（另开终端）
+
+cd '/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)'
+bash scripts/observe_navigation.sh --profile chassis --duration 15 --output local/chassis-runtime-observation.json
+
+观察真实数据频率、时间戳、三段TF及Nav2状态。
+底盘模式TF：map→odom→base_footprint→front_mid360。
+速度：cmd_vel_controller→cmd_vel_nav2_result→chassis_comm。
+无云台关节或frame_ready话题属于预期。
+
+八、停车/退出
+
+如已进入未来实车验收阶段，先执行遥控/实体急停停车。
+停止所有测试程序用Ctrl+C；确认速度归零后再断电。
+电脑端输入超时150ms、反馈超时250ms；反馈恢复不会自动使能。
+本文件不提供直接解除固件锁并使能的命令：先完成尺寸、轮向、单位、遥控接管、急停及定位的实测验收。
+待确认清单和代码位置见同目录《底盘固定雷达导航部署与待确认-20261112.md》。

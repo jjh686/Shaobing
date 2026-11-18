@@ -1,0 +1,16 @@
+[INFO] [1794368484.980578064] [mid360_test_recorder]: Map output: /home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-map-rwum8lvw
+[INFO] [1794368484.981286093] [mid360_test_recorder]: No registered point cloud yet; check lidar and Point-LIO
+[ERROR] [1794368484.982051716] [mid360_test_recorder]: Expected registered cloud in camera_init
+[INFO] [1794368484.984425782] [mid360_test_recorder]: Saved 2 points to /home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-map-rwum8lvw; 2D map saved: False
+[INFO] [1794368484.986711220] [mid360_test_recorder]: Saved 2 points to /home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-map-rwum8lvw; 2D map saved: True
+{
+  "passed": true,
+  "synthetic_data_only": true,
+  "output": "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-map-rwum8lvw",
+  "checks": [
+    "Empty input rejected without creating a map",
+    "Cloud in incorrect frame rejected",
+    "NaNs removed and points voxelized; 3D-only save reports incomplete 2D map",
+    "PCD binary data, PGM row order/cell values, YAML origin/yaw/resolution verified"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "synthetic_data_only": true,
+  "output": "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-pipeline-br_svv2o",
+  "passed": true,
+  "received": {
+    "scans": 1727,
+    "grids": 1
+  },
+  "saved": {
+    "point_count": 160,
+    "voxel_size_m": 0.1,
+    "registered_frames": 280,
+    "cloud_frame": "camera_init",
+    "bounds_m": {
+      "min": [
+        -2.0,
+        -2.0,
+        0.30000001192092896
+      ],
+      "max": [
+        2.0,
+        2.0,
+        0.30000001192092896
+      ]
+    },
+    "voxel_limit_reached": false,
+    "occupancy_grid_saved": true,
+    "grid": {
+      "width": 80,
+      "height": 80,
+      "resolution_m": 0.05000000074505806,
+      "known_cells": 4374,
+      "occupied_cells": 142
+    }
+  },
+  "service_message": "Saved 160 points to /home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-pipeline-br_svv2o; 2D map saved: True",
+  "launcher_exit": 0
+}

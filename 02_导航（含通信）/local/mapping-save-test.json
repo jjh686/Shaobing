@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "synthetic_data_only": true,
+  "output": "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-map-rwum8lvw",
+  "checks": [
+    "Empty input rejected without creating a map",
+    "Cloud in incorrect frame rejected",
+    "NaNs removed and points voxelized; 3D-only save reports incomplete 2D map",
+    "PCD binary data, PGM row order/cell values, YAML origin/yaw/resolution verified"
+  ]
+}

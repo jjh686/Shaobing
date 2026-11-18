@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-11",
+  "modified_original_files": [
+    {
+      "path": "scripts/build_comm.sh",
+      "state": "modified",
+      "original_sha256": "1bee72ac6e83e7a1291b646f33ec839c172e4bc409920683f428f6b4dc3a6ff5",
+      "local_sha256": "4240fc9242f77b378063c94b4c2d8333aa58b644b9052f7a3682650b2c817dc4"
+    },
+    {
+      "path": "scripts/build_nav.sh",
+      "state": "modified",
+      "original_sha256": "a14aad71f99e2f72ea6006ee3320055adc8380417b0e6097d75459f549ae0c3b",
+      "local_sha256": "af8f9e77252c3fc38495ddbb516c350a338e9147b40ca44bc53fb5d1b59aad4c"
+    },
+    {
+      "path": "scripts/comm_test.sh",
+      "state": "modified",
+      "original_sha256": "4db635f97411c47cd15d42fb57870cade446d852f119a9bc0b4958c22408e826",
+      "local_sha256": "b4cb4687d3807e599f48e5c0d9913667617622c6513f316ceedaeb410b59a039"
+    },
+    {
+      "path": "scripts/watch_comm.sh",
+      "state": "modified",
+      "original_sha256": "fc16f79758db487ef9e9e89d6a1632559bf05b8887cd366267040ee169239122",
+      "local_sha256": "35bd7a274d7fddfdeb582ade53d29e2ebd5614d2e86cec5144d62a9fc50f9975"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/pb2025_nav_bringup/config/reality/mid360_user_config.json",
+      "state": "modified",
+      "original_sha256": "bbc54be53a86ad91f61ebea94cbabfc43c12760ae5ebfd26af1708150097a17c",
+      "local_sha256": "9bcbe92fa191432c2b35a00fc4c239908e9acaab27aa52dc0a2acb5f642f308b"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/pb2025_nav_bringup/launch/rm_navigation_reality_launch.py",
+      "state": "modified",
+      "original_sha256": "993ad8ea5d847639c6dc3b647cb3fbd4d09faa812321f00e88784dc6d52a2afa",
+      "local_sha256": "16553c67f5f76a6f1b7748cc4c78902a1443a7c66776d0dc849bf848a82da6cc"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/pb2025_nav_bringup/launch/rviz_launch.py",
+      "state": "modified",
+      "original_sha256": "2f5a44a67f601e64c094bb6c3316697115e1f4a087b0129c9d195c6c8bdb8fcb",
+      "local_sha256": "6970a538bb860f3da1b7773bdd0bf63a9da301ce15580962f7e98c24beeaccc8"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/pb2025_nav_bringup/package.xml",
+      "state": "modified",
+      "original_sha256": "2b902e380c54144cd3a6606bf0717ae2c9a9217f3e25bb1f1805aeb0272fa4c6",
+      "local_sha256": "96b2bd362acc8633653f724d0708f1f2ca9c854492959f09f4cf0ca44855e6fd"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/terrain_analysis/src/terrainAnalysis.cpp",
+      "state": "modified",
+      "original_sha256": "147c1d7817879bbf4ba804ed8e447651f8ada362e13df1c95032ee40411b5fc0",
+      "local_sha256": "f9a889387743ec3875a8ff101eba21f75943a23ad3cbe63eac0d0ec1d4d1a044"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/terrain_analysis_ext/src/terrainAnalysisExt.cpp",
+      "state": "modified",
+      "original_sha256": "94ac9c7537aacdb142763cbd6a6fb3ecc5fd176c6be30cd288f33800bffb286f",
+      "local_sha256": "cc94f3038a57063c2b7f20fc3af2134428da68cd48272c830d5571f81f527130"
+    },
+    {
+      "path": "src/rm_chassis_comm/config/chassis.yaml",
+      "state": "modified",
+      "original_sha256": "fbd62447a1f7eb3aa058120d8ca8b7fce9cbbd6b34a003ea4e5fd36467dfb610",
+      "local_sha256": "9de4481260aa6b8a138a15a60c0f36f8b841e35ff0641a3beb2b38b326b45c6e"
+    },
+    {
+      "path": "src/rm_chassis_comm/launch/sentry_reality.launch.py",
+      "state": "modified",
+      "original_sha256": "4fc9bb469827cf19179adcee3add43187c1cc874ffa2586487a59e0481e28b2e",
+      "local_sha256": "7b9da974a798b9372d4d2093d1b120dfc202edaf89fd7c820ad42f5bd3b53ca4"
+    },
+    {
+      "path": "src/rm_chassis_comm/package.xml",
+      "state": "modified",
+      "original_sha256": "58233e86e6e17cdc3ea5ad0f316fe0408ad71fbba8326e132572db45de30b255",
+      "local_sha256": "f7c9ece18aeae2639613ac0efbe48e16efc4d2adccae26accdf582443eb9e8fc"
+    },
+    {
+      "path": "src/rm_chassis_comm/test/test_ros_pty.py",
+      "state": "modified",
+      "original_sha256": "d6f85eb330a85d659336566e525193f75969998f81696ff54adb0edeca20f906",
+      "local_sha256": "03690f3c4a9d974c9d5e692690447062c30972b773f6891a648307e54cbf7185"
+    }
+  ],
+  "added_source_configuration_and_documents": [
+    "local/backup_location.txt",
+    "local/continued_backup_location.txt",
+    "local/launch-arguments.txt",
+    "local/measured_mounting.yaml",
+    "local/nav2_params.yaml",
+    "local/sentry_real.yaml",
+    "local/test_mapping_pipeline.py",
+    "local/test_mapping_save.py",
+    "scripts/check_environment.py",
+    "scripts/check_environment.sh",
+    "scripts/local_env.sh",
+    "scripts/mid360_map_recorder.py",
+    "scripts/observe_navigation.py",
+    "scripts/observe_navigation.sh",
+    "scripts/run_lidar.sh",
+    "scripts/run_mapping.sh",
+    "scripts/run_sentry.sh",
+    "scripts/test_local.sh",
+    "scripts/validate_port.sh",
+    "src/pb2025_sentry_nav/pb2025_nav_bringup/launch/mid360_mapping_test.launch.py",
+    "src/pb2025_sentry_nav/pb2025_nav_bringup/rviz/mid360_mapping_test.rviz",
+    "新导航继续适配与软件检查-20261111.md",
+    "本机配置与启动.md",
+    "本次电脑端配置改动与待确认事项.md"
+  ],
+  "local_evidence_files": [
+    "check-observation.json",
+    "check-observer-console.log",
+    "cross-process-tests.log",
+    "environment-check-console.log",
+    "environment-check.json",
+    "mapping-observation.json",
+    "mapping-observer-console.log",
+    "mapping-pipeline-observation.json",
+    "mapping-pipeline-test-console.log",
+    "mapping-pipeline-test.json",
+    "mapping-pipeline.log",
+    "mapping-save-test-console.log",
+    "mapping-save-test.json",
+    "mapping-startup.log",
+    "navigation-geometry-gate-observation.json",
+    "navigation-geometry-gate-observer.log",
+    "navigation-geometry-gate.log",
+    "navigation-observer-console.log",
+    "navigation-startup-autostart-observation.json",
+    "navigation-startup-autostart.log",
+    "navigation-startup-initial.log",
+    "navigation-startup-observation.json",
+    "navigation-startup-test.json",
+    "navigation-startup.log",
+    "preview-launch.log",
+    "preview-result.json",
+    "preview-shutdown-result.json",
+    "preview-shutdown.log",
+    "software-tests-initial.log",
+    "software-tests.log",
+    "验证结果.md"
+  ],
+  "note": "Original SHA256SUMS preserved; synthetic map files excluded from production maps."
+}

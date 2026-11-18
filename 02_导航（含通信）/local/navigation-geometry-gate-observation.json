@@ -1,0 +1,154 @@
+{
+  "namespace": "/red_standard_robot1",
+  "duration_seconds": 3.0,
+  "note": "Read-only observer; no velocity, goals or enable requests published.",
+  "topics": {
+    "livox/imu": {
+      "count": 0
+    },
+    "livox/lidar/pointcloud": {
+      "count": 0
+    },
+    "cloud_registered": {
+      "count": 0
+    },
+    "registered_scan": {
+      "count": 0
+    },
+    "odometry": {
+      "count": 0
+    },
+    "gimbal_joint_state": {
+      "count": 0
+    },
+    "cmd_vel_gimbal_stamped": {
+      "count": 0
+    },
+    "cmd_vel_body": {
+      "count": 738,
+      "max_gap_seconds": 0.013741958000537124,
+      "timestamp_regressions": 11,
+      "repeated_timestamps": 0,
+      "stamp_ns": 1794368654089778659,
+      "frame": "base_footprint",
+      "received_hz": 245.44814696318824,
+      "last_arrival_age_seconds": 3.162800021527801e-05,
+      "last_stamp_age_seconds": 0.000184154
+    },
+    "diagnostics": {
+      "count": 4,
+      "max_gap_seconds": 0.696061761999772,
+      "timestamp_regressions": 0,
+      "repeated_timestamps": 0,
+      "stamp_ns": 1794368653664962348,
+      "frame": "",
+      "received_hz": 2.285001875229737,
+      "last_arrival_age_seconds": 0.4247056069998507,
+      "last_stamp_age_seconds": 0.425015011
+    },
+    "frame_ready": {
+      "count": 1240,
+      "max_gap_seconds": 0.010222012000667746,
+      "timestamp_regressions": 0,
+      "repeated_timestamps": 0,
+      "received_hz": 414.1301549810438,
+      "last_arrival_age_seconds": 0.0052003210003022105
+    }
+  },
+  "tf": {
+    "base_footprint <- front_mid360": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.2
+      ],
+      "quaternion_xyzw": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "stamp_ns": 0
+    },
+    "base_footprint <- gimbal_yaw": {
+      "unavailable": "\"gimbal_yaw\" passed to lookupTransform argument source_frame does not exist. "
+    },
+    "gimbal_yaw <- gimbal_pitch": {
+      "unavailable": "\"gimbal_yaw\" passed to lookupTransform argument target_frame does not exist. "
+    },
+    "odom <- base_footprint": {
+      "unavailable": "Could not find a connection between 'odom' and 'base_footprint' because they are not part of the same tree.Tf has two or more unconnected trees."
+    },
+    "map <- odom": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion_xyzw": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "stamp_ns": 100000000
+    }
+  },
+  "lifecycle": {
+    "map_server": "unconfigured",
+    "controller_server": "unconfigured",
+    "planner_server": "unconfigured",
+    "bt_navigator": "unconfigured"
+  },
+  "diagnostics": [
+    {
+      "message": "Preview: hardware not opened",
+      "values": {
+        "route": "2",
+        "enabled": "false",
+        "session": "1972465009",
+        "fault_mask": "unknown",
+        "received_bytes": "0",
+        "decoded_feedback": "0",
+        "decoded_gimbal": "0",
+        "gimbal_status": "0",
+        "gimbal_fresh": "false",
+        "gimbal_clock_uncertainty_ms": "0.000000",
+        "frame_ready": "false",
+        "feedback_age_ms": "unknown"
+      }
+    }
+  ],
+  "frame_ready": false,
+  "nodes": [
+    "/red_standard_robot1/behavior_server",
+    "/red_standard_robot1/bt_navigator",
+    "/red_standard_robot1/chassis_comm",
+    "/red_standard_robot1/chassis_comm",
+    "/red_standard_robot1/controller_server",
+    "/red_standard_robot1/fake_vel_transform",
+    "/red_standard_robot1/global_costmap/global_costmap",
+    "/red_standard_robot1/lifecycle_manager_localization",
+    "/red_standard_robot1/lifecycle_manager_navigation",
+    "/red_standard_robot1/loam_interface",
+    "/red_standard_robot1/local_costmap/local_costmap",
+    "/red_standard_robot1/map_server",
+    "/red_standard_robot1/planner_server",
+    "/red_standard_robot1/point_lio",
+    "/red_standard_robot1/sensor_scan_generation",
+    "/red_standard_robot1/sentry_frame_bridge",
+    "/red_standard_robot1/sentry_frame_bridge",
+    "/red_standard_robot1/sentry_navigation_observer",
+    "/red_standard_robot1/sentry_static_3",
+    "/red_standard_robot1/sentry_static_3",
+    "/red_standard_robot1/small_gicp_relocalization",
+    "/red_standard_robot1/smoother_server",
+    "/red_standard_robot1/terrain_analysis",
+    "/red_standard_robot1/terrain_analysis_ext",
+    "/red_standard_robot1/transform_listener_impl_570690c4ebd0",
+    "/red_standard_robot1/transform_listener_impl_5d2ad5e36720",
+    "/red_standard_robot1/transform_listener_impl_5f43d0258ce0",
+    "/red_standard_robot1/velocity_smoother",
+    "/red_standard_robot1/waypoint_follower"
+  ]
+}

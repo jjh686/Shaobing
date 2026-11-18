@@ -1,0 +1,27 @@
+# Explicitly loaded by sentry_reality.launch.py; distances m, angles rad.
+# Values under frames must be measured on THIS robot before confirmation.
+serial:
+  frame_id: base_footprint
+  route: 2
+  use_stamped_commands: true
+  require_gimbal_state: true
+  require_frame_ready: true
+  sp_proxy_enabled: true
+  gimbal_state_timeout_ms: 60
+  frame_ready_timeout_ms: 100
+  yaw_joint_name: gimbal_yaw_joint
+  pitch_joint_name: gimbal_pitch_joint
+frames:
+  geometry_confirmed: false
+  publish_tf: true
+  body_frame: base_footprint
+  yaw_frame: gimbal_yaw
+  pitch_frame: gimbal_pitch
+  yaw_joint: gimbal_yaw_joint
+  pitch_joint: gimbal_pitch_joint
+  yaw_pivot_xyz: [0.0, 0.0, 0.0]
+  pitch_pivot_xyz: [0.0, 0.0, 0.0]
+# Static extrinsics may instead be owned by an existing robot description.
+# Each confirmed entry: parent, child, xyz:[x,y,z], rpy:[roll,pitch,yaw].
+# Example shape only; no lidar/camera transform is fabricated by default.
+static_transforms: []

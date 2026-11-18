@@ -1,0 +1,119 @@
+{
+  "synthetic_data_only": true,
+  "physical_port_opened": false,
+  "connect": false,
+  "start_lidar": false,
+  "output": "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/synthetic-chassis-nav-spmdf5r2",
+  "command": [
+    "bash",
+    "/home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/scripts/run_chassis_nav.sh",
+    "check",
+    "autostart:=true",
+    "map:=/home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/local/test-artifacts/synthetic-chassis-nav-spmdf5r2/map.yaml",
+    "prior_pcd_file:=/home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/local/test-artifacts/synthetic-chassis-nav-spmdf5r2/map.pcd"
+  ],
+  "limitations": "Synthetic Point-LIO outputs; no physical lidar, USB, CAN, motors, localization accuracy, or motion enabled.",
+  "lifecycle": {
+    "map_server": "active",
+    "planner_server": "active",
+    "smoother_server": "active",
+    "bt_navigator": "active",
+    "controller_server": "active",
+    "velocity_smoother": "active",
+    "behavior_server": "active"
+  },
+  "tf": {
+    "base_footprint <- front_mid360": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.2
+      ],
+      "quaternion_xyzw": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "odom <- base_footprint": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion_xyzw": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "map <- odom": {
+      "xyz": [
+        2.24779714398523e-12,
+        -5.986039025787967e-14,
+        -2.9741057679908314e-09
+      ],
+      "quaternion_xyzw": [
+        8.035843766190583e-14,
+        -1.598221531129519e-13,
+        -1.4999870847149747e-13,
+        1.0
+      ]
+    }
+  },
+  "planner": {
+    "status": 4,
+    "path_poses": 21
+  },
+  "controller": {
+    "accepted": true,
+    "cancel_requested": true,
+    "max_smoothed_abs_xyw": [
+      0.015,
+      0.015,
+      2.7014767395714376e-12
+    ]
+  },
+  "received": {
+    "tx_preview": 89,
+    "diagnostics": 3,
+    "map": 1,
+    "registered_scan": 17,
+    "odometry": 17,
+    "sensor_scan": 17,
+    "terrain_map": 17,
+    "cmd_vel_controller": 2,
+    "cmd_vel_nav2_result": 4
+  },
+  "preview": {
+    "stop_frames": 89,
+    "enabled_frames": 0
+  },
+  "diagnostics": [
+    {
+      "message": "Preview: hardware not opened",
+      "values": {
+        "route": "2",
+        "enabled": "false",
+        "frame_id": "base_footprint",
+        "use_stamped_commands": "false",
+        "require_gimbal_state": "false",
+        "require_frame_ready": "false",
+        "session": "4147629061",
+        "fault_mask": "unknown",
+        "received_bytes": "0",
+        "decoded_feedback": "0",
+        "decoded_gimbal": "0",
+        "gimbal_status": "0",
+        "gimbal_fresh": "false",
+        "gimbal_clock_uncertainty_ms": "0.000000",
+        "frame_ready": "false",
+        "feedback_age_ms": "unknown"
+      }
+    }
+  ],
+  "passed": true,
+  "launcher_exit": 0
+}

@@ -1,0 +1,17 @@
+[INFO] [launch]: All log files can be found below /home/wangjiaming/.local/share/rm_sentry_nav_20261110/log/ros/2026-11-12-00-36-05-665827-wangjiaming-NUC11PAHi7-14669
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [chassis_node-1]: process started with pid [14670]
+[INFO] [static_transform_publisher-2]: process started with pid [14672]
+[static_transform_publisher-2] [INFO] [1794414965.716471715] [chassis_launch_pty_14631.chassis_lidar_mount]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.200000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'base_footprint' to 'front_mid360'
+[chassis_node-1] [INFO] [1794414965.718432676] [chassis_launch_pty_14631.chassis_comm]: Chassis route=2, connect=1; no motion until feedback handshake, enable and new cmd_vel
+[chassis_node-1] [INFO] [1794414965.723508322] [chassis_launch_pty_14631.chassis_comm]: USB connected; STOP handshake only, chassis remains disabled
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [static_transform_publisher-2]: sending signal 'SIGINT' to process[static_transform_publisher-2]
+[INFO] [chassis_node-1]: sending signal 'SIGINT' to process[chassis_node-1]
+[static_transform_publisher-2] [INFO] [1794414969.351079429] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[chassis_node-1] [INFO] [1794414969.351263645] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [chassis_node-1]: process has finished cleanly [pid 14670]
+[INFO] [static_transform_publisher-2]: process has finished cleanly [pid 14672]

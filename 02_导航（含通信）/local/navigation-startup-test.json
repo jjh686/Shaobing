@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "launcher_exit": 0,
+  "started_processes": 20,
+  "clean_exits": 20,
+  "lifecycle": {
+    "map_server": "unconfigured",
+    "controller_server": "unconfigured",
+    "planner_server": "unconfigured",
+    "bt_navigator": "unconfigured"
+  },
+  "enabled": false,
+  "frame_ready": false,
+  "physical_USB_opened": false,
+  "lidar_started": false,
+  "joystick_started": false,
+  "geometry_gate_verified": true
+}

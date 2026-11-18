@@ -1,0 +1,31 @@
+{
+  "hardware_opened": false,
+  "use_composition": true,
+  "passed": true,
+  "nodes": 26,
+  "lifecycle": {
+    "map_server": "unconfigured",
+    "controller_server": "unconfigured",
+    "planner_server": "unconfigured",
+    "bt_navigator": "unconfigured"
+  },
+  "diagnostics": {
+    "route": "2",
+    "enabled": "false",
+    "frame_id": "base_footprint",
+    "use_stamped_commands": "false",
+    "require_gimbal_state": "false",
+    "require_frame_ready": "false",
+    "session": "4210883252",
+    "fault_mask": "unknown",
+    "received_bytes": "0",
+    "decoded_feedback": "0",
+    "decoded_gimbal": "0",
+    "gimbal_status": "0",
+    "gimbal_fresh": "false",
+    "gimbal_clock_uncertainty_ms": "0.000000",
+    "frame_ready": "false",
+    "feedback_age_ms": "unknown"
+  },
+  "launcher_exit": 0
+}

@@ -1,0 +1,39 @@
+{
+  "cpu_id": "0x100f6413",
+  "uid_words": [
+    "002a003b",
+    "3034470f",
+    "31353233"
+  ],
+  "sampled_pc": "0x08001070",
+  "initial_state": "running",
+  "final_state": "running",
+  "current_vectors": [
+    "0x20000670",
+    "0x8000229",
+    "0x8000efd",
+    "0x8000e79"
+  ],
+  "comparison": {
+    "original_before_flash": {
+      "vectors_256B_match": false,
+      "vectors_first16B": [
+        "0x20020000",
+        "0x8015395",
+        "0x8005685",
+        "0x8005687"
+      ],
+      "code_08001020_match": false
+    },
+    "previous_navigation_test": {
+      "vectors_256B_match": false,
+      "vectors_first16B": [
+        "0x20020000",
+        "0x8014c2d",
+        "0x800c895",
+        "0x800c897"
+      ],
+      "code_08001020_match": false
+    }
+  }
+}

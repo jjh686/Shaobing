@@ -1,0 +1,23 @@
+Starting >>> pb2025_nav_bringup
+--- stderr: pb2025_nav_bringup
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_BUILD_PARALLEL_LEVEL
+
+
+---
+Finished <<< pb2025_nav_bringup [0.32s]
+Starting >>> rm_chassis_comm
+--- stderr: rm_chassis_comm
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_BUILD_PARALLEL_LEVEL
+
+
+---
+Finished <<< rm_chassis_comm [27.7s]
+
+Summary: 2 packages finished [28.3s]
+  2 packages had stderr output: pb2025_nav_bringup rm_chassis_comm

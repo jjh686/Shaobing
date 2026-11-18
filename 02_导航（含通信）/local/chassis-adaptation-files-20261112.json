@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-12",
+  "profile": "chassis-fixed-lidar",
+  "physical_motion_enabled": false,
+  "files": [
+    {
+      "path": "scripts/run_chassis_nav.sh",
+      "sha256": "7f1f01ec81fbabbb8691d5e12bc5836930d1551bc2a2209dd733a5430c5e44d0"
+    },
+    {
+      "path": "scripts/check_environment.py",
+      "sha256": "79f73ca1dd9511b5cda922134fdc2817109595c6cccd1483b4ba89ccd96b5e3c"
+    },
+    {
+      "path": "scripts/observe_navigation.py",
+      "sha256": "139f632abf0fb2bf90b360b1e24beb5fcfcc1681d5e26c007175fd954dee6fa5"
+    },
+    {
+      "path": "src/rm_chassis_comm/launch/chassis_navigation.launch.py",
+      "sha256": "0a4f77fbb0cd3693a32ec220aeeb78552fa2184356d8afdc5bf5813b4b09bac2"
+    },
+    {
+      "path": "src/rm_chassis_comm/src/chassis_node.cpp",
+      "sha256": "dd09e4d23a24b17dbfa4b7c364d0d02933e666f549137eccbc88c7c203f26916"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/pb2025_nav_bringup/launch/bringup_launch.py",
+      "sha256": "563e047014aebe801151c6cdfbc23ca82969bc5023e4d005ae9a806f57d8e0ca"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/pb2025_nav_bringup/launch/navigation_launch.py",
+      "sha256": "9703f8968e6a17a3cca8934866597386e87c6abafbdaa29eaf7e3f4eccb1b056"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/pb2025_nav_bringup/launch/rm_navigation_reality_launch.py",
+      "sha256": "342f297f77502de79adae46bbfead5cdc70ad5e41c38407727ebee9d710d124e"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/sensor_scan_generation/src/sensor_scan_generation.cpp",
+      "sha256": "9a72ee9885afcbe0ba901eef09fbb08c3e8cf48a6c0bc36af0877fa0fb3ebad4"
+    },
+    {
+      "path": "src/pb2025_sentry_nav/sensor_scan_generation/include/sensor_scan_generation/sensor_scan_generation.hpp",
+      "sha256": "a183ccc1b37bcd3e586f9e8f754a934b95fc333aa7e2325ab568909309dbe740"
+    },
+    {
+      "path": "local/chassis_nav2_params.yaml",
+      "sha256": "4edaded075f7cf91caf662e5c467c34bf4de1345b904cf81e0b15a1248bbc4e1"
+    },
+    {
+      "path": "local/chassis_nav.rviz",
+      "sha256": "0bb772b4706ba3e833fb7a0b1d4c92dea517b1096490662be17b9627a60226e6"
+    },
+    {
+      "path": "local/test_chassis_launch_pty.py",
+      "sha256": "77b374b024c122655bb6a379a14403ad4ba668388f96d4108d131c1fa5187982"
+    },
+    {
+      "path": "local/test_chassis_odometry.py",
+      "sha256": "14047bd1300cb0fa9725fb776621760b4c7935ff3d50f7a41b44ed191d984287"
+    },
+    {
+      "path": "local/test_chassis_nav_pipeline.py",
+      "sha256": "98454ab1273caf0afe98461a4cfc8494c07310ec142a5a77832ca13a424743e6"
+    },
+    {
+      "path": "local/test_chassis_composed_startup.py",
+      "sha256": "be91242af44f403158e0d58bb0be8a0a1e6a5fc83811e4c5f8333646c4c408db"
+    },
+    {
+      "path": "底盘固定雷达导航部署与待确认-20261112.md",
+      "sha256": "f6eb50057b46ded4182b0db89012af5e52cd4e1e572cf9885f0e0d1100e9a72f"
+    },
+    {
+      "path": "底盘导航启动与联调指令-20261112.txt",
+      "sha256": "59054b70b5d726d25c0614acfad1e3504543c68edc05c69033f804177914861e"
+    },
+    {
+      "path": "本机配置与启动.md",
+      "sha256": "3aee0d3fcca102d68833ccc2867b5c9577f252fd466d38c71aa23e1a87a543b2"
+    },
+    {
+      "path": "先读我-部署与通信测试.md",
+      "sha256": "d927deaa51a8fc3e7f365ede4d1fd91c8e53fd6fee8315e54025f6bfc87329e7"
+    },
+    {
+      "path": "快速部署与通信测试.md",
+      "sha256": "c5e4d022d2937efaf7e61c37131fb6fea810d84603ea42aef4cffb8404c37cc4"
+    },
+    {
+      "path": "../c_board_nav_gateway_20261111/pc/run.sh",
+      "sha256": "f74c359820d8164e9b84d41e8727093a409db545e107bd58be5a34b5e6288d43"
+    },
+    {
+      "path": "../c_board_nav_gateway_20261111/README.md",
+      "sha256": "ea2b33f65248bf95e5e819344b6ab187c6d36cb45c70392dfc132e8c805b4ed6"
+    },
+    {
+      "path": "../c_board_nav_gateway_20261111/docs/烧录成功后通信测试指令.txt",
+      "sha256": "37547b7577b5a8a63bd49d5e3f906c68f153e6b3ed7a03b4c6baee04402d81d2"
+    }
+  ]
+}

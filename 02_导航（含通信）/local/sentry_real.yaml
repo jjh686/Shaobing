@@ -1,0 +1,45 @@
+# Gimbal pivots and ECD zero are UNKNOWN: geometry_confirmed must stay false.
+# Static lidar mounting was confirmed by user on 2026-11-10.
+serial:
+  frame_id: base_footprint
+  route: 2
+  use_stamped_commands: true
+  require_gimbal_state: true
+  require_frame_ready: true
+  sp_proxy_enabled: true
+  gimbal_state_timeout_ms: 60
+  frame_ready_timeout_ms: 100
+  yaw_joint_name: gimbal_yaw_joint
+  pitch_joint_name: gimbal_pitch_joint
+  max_linear_speed: 0.3
+  max_angular_speed: 0.5
+  command_timeout_ms: 150
+  feedback_timeout_ms: 250
+frames:
+  geometry_confirmed: false
+  publish_tf: true
+  body_frame: base_footprint
+  yaw_frame: gimbal_yaw
+  pitch_frame: gimbal_pitch
+  yaw_joint: gimbal_yaw_joint
+  pitch_joint: gimbal_pitch_joint
+  yaw_pivot_xyz:
+  - 0.0
+  - 0.0
+  - 0.0
+  pitch_pivot_xyz:
+  - 0.0
+  - 0.0
+  - 0.0
+static_transforms:
+- parent: base_footprint
+  child: front_mid360
+  xyz:
+  - 0.0
+  - 0.0
+  - 0.2
+  rpy:
+  - 0.0
+  - 0.0
+  - 0.0
+static_extrinsics_confirmed: true

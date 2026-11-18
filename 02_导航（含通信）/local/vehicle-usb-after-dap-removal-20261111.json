@@ -1,0 +1,9 @@
+{
+  "time": "2026-11-11 13:10:46",
+  "host": "wangjiaming-NUC11PAHi7",
+  "usb_devices": "Bus 004 Device 002: ID 35d6:3510 Bridgesil USB3.2 Hub\nBus 003 Device 006: ID 1a2c:97f4 China Resource Semico Co., Ltd USB Gaming Keyboard \nBus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub\nBus 003 Device 003: ID 8087:0026 Intel Corp. AX201 Bluetooth\nBus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub\nBus 003 Device 005: ID 046d:c077 Logitech, Inc. M105 Optical Mouse\nBus 003 Device 002: ID 35d6:2510 Bridgesil USB2.1 Hub\nBus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub\nBus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub\n",
+  "serial_paths": [],
+  "debugger_removed_confirmed": true,
+  "application_usb_detected": false,
+  "note": "Kernel records debugger removal at 13:08:47; no new C-board USB enumeration observed. No serial I/O performed."
+}

@@ -1,0 +1,24 @@
+Internal ctest changing into directory: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/rm_chassis_comm
+Test project /home/wangjiaming/.local/share/rm_sentry_nav_20261110/build/rm_chassis_comm
+    Start 1: chassis_protocol
+1/9 Test #1: chassis_protocol .................   Passed    0.00 sec
+    Start 2: chassis_mcu
+2/9 Test #2: chassis_mcu ......................   Passed    0.00 sec
+    Start 3: chassis_can
+3/9 Test #3: chassis_can ......................   Passed    0.00 sec
+    Start 4: chassis_port
+4/9 Test #4: chassis_port .....................   Passed    0.00 sec
+    Start 5: chassis_gimbal_protocol
+5/9 Test #5: chassis_gimbal_protocol ..........   Passed    0.00 sec
+    Start 6: chassis_mux
+6/9 Test #6: chassis_mux ......................   Passed    0.00 sec
+    Start 7: chassis_frame_math
+7/9 Test #7: chassis_frame_math ...............   Passed    0.00 sec
+    Start 8: chassis_gimbal_clock
+8/9 Test #8: chassis_gimbal_clock .............   Passed    0.00 sec
+    Start 9: sentry_ros_pty
+9/9 Test #9: sentry_ros_pty ...................   Passed    2.84 sec
+
+100% tests passed, 0 tests failed out of 9
+
+Total Test time (real) =   2.85 sec

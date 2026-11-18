@@ -1,0 +1,42 @@
+Mapping output: /home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/local/maps/20261111_114058
+[INFO] [launch]: All log files can be found below /home/wangjiaming/.local/share/rm_sentry_nav_20261110/log/ros/2026-11-11-11-40-58-649435-wangjiaming-NUC11PAHi7-19088
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [pointlio_mapping-1]: process started with pid [19111]
+[INFO] [static_transform_publisher-2]: process started with pid [19113]
+[INFO] [static_transform_publisher-3]: process started with pid [19115]
+[INFO] [pointcloud_to_laserscan_node-4]: process started with pid [19117]
+[INFO] [sync_slam_toolbox_node-5]: process started with pid [19119]
+[INFO] [python3-6]: process started with pid [19121]
+[static_transform_publisher-2] [INFO] [1794368458.745686971] [mid360_test_map_tf]: Spinning until stopped - publishing transform
+[static_transform_publisher-2] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-2] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-2] from 'map' to 'camera_init'
+[static_transform_publisher-3] [INFO] [1794368458.750990231] [mid360_test_body_tf]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'aft_mapped' to 'body'
+[sync_slam_toolbox_node-5] [INFO] [1794368458.759083163] [slam_toolbox]: Node using stack size 40000000
+[pointcloud_to_laserscan_node-4] [INFO] [1794368458.774481203] [mid360_test_scan]: Got a subscriber to laserscan, starting pointcloud subscriber
+[sync_slam_toolbox_node-5] [INFO] [1794368458.784143474] [slam_toolbox]: Using solver plugin solver_plugins::CeresSolver
+[sync_slam_toolbox_node-5] [INFO] [1794368458.784299921] [slam_toolbox]: CeresSolver: Using SCHUR_JACOBI preconditioner.
+[python3-6] [INFO] [1794368459.021804933] [mid360_test_recorder]: Map output: /home/wangjiaming/桌面/rm_nav_source_20261110(zbh)/local/test-artifacts/no-sensor-mapping
+[pointlio_mapping-1] lidar_type: 1
+[pointlio_mapping-1] ~~~~/home/wangjiaming/.local/share/rm_sentry_nav_20261110/source/src/pb2025_sentry_nav/point_lio/ file opened
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [python3-6]: sending signal 'SIGINT' to process[python3-6]
+[INFO] [sync_slam_toolbox_node-5]: sending signal 'SIGINT' to process[sync_slam_toolbox_node-5]
+[INFO] [pointcloud_to_laserscan_node-4]: sending signal 'SIGINT' to process[pointcloud_to_laserscan_node-4]
+[INFO] [static_transform_publisher-3]: sending signal 'SIGINT' to process[static_transform_publisher-3]
+[INFO] [static_transform_publisher-2]: sending signal 'SIGINT' to process[static_transform_publisher-2]
+[INFO] [pointlio_mapping-1]: sending signal 'SIGINT' to process[pointlio_mapping-1]
+[sync_slam_toolbox_node-5] [INFO] [1794368468.922647450] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[pointcloud_to_laserscan_node-4] [INFO] [1794368468.923278734] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[static_transform_publisher-3] [INFO] [1794368468.923876231] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[static_transform_publisher-2] [INFO] [1794368468.924416956] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[pointlio_mapping-1] [WARN] [1794368468.925047184] [laserMapping]: catch sig 2
+[INFO] [static_transform_publisher-3]: process has finished cleanly [pid 19115]
+[INFO] [static_transform_publisher-2]: process has finished cleanly [pid 19113]
+[INFO] [sync_slam_toolbox_node-5]: process has finished cleanly [pid 19119]
+[INFO] [pointcloud_to_laserscan_node-4]: process has finished cleanly [pid 19117]
+[INFO] [pointlio_mapping-1]: process has finished cleanly [pid 19111]
+[INFO] [python3-6]: process has finished cleanly [pid 19121]

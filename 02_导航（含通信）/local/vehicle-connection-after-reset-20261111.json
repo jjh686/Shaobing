@@ -1,0 +1,12 @@
+{
+  "time": "2026-11-11 13:08:56",
+  "user_reports": "C-board directly connected by USB; unplugged/replugged and reset; power LED on",
+  "usb_list": "Bus 004 Device 002: ID 35d6:3510 Bridgesil USB3.2 Hub\nBus 003 Device 006: ID 1a2c:97f4 China Resource Semico Co., Ltd USB Gaming Keyboard \nBus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub\nBus 003 Device 003: ID 8087:0026 Intel Corp. AX201 Bluetooth\nBus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub\nBus 003 Device 005: ID 046d:c077 Logitech, Inc. M105 Optical Mouse\nBus 003 Device 002: ID 35d6:2510 Bridgesil USB2.1 Hub\nBus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub\nBus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub\n",
+  "ethernet": "enp89s0          DOWN",
+  "cboard_application_usb_detected": false,
+  "application_protocol_tested": false,
+  "physical_serial_opened": false,
+  "motion_commands_sent": false,
+  "usb_event_log": "cboard-usb-reconnect-events.log",
+  "interpretation": "Only debugger USB detected. Cannot distinguish USB cable/connector faults from firmware USB initialization failure from this inventory alone."
+}
