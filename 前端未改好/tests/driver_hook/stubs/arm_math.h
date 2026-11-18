@@ -1,0 +1,1 @@
+/* The tested controller uses no CMSIS math entry points. */

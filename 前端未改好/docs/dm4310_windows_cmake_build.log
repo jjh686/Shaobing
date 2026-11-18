@@ -1,0 +1,179 @@
+[0/2] Re-checking globbed directories...
+[1/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.obj
+[2/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.obj
+[3/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.obj
+[4/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.obj
+[5/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.obj
+[6/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.obj
+[7/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.obj
+[8/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.obj
+[9/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c.obj
+[10/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.obj
+[11/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.obj
+[12/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.obj
+[13/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.obj
+[14/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.obj
+[15/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.obj
+[16/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.obj
+[17/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.obj
+[18/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.obj
+[19/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.obj
+[20/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.obj
+[21/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.obj
+[22/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.obj
+[23/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.obj
+[24/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.obj
+[25/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.obj
+[26/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.obj
+[27/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.obj
+[28/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.obj
+[29/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj
+[30/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj
+[31/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj
+[32/137] Building C object CMakeFiles/basic_framework.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.obj
+[33/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c.obj
+[34/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c.obj
+[35/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c.obj
+[36/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c.obj
+[37/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/croutine.c.obj
+[38/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/list.c.obj
+[39/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c.obj
+[40/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c.obj
+[41/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c.obj
+[42/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c.obj
+[43/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/queue.c.obj
+[44/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/timers.c.obj
+[45/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c.obj
+[46/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/FreeRTOS/Source/tasks.c.obj
+[47/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT_printf.c.obj
+[48/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/adc.c.obj
+[49/137] Building C object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.c.obj
+[50/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/can.c.obj
+[51/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/crc.c.obj
+[52/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/dac.c.obj
+[53/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/dma.c.obj
+[54/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/freertos.c.obj
+[55/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/gpio.c.obj
+[56/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/i2c.c.obj
+[57/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/rng.c.obj
+[58/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/rtc.c.obj
+[59/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/spi.c.obj
+[60/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/main.c.obj
+[61/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/stm32f4xx_hal_msp.c.obj
+[62/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/stm32f4xx_hal_timebase_tim.c.obj
+[63/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/stm32f4xx_it.c.obj
+[64/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/system_stm32f4xx.c.obj
+[65/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/usart.c.obj
+[66/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/tim.c.obj
+[67/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/usb_device.c.obj
+[68/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/usbd_cdc_if.c.obj
+[69/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/usbd_desc.c.obj
+[70/137] Building C object CMakeFiles/basic_framework.elf.dir/Src/usbd_conf.c.obj
+[71/137] Building C object CMakeFiles/basic_framework.elf.dir/application/cmd/control_guard.c.obj
+[72/137] Building C object CMakeFiles/basic_framework.elf.dir/application/cmd/auto_aim_boot.c.obj
+[73/137] Building C object CMakeFiles/basic_framework.elf.dir/application/cmd/robot_cmd.c.obj
+[74/137] Building C object CMakeFiles/basic_framework.elf.dir/application/chassis/chassis.c.obj
+[75/137] Building C object CMakeFiles/basic_framework.elf.dir/application/communication/robot_comm.c.obj
+[76/137] Building C object CMakeFiles/basic_framework.elf.dir/application/gimbal/gimbal_math.c.obj
+[77/137] Building C object CMakeFiles/basic_framework.elf.dir/application/gimbal/gimbal_speed_pi.c.obj
+[78/137] Building C object CMakeFiles/basic_framework.elf.dir/application/gimbal/gimbal.c.obj
+[79/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/adc/bsp_adc.c.obj
+[80/137] Building C object CMakeFiles/basic_framework.elf.dir/application/shoot/shoot.c.obj
+[81/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/bsp_tools.c.obj
+[82/137] Building C object CMakeFiles/basic_framework.elf.dir/application/robot.c.obj
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/application/robot.c:9:9: note: '#pragma message: check if you have configured the parameters in robot_def.h, IF NOT, please refer to the comments AND DO IT, otherwise the robot will have FATAL ERRORS!!!'
+    9 | #pragma message "check if you have configured the parameters in robot_def.h, IF NOT, please refer to the comments AND DO IT, otherwise the robot will have FATAL ERRORS!!!"
+      |         ^~~~~~~
+[83/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/can/bsp_can.c.obj
+[84/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/flash/bsp_flash.c.obj
+[85/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/dwt/bsp_dwt.c.obj
+[86/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/gpio/bsp_gpio.c.obj
+[87/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/log/bsp_log.c.obj
+[88/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/iic/bsp_iic.c.obj
+[89/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/pwm/bsp_pwm.c.obj
+[90/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/spi/bsp_spi.c.obj
+[91/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/usart/bsp_usart.c.obj
+[92/137] Building C object CMakeFiles/basic_framework.elf.dir/bsp/usb/bsp_usb.c.obj
+[93/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/TFminiPlus/tfminiplus.c.obj
+[94/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/BMI088/bmi088.c.obj
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/BMI088/bmi088.c: In function 'BMI088GyroINTCallback':
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/BMI088/bmi088.c:231:13: warning: unused variable 'whoami_check' [-Wunused-variable]
+  231 |     uint8_t whoami_check = 0;
+      |             ^~~~~~~~~~~~
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/BMI088/bmi088.c: At top level:
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/BMI088/bmi088.c:297:9: note: '#pragma message: REMEMBER TO SET PRE CALIBRATE PARAMETER IF YOU CHOOSE NOT TO CALIBRATE'
+  297 | #pragma message "REMEMBER TO SET PRE CALIBRATE PARAMETER IF YOU CHOOSE NOT TO CALIBRATE"
+      |         ^~~~~~~
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/BMI088/bmi088.c:6:24: warning: 'bmi088_daemon_instance' defined but not used [-Wunused-variable]
+    6 | static DaemonInstance *bmi088_daemon_instance;
+      |                        ^~~~~~~~~~~~~~~~~~~~~~
+[95/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/algorithm/QuaternionEKF.c.obj
+[96/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/alarm/buzzer.c.obj
+[97/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/algorithm/controller.c.obj
+[98/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/algorithm/crc8.c.obj
+[99/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/algorithm/crc16.c.obj
+[100/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/algorithm/kalman_filter.c.obj
+[101/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/bluetooth/HC05.c.obj
+[102/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/algorithm/user_lib.c.obj
+[103/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/can_comm/can_comm.c.obj
+[104/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/imu/BMI088Middleware.c.obj
+[105/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/daemon/daemon.c.obj
+[106/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/master_machine/master_process.c.obj
+[107/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/imu/BMI088driver.c.obj
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/imu/BMI088driver.c:8:9: note: '#pragma message: this is a legacy support. test the new BMI088 module as soon as possible.'
+    8 | #pragma message "this is a legacy support. test the new BMI088 module as soon as possible."
+      |         ^~~~~~~
+[108/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/imu/ins_task.c.obj
+[109/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/ist8310/ist8310.c.obj
+[110/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/master_machine/sp_protocol.c.obj
+[111/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/master_machine/seasky_protocol.c.obj
+[112/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/message_center/message_center.c.obj
+[113/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/DJImotor/dji_motor.c.obj
+[114/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/DMmotor/dm4310_pitch.c.obj
+[115/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/DMmotor/dmmotor.c.obj
+[116/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/HTmotor/HT04.c.obj
+[117/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/LKmotor/LK9025.c.obj
+[118/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/step_motor/step_motor.c.obj
+[119/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/motor_task.c.obj
+[120/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/servo_motor/servo_motor.c.obj
+[121/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/motor/power_control.c.obj
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/motor/power_control.c:18:33: warning: 'chassis_power' defined but not used [-Wunused-variable]
+   18 | static float chassis_max_power, chassis_power, initial_total_power = 0.0f;
+      |                                 ^~~~~~~~~~~~~
+[122/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/referee/crc_ref.c.obj
+[123/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/oled/oled.c.obj
+[124/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/referee/referee_custom.c.obj
+[125/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/referee/referee_UI.c.obj
+[126/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/referee/referee_task.c.obj
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/referee/referee_task.c: In function 'MyUIRefresh':
+C:/Users/zbh26/RoboMasterTools/build-cache/dm4310-pitch-20261115/source/modules/referee/referee_task.c:204:9: warning: enumeration value 'GIMBAL_VISION_MODE' not handled in switch [-Wswitch]
+  204 |         switch (_Interactive_data->gimbal_mode)
+      |         ^~~~~~
+[127/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/referee/referee_vt.c.obj
+[128/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/standard_cmd/std_cmd.c.obj
+[129/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/referee/referee_vt_task.c.obj
+[130/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/referee/rm_referee.c.obj
+[131/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/unicomm/unicomm.c.obj
+[132/137] Building ASM object CMakeFiles/basic_framework.elf.dir/startup_stm32f407xx.s.obj
+[133/137] Building ASM object CMakeFiles/basic_framework.elf.dir/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT_ASM_ARMv7M.s.obj
+[134/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/remote/remote_control.c.obj
+[135/137] Building C object CMakeFiles/basic_framework.elf.dir/modules/super_cap/super_cap.c.obj
+[136/137] Linking C executable basic_framework.elf; EXCUTABLE SIZE:
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-closer.o): in function `_close_r':
+closer.c:(.text._close_r+0xc): warning: _close is not implemented and will always fail
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-closer.o): note: the message above does not take linker garbage collection into account
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-lseekr.o): in function `_lseek_r':
+lseekr.c:(.text._lseek_r+0x10): warning: _lseek is not implemented and will always fail
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-lseekr.o): note: the message above does not take linker garbage collection into account
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-readr.o): in function `_read_r':
+readr.c:(.text._read_r+0x10): warning: _read is not implemented and will always fail
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-readr.o): note: the message above does not take linker garbage collection into account
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-writer.o): in function `_write_r':
+writer.c:(.text._write_r+0x10): warning: _write is not implemented and will always fail
+C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/zbh26/RoboMasterTools/arm-gnu-toolchain-14.3.rel1-mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-writer.o): note: the message above does not take linker garbage collection into account
+Memory region         Used Size  Region Size  %age Used
+             RAM:       79448 B       128 KB     60.61%
+          CCMRAM:           0 B        64 KB      0.00%
+           FLASH:       93204 B         1 MB      8.89%
+   text	   data	    bss	    dec	    hex	filename
+  92108	   1084	  78368	 171560	  29e28	basic_framework.elf
