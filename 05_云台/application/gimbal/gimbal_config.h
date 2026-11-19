@@ -58,10 +58,13 @@
 /* 相对上电位置，仅在上电姿态为行程中心时成立。
  * 这两个值同时是 GimbalGetState 的健康判定阈值([min-1, max+1])，
  * 设超过机械止挡会撞限位，设小于实际行程会中途失能。
- * Yaw放宽到±120用于覆盖目标大范围移动，前提是有滑环或线束余量。
+ * Yaw已放宽到±360：本机yaw为滑环、无机械止挡，允许整周旋转（每侧一圈）。
+ * 多圈能力本身由 continuous_yaw 逐周期解包提供，这里只放开包络与健康阈值
+ * ([min-1,max+1]=±361)，仍保留兜底防止目标跳变/姿态异常导致无限累加。
+ * 注意视觉端若仍按±180发绝对角，跨±180时靠 GimbalWrapRad 走最短路，不会绕圈。
  * Pitch仍为±20：上下是硬机械止挡，不能按Yaw放大。 */
-#define GIMBAL_YAW_MIN_DEG (-120.0f)
-#define GIMBAL_YAW_MAX_DEG 120.0f
+#define GIMBAL_YAW_MIN_DEG (-360.0f)
+#define GIMBAL_YAW_MAX_DEG 360.0f
 #define GIMBAL_PITCH_MIN_DEG (-20.0f)
 #define GIMBAL_PITCH_MAX_DEG 20.0f
 /* Separate normal soft limits from fault thresholds. Defaults preserve the
@@ -75,17 +78,27 @@
  * PID numbers here. These gains have NOT been tuned for this mechanism. */
 #define GIMBAL_YAW_ANGLE_KP 8.0f
 #define GIMBAL_PITCH_ANGLE_KP 25.0f /* User-confirmed commissioning baseline. */
-#define GIMBAL_YAW_ANGLE_DEADBAND_RAD (0.1f * GIMBAL_RAD_PER_DEG)
-#define GIMBAL_YAW_SPEED_KP 50.0f /* CAN command / (rad/s) */
+/* 0.2°：死区内 PIDCalculate 输出0(controller.c:202)，用于止住"目标停住后
+ * 位置环继续给60~100°/s修正"造成的到点回摆。0.1°时零点附近仍会反推一次。
+ * 代价是稳态最多偏0.2°；若死区边缘出现小幅来回则缩回0.15°。
+ * 注意该宏也被 GIMBAL_PITCH_REVERSAL_REF_RAD_S 借用，但pitch的
+ * reset_i_on_ref_reversal=0，该阈值不生效，pitch不受影响。 */
+#define GIMBAL_YAW_ANGLE_DEADBAND_RAD (0.2f * GIMBAL_RAD_PER_DEG)
+/* 200*1 = 200 command/(rad/s)。原50太小：满误差(约8.7rad/s)只给435 counts(1.5%)，
+ * 推不动GM6020且起步要靠积分爬(约3654 counts/s)，实测有0.3秒反应延迟、两个方向
+ * 都跟不上(实际速度只有指令的0.6~2%)。200时起步延迟消失、跟随正常，实测比120
+ * 更跟手，故最终定在200。代价是目标停住时会冲过头回摆两下——那属于位置环
+ * (gimbal.c:316的Kp=200)缺少阻尼，不要再回退速度环来压制。
+ * 若出现高频嗡嗡则退160。 */
+#define GIMBAL_YAW_SPEED_KP 200.0f /* CAN command / (rad/s) */
 /* Dedicated controller currently implements PI (speed Kd must remain 0).
- * 1000*0.0005 = 0.50 Nm/(rad/s)。历史：500时起步要等积分爬约5秒；2500消除了
+ * 900*0.0005 = 0.45 Nm/(rad/s)。历史：500时起步要等积分爬约5秒；2500消除了
  * 该延迟，但实机运动时出现高频抖动——速度反馈pitch_speed取IMU陀螺原始角速度，
- * 全链路无低通，P把减速箱/结构的振动一并放大成力矩，形成自激。本轮单变量
- * 回退到1000仅用于确认抖动是否只由带宽引起。
- * 代价：起动瞬间力矩由0.75 Nm降到约0.30 Nm。若机构起动力矩大于该值，积分仍需
- * 以0.15 Nm/s补齐，起步延迟会部分回归；此时应改用GIMBAL_PITCH_FRICTION_*
- * 起动辅助或参考速度前馈恢复反应，而不是再把P抬回去。 */
-#define GIMBAL_PITCH_SPEED_KP 1000.0f
+ * 全链路无低通，P把减速箱/结构的振动一并放大成力矩，形成自激。
+ * 1500 实测失败(抖动更重)，证实瓶颈是高频自激而非刹车力不足；1000→900 实测
+ * 抖动减轻，故本轮停在900。800 试过，与900差别不明显，回900以保持与上一版
+ * 板内固件一致，便于单独验证重力前馈这一项。提速不要再靠抬Kp。 */
+#define GIMBAL_PITCH_SPEED_KP 900.0f
 /* 420 = 3000/2500*350，使Yaw与Pitch达到各自的I上限所需时间相同。 */
 #define GIMBAL_YAW_SPEED_KI 420.0f
 /* Single-parameter follow-up: Ki=200 reduced oscillation but the user reports
@@ -115,13 +128,26 @@
 #define GIMBAL_PITCH_BRAKE_RAD_S2 (120.0f * GIMBAL_RAD_PER_DEG)
 #define GIMBAL_PITCH_MOTION_LIMIT_ENABLE 1
 /* Signed canonical-pitch Nm: A*cos(pitch-zero)+B*sin(pitch-zero)，θ用IMU俯仰角(rad)。
- * 实测托举力矩(相对本次上电)：5°≈0、9.6°≈0.30、17.4°≈0.62 Nm，角度越大越大。
- * 用后两点解二元一次方程得 A=0.10、B=-2.41；回代 9.6°→0.30、17.4°→0.62，与实测一致。
- * 只有两点拟合，误差约±0.2Nm：若某角度仍看到积分缓慢爬升，说明欠补，直接加大|B|；
- * 若到位后自己往上冲，说明过补，减小|B|。改完必须重新上电，让积分从0建立，
- * 否则旧积分与新前馈叠加会突跳一次。 */
-#define GIMBAL_PITCH_GRAVITY_COS_NM 0.10f
-#define GIMBAL_PITCH_GRAVITY_SIN_NM (-2.41f)
+ * 本平台实测负载近似"与角度无关的常值"，不是随sinθ增大的重力矩，所以只填A、B=0。
+ * 依据：零前馈基线下用"同角度上下各走一次"直接测(摩擦随方向反号、负载不反,
+ * 故 (T_up+T_down)/2 即为真实负载)：-2~6°得-0.476(上-0.042/下-0.910)，
+ * 6~14°得-0.420(上-0.109/下-0.730)，2~10°另一次测得-0.484，重复性约0.05。
+ * 故取 A=-0.45。0~14°的样本充足；负角度与14°以上暂无可靠数据（14~22°只有3个
+ * 上升样本且上下差仅0.13，不采用），若那些角度积分仍顶满，说明欠补，需单独补。
+ * 旧值 A=0.10/B=-2.41 由"轴卡住时的积分读数"拟合，静摩擦下该读数反映卡滞而非
+ * 负载：它在0°给+0.10(应为-0.45，方向相反)、5°给-0.11、14°约-0.49(碰巧接近)、
+ * 20°给-0.73(过补)，即斜率错而非整体写反。
+ * 顺带实测动摩擦约0.43Nm、静摩擦约1.5Nm，粘滑是快跟随抖动的根源。
+ * 第二轮(常值-0.45生效后)按角度统计积分残余："还差多少"为 -8~-2°→-0.285、
+ * -2~6°→-0.114、6~14°→-0.050，饱和占比均为0%（改前长期顶满±0.60），说明常值
+ * 方向正确，只是低角度欠补约0.3。
+ * 但按三点最小二乘补上角度项(A=-0.64,B=+0.88)后实机抖动反而更重，故已回退：
+ * 角度项会随姿态连续变化，在粘滑系统里等于给每次挣脱叠加不同幅值，反而放大抖动。
+ * 结论：本平台只保留常值 A=-0.45，B=0。低角度残余的0.3交由积分承担（积分上限
+ * 0.6，实测未饱和），宁可欠补也不引入随角度变化的力矩。
+ * 改完必须重新上电，让积分从0建立。 */
+#define GIMBAL_PITCH_GRAVITY_COS_NM (-0.45f)
+#define GIMBAL_PITCH_GRAVITY_SIN_NM 0.0f
 #define GIMBAL_PITCH_GRAVITY_ZERO_RAD 0.0f
 #define GIMBAL_PITCH_GRAVITY_RAMP_NM_S 5.0f
 /* Optional finite breakaway assistance, independently measured per direction.
@@ -144,11 +170,15 @@
  * 参考回零即归零，不留到位残余。
  * 上面那组FRICTION_*是"起动一脚"(有状态机、一动就撤、0.25s超时)，已停用(系数0)，
  * 由本项取代——它补不了运动中持续的摩擦，正是之前"一卡一卡"的来源。
- * 实测依据：16°处重力前馈抵消0.57Nm后，P+I共0.61Nm时净力矩仅0.04Nm，
- * 轴只能以约0.5~1.5°/s爬行，说明另有约0.6Nm阻力未被补偿。
- * 按SPEED_LIMIT(45°/s)归一，实际34.6°/s时出力0.46Nm。取0.60为"欠补"：
- * 仍慢就0.75；到位冲过头就0.45。0=关闭。 */
-#define GIMBAL_PITCH_SPEED_FF_NM 0.60f
+ * 实测依据(27秒连续动作采样)：参考持续-34.6°/s时，下发力矩-1.2~-1.5Nm
+ * 仍只以1~2°/s的平均速度间歇爬行(偶发8~11°/s的突跳)，而P+I+前馈在满速时
+ * 合计只有0.30+0.60+0.46=1.36Nm，正好卡在起动门槛(约1.5Nm)之下，形成粘滑。
+ * 本平台结构所需推动力矩大于普通云台，1.00(满速0.77Nm，合计1.67Nm)确实把平均速度
+ * 从0.9°/s提到7.4°/s，但快跟随中出现粘滑式爆发：挣脱瞬间多出约0.9Nm(静1.5-动0.6)
+ * 全部用于加速，0.1秒即冲到50~70°/s，过冲9~12°后参考反号再冲一次。
+ * 故回退到0.85(满速0.65Nm，合计1.55Nm)：仍高于起动门槛，但爆发幅度减小。
+ * 若又变慢就回1.0；若仍抖则问题在阻尼(速度环Kp)而非前馈。0=关闭。 */
+#define GIMBAL_PITCH_SPEED_FF_NM 0.85f
 #define GIMBAL_ANGLE_SPEED_LIMIT (500.0f * GIMBAL_RAD_PER_DEG)
 #define GIMBAL_OUTPUT_LIMIT 20000.0f
 /* DM-J4310 pitch, MIT torque-only transport. Match the motor's saved ranges.

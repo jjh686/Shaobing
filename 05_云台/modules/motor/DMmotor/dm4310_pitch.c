@@ -6,6 +6,11 @@
 static DM4310PitchInstance pitch_instance;
 static uint8_t registered;
 
+/* 达妙反馈字节0的高4位是状态码，0xD = 通信丢失(DM_STATE_COMM_LOST)。 */
+#define DM4310_PITCH_STATE_COMM_LOST 0x0Du
+/* 清错帧0xFB的重发间隔，避免总线被占满。 */
+#define DM4310_PITCH_COMM_CLEAR_RETRY_MS 100u
+
 static float DecodeRange(uint32_t value, float maximum, uint32_t top)
 {
     return (float)value * (2.0f * maximum) / (float)top - maximum;
@@ -57,7 +62,13 @@ static void DecodeFeedback(CANInstance *can)
     m->measure = next;
     m->last_feedback_tick = HAL_GetTick();
     m->feedback_seen = 1;
-    if (next.state > 1u || (next.state == 0u && m->hardware_running_seen)) {
+    if (next.state == DM4310_PITCH_STATE_COMM_LOST) {
+        /* 通信丢失是刷写/复位时CAN静默造成的可恢复状态，不锁存故障：
+         * 只停机，交由 DM4310PitchControl 发 0xFB 清除后重新走使能流程。
+         * 其他错误码(过压/过流/过温等)仍按下述逻辑锁存，需人工排除。 */
+        m->hardware_running_seen = 0;
+        m->stop_flag = MOTOR_STOP;
+    } else if (next.state > 1u || (next.state == 0u && m->hardware_running_seen)) {
         if (!m->fault_latched) m->fault_reason_flags = DM_PITCH_GATE_NOT_ENABLED;
         m->fault_latched = 1;
         m->stop_flag = MOTOR_STOP;
@@ -207,8 +218,9 @@ uint8_t DM4310PitchClearFault(DM4310PitchInstance *m)
         m->hardware_running_seen = 0;
     }
     __set_PRIMASK(mask);
-    /* No 0xFB automatic hardware reset: a real overtemperature/voltage error
-     * must first be corrected and cleared explicitly outside this loop. */
+    /* 此处不清电机硬件错误：过压/过流/过温等必须先在达妙工具中排除。
+     * 唯一自动处理的是通信丢失(0xD)，由 DM4310PitchControl 发 0xFB，
+     * 因为那是刷写/复位打断CAN造成的可恢复状态。 */
     return (uint8_t)ok;
 }
 
@@ -230,7 +242,10 @@ void DM4310PitchControl(void)
     int healthy = InputsHealthy(m, now) && (stop != MOTOR_ENABLED ||
         !m->command_timeout_ms || (uint32_t)(now-command_tick) <= m->command_timeout_ms);
     uint8_t hardware_enabled = m->measure.state == 1u;
-    if (stop == MOTOR_ENABLED && !healthy) {
+    /* 通信丢失是可自恢复状态：门控照常封锁力矩，但不触发故障锁存，
+     * 否则 0xFB 清除后也无法重新使能。 */
+    int comm_lost = m->measure.state == DM4310_PITCH_STATE_COMM_LOST;
+    if (stop == MOTOR_ENABLED && !healthy && !comm_lost) {
         if (!m->fault_latched) {
             uint32_t reason = DM_PITCH_GATE_INVALID;
             if (!m->feedback_seen || (uint32_t)(now-m->last_feedback_tick) > GIMBAL_MOTOR_TIMEOUT_MS)
@@ -306,7 +321,7 @@ void DM4310PitchControl(void)
     if (isfinite(m->requested_torque_nm) &&
         fabsf(m->requested_torque_nm) > GIMBAL_PITCH_DM_TORQUE_LIMIT_NM)
         gates |= DM_PITCH_GATE_TORQUE_LIMIT;
-    if (m->stop_flag == MOTOR_ENABLED && !final_healthy) {
+    if (m->stop_flag == MOTOR_ENABLED && !final_healthy && !comm_lost) {
         if (!m->fault_latched) m->fault_reason_flags = gates | DM_PITCH_GATE_INVALID;
         m->fault_latched = 1; m->stop_flag = MOTOR_STOP;
     }
@@ -338,6 +353,15 @@ void DM4310PitchControl(void)
     m->last_gate_flags = gates;
     PackTorque(torque, m->motor_can_instance->tx_buff);
     CANTransmit(m->motor_can_instance, 8);
+    /* 通信丢失自恢复：0xFB 只在此状态下自动发送，不会掩盖真实硬件故障。
+     * 清零后电机回到 state=0，下一次循环由下面的使能块重新发 0xFC。 */
+    if (m->measure.state == DM4310_PITCH_STATE_COMM_LOST &&
+        (uint32_t)(now-m->last_comm_clear_tick) >= DM4310_PITCH_COMM_CLEAR_RETRY_MS) {
+        memset(m->motor_can_instance->tx_buff, 0xff, 7);
+        m->motor_can_instance->tx_buff[7] = 0xfb;
+        CANTransmit(m->motor_can_instance, 8);
+        m->last_comm_clear_tick = now;
+    }
     if (stop == MOTOR_ENABLED && m->stop_flag == MOTOR_ENABLED && !m->fault_latched &&
         healthy && final_healthy && m->measure.state == 0u &&
         (!m->enable_sent || (uint32_t)(now-m->last_enable_tick) >= GIMBAL_PITCH_DM_ENABLE_RETRY_MS)) {

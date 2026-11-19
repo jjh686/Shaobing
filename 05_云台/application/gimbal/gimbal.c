@@ -310,10 +310,11 @@ void GimbalInit(void)
         return;
     }
 /* 临时实验覆盖：外环 Kp 抬到 200，使 5° 误差给出 17.46rad/s 的参考，
- * 由 angle_PID.MaxOut 截断为 8.727rad/s(500°/s)，用于测量内环起动输出。
- * 实验结束必须删除本块；宏 GIMBAL_*_ANGLE_KP 未被修改，
+ * 由 angle_PID.MaxOut 截断为 8.727rad/s(500°/s)。
+ * 历史：120 试过，接近目标速度指令小了(1°→120°/s)，但远处跟随变慢，已回退。
+ * 宏 GIMBAL_YAW_ANGLE_KP(8) 未被修改，
  * 因此 GIMBAL_YAW_REVERSAL_REF_RAD_S 仍按 8 计算，不随本覆盖联动。 */
-    yaw_motor->motor_controller.angle_PID.Kp = 200.0f;
+	yaw_motor->motor_controller.angle_PID.Kp = 200.0f;
     /* Pitch gain comes only from GIMBAL_PITCH_ANGLE_KP (baseline 25). */
 #if GIMBAL_TRACKING_SPEED_PI_ENABLE
     const GimbalPitchAssistConfig assist_config = {

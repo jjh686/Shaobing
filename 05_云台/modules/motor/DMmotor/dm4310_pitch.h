@@ -45,6 +45,7 @@ typedef struct {
     DJIMotorSpeedController speed_controller;
     volatile uint32_t speed_reset_request, speed_reset_consumed;
     uint32_t last_enable_tick, rejected_feedback;
+    uint32_t last_comm_clear_tick; /* 0xFB 通信丢失自恢复的重发节流。 */
     uint8_t enable_sent, hardware_running_seen;
     float last_torque_nm;
     float requested_torque_nm; /* Signed motor torque before final limiting. */

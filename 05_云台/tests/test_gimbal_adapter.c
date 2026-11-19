@@ -239,7 +239,8 @@ static void BindingsAndOriginalGains(void)
 {
     CHECK(init_count == 2);
     CHECK(configs[0].can_init_config.can_handle == &hcan1);
-    CHECK(configs[1].can_init_config.can_handle == &hcan1);
+    /* 实机接线：pitch DM4310 在 CAN2，CAN1 留给与底盘的板间链路。 */
+    CHECK(configs[1].can_init_config.can_handle == &hcan2);
     CHECK(configs[0].can_init_config.tx_id == 1 && configs[1].can_init_config.tx_id == 2);
     CHECK(yaw_motor == &yaw_stub && pitch_motor == &pitch_stub);
     CHECK(yaw_stub.motor_type == GM6020);
@@ -250,13 +251,13 @@ static void BindingsAndOriginalGains(void)
     CHECK(pitch_stub.speed_controller.context == &pitch_speed_axis);
     CHECK(yaw_speed_axis.pi.config.reset_i_on_ref_reversal == 1);
     CHECK(pitch_speed_axis.pi.config.reset_i_on_ref_reversal == 0);
-    Near(yaw_speed_axis.pi.config.reversal_ref_min_rad_s, 8.0f * 0.1f * GIMBAL_RAD_PER_DEG, 1e-7f);
+    Near(yaw_speed_axis.pi.config.reversal_ref_min_rad_s, GIMBAL_YAW_ANGLE_KP * GIMBAL_YAW_ANGLE_DEADBAND_RAD, 1e-7f);
     Near(yaw_speed_axis.pi.config.max_dt_s, 0.03f, 1e-7f);
     /* Keep yaw's commissioned override; pitch has one authoritative gain. */
     Near(yaw_stub.motor_controller.angle_PID.Kp, 200.0f, 1e-7f);
     Near(pitch_stub.motor_controller.angle_PID.Kp, 25.0f, 1e-7f);
-    Near(yaw_speed_axis.pi.config.kp, 50.0f, 1e-7f);
-    Near(pitch_speed_axis.pi.config.kp, 1000.0f, 1e-7f);
+    Near(yaw_speed_axis.pi.config.kp, 200.0f, 1e-7f);
+    Near(pitch_speed_axis.pi.config.kp, 900.0f, 1e-7f);
     Near(yaw_speed_axis.pi.config.ki, 420.0f, 1e-7f);
     Near(pitch_speed_axis.pi.config.ki, 500.0f, 1e-7f);
     Near(yaw_speed_axis.pi.config.i_limit, 6000.0f, 1e-7f);
@@ -407,13 +408,13 @@ static void DwtAndDiagnosticMirror(void)
     Prepare();
     PIDInstance *pid = &yaw_stub.motor_controller.speed_PID;
     next_dt_s = 0.007f;
-    Near(Step(&yaw_stub, 0.1f, 0.4f), 15.882f, 1e-4f);
+    Near(Step(&yaw_stub, 0.1f, 0.4f), 60.882f, 1e-4f);
     CHECK(last_dwt_counter == &pid->DWT_CNT);
     Near(pid->dt, 0.007f, 1e-7f);
     Near(pid->Measure, 0.1f, 1e-6f); Near(pid->Ref, 0.4f, 1e-6f);
-    Near(pid->Err, 0.3f, 1e-6f); Near(pid->Pout, 15.0f, 1e-4f);
+    Near(pid->Err, 0.3f, 1e-6f); Near(pid->Pout, 60.0f, 1e-4f);
     Near(pid->Iout, 0.882f, 1e-4f); Near(pid->ITerm, 0.882f, 1e-4f);
-    Near(pid->Output, 15.882f, 1e-4f);
+    Near(pid->Output, 60.882f, 1e-4f);
     Near(pid->Last_Measure, pid->Measure, 1e-7f);
     Near(pid->Last_Err, pid->Err, 1e-7f);
     Near(pid->Last_Output, pid->Output, 1e-7f);
@@ -422,16 +423,16 @@ static void DwtAndDiagnosticMirror(void)
     Near(Step(&yaw_stub, 0.1f, 0.4f), 19.092f, 1e-4f);
     Near(yaw_speed_axis.pi.config.kp, 60.0f, 1e-6f);
     Near(yaw_speed_axis.pi.config.i_limit, 200.0f, 1e-6f);
-    Near(pitch_speed_axis.pi.config.kp, 1000.0f, 1e-6f);
+    Near(pitch_speed_axis.pi.config.kp, 900.0f, 1e-6f);
     Near(pitch_speed_axis.pi.state.i, 0.0f, 1e-6f);
     /* Restore the real binding's baseline tunables for following groups. */
-    pid->Kp = 50.0f; pid->Ki = 420.0f; pid->IntegralLimit = 6000.0f; pid->MaxOut = 20000.0f;
+    pid->Kp = 200.0f; pid->Ki = 420.0f; pid->IntegralLimit = 6000.0f; pid->MaxOut = 20000.0f;
 }
 static void InvalidDataRemainsNan(void)
 {
     Prepare();
     PIDInstance *pid = &yaw_stub.motor_controller.speed_PID;
-    Near(Step(&yaw_stub, 0.0f, 0.5f), 25.21f, 1e-4f);
+    Near(Step(&yaw_stub, 0.0f, 0.5f), 100.21f, 1e-4f);
     GimbalSpeedPiState before = yaw_speed_axis.pi.state;
     next_dt_s = 0.031f;
     CHECK(isnan(Step(&yaw_stub, 0.0f, 0.5f)));
