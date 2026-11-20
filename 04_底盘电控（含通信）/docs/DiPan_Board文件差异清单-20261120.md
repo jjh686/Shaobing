@@ -1,0 +1,22 @@
+# 底盘与桌面 DiPan_Board 文件差异明细（2026-11-20）
+本清单生成于本次报告写入之前。排除构建、日志、发布包、缓存及编辑器配置；逐字节比较，其余文件均检查。只读比较，未同步代码。
+- 仅当前：`.gitignore`
+- 内容不同：`README.md`
+- 内容不同：`chassis_driver/basic_framework/bsp/can/bsp_can.c`
+- 内容不同：`chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.c`
+- 内容不同：`chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.h`
+- 内容不同：`chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h`
+- 内容不同：`chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can_hal.h`
+- 仅 DiPan_Board：`communication_reference/chassis_firmware/basic_framework.ioc`
+- 内容不同：`communication_reference/chassis_firmware/modules/nav_conversion/nav_can_hal.h`
+- 内容不同：`communication_reference/common/nav_can_hal.h`
+- 内容不同：`communication_reference/gimbal_firmware/application/communication/nav_gateway_port.c`
+- 内容不同：`communication_reference/gimbal_firmware/application/communication/nav_gateway_port.h`
+- 仅 DiPan_Board：`communication_reference/gimbal_firmware/basic_framework.ioc`
+- 仅 DiPan_Board：`communication_reference/gimbal_firmware/firmware_release/gimbal_nav_converter.elf`
+- 仅 DiPan_Board：`communication_reference/gimbal_firmware/firmware_release/gimbal_nav_converter.hex`
+- 内容不同：`communication_reference/gimbal_firmware/modules/nav_conversion/nav_can_hal.h`
+- 仅当前：`docs/迁移与运行说明-20261118.md`
+- 仅当前：`tools/build_chassis.ps1`
+- 仅 DiPan_Board：`tools/build_gimbal.sh`
+- 内容不同：`当前烧录说明.md`

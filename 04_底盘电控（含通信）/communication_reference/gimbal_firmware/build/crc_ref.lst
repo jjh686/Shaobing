@@ -1,0 +1,1127 @@
+ARM GAS  /tmp/ccPNytMz.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"crc_ref.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Get_CRC8_Check_Sum,"ax",%progbits
+  18              		.align	1
+  19              		.global	Get_CRC8_Check_Sum
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	Get_CRC8_Check_Sum:
+  27              	.LVL0:
+  28              	.LFB3:
+  29              		.file 1 "modules/referee/crc_ref.c"
+   1:modules/referee/crc_ref.c **** #include "crc_ref.h"
+   2:modules/referee/crc_ref.c **** #include <stdio.h>
+   3:modules/referee/crc_ref.c **** 
+   4:modules/referee/crc_ref.c **** 
+   5:modules/referee/crc_ref.c **** const uint8_t CRC8_INIT = 0xff;
+   6:modules/referee/crc_ref.c **** const uint8_t CRC8_TAB[256] =
+   7:modules/referee/crc_ref.c **** {
+   8:modules/referee/crc_ref.c **** 		0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83, 0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41,
+   9:modules/referee/crc_ref.c **** 		0x9d, 0xc3, 0x21, 0x7f, 0xfc, 0xa2, 0x40, 0x1e, 0x5f, 0x01, 0xe3, 0xbd, 0x3e, 0x60, 0x82, 0xdc,
+  10:modules/referee/crc_ref.c **** 		0x23, 0x7d, 0x9f, 0xc1, 0x42, 0x1c, 0xfe, 0xa0, 0xe1, 0xbf, 0x5d, 0x03, 0x80, 0xde, 0x3c, 0x62,
+  11:modules/referee/crc_ref.c **** 		0xbe, 0xe0, 0x02, 0x5c, 0xdf, 0x81, 0x63, 0x3d, 0x7c, 0x22, 0xc0, 0x9e, 0x1d, 0x43, 0xa1, 0xff,
+  12:modules/referee/crc_ref.c **** 		0x46, 0x18, 0xfa, 0xa4, 0x27, 0x79, 0x9b, 0xc5, 0x84, 0xda, 0x38, 0x66, 0xe5, 0xbb, 0x59, 0x07,
+  13:modules/referee/crc_ref.c **** 		0xdb, 0x85, 0x67, 0x39, 0xba, 0xe4, 0x06, 0x58, 0x19, 0x47, 0xa5, 0xfb, 0x78, 0x26, 0xc4, 0x9a,
+  14:modules/referee/crc_ref.c **** 		0x65, 0x3b, 0xd9, 0x87, 0x04, 0x5a, 0xb8, 0xe6, 0xa7, 0xf9, 0x1b, 0x45, 0xc6, 0x98, 0x7a, 0x24,
+  15:modules/referee/crc_ref.c **** 		0xf8, 0xa6, 0x44, 0x1a, 0x99, 0xc7, 0x25, 0x7b, 0x3a, 0x64, 0x86, 0xd8, 0x5b, 0x05, 0xe7, 0xb9,
+  16:modules/referee/crc_ref.c **** 		0x8c, 0xd2, 0x30, 0x6e, 0xed, 0xb3, 0x51, 0x0f, 0x4e, 0x10, 0xf2, 0xac, 0x2f, 0x71, 0x93, 0xcd,
+  17:modules/referee/crc_ref.c **** 		0x11, 0x4f, 0xad, 0xf3, 0x70, 0x2e, 0xcc, 0x92, 0xd3, 0x8d, 0x6f, 0x31, 0xb2, 0xec, 0x0e, 0x50,
+  18:modules/referee/crc_ref.c **** 		0xaf, 0xf1, 0x13, 0x4d, 0xce, 0x90, 0x72, 0x2c, 0x6d, 0x33, 0xd1, 0x8f, 0x0c, 0x52, 0xb0, 0xee,
+  19:modules/referee/crc_ref.c **** 		0x32, 0x6c, 0x8e, 0xd0, 0x53, 0x0d, 0xef, 0xb1, 0xf0, 0xae, 0x4c, 0x12, 0x91, 0xcf, 0x2d, 0x73,
+  20:modules/referee/crc_ref.c **** 		0xca, 0x94, 0x76, 0x28, 0xab, 0xf5, 0x17, 0x49, 0x08, 0x56, 0xb4, 0xea, 0x69, 0x37, 0xd5, 0x8b,
+  21:modules/referee/crc_ref.c **** 		0x57, 0x09, 0xeb, 0xb5, 0x36, 0x68, 0x8a, 0xd4, 0x95, 0xcb, 0x29, 0x77, 0xf4, 0xaa, 0x48, 0x16,
+  22:modules/referee/crc_ref.c **** 		0xe9, 0xb7, 0x55, 0x0b, 0x88, 0xd6, 0x34, 0x6a, 0x2b, 0x75, 0x97, 0xc9, 0x4a, 0x14, 0xf6, 0xa8,
+  23:modules/referee/crc_ref.c **** 		0x74, 0x2a, 0xc8, 0x96, 0x15, 0x4b, 0xa9, 0xf7, 0xb6, 0xe8, 0x0a, 0x54, 0xd7, 0x89, 0x6b, 0x35,
+  24:modules/referee/crc_ref.c **** };
+  25:modules/referee/crc_ref.c **** 
+  26:modules/referee/crc_ref.c **** 
+  27:modules/referee/crc_ref.c **** uint16_t CRC_INIT = 0xffff;
+  28:modules/referee/crc_ref.c **** const uint16_t wCRC_Table[256] =
+  29:modules/referee/crc_ref.c **** {
+ARM GAS  /tmp/ccPNytMz.s 			page 2
+
+
+  30:modules/referee/crc_ref.c **** 		0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
+  31:modules/referee/crc_ref.c **** 		0x8c48, 0x9dc1, 0xaf5a, 0xbed3, 0xca6c, 0xdbe5, 0xe97e, 0xf8f7,
+  32:modules/referee/crc_ref.c **** 		0x1081, 0x0108, 0x3393, 0x221a, 0x56a5, 0x472c, 0x75b7, 0x643e,
+  33:modules/referee/crc_ref.c **** 		0x9cc9, 0x8d40, 0xbfdb, 0xae52, 0xdaed, 0xcb64, 0xf9ff, 0xe876,
+  34:modules/referee/crc_ref.c **** 		0x2102, 0x308b, 0x0210, 0x1399, 0x6726, 0x76af, 0x4434, 0x55bd,
+  35:modules/referee/crc_ref.c **** 		0xad4a, 0xbcc3, 0x8e58, 0x9fd1, 0xeb6e, 0xfae7, 0xc87c, 0xd9f5,
+  36:modules/referee/crc_ref.c **** 		0x3183, 0x200a, 0x1291, 0x0318, 0x77a7, 0x662e, 0x54b5, 0x453c,
+  37:modules/referee/crc_ref.c **** 		0xbdcb, 0xac42, 0x9ed9, 0x8f50, 0xfbef, 0xea66, 0xd8fd, 0xc974,
+  38:modules/referee/crc_ref.c **** 		0x4204, 0x538d, 0x6116, 0x709f, 0x0420, 0x15a9, 0x2732, 0x36bb,
+  39:modules/referee/crc_ref.c **** 		0xce4c, 0xdfc5, 0xed5e, 0xfcd7, 0x8868, 0x99e1, 0xab7a, 0xbaf3,
+  40:modules/referee/crc_ref.c **** 		0x5285, 0x430c, 0x7197, 0x601e, 0x14a1, 0x0528, 0x37b3, 0x263a,
+  41:modules/referee/crc_ref.c **** 		0xdecd, 0xcf44, 0xfddf, 0xec56, 0x98e9, 0x8960, 0xbbfb, 0xaa72,
+  42:modules/referee/crc_ref.c **** 		0x6306, 0x728f, 0x4014, 0x519d, 0x2522, 0x34ab, 0x0630, 0x17b9,
+  43:modules/referee/crc_ref.c **** 		0xef4e, 0xfec7, 0xcc5c, 0xddd5, 0xa96a, 0xb8e3, 0x8a78, 0x9bf1,
+  44:modules/referee/crc_ref.c **** 		0x7387, 0x620e, 0x5095, 0x411c, 0x35a3, 0x242a, 0x16b1, 0x0738,
+  45:modules/referee/crc_ref.c **** 		0xffcf, 0xee46, 0xdcdd, 0xcd54, 0xb9eb, 0xa862, 0x9af9, 0x8b70,
+  46:modules/referee/crc_ref.c **** 		0x8408, 0x9581, 0xa71a, 0xb693, 0xc22c, 0xd3a5, 0xe13e, 0xf0b7,
+  47:modules/referee/crc_ref.c **** 		0x0840, 0x19c9, 0x2b52, 0x3adb, 0x4e64, 0x5fed, 0x6d76, 0x7cff,
+  48:modules/referee/crc_ref.c **** 		0x9489, 0x8500, 0xb79b, 0xa612, 0xd2ad, 0xc324, 0xf1bf, 0xe036,
+  49:modules/referee/crc_ref.c **** 		0x18c1, 0x0948, 0x3bd3, 0x2a5a, 0x5ee5, 0x4f6c, 0x7df7, 0x6c7e,
+  50:modules/referee/crc_ref.c **** 		0xa50a, 0xb483, 0x8618, 0x9791, 0xe32e, 0xf2a7, 0xc03c, 0xd1b5,
+  51:modules/referee/crc_ref.c **** 		0x2942, 0x38cb, 0x0a50, 0x1bd9, 0x6f66, 0x7eef, 0x4c74, 0x5dfd,
+  52:modules/referee/crc_ref.c **** 		0xb58b, 0xa402, 0x9699, 0x8710, 0xf3af, 0xe226, 0xd0bd, 0xc134,
+  53:modules/referee/crc_ref.c **** 		0x39c3, 0x284a, 0x1ad1, 0x0b58, 0x7fe7, 0x6e6e, 0x5cf5, 0x4d7c,
+  54:modules/referee/crc_ref.c **** 		0xc60c, 0xd785, 0xe51e, 0xf497, 0x8028, 0x91a1, 0xa33a, 0xb2b3,
+  55:modules/referee/crc_ref.c **** 		0x4a44, 0x5bcd, 0x6956, 0x78df, 0x0c60, 0x1de9, 0x2f72, 0x3efb,
+  56:modules/referee/crc_ref.c **** 		0xd68d, 0xc704, 0xf59f, 0xe416, 0x90a9, 0x8120, 0xb3bb, 0xa232,
+  57:modules/referee/crc_ref.c **** 		0x5ac5, 0x4b4c, 0x79d7, 0x685e, 0x1ce1, 0x0d68, 0x3ff3, 0x2e7a,
+  58:modules/referee/crc_ref.c **** 		0xe70e, 0xf687, 0xc41c, 0xd595, 0xa12a, 0xb0a3, 0x8238, 0x93b1,
+  59:modules/referee/crc_ref.c **** 		0x6b46, 0x7acf, 0x4854, 0x59dd, 0x2d62, 0x3ceb, 0x0e70, 0x1ff9,
+  60:modules/referee/crc_ref.c **** 		0xf78f, 0xe606, 0xd49d, 0xc514, 0xb1ab, 0xa022, 0x92b9, 0x8330,
+  61:modules/referee/crc_ref.c **** 		0x7bc7, 0x6a4e, 0x58d5, 0x495c, 0x3de3, 0x2c6a, 0x1ef1, 0x0f78
+  62:modules/referee/crc_ref.c **** };
+  63:modules/referee/crc_ref.c **** 
+  64:modules/referee/crc_ref.c **** // CRC8
+  65:modules/referee/crc_ref.c **** void Append_CRC8_Check_Sum( uint8_t *pchMessage, uint16_t dwLength);
+  66:modules/referee/crc_ref.c **** uint32_t Verify_CRC8_Check_Sum( uint8_t *pchMessage, uint16_t dwLength);
+  67:modules/referee/crc_ref.c **** uint8_t Get_CRC8_Check_Sum( uint8_t *pchMessage, uint16_t dwLength, uint8_t ucCRC8 );
+  68:modules/referee/crc_ref.c **** 
+  69:modules/referee/crc_ref.c **** // CRC16
+  70:modules/referee/crc_ref.c **** void Append_CRC16_Check_Sum(uint8_t * pchMessage,uint32_t dwLength);
+  71:modules/referee/crc_ref.c **** uint32_t Verify_CRC16_Check_Sum(uint8_t *pchMessage, uint32_t dwLength);
+  72:modules/referee/crc_ref.c **** uint16_t Get_CRC16_Check_Sum(uint8_t *pchMessage,uint32_t dwLength,uint16_t wCRC);
+  73:modules/referee/crc_ref.c **** 
+  74:modules/referee/crc_ref.c **** 
+  75:modules/referee/crc_ref.c **** 
+  76:modules/referee/crc_ref.c **** 
+  77:modules/referee/crc_ref.c **** /* CRC校验 */
+  78:modules/referee/crc_ref.c **** 
+  79:modules/referee/crc_ref.c **** uint8_t Get_CRC8_Check_Sum( uint8_t *pchMessage, uint16_t dwLength, uint8_t ucCRC8 )
+  80:modules/referee/crc_ref.c **** {
+  30              		.loc 1 80 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  35              		.loc 1 80 1 is_stmt 0 view .LVU1
+ARM GAS  /tmp/ccPNytMz.s 			page 3
+
+
+  36 0000 0346     		mov	r3, r0
+  37 0002 1046     		mov	r0, r2
+  38              	.LVL1:
+  81:modules/referee/crc_ref.c **** 		uint8_t ucIndex;
+  39              		.loc 1 81 3 is_stmt 1 view .LVU2
+  82:modules/referee/crc_ref.c **** 	
+  83:modules/referee/crc_ref.c **** 		while (dwLength--)
+  40              		.loc 1 83 3 view .LVU3
+  41              		.loc 1 83 9 is_stmt 0 view .LVU4
+  42 0004 05E0     		b	.L2
+  43              	.LVL2:
+  44              	.L3:
+  84:modules/referee/crc_ref.c **** 		{
+  85:modules/referee/crc_ref.c **** 				ucIndex = ucCRC8^(*pchMessage++);
+  45              		.loc 1 85 5 is_stmt 1 view .LVU5
+  46              		.loc 1 85 23 is_stmt 0 view .LVU6
+  47 0006 13F8011B 		ldrb	r1, [r3], #1	@ zero_extendqisi2
+  48              	.LVL3:
+  49              		.loc 1 85 13 view .LVU7
+  50 000a 4140     		eors	r1, r1, r0
+  51              	.LVL4:
+  86:modules/referee/crc_ref.c **** 				ucCRC8 = CRC8_TAB[ucIndex];
+  52              		.loc 1 86 5 is_stmt 1 view .LVU8
+  53              		.loc 1 86 12 is_stmt 0 view .LVU9
+  54 000c 044A     		ldr	r2, .L4
+  55 000e 505C     		ldrb	r0, [r2, r1]	@ zero_extendqisi2
+  56              	.LVL5:
+  83:modules/referee/crc_ref.c **** 		{
+  57              		.loc 1 83 18 view .LVU10
+  58 0010 6146     		mov	r1, ip
+  59              	.LVL6:
+  60              	.L2:
+  83:modules/referee/crc_ref.c **** 		{
+  61              		.loc 1 83 9 is_stmt 1 view .LVU11
+  83:modules/referee/crc_ref.c **** 		{
+  62              		.loc 1 83 18 is_stmt 0 view .LVU12
+  63 0012 01F1FF3C 		add	ip, r1, #-1
+  64 0016 1FFA8CFC 		uxth	ip, ip
+  65              	.LVL7:
+  83:modules/referee/crc_ref.c **** 		{
+  66              		.loc 1 83 9 view .LVU13
+  67 001a 0029     		cmp	r1, #0
+  68 001c F3D1     		bne	.L3
+  87:modules/referee/crc_ref.c **** 		}
+  88:modules/referee/crc_ref.c **** 		return ucCRC8;
+  69              		.loc 1 88 3 is_stmt 1 view .LVU14
+  89:modules/referee/crc_ref.c **** }
+  70              		.loc 1 89 1 is_stmt 0 view .LVU15
+  71 001e 7047     		bx	lr
+  72              	.L5:
+  73              		.align	2
+  74              	.L4:
+  75 0020 00000000 		.word	.LANCHOR0
+  76              		.cfi_endproc
+  77              	.LFE3:
+  79              		.section	.text.Verify_CRC8_Check_Sum,"ax",%progbits
+  80              		.align	1
+ARM GAS  /tmp/ccPNytMz.s 			page 4
+
+
+  81              		.global	Verify_CRC8_Check_Sum
+  82              		.syntax unified
+  83              		.thumb
+  84              		.thumb_func
+  85              		.fpu fpv4-sp-d16
+  87              	Verify_CRC8_Check_Sum:
+  88              	.LVL8:
+  89              	.LFB4:
+  90:modules/referee/crc_ref.c **** 
+  91:modules/referee/crc_ref.c **** 
+  92:modules/referee/crc_ref.c **** /*
+  93:modules/referee/crc_ref.c **** ** Descriptions: CRC8 Verify function
+  94:modules/referee/crc_ref.c **** ** Input: Data to Verify,Stream length = Data + checksum
+  95:modules/referee/crc_ref.c **** ** Output: True or False (CRC Verify Result)
+  96:modules/referee/crc_ref.c **** */
+  97:modules/referee/crc_ref.c **** uint32_t Verify_CRC8_Check_Sum( uint8_t *pchMessage, uint16_t dwLength)
+  98:modules/referee/crc_ref.c **** {
+  90              		.loc 1 98 1 is_stmt 1 view -0
+  91              		.cfi_startproc
+  92              		@ args = 0, pretend = 0, frame = 0
+  93              		@ frame_needed = 0, uses_anonymous_args = 0
+  99:modules/referee/crc_ref.c **** 		uint8_t ucExpected = 0;
+  94              		.loc 1 99 3 view .LVU17
+ 100:modules/referee/crc_ref.c **** 	
+ 101:modules/referee/crc_ref.c **** 		if (pchMessage == 0 || dwLength <= 2)
+  95              		.loc 1 101 3 view .LVU18
+  96              		.loc 1 101 6 is_stmt 0 view .LVU19
+  97 0000 88B1     		cbz	r0, .L8
+  98:modules/referee/crc_ref.c **** 		uint8_t ucExpected = 0;
+  98              		.loc 1 98 1 discriminator 1 view .LVU20
+  99 0002 38B5     		push	{r3, r4, r5, lr}
+ 100              	.LCFI0:
+ 101              		.cfi_def_cfa_offset 16
+ 102              		.cfi_offset 3, -16
+ 103              		.cfi_offset 4, -12
+ 104              		.cfi_offset 5, -8
+ 105              		.cfi_offset 14, -4
+ 106 0004 0C46     		mov	r4, r1
+ 107 0006 0546     		mov	r5, r0
+ 108              		.loc 1 101 23 discriminator 1 view .LVU21
+ 109 0008 0229     		cmp	r1, #2
+ 110 000a 0ED9     		bls	.L9
+ 102:modules/referee/crc_ref.c **** 		{
+ 103:modules/referee/crc_ref.c **** 			  return 0;
+ 104:modules/referee/crc_ref.c **** 		}
+ 105:modules/referee/crc_ref.c **** 		
+ 106:modules/referee/crc_ref.c **** 		ucExpected = Get_CRC8_Check_Sum( pchMessage, dwLength-1, CRC8_INIT);
+ 111              		.loc 1 106 3 is_stmt 1 view .LVU22
+ 112              		.loc 1 106 16 is_stmt 0 view .LVU23
+ 113 000c 0139     		subs	r1, r1, #1
+ 114              	.LVL9:
+ 115              		.loc 1 106 16 view .LVU24
+ 116 000e FF22     		movs	r2, #255
+ 117 0010 89B2     		uxth	r1, r1
+ 118 0012 FFF7FEFF 		bl	Get_CRC8_Check_Sum
+ 119              	.LVL10:
+ 107:modules/referee/crc_ref.c **** 		
+ARM GAS  /tmp/ccPNytMz.s 			page 5
+
+
+ 108:modules/referee/crc_ref.c **** 		return ( ucExpected == pchMessage[dwLength-1] );
+ 120              		.loc 1 108 3 is_stmt 1 view .LVU25
+ 121              		.loc 1 108 36 is_stmt 0 view .LVU26
+ 122 0016 2C44     		add	r4, r4, r5
+ 123 0018 14F8013C 		ldrb	r3, [r4, #-1]	@ zero_extendqisi2
+ 124              		.loc 1 108 23 view .LVU27
+ 125 001c 8342     		cmp	r3, r0
+ 126 001e 14BF     		ite	ne
+ 127 0020 0020     		movne	r0, #0
+ 128              	.LVL11:
+ 129              		.loc 1 108 23 view .LVU28
+ 130 0022 0120     		moveq	r0, #1
+ 131              	.L6:
+ 109:modules/referee/crc_ref.c **** }
+ 132              		.loc 1 109 1 view .LVU29
+ 133 0024 38BD     		pop	{r3, r4, r5, pc}
+ 134              	.LVL12:
+ 135              	.L8:
+ 136              	.LCFI1:
+ 137              		.cfi_def_cfa_offset 0
+ 138              		.cfi_restore 3
+ 139              		.cfi_restore 4
+ 140              		.cfi_restore 5
+ 141              		.cfi_restore 14
+ 103:modules/referee/crc_ref.c **** 		}
+ 142              		.loc 1 103 13 view .LVU30
+ 143 0026 0020     		movs	r0, #0
+ 144              	.LVL13:
+ 145              		.loc 1 109 1 view .LVU31
+ 146 0028 7047     		bx	lr
+ 147              	.LVL14:
+ 148              	.L9:
+ 149              	.LCFI2:
+ 150              		.cfi_def_cfa_offset 16
+ 151              		.cfi_offset 3, -16
+ 152              		.cfi_offset 4, -12
+ 153              		.cfi_offset 5, -8
+ 154              		.cfi_offset 14, -4
+ 103:modules/referee/crc_ref.c **** 		}
+ 155              		.loc 1 103 13 view .LVU32
+ 156 002a 0020     		movs	r0, #0
+ 157              	.LVL15:
+ 103:modules/referee/crc_ref.c **** 		}
+ 158              		.loc 1 103 13 view .LVU33
+ 159 002c FAE7     		b	.L6
+ 160              		.cfi_endproc
+ 161              	.LFE4:
+ 163              		.section	.text.Append_CRC8_Check_Sum,"ax",%progbits
+ 164              		.align	1
+ 165              		.global	Append_CRC8_Check_Sum
+ 166              		.syntax unified
+ 167              		.thumb
+ 168              		.thumb_func
+ 169              		.fpu fpv4-sp-d16
+ 171              	Append_CRC8_Check_Sum:
+ 172              	.LVL16:
+ 173              	.LFB5:
+ARM GAS  /tmp/ccPNytMz.s 			page 6
+
+
+ 110:modules/referee/crc_ref.c **** 
+ 111:modules/referee/crc_ref.c **** 
+ 112:modules/referee/crc_ref.c **** /*
+ 113:modules/referee/crc_ref.c **** ** Descriptions: append CRC8 to the end of data
+ 114:modules/referee/crc_ref.c **** ** Input: Data to CRC and append,Stream length = Data + checksum
+ 115:modules/referee/crc_ref.c **** ** Output: True or False (CRC Verify Result)
+ 116:modules/referee/crc_ref.c **** */
+ 117:modules/referee/crc_ref.c **** void Append_CRC8_Check_Sum( uint8_t *pchMessage, uint16_t dwLength)
+ 118:modules/referee/crc_ref.c **** {
+ 174              		.loc 1 118 1 is_stmt 1 view -0
+ 175              		.cfi_startproc
+ 176              		@ args = 0, pretend = 0, frame = 0
+ 177              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119:modules/referee/crc_ref.c **** 		uint8_t ucCRC = 0;
+ 178              		.loc 1 119 3 view .LVU35
+ 120:modules/referee/crc_ref.c **** 	
+ 121:modules/referee/crc_ref.c **** 		if (pchMessage == 0 || dwLength <= 2)
+ 179              		.loc 1 121 3 view .LVU36
+ 180              		.loc 1 121 6 is_stmt 0 view .LVU37
+ 181 0000 50B1     		cbz	r0, .L17
+ 118:modules/referee/crc_ref.c **** 		uint8_t ucCRC = 0;
+ 182              		.loc 1 118 1 discriminator 1 view .LVU38
+ 183 0002 38B5     		push	{r3, r4, r5, lr}
+ 184              	.LCFI3:
+ 185              		.cfi_def_cfa_offset 16
+ 186              		.cfi_offset 3, -16
+ 187              		.cfi_offset 4, -12
+ 188              		.cfi_offset 5, -8
+ 189              		.cfi_offset 14, -4
+ 190 0004 0546     		mov	r5, r0
+ 191              		.loc 1 121 23 discriminator 1 view .LVU39
+ 192 0006 0229     		cmp	r1, #2
+ 193 0008 05D9     		bls	.L14
+ 122:modules/referee/crc_ref.c **** 		{
+ 123:modules/referee/crc_ref.c **** 			  return;
+ 124:modules/referee/crc_ref.c **** 		}
+ 125:modules/referee/crc_ref.c **** 		
+ 126:modules/referee/crc_ref.c **** 		ucCRC = Get_CRC8_Check_Sum( (uint8_t *)pchMessage, dwLength-1, CRC8_INIT);
+ 194              		.loc 1 126 3 is_stmt 1 view .LVU40
+ 195              		.loc 1 126 11 is_stmt 0 view .LVU41
+ 196 000a 4C1E     		subs	r4, r1, #1
+ 197 000c FF22     		movs	r2, #255
+ 198 000e A1B2     		uxth	r1, r4
+ 199              	.LVL17:
+ 200              		.loc 1 126 11 view .LVU42
+ 201 0010 FFF7FEFF 		bl	Get_CRC8_Check_Sum
+ 202              	.LVL18:
+ 127:modules/referee/crc_ref.c **** 		
+ 128:modules/referee/crc_ref.c **** 		pchMessage[dwLength-1] = ucCRC;
+ 203              		.loc 1 128 3 is_stmt 1 view .LVU43
+ 204              		.loc 1 128 26 is_stmt 0 view .LVU44
+ 205 0014 2855     		strb	r0, [r5, r4]
+ 206              	.LVL19:
+ 207              	.L14:
+ 129:modules/referee/crc_ref.c **** }
+ 208              		.loc 1 129 1 view .LVU45
+ 209 0016 38BD     		pop	{r3, r4, r5, pc}
+ARM GAS  /tmp/ccPNytMz.s 			page 7
+
+
+ 210              	.LVL20:
+ 211              	.L17:
+ 212              	.LCFI4:
+ 213              		.cfi_def_cfa_offset 0
+ 214              		.cfi_restore 3
+ 215              		.cfi_restore 4
+ 216              		.cfi_restore 5
+ 217              		.cfi_restore 14
+ 218              		.loc 1 129 1 view .LVU46
+ 219 0018 7047     		bx	lr
+ 220              		.cfi_endproc
+ 221              	.LFE5:
+ 223              		.section	.text.Get_CRC16_Check_Sum,"ax",%progbits
+ 224              		.align	1
+ 225              		.global	Get_CRC16_Check_Sum
+ 226              		.syntax unified
+ 227              		.thumb
+ 228              		.thumb_func
+ 229              		.fpu fpv4-sp-d16
+ 231              	Get_CRC16_Check_Sum:
+ 232              	.LVL21:
+ 233              	.LFB6:
+ 130:modules/referee/crc_ref.c **** 
+ 131:modules/referee/crc_ref.c **** 
+ 132:modules/referee/crc_ref.c **** /*
+ 133:modules/referee/crc_ref.c **** ** Descriptions: CRC16 checksum function
+ 134:modules/referee/crc_ref.c **** ** Input: Data to check,Stream length, initialized checksum
+ 135:modules/referee/crc_ref.c **** ** Output: CRC checksum
+ 136:modules/referee/crc_ref.c **** */
+ 137:modules/referee/crc_ref.c **** uint16_t Get_CRC16_Check_Sum(uint8_t *pchMessage,uint32_t dwLength,uint16_t wCRC)
+ 138:modules/referee/crc_ref.c **** {
+ 234              		.loc 1 138 1 is_stmt 1 view -0
+ 235              		.cfi_startproc
+ 236              		@ args = 0, pretend = 0, frame = 0
+ 237              		@ frame_needed = 0, uses_anonymous_args = 0
+ 238              		@ link register save eliminated.
+ 139:modules/referee/crc_ref.c ****     uint8_t chData;	
+ 239              		.loc 1 139 5 view .LVU48
+ 140:modules/referee/crc_ref.c **** 	if (pchMessage == NULL)
+ 240              		.loc 1 140 2 view .LVU49
+ 241              		.loc 1 140 5 is_stmt 0 view .LVU50
+ 242 0000 0346     		mov	r3, r0
+ 243 0002 98B1     		cbz	r0, .L30
+ 141:modules/referee/crc_ref.c **** 	{
+ 142:modules/referee/crc_ref.c **** 		return 0xFFFF;
+ 143:modules/referee/crc_ref.c **** 	}
+ 144:modules/referee/crc_ref.c **** 	while(dwLength--)
+ 244              		.loc 1 144 7 is_stmt 1 view .LVU51
+ 245              		.loc 1 144 16 is_stmt 0 view .LVU52
+ 246 0004 481E     		subs	r0, r1, #1
+ 247              	.LVL22:
+ 248              		.loc 1 144 7 view .LVU53
+ 249 0006 99B1     		cbz	r1, .L28
+ 138:modules/referee/crc_ref.c ****     uint8_t chData;	
+ 250              		.loc 1 138 1 view .LVU54
+ 251 0008 10B4     		push	{r4}
+ 252              	.LCFI5:
+ARM GAS  /tmp/ccPNytMz.s 			page 8
+
+
+ 253              		.cfi_def_cfa_offset 4
+ 254              		.cfi_offset 4, -4
+ 255              	.L23:
+ 145:modules/referee/crc_ref.c **** 	{
+ 146:modules/referee/crc_ref.c **** 		chData = *pchMessage++;
+ 256              		.loc 1 146 3 is_stmt 1 view .LVU55
+ 257              	.LVL23:
+ 258              		.loc 1 146 10 is_stmt 0 view .LVU56
+ 259 000a 13F8011B 		ldrb	r1, [r3], #1	@ zero_extendqisi2
+ 260              	.LVL24:
+ 147:modules/referee/crc_ref.c **** 		(wCRC) = ((uint16_t)(wCRC) >> 8) ^ 
+ 261              		.loc 1 147 3 is_stmt 1 view .LVU57
+ 148:modules/referee/crc_ref.c **** 		wCRC_Table[((uint16_t)(wCRC) ^ (uint16_t)(chData)) & 0x00ff];
+ 262              		.loc 1 148 32 is_stmt 0 view .LVU58
+ 263 000e 5140     		eors	r1, r1, r2
+ 264              	.LVL25:
+ 265              		.loc 1 148 54 view .LVU59
+ 266 0010 C9B2     		uxtb	r1, r1
+ 267              		.loc 1 148 13 view .LVU60
+ 268 0012 084C     		ldr	r4, .L31
+ 269 0014 34F81110 		ldrh	r1, [r4, r1, lsl #1]
+ 147:modules/referee/crc_ref.c **** 		(wCRC) = ((uint16_t)(wCRC) >> 8) ^ 
+ 270              		.loc 1 147 10 view .LVU61
+ 271 0018 81EA1222 		eor	r2, r1, r2, lsr #8
+ 272              	.LVL26:
+ 144:modules/referee/crc_ref.c **** 	{
+ 273              		.loc 1 144 16 view .LVU62
+ 274 001c 0146     		mov	r1, r0
+ 275              	.LVL27:
+ 144:modules/referee/crc_ref.c **** 	{
+ 276              		.loc 1 144 7 is_stmt 1 view .LVU63
+ 144:modules/referee/crc_ref.c **** 	{
+ 277              		.loc 1 144 16 is_stmt 0 view .LVU64
+ 278 001e 0138     		subs	r0, r0, #1
+ 279              	.LVL28:
+ 144:modules/referee/crc_ref.c **** 	{
+ 280              		.loc 1 144 7 view .LVU65
+ 281 0020 0029     		cmp	r1, #0
+ 282 0022 F2D1     		bne	.L23
+ 149:modules/referee/crc_ref.c **** 	}		
+ 150:modules/referee/crc_ref.c **** 	return wCRC;
+ 151:modules/referee/crc_ref.c **** }
+ 283              		.loc 1 151 1 view .LVU66
+ 284 0024 1046     		mov	r0, r2
+ 285              	.LVL29:
+ 286              		.loc 1 151 1 view .LVU67
+ 287 0026 5DF8044B 		ldr	r4, [sp], #4
+ 288              	.LCFI6:
+ 289              		.cfi_restore 4
+ 290              		.cfi_def_cfa_offset 0
+ 291 002a 7047     		bx	lr
+ 292              	.LVL30:
+ 293              	.L30:
+ 142:modules/referee/crc_ref.c **** 	}
+ 294              		.loc 1 142 10 view .LVU68
+ 295 002c 4FF6FF72 		movw	r2, #65535
+ 296              	.LVL31:
+ARM GAS  /tmp/ccPNytMz.s 			page 9
+
+
+ 297              	.L28:
+ 298              		.loc 1 151 1 view .LVU69
+ 299 0030 1046     		mov	r0, r2
+ 300 0032 7047     		bx	lr
+ 301              	.L32:
+ 302              		.align	2
+ 303              	.L31:
+ 304 0034 00000000 		.word	.LANCHOR1
+ 305              		.cfi_endproc
+ 306              	.LFE6:
+ 308              		.section	.text.Verify_CRC16_Check_Sum,"ax",%progbits
+ 309              		.align	1
+ 310              		.global	Verify_CRC16_Check_Sum
+ 311              		.syntax unified
+ 312              		.thumb
+ 313              		.thumb_func
+ 314              		.fpu fpv4-sp-d16
+ 316              	Verify_CRC16_Check_Sum:
+ 317              	.LVL32:
+ 318              	.LFB7:
+ 152:modules/referee/crc_ref.c **** 
+ 153:modules/referee/crc_ref.c **** 
+ 154:modules/referee/crc_ref.c **** /*
+ 155:modules/referee/crc_ref.c **** ** Descriptions: CRC16 Verify function
+ 156:modules/referee/crc_ref.c **** ** Input: Data to Verify,Stream length = Data + checksum
+ 157:modules/referee/crc_ref.c **** ** Output: True or False (CRC Verify Result)
+ 158:modules/referee/crc_ref.c **** */
+ 159:modules/referee/crc_ref.c **** uint32_t Verify_CRC16_Check_Sum(uint8_t *pchMessage, uint32_t dwLength)
+ 160:modules/referee/crc_ref.c **** {
+ 319              		.loc 1 160 1 is_stmt 1 view -0
+ 320              		.cfi_startproc
+ 321              		@ args = 0, pretend = 0, frame = 0
+ 322              		@ frame_needed = 0, uses_anonymous_args = 0
+ 161:modules/referee/crc_ref.c **** 		uint16_t wExpected = 0;
+ 323              		.loc 1 161 3 view .LVU71
+ 162:modules/referee/crc_ref.c **** 	
+ 163:modules/referee/crc_ref.c **** 		if ((pchMessage == NULL) || (dwLength <= 2))
+ 324              		.loc 1 163 3 view .LVU72
+ 325              		.loc 1 163 6 is_stmt 0 view .LVU73
+ 326 0000 D8B1     		cbz	r0, .L36
+ 160:modules/referee/crc_ref.c **** 		uint16_t wExpected = 0;
+ 327              		.loc 1 160 1 discriminator 1 view .LVU74
+ 328 0002 70B5     		push	{r4, r5, r6, lr}
+ 329              	.LCFI7:
+ 330              		.cfi_def_cfa_offset 16
+ 331              		.cfi_offset 4, -16
+ 332              		.cfi_offset 5, -12
+ 333              		.cfi_offset 6, -8
+ 334              		.cfi_offset 14, -4
+ 335 0004 0C46     		mov	r4, r1
+ 336 0006 0646     		mov	r6, r0
+ 337              		.loc 1 163 28 discriminator 1 view .LVU75
+ 338 0008 0229     		cmp	r1, #2
+ 339 000a 18D9     		bls	.L37
+ 164:modules/referee/crc_ref.c **** 		{
+ 165:modules/referee/crc_ref.c ****         	return FALSE;
+ 166:modules/referee/crc_ref.c **** 		}
+ARM GAS  /tmp/ccPNytMz.s 			page 10
+
+
+ 167:modules/referee/crc_ref.c **** 		
+ 168:modules/referee/crc_ref.c **** 		wExpected = Get_CRC16_Check_Sum ( pchMessage, dwLength - 2, CRC_INIT);
+ 340              		.loc 1 168 3 is_stmt 1 view .LVU76
+ 341              		.loc 1 168 15 is_stmt 0 view .LVU77
+ 342 000c 8D1E     		subs	r5, r1, #2
+ 343 000e 0D4B     		ldr	r3, .L45
+ 344 0010 1A88     		ldrh	r2, [r3]
+ 345 0012 2946     		mov	r1, r5
+ 346              	.LVL33:
+ 347              		.loc 1 168 15 view .LVU78
+ 348 0014 FFF7FEFF 		bl	Get_CRC16_Check_Sum
+ 349              	.LVL34:
+ 169:modules/referee/crc_ref.c **** 		return ( (wExpected & 0xff) == pchMessage[dwLength - 2] 
+ 350              		.loc 1 169 3 is_stmt 1 view .LVU79
+ 170:modules/referee/crc_ref.c **** 			     && ((wExpected >> 8) & 0xff) == pchMessage[dwLength - 1]);
+ 351              		.loc 1 170 9 is_stmt 0 view .LVU80
+ 352 0018 C2B2     		uxtb	r2, r0
+ 353 001a 735D     		ldrb	r3, [r6, r5]	@ zero_extendqisi2
+ 354 001c 9A42     		cmp	r2, r3
+ 355 001e 01D0     		beq	.L44
+ 356 0020 0020     		movs	r0, #0
+ 357              	.LVL35:
+ 358              	.L33:
+ 171:modules/referee/crc_ref.c **** }
+ 359              		.loc 1 171 1 view .LVU81
+ 360 0022 70BD     		pop	{r4, r5, r6, pc}
+ 361              	.LVL36:
+ 362              	.L44:
+ 170:modules/referee/crc_ref.c **** 			     && ((wExpected >> 8) & 0xff) == pchMessage[dwLength - 1]);
+ 363              		.loc 1 170 30 discriminator 1 view .LVU82
+ 364 0024 C0F30F20 		ubfx	r0, r0, #8, #16
+ 365              	.LVL37:
+ 170:modules/referee/crc_ref.c **** 			     && ((wExpected >> 8) & 0xff) == pchMessage[dwLength - 1]);
+ 366              		.loc 1 170 51 discriminator 1 view .LVU83
+ 367 0028 3444     		add	r4, r4, r6
+ 368              	.LVL38:
+ 170:modules/referee/crc_ref.c **** 			     && ((wExpected >> 8) & 0xff) == pchMessage[dwLength - 1]);
+ 369              		.loc 1 170 9 discriminator 1 view .LVU84
+ 370 002a 14F8013C 		ldrb	r3, [r4, #-1]	@ zero_extendqisi2
+ 371 002e 9842     		cmp	r0, r3
+ 372 0030 01D0     		beq	.L39
+ 170:modules/referee/crc_ref.c **** 			     && ((wExpected >> 8) & 0xff) == pchMessage[dwLength - 1]);
+ 373              		.loc 1 170 9 view .LVU85
+ 374 0032 0020     		movs	r0, #0
+ 375 0034 F5E7     		b	.L33
+ 376              	.L39:
+ 377 0036 0120     		movs	r0, #1
+ 378 0038 F3E7     		b	.L33
+ 379              	.LVL39:
+ 380              	.L36:
+ 381              	.LCFI8:
+ 382              		.cfi_def_cfa_offset 0
+ 383              		.cfi_restore 4
+ 384              		.cfi_restore 5
+ 385              		.cfi_restore 6
+ 386              		.cfi_restore 14
+ 165:modules/referee/crc_ref.c **** 		}
+ARM GAS  /tmp/ccPNytMz.s 			page 11
+
+
+ 387              		.loc 1 165 17 view .LVU86
+ 388 003a 0020     		movs	r0, #0
+ 389              	.LVL40:
+ 390              		.loc 1 171 1 view .LVU87
+ 391 003c 7047     		bx	lr
+ 392              	.LVL41:
+ 393              	.L37:
+ 394              	.LCFI9:
+ 395              		.cfi_def_cfa_offset 16
+ 396              		.cfi_offset 4, -16
+ 397              		.cfi_offset 5, -12
+ 398              		.cfi_offset 6, -8
+ 399              		.cfi_offset 14, -4
+ 165:modules/referee/crc_ref.c **** 		}
+ 400              		.loc 1 165 17 view .LVU88
+ 401 003e 0020     		movs	r0, #0
+ 402              	.LVL42:
+ 165:modules/referee/crc_ref.c **** 		}
+ 403              		.loc 1 165 17 view .LVU89
+ 404 0040 EFE7     		b	.L33
+ 405              	.L46:
+ 406 0042 00BF     		.align	2
+ 407              	.L45:
+ 408 0044 00000000 		.word	.LANCHOR2
+ 409              		.cfi_endproc
+ 410              	.LFE7:
+ 412              		.section	.text.Append_CRC16_Check_Sum,"ax",%progbits
+ 413              		.align	1
+ 414              		.global	Append_CRC16_Check_Sum
+ 415              		.syntax unified
+ 416              		.thumb
+ 417              		.thumb_func
+ 418              		.fpu fpv4-sp-d16
+ 420              	Append_CRC16_Check_Sum:
+ 421              	.LVL43:
+ 422              	.LFB8:
+ 172:modules/referee/crc_ref.c **** 
+ 173:modules/referee/crc_ref.c **** 
+ 174:modules/referee/crc_ref.c **** /*
+ 175:modules/referee/crc_ref.c **** ** Descriptions: append CRC16 to the end of data
+ 176:modules/referee/crc_ref.c **** ** Input: Data to CRC and append,Stream length = Data + checksum
+ 177:modules/referee/crc_ref.c **** ** Output: True or False (CRC Verify Result)
+ 178:modules/referee/crc_ref.c **** */
+ 179:modules/referee/crc_ref.c **** void Append_CRC16_Check_Sum(uint8_t * pchMessage,uint32_t dwLength)
+ 180:modules/referee/crc_ref.c **** {
+ 423              		.loc 1 180 1 is_stmt 1 view -0
+ 424              		.cfi_startproc
+ 425              		@ args = 0, pretend = 0, frame = 0
+ 426              		@ frame_needed = 0, uses_anonymous_args = 0
+ 181:modules/referee/crc_ref.c **** 		uint16_t wCRC = 0;
+ 427              		.loc 1 181 3 view .LVU91
+ 182:modules/referee/crc_ref.c **** 	
+ 183:modules/referee/crc_ref.c **** 		if ((pchMessage == NULL) || (dwLength <= 2))
+ 428              		.loc 1 183 3 view .LVU92
+ 429              		.loc 1 183 6 is_stmt 0 view .LVU93
+ 430 0000 80B1     		cbz	r0, .L50
+ 180:modules/referee/crc_ref.c **** 		uint16_t wCRC = 0;
+ARM GAS  /tmp/ccPNytMz.s 			page 12
+
+
+ 431              		.loc 1 180 1 discriminator 1 view .LVU94
+ 432 0002 70B5     		push	{r4, r5, r6, lr}
+ 433              	.LCFI10:
+ 434              		.cfi_def_cfa_offset 16
+ 435              		.cfi_offset 4, -16
+ 436              		.cfi_offset 5, -12
+ 437              		.cfi_offset 6, -8
+ 438              		.cfi_offset 14, -4
+ 439 0004 0C46     		mov	r4, r1
+ 440 0006 0546     		mov	r5, r0
+ 441              		.loc 1 183 28 discriminator 1 view .LVU95
+ 442 0008 0229     		cmp	r1, #2
+ 443 000a 0AD9     		bls	.L47
+ 184:modules/referee/crc_ref.c **** 		{
+ 185:modules/referee/crc_ref.c **** 				return;
+ 186:modules/referee/crc_ref.c **** 		}
+ 187:modules/referee/crc_ref.c **** 		
+ 188:modules/referee/crc_ref.c **** 		wCRC = Get_CRC16_Check_Sum ( (uint8_t *)pchMessage, dwLength-2, CRC_INIT );
+ 444              		.loc 1 188 3 is_stmt 1 view .LVU96
+ 445              		.loc 1 188 10 is_stmt 0 view .LVU97
+ 446 000c 8E1E     		subs	r6, r1, #2
+ 447 000e 064B     		ldr	r3, .L53
+ 448 0010 1A88     		ldrh	r2, [r3]
+ 449 0012 3146     		mov	r1, r6
+ 450              	.LVL44:
+ 451              		.loc 1 188 10 view .LVU98
+ 452 0014 FFF7FEFF 		bl	Get_CRC16_Check_Sum
+ 453              	.LVL45:
+ 189:modules/referee/crc_ref.c **** 		
+ 190:modules/referee/crc_ref.c **** 		pchMessage[dwLength-2] = (uint8_t)(wCRC & 0x00ff);
+ 454              		.loc 1 190 3 is_stmt 1 view .LVU99
+ 455              		.loc 1 190 26 is_stmt 0 view .LVU100
+ 456 0018 A855     		strb	r0, [r5, r6]
+ 191:modules/referee/crc_ref.c **** 		pchMessage[dwLength-1] = (uint8_t)((wCRC >> 8)& 0x00ff);
+ 457              		.loc 1 191 3 is_stmt 1 view .LVU101
+ 458              		.loc 1 191 13 is_stmt 0 view .LVU102
+ 459 001a 013C     		subs	r4, r4, #1
+ 460              	.LVL46:
+ 461              		.loc 1 191 28 view .LVU103
+ 462 001c C0F30720 		ubfx	r0, r0, #8, #8
+ 463              	.LVL47:
+ 464              		.loc 1 191 26 view .LVU104
+ 465 0020 2855     		strb	r0, [r5, r4]
+ 466              	.LVL48:
+ 467              	.L47:
+ 192:modules/referee/crc_ref.c **** }
+ 468              		.loc 1 192 1 view .LVU105
+ 469 0022 70BD     		pop	{r4, r5, r6, pc}
+ 470              	.LVL49:
+ 471              	.L50:
+ 472              	.LCFI11:
+ 473              		.cfi_def_cfa_offset 0
+ 474              		.cfi_restore 4
+ 475              		.cfi_restore 5
+ 476              		.cfi_restore 6
+ 477              		.cfi_restore 14
+ 478              		.loc 1 192 1 view .LVU106
+ARM GAS  /tmp/ccPNytMz.s 			page 13
+
+
+ 479 0024 7047     		bx	lr
+ 480              	.L54:
+ 481 0026 00BF     		.align	2
+ 482              	.L53:
+ 483 0028 00000000 		.word	.LANCHOR2
+ 484              		.cfi_endproc
+ 485              	.LFE8:
+ 487              		.global	wCRC_Table
+ 488              		.global	CRC_INIT
+ 489              		.global	CRC8_TAB
+ 490              		.global	CRC8_INIT
+ 491              		.section	.data.CRC_INIT,"aw"
+ 492              		.align	1
+ 493              		.set	.LANCHOR2,. + 0
+ 496              	CRC_INIT:
+ 497 0000 FFFF     		.short	-1
+ 498              		.section	.rodata.CRC8_INIT,"a"
+ 501              	CRC8_INIT:
+ 502 0000 FF       		.byte	-1
+ 503              		.section	.rodata.CRC8_TAB,"a"
+ 504              		.align	2
+ 505              		.set	.LANCHOR0,. + 0
+ 508              	CRC8_TAB:
+ 509 0000 005EBCE2 		.ascii	"\000^\274\342a?\335\203\302\234~ \243\375\037A\235\303"
+ 509      613FDD83 
+ 509      C29C7E20 
+ 509      A3FD1F41 
+ 509      9DC3
+ 510 0012 217FFCA2 		.ascii	"!\177\374\242@\036_\001\343\275>`\202\334#}\237\301"
+ 510      401E5F01 
+ 510      E3BD3E60 
+ 510      82DC237D 
+ 510      9FC1
+ 511 0024 421CFEA0 		.ascii	"B\034\376\240\341\277]\003\200\336<b\276\340\002\\\337"
+ 511      E1BF5D03 
+ 511      80DE3C62 
+ 511      BEE0025C 
+ 511      DF
+ 512 0035 81633D7C 		.ascii	"\201c=|\"\300\236\035C\241\377F\030\372\244'y\233\305"
+ 512      22C09E1D 
+ 512      43A1FF46 
+ 512      18FAA427 
+ 512      799BC5
+ 513 0048 84DA3866 		.ascii	"\204\3328f\345\273Y\007\333\205g9\272\344\006X\031G"
+ 513      E5BB5907 
+ 513      DB856739 
+ 513      BAE40658 
+ 513      1947
+ 514 005a A5FB7826 		.ascii	"\245\373x&\304\232e;\331\207\004Z\270\346\247\371\033"
+ 514      C49A653B 
+ 514      D987045A 
+ 514      B8E6A7F9 
+ 514      1B
+ 515 006b 45C6987A 		.ascii	"E\306\230z$\370\246D\032\231\307%{:d\206\330[\005\347"
+ 515      24F8A644 
+ 515      1A99C725 
+ 515      7B3A6486 
+ARM GAS  /tmp/ccPNytMz.s 			page 14
+
+
+ 515      D85B05E7 
+ 516 007f B98CD230 		.ascii	"\271\214\3220n\355\263Q\017N\020\362\254/q\223\315\021"
+ 516      6EEDB351 
+ 516      0F4E10F2 
+ 516      AC2F7193 
+ 516      CD11
+ 517 0091 4FADF370 		.ascii	"O\255\363p.\314\222\323\215o1\262\354\016P\257\361\023"
+ 517      2ECC92D3 
+ 517      8D6F31B2 
+ 517      EC0E50AF 
+ 517      F113
+ 518 00a3 4DCE9072 		.ascii	"M\316\220r,m3\321\217\014R\260\3562l\216\320S\015\357"
+ 518      2C6D33D1 
+ 518      8F0C52B0 
+ 518      EE326C8E 
+ 518      D0530DEF 
+ 519 00b7 B1F0AE4C 		.ascii	"\261\360\256L\022\221\317-s\312\224v(\253\365\027I\010"
+ 519      1291CF2D 
+ 519      73CA9476 
+ 519      28ABF517 
+ 519      4908
+ 520 00c9 56B4EA69 		.ascii	"V\264\352i7\325\213W\011\353\2656h\212\324\225\313)"
+ 520      37D58B57 
+ 520      09EBB536 
+ 520      688AD495 
+ 520      CB29
+ 521 00db 77F4AA48 		.ascii	"w\364\252H\026\351\267U\013\210\3264j+u\227\311J\024"
+ 521      16E9B755 
+ 521      0B88D634 
+ 521      6A2B7597 
+ 521      C94A14
+ 522 00ee F6A8742A 		.ascii	"\366\250t*\310\226\025K\251\367\266\350\012T\327\211"
+ 522      C896154B 
+ 522      A9F7B6E8 
+ 522      0A54D789 
+ 523 00fe 6B35     		.ascii	"k5"
+ 524              		.section	.rodata.wCRC_Table,"a"
+ 525              		.align	2
+ 526              		.set	.LANCHOR1,. + 0
+ 529              	wCRC_Table:
+ 530 0000 0000     		.short	0
+ 531 0002 8911     		.short	4489
+ 532 0004 1223     		.short	8978
+ 533 0006 9B32     		.short	12955
+ 534 0008 2446     		.short	17956
+ 535 000a AD57     		.short	22445
+ 536 000c 3665     		.short	25910
+ 537 000e BF74     		.short	29887
+ 538 0010 488C     		.short	-29624
+ 539 0012 C19D     		.short	-25151
+ 540 0014 5AAF     		.short	-20646
+ 541 0016 D3BE     		.short	-16685
+ 542 0018 6CCA     		.short	-13716
+ 543 001a E5DB     		.short	-9243
+ 544 001c 7EE9     		.short	-5762
+ 545 001e F7F8     		.short	-1801
+ 546 0020 8110     		.short	4225
+ARM GAS  /tmp/ccPNytMz.s 			page 15
+
+
+ 547 0022 0801     		.short	264
+ 548 0024 9333     		.short	13203
+ 549 0026 1A22     		.short	8730
+ 550 0028 A556     		.short	22181
+ 551 002a 2C47     		.short	18220
+ 552 002c B775     		.short	30135
+ 553 002e 3E64     		.short	25662
+ 554 0030 C99C     		.short	-25399
+ 555 0032 408D     		.short	-29376
+ 556 0034 DBBF     		.short	-16421
+ 557 0036 52AE     		.short	-20910
+ 558 0038 EDDA     		.short	-9491
+ 559 003a 64CB     		.short	-13468
+ 560 003c FFF9     		.short	-1537
+ 561 003e 76E8     		.short	-6026
+ 562 0040 0221     		.short	8450
+ 563 0042 8B30     		.short	12427
+ 564 0044 1002     		.short	528
+ 565 0046 9913     		.short	5017
+ 566 0048 2667     		.short	26406
+ 567 004a AF76     		.short	30383
+ 568 004c 3444     		.short	17460
+ 569 004e BD55     		.short	21949
+ 570 0050 4AAD     		.short	-21174
+ 571 0052 C3BC     		.short	-17213
+ 572 0054 588E     		.short	-29096
+ 573 0056 D19F     		.short	-24623
+ 574 0058 6EEB     		.short	-5266
+ 575 005a E7FA     		.short	-1305
+ 576 005c 7CC8     		.short	-14212
+ 577 005e F5D9     		.short	-9739
+ 578 0060 8331     		.short	12675
+ 579 0062 0A20     		.short	8202
+ 580 0064 9112     		.short	4753
+ 581 0066 1803     		.short	792
+ 582 0068 A777     		.short	30631
+ 583 006a 2E66     		.short	26158
+ 584 006c B554     		.short	21685
+ 585 006e 3C45     		.short	17724
+ 586 0070 CBBD     		.short	-16949
+ 587 0072 42AC     		.short	-21438
+ 588 0074 D99E     		.short	-24871
+ 589 0076 508F     		.short	-28848
+ 590 0078 EFFB     		.short	-1041
+ 591 007a 66EA     		.short	-5530
+ 592 007c FDD8     		.short	-9987
+ 593 007e 74C9     		.short	-13964
+ 594 0080 0442     		.short	16900
+ 595 0082 8D53     		.short	21389
+ 596 0084 1661     		.short	24854
+ 597 0086 9F70     		.short	28831
+ 598 0088 2004     		.short	1056
+ 599 008a A915     		.short	5545
+ 600 008c 3227     		.short	10034
+ 601 008e BB36     		.short	14011
+ 602 0090 4CCE     		.short	-12724
+ 603 0092 C5DF     		.short	-8251
+ARM GAS  /tmp/ccPNytMz.s 			page 16
+
+
+ 604 0094 5EED     		.short	-4770
+ 605 0096 D7FC     		.short	-809
+ 606 0098 6888     		.short	-30616
+ 607 009a E199     		.short	-26143
+ 608 009c 7AAB     		.short	-21638
+ 609 009e F3BA     		.short	-17677
+ 610 00a0 8552     		.short	21125
+ 611 00a2 0C43     		.short	17164
+ 612 00a4 9771     		.short	29079
+ 613 00a6 1E60     		.short	24606
+ 614 00a8 A114     		.short	5281
+ 615 00aa 2805     		.short	1320
+ 616 00ac B337     		.short	14259
+ 617 00ae 3A26     		.short	9786
+ 618 00b0 CDDE     		.short	-8499
+ 619 00b2 44CF     		.short	-12476
+ 620 00b4 DFFD     		.short	-545
+ 621 00b6 56EC     		.short	-5034
+ 622 00b8 E998     		.short	-26391
+ 623 00ba 6089     		.short	-30368
+ 624 00bc FBBB     		.short	-17413
+ 625 00be 72AA     		.short	-21902
+ 626 00c0 0663     		.short	25350
+ 627 00c2 8F72     		.short	29327
+ 628 00c4 1440     		.short	16404
+ 629 00c6 9D51     		.short	20893
+ 630 00c8 2225     		.short	9506
+ 631 00ca AB34     		.short	13483
+ 632 00cc 3006     		.short	1584
+ 633 00ce B917     		.short	6073
+ 634 00d0 4EEF     		.short	-4274
+ 635 00d2 C7FE     		.short	-313
+ 636 00d4 5CCC     		.short	-13220
+ 637 00d6 D5DD     		.short	-8747
+ 638 00d8 6AA9     		.short	-22166
+ 639 00da E3B8     		.short	-18205
+ 640 00dc 788A     		.short	-30088
+ 641 00de F19B     		.short	-25615
+ 642 00e0 8773     		.short	29575
+ 643 00e2 0E62     		.short	25102
+ 644 00e4 9550     		.short	20629
+ 645 00e6 1C41     		.short	16668
+ 646 00e8 A335     		.short	13731
+ 647 00ea 2A24     		.short	9258
+ 648 00ec B116     		.short	5809
+ 649 00ee 3807     		.short	1848
+ 650 00f0 CFFF     		.short	-49
+ 651 00f2 46EE     		.short	-4538
+ 652 00f4 DDDC     		.short	-8995
+ 653 00f6 54CD     		.short	-12972
+ 654 00f8 EBB9     		.short	-17941
+ 655 00fa 62A8     		.short	-22430
+ 656 00fc F99A     		.short	-25863
+ 657 00fe 708B     		.short	-29840
+ 658 0100 0884     		.short	-31736
+ 659 0102 8195     		.short	-27263
+ 660 0104 1AA7     		.short	-22758
+ARM GAS  /tmp/ccPNytMz.s 			page 17
+
+
+ 661 0106 93B6     		.short	-18797
+ 662 0108 2CC2     		.short	-15828
+ 663 010a A5D3     		.short	-11355
+ 664 010c 3EE1     		.short	-7874
+ 665 010e B7F0     		.short	-3913
+ 666 0110 4008     		.short	2112
+ 667 0112 C919     		.short	6601
+ 668 0114 522B     		.short	11090
+ 669 0116 DB3A     		.short	15067
+ 670 0118 644E     		.short	20068
+ 671 011a ED5F     		.short	24557
+ 672 011c 766D     		.short	28022
+ 673 011e FF7C     		.short	31999
+ 674 0120 8994     		.short	-27511
+ 675 0122 0085     		.short	-31488
+ 676 0124 9BB7     		.short	-18533
+ 677 0126 12A6     		.short	-23022
+ 678 0128 ADD2     		.short	-11603
+ 679 012a 24C3     		.short	-15580
+ 680 012c BFF1     		.short	-3649
+ 681 012e 36E0     		.short	-8138
+ 682 0130 C118     		.short	6337
+ 683 0132 4809     		.short	2376
+ 684 0134 D33B     		.short	15315
+ 685 0136 5A2A     		.short	10842
+ 686 0138 E55E     		.short	24293
+ 687 013a 6C4F     		.short	20332
+ 688 013c F77D     		.short	32247
+ 689 013e 7E6C     		.short	27774
+ 690 0140 0AA5     		.short	-23286
+ 691 0142 83B4     		.short	-19325
+ 692 0144 1886     		.short	-31208
+ 693 0146 9197     		.short	-26735
+ 694 0148 2EE3     		.short	-7378
+ 695 014a A7F2     		.short	-3417
+ 696 014c 3CC0     		.short	-16324
+ 697 014e B5D1     		.short	-11851
+ 698 0150 4229     		.short	10562
+ 699 0152 CB38     		.short	14539
+ 700 0154 500A     		.short	2640
+ 701 0156 D91B     		.short	7129
+ 702 0158 666F     		.short	28518
+ 703 015a EF7E     		.short	32495
+ 704 015c 744C     		.short	19572
+ 705 015e FD5D     		.short	24061
+ 706 0160 8BB5     		.short	-19061
+ 707 0162 02A4     		.short	-23550
+ 708 0164 9996     		.short	-26983
+ 709 0166 1087     		.short	-30960
+ 710 0168 AFF3     		.short	-3153
+ 711 016a 26E2     		.short	-7642
+ 712 016c BDD0     		.short	-12099
+ 713 016e 34C1     		.short	-16076
+ 714 0170 C339     		.short	14787
+ 715 0172 4A28     		.short	10314
+ 716 0174 D11A     		.short	6865
+ 717 0176 580B     		.short	2904
+ARM GAS  /tmp/ccPNytMz.s 			page 18
+
+
+ 718 0178 E77F     		.short	32743
+ 719 017a 6E6E     		.short	28270
+ 720 017c F55C     		.short	23797
+ 721 017e 7C4D     		.short	19836
+ 722 0180 0CC6     		.short	-14836
+ 723 0182 85D7     		.short	-10363
+ 724 0184 1EE5     		.short	-6882
+ 725 0186 97F4     		.short	-2921
+ 726 0188 2880     		.short	-32728
+ 727 018a A191     		.short	-28255
+ 728 018c 3AA3     		.short	-23750
+ 729 018e B3B2     		.short	-19789
+ 730 0190 444A     		.short	19012
+ 731 0192 CD5B     		.short	23501
+ 732 0194 5669     		.short	26966
+ 733 0196 DF78     		.short	30943
+ 734 0198 600C     		.short	3168
+ 735 019a E91D     		.short	7657
+ 736 019c 722F     		.short	12146
+ 737 019e FB3E     		.short	16123
+ 738 01a0 8DD6     		.short	-10611
+ 739 01a2 04C7     		.short	-14588
+ 740 01a4 9FF5     		.short	-2657
+ 741 01a6 16E4     		.short	-7146
+ 742 01a8 A990     		.short	-28503
+ 743 01aa 2081     		.short	-32480
+ 744 01ac BBB3     		.short	-19525
+ 745 01ae 32A2     		.short	-24014
+ 746 01b0 C55A     		.short	23237
+ 747 01b2 4C4B     		.short	19276
+ 748 01b4 D779     		.short	31191
+ 749 01b6 5E68     		.short	26718
+ 750 01b8 E11C     		.short	7393
+ 751 01ba 680D     		.short	3432
+ 752 01bc F33F     		.short	16371
+ 753 01be 7A2E     		.short	11898
+ 754 01c0 0EE7     		.short	-6386
+ 755 01c2 87F6     		.short	-2425
+ 756 01c4 1CC4     		.short	-15332
+ 757 01c6 95D5     		.short	-10859
+ 758 01c8 2AA1     		.short	-24278
+ 759 01ca A3B0     		.short	-20317
+ 760 01cc 3882     		.short	-32200
+ 761 01ce B193     		.short	-27727
+ 762 01d0 466B     		.short	27462
+ 763 01d2 CF7A     		.short	31439
+ 764 01d4 5448     		.short	18516
+ 765 01d6 DD59     		.short	23005
+ 766 01d8 622D     		.short	11618
+ 767 01da EB3C     		.short	15595
+ 768 01dc 700E     		.short	3696
+ 769 01de F91F     		.short	8185
+ 770 01e0 8FF7     		.short	-2161
+ 771 01e2 06E6     		.short	-6650
+ 772 01e4 9DD4     		.short	-11107
+ 773 01e6 14C5     		.short	-15084
+ 774 01e8 ABB1     		.short	-20053
+ARM GAS  /tmp/ccPNytMz.s 			page 19
+
+
+ 775 01ea 22A0     		.short	-24542
+ 776 01ec B992     		.short	-27975
+ 777 01ee 3083     		.short	-31952
+ 778 01f0 C77B     		.short	31687
+ 779 01f2 4E6A     		.short	27214
+ 780 01f4 D558     		.short	22741
+ 781 01f6 5C49     		.short	18780
+ 782 01f8 E33D     		.short	15843
+ 783 01fa 6A2C     		.short	11370
+ 784 01fc F11E     		.short	7921
+ 785 01fe 780F     		.short	3960
+ 786              		.text
+ 787              	.Letext0:
+ 788              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ARM GAS  /tmp/ccPNytMz.s 			page 20
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 crc_ref.c
+     /tmp/ccPNytMz.s:18     .text.Get_CRC8_Check_Sum:0000000000000000 $t
+     /tmp/ccPNytMz.s:26     .text.Get_CRC8_Check_Sum:0000000000000000 Get_CRC8_Check_Sum
+     /tmp/ccPNytMz.s:75     .text.Get_CRC8_Check_Sum:0000000000000020 $d
+     /tmp/ccPNytMz.s:80     .text.Verify_CRC8_Check_Sum:0000000000000000 $t
+     /tmp/ccPNytMz.s:87     .text.Verify_CRC8_Check_Sum:0000000000000000 Verify_CRC8_Check_Sum
+     /tmp/ccPNytMz.s:164    .text.Append_CRC8_Check_Sum:0000000000000000 $t
+     /tmp/ccPNytMz.s:171    .text.Append_CRC8_Check_Sum:0000000000000000 Append_CRC8_Check_Sum
+     /tmp/ccPNytMz.s:224    .text.Get_CRC16_Check_Sum:0000000000000000 $t
+     /tmp/ccPNytMz.s:231    .text.Get_CRC16_Check_Sum:0000000000000000 Get_CRC16_Check_Sum
+     /tmp/ccPNytMz.s:304    .text.Get_CRC16_Check_Sum:0000000000000034 $d
+     /tmp/ccPNytMz.s:309    .text.Verify_CRC16_Check_Sum:0000000000000000 $t
+     /tmp/ccPNytMz.s:316    .text.Verify_CRC16_Check_Sum:0000000000000000 Verify_CRC16_Check_Sum
+     /tmp/ccPNytMz.s:408    .text.Verify_CRC16_Check_Sum:0000000000000044 $d
+     /tmp/ccPNytMz.s:413    .text.Append_CRC16_Check_Sum:0000000000000000 $t
+     /tmp/ccPNytMz.s:420    .text.Append_CRC16_Check_Sum:0000000000000000 Append_CRC16_Check_Sum
+     /tmp/ccPNytMz.s:483    .text.Append_CRC16_Check_Sum:0000000000000028 $d
+     /tmp/ccPNytMz.s:529    .rodata.wCRC_Table:0000000000000000 wCRC_Table
+     /tmp/ccPNytMz.s:496    .data.CRC_INIT:0000000000000000 CRC_INIT
+     /tmp/ccPNytMz.s:508    .rodata.CRC8_TAB:0000000000000000 CRC8_TAB
+     /tmp/ccPNytMz.s:501    .rodata.CRC8_INIT:0000000000000000 CRC8_INIT
+     /tmp/ccPNytMz.s:492    .data.CRC_INIT:0000000000000000 $d
+     /tmp/ccPNytMz.s:504    .rodata.CRC8_TAB:0000000000000000 $d
+     /tmp/ccPNytMz.s:525    .rodata.wCRC_Table:0000000000000000 $d
+
+NO UNDEFINED SYMBOLS

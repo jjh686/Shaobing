@@ -10,7 +10,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.22.1/CMakeASMCompiler.cmake"
   "CMakeFiles/3.22.1/CMakeCCompiler.cmake"
   "CMakeFiles/3.22.1/CMakeSystem.cmake"
-  "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework/CMakeLists.txt"
+  "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/CMakeLists.txt"
   "/usr/share/cmake-3.22/Modules/CMakeASMCompiler.cmake.in"
   "/usr/share/cmake-3.22/Modules/CMakeASMInformation.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeCCompiler.cmake.in"

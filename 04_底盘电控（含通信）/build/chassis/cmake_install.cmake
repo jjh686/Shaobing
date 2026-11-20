@@ -1,4 +1,4 @@
-# Install script for directory: /home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework
+# Install script for directory: /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/build/chassis/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -6,7 +6,7 @@
  */
 #include "robot_comm.h"
 #include "nav_usb_mux.h"
-#include "nav_gateway_port.h"
+#include "chassis_link.h"
 #include "bsp_usb.h"
 #include "ins_task.h"
 #include "gimbal_config.h"
@@ -44,7 +44,7 @@ static void DispatchUsb(const uint8_t *bytes,unsigned length,uint32_t received,v
 {
     (void)context;
     if(length==SP_COMMAND_SIZE) SP_ParserFeed(&parser,bytes,length,OnCommand,NULL);
-    else NavGatewayReceive(bytes,length,received);
+    else ChassisLinkReceiveUsb(bytes,length,received);
 }
 static void DecodeVision(uint16_t length)
 {
@@ -53,7 +53,7 @@ static void DecodeVision(uint16_t length)
         ++recv_data.session;
         command_valid = 0;
         SP_ParserInit(&parser);
-        memset(&usb_mux,0,sizeof(usb_mux));NavGatewayReset();
+        memset(&usb_mux,0,sizeof(usb_mux));ChassisLinkResetUsbSession();
         return;
     }
     uint32_t now=HAL_GetTick();
@@ -65,7 +65,7 @@ Vision_Recv_s *RobotCommInit(void)
 {
     SP_ParserInit(&parser);
     memset(&usb_mux,0,sizeof(usb_mux));
-    NavGatewayInit();
+    ChassisLinkInit();
     memset(&recv_data, 0, sizeof(recv_data));
     command_valid = requested_mode = 0;
     USB_Init_Config_s config = {.rx_cbk = DecodeVision, .tx_cbk = NULL};

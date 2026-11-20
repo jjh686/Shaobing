@@ -13,6 +13,12 @@ static CANInstance *can_instance[CAN_MX_REGISTER_CNT] = {NULL};
 static uint8_t idx; // 全局CAN实例索引,每次有新的模块注册会自增
 static CAN_Send_FIFO_s CAN1_Send_FIFO, CAN2_Send_FIFO; // CAN发送队列，每个hcan对应一个队列
 
+__weak void CANOnTxMailboxAssigned(CAN_HandleTypeDef *can, uint32_t mailbox)
+{
+    (void)can;
+    (void)mailbox;
+}
+
 /* ----------------two static function called by CANRegister()-------------------- */
 
 /**
@@ -129,6 +135,8 @@ static void CANSendFIFOTransmit(CAN_Send_FIFO_s *CAN_Send_FIFO){
         return; // 发送失败,邮箱满了,等待下一次发送机会
     }
 
+    CANOnTxMailboxAssigned(CAN_Send_FIFO->queue[CAN_Send_FIFO->front_idx].can_instance->can_handle,
+                           CAN_Send_FIFO->queue[CAN_Send_FIFO->front_idx].can_instance->tx_mailbox);
     CAN_Send_FIFO->front_idx = (CAN_Send_FIFO->front_idx + 1) % CAN_Send_FIFO_SIZE; // 队列头索引自增
     CAN_Send_FIFO->current_size--; // 队列长度自减
 
@@ -200,7 +208,9 @@ static void CANFIFOxCallback(CAN_HandleTypeDef *_hcan, uint32_t fifox)
     uint8_t can_rx_buff[8];
     while (HAL_CAN_GetRxFifoFillLevel(_hcan, fifox)) // FIFO不为空,有可能在其他中断时有多帧数据进入
     {
-        HAL_CAN_GetRxMessage(_hcan, fifox, &rxconf, can_rx_buff); // 从FIFO中获取数据
+        if (HAL_CAN_GetRxMessage(_hcan, fifox, &rxconf, can_rx_buff) != HAL_OK) break;
+        /* Match 04: only standard data frames may reach the board protocol. */
+        if (rxconf.IDE != CAN_ID_STD || rxconf.RTR != CAN_RTR_DATA || rxconf.DLC > 8) continue;
         for (size_t i = 0; i < idx; ++i)
         { // 两者相等说明这是要找的实例
             if (_hcan == can_instance[i]->can_handle && rxconf.StdId == can_instance[i]->rx_id)

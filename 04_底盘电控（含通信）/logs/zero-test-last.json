@@ -1,20 +1,20 @@
 {
-  "port": "/dev/ttyACM0",
+  "port": "/dev/ttyACM1",
   "enabled": false,
   "passed": true,
-  "session": 2079683994,
-  "sent_STOP": 226,
-  "fresh_chassis_ACK": 250,
-  "USB_bytes": 53981,
+  "session": 4025130966,
+  "sent_STOP": 449,
+  "fresh_chassis_ACK": 500,
+  "USB_bytes": 108839,
   "frames": {
-    "SP": 1001,
-    "gimbal": 53,
-    "feedback": 250
+    "SP": 2001,
+    "gimbal": 126,
+    "feedback": 500
   },
   "last_gimbal": {
-    "uptime": 36336,
-    "sequence": 193,
-    "session": 2079683994,
-    "command_received_ms": 36322
+    "uptime": 465039,
+    "sequence": 447,
+    "session": 4025130966,
+    "command_received_ms": 465020
   }
 }

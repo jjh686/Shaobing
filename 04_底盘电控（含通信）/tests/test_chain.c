@@ -101,7 +101,9 @@ int main(void)
  remote.channel[6]=1;tick=471;send(13,0);step(1);
  usb_busy=1;tick=491;send(14,0);step(1);unsigned before=ack_count;
  tick=502;usb_busy=0;step(1);assert(ack_count==before);
- configured=0;tick=511;step(1);configured=1;tick=531;send(15,1);step(1);stopped();
+ /* The real CDC Init/DeInit callback resets the gateway on both USB events. */
+ configured=0;NavGatewayReset();tick=511;step(1);
+ configured=1;NavGatewayReset();tick=531;send(15,1);step(1);stopped();
  tick=551;send(16,0);step(1);
  for(unsigned n=0;n<10000;n++){
   tick+=20;send((uint16_t)(17+n),1);step(1);

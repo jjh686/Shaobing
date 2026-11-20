@@ -1,7 +1,7 @@
 CMakeFiles/basic_framework.elf.dir/modules/chassis_comm/protocol/nav_can.c.obj: \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.c \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/protocol.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.c \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/protocol.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \

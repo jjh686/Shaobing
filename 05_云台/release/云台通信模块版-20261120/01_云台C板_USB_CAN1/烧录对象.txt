@@ -1,0 +1,5 @@
+对象：05_云台完整功能云台C板（STM32F407），历史UID末尾36363032。
+推荐：Gimbal_ChassisLink.elf；HEX、BIN为同一程序的其他格式。
+BIN起始地址：0x08000000。CAN1接底盘CAN2并连接yaw；CAN2接pitch。
+源码：05_云台，含独立modules/chassis_link通信模块。
+本次仅整理文件，未烧录。

@@ -75,4 +75,8 @@ CANInstance *CANRegister(CAN_Init_Config_s *config);
  */
 void CANTransmit(CANInstance *_instance, uint8_t length);
 
+/* Called under the TX critical section after every successful mailbox load.
+ * A transport can relinquish stale ownership before a motor reuses the slot. */
+void CANOnTxMailboxAssigned(CAN_HandleTypeDef *can, uint32_t mailbox);
+
 #endif

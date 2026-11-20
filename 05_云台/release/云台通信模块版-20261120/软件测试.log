@@ -1,0 +1,19 @@
+gimbal speed PI: 14 test groups passed
+pitch assistance: gravity/sign, support handover, bounded breakaway, downstream antiwindup, speed/braking/edge caps passed
+DJI speed-controller routing tests passed
+DM4310 pitch driver: wire, feedback, handshake, torque/sign, watchdogs, fault latch, reset/STOP commit passed
+gimbal adapter: 13 integration test groups passed
+robot communication: mixed SP/navigation stream and USB session reset passed
+robot communication: 7 test groups passed (legacy API)
+robot communication: mixed SP/navigation stream and USB session reset passed
+robot communication: 7 test groups passed (unified API)
+PASS 04/05 codecs, headers, USB mux and session gate match
+PASS protocol: typed CAN fields, CRC/order/version/DLC/EXT/RTR/drop/timeout, quantization, wrap, BUSY expiry, session STOP, USB SP mux
+PASS remote CAN: channel encoding, CRC, order/drop/DLC/age, duplicate, sequence/tick wrap, source age, lost link, CH10 stop, fault generation, reconnect/rearm
+PASS 8 ms expiry, async abort ownership, yaw/RC mailbox reuse, blocked bus, HAL retry, tick wrap, independent CAN2
+PASS real CAN BSP: yaw queue/IRQ delivery, mailbox ownership hook, FIFO0, EXT/RTR/DLC/HAL rejection
+PASS chassis_link task: single instance, allocation retry, normal priority, original stack, 1 ms forwarding/yield
+PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect
+PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs
+PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect
+PASS CAN compatibility: 7 executables; 04 sources unchanged; no hardware accessed

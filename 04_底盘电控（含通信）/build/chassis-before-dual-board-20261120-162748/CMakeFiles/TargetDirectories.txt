@@ -1,0 +1,3 @@
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis/CMakeFiles/basic_framework.elf.dir
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis/CMakeFiles/edit_cache.dir
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis/CMakeFiles/rebuild_cache.dir

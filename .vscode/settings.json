@@ -4,5 +4,6 @@
     ],
     "mcu-debug.rtos-views.trackDebuggers": [
         "ozone"
-    ]
+    ],
+    "emberprobe.sampleFrequencyHz": 30
 }

@@ -58,3 +58,9 @@ build
 !artifacts/*.elf
 !artifacts/*.hex
 !artifacts/*.bin
+
+# 版本发布包中的烧录产物需要保留
+!release/
+!release/**/*.elf
+!release/**/*.hex
+!release/**/*.bin

@@ -1,0 +1,367 @@
+ARM GAS  /tmp/cc1OrGNI.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"super_cap.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	__aeabi_i2d
+  18              		.global	__aeabi_ddiv
+  19              		.global	__aeabi_d2f
+  20              		.section	.text.SuperCapRxCallback,"ax",%progbits
+  21              		.align	1
+  22              		.arch armv7e-m
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  26              		.fpu fpv4-sp-d16
+  28              	SuperCapRxCallback:
+  29              	.LVL0:
+  30              	.LFB239:
+  31              		.file 1 "modules/super_cap/super_cap.c"
+   1:modules/super_cap/super_cap.c **** /*
+   2:modules/super_cap/super_cap.c ****  * @Descripttion:
+   3:modules/super_cap/super_cap.c ****  * @version:
+   4:modules/super_cap/super_cap.c ****  * @Author: Chenfu
+   5:modules/super_cap/super_cap.c ****  * @Date: 2022-12-02 21:32:47
+   6:modules/super_cap/super_cap.c ****  * @LastEditTime: 2022-12-05 15:29:49
+   7:modules/super_cap/super_cap.c ****  */
+   8:modules/super_cap/super_cap.c **** #include "super_cap.h"
+   9:modules/super_cap/super_cap.c **** #include "memory.h"
+  10:modules/super_cap/super_cap.c **** #include "stdlib.h"
+  11:modules/super_cap/super_cap.c **** 
+  12:modules/super_cap/super_cap.c **** static SuperCapInstance *super_cap_instance = NULL; // 可以由app保存此指针
+  13:modules/super_cap/super_cap.c **** 
+  14:modules/super_cap/super_cap.c **** static void SuperCapRxCallback(CANInstance *_instance)
+  15:modules/super_cap/super_cap.c **** {
+  32              		.loc 1 15 1 view -0
+  33              		.cfi_startproc
+  34              		@ args = 0, pretend = 0, frame = 0
+  35              		@ frame_needed = 0, uses_anonymous_args = 0
+  36              		.loc 1 15 1 is_stmt 0 view .LVU1
+  37 0000 38B5     		push	{r3, r4, r5, lr}
+  38              	.LCFI0:
+  39              		.cfi_def_cfa_offset 16
+  40              		.cfi_offset 3, -16
+  41              		.cfi_offset 4, -12
+  42              		.cfi_offset 5, -8
+  43              		.cfi_offset 14, -4
+ARM GAS  /tmp/cc1OrGNI.s 			page 2
+
+
+  44 0002 0446     		mov	r4, r0
+  16:modules/super_cap/super_cap.c ****     uint8_t *rxbuff;
+  45              		.loc 1 16 5 is_stmt 1 view .LVU2
+  17:modules/super_cap/super_cap.c ****     SuperCap_Msg_s *Msg;
+  46              		.loc 1 17 5 view .LVU3
+  18:modules/super_cap/super_cap.c ****     rxbuff = _instance->rx_buff;
+  47              		.loc 1 18 5 view .LVU4
+  48              	.LVL1:
+  19:modules/super_cap/super_cap.c ****     Msg = &super_cap_instance->cap_msg;
+  49              		.loc 1 19 5 view .LVU5
+  50              		.loc 1 19 30 is_stmt 0 view .LVU6
+  51 0004 144B     		ldr	r3, .L3
+  52 0006 1D68     		ldr	r5, [r3]
+  53              	.LVL2:
+  20:modules/super_cap/super_cap.c ****     Msg->cap_vol = (uint16_t)(rxbuff[0] << 8 | rxbuff[1])/1000.0;
+  54              		.loc 1 20 5 is_stmt 1 view .LVU7
+  55              		.loc 1 20 37 is_stmt 0 view .LVU8
+  56 0008 007D     		ldrb	r0, [r0, #20]	@ zero_extendqisi2
+  57              	.LVL3:
+  58              		.loc 1 20 54 view .LVU9
+  59 000a 637D     		ldrb	r3, [r4, #21]	@ zero_extendqisi2
+  60              		.loc 1 20 58 view .LVU10
+  61 000c 43EA0020 		orr	r0, r3, r0, lsl #8
+  62 0010 FFF7FEFF 		bl	__aeabi_i2d
+  63              	.LVL4:
+  64 0014 0022     		movs	r2, #0
+  65 0016 114B     		ldr	r3, .L3+4
+  66 0018 FFF7FEFF 		bl	__aeabi_ddiv
+  67              	.LVL5:
+  68 001c FFF7FEFF 		bl	__aeabi_d2f
+  69              	.LVL6:
+  70              		.loc 1 20 18 view .LVU11
+  71 0020 6860     		str	r0, [r5, #4]	@ unaligned
+  21:modules/super_cap/super_cap.c ****     Msg->power_in = (uint16_t)(rxbuff[2] << 8 | rxbuff[3])/1000.0;
+  72              		.loc 1 21 5 is_stmt 1 view .LVU12
+  73              		.loc 1 21 38 is_stmt 0 view .LVU13
+  74 0022 A07D     		ldrb	r0, [r4, #22]	@ zero_extendqisi2
+  75              		.loc 1 21 55 view .LVU14
+  76 0024 E37D     		ldrb	r3, [r4, #23]	@ zero_extendqisi2
+  77              		.loc 1 21 59 view .LVU15
+  78 0026 43EA0020 		orr	r0, r3, r0, lsl #8
+  79 002a FFF7FEFF 		bl	__aeabi_i2d
+  80              	.LVL7:
+  81 002e 0022     		movs	r2, #0
+  82 0030 0A4B     		ldr	r3, .L3+4
+  83 0032 FFF7FEFF 		bl	__aeabi_ddiv
+  84              	.LVL8:
+  85 0036 FFF7FEFF 		bl	__aeabi_d2f
+  86              	.LVL9:
+  87              		.loc 1 21 19 view .LVU16
+  88 003a A860     		str	r0, [r5, #8]	@ unaligned
+  22:modules/super_cap/super_cap.c ****     Msg->power_chassis = (uint16_t)(rxbuff[4] << 8 | rxbuff[5])/1000.0;
+  89              		.loc 1 22 5 is_stmt 1 view .LVU17
+  90              		.loc 1 22 43 is_stmt 0 view .LVU18
+  91 003c 207E     		ldrb	r0, [r4, #24]	@ zero_extendqisi2
+  92              		.loc 1 22 60 view .LVU19
+  93 003e 637E     		ldrb	r3, [r4, #25]	@ zero_extendqisi2
+ARM GAS  /tmp/cc1OrGNI.s 			page 3
+
+
+  94              		.loc 1 22 64 view .LVU20
+  95 0040 43EA0020 		orr	r0, r3, r0, lsl #8
+  96 0044 FFF7FEFF 		bl	__aeabi_i2d
+  97              	.LVL10:
+  98 0048 0022     		movs	r2, #0
+  99 004a 044B     		ldr	r3, .L3+4
+ 100 004c FFF7FEFF 		bl	__aeabi_ddiv
+ 101              	.LVL11:
+ 102 0050 FFF7FEFF 		bl	__aeabi_d2f
+ 103              	.LVL12:
+ 104              		.loc 1 22 24 view .LVU21
+ 105 0054 E860     		str	r0, [r5, #12]	@ unaligned
+  23:modules/super_cap/super_cap.c ****     // Msg->vol = (int16_t)(rxbuff[0] << 8 | rxbuff[1]);
+  24:modules/super_cap/super_cap.c ****     // Msg->referee_power = (int16_t)(rxbuff[2] << 8 | rxbuff[3]);
+  25:modules/super_cap/super_cap.c ****     // Msg->chassis_power = (int16_t)(rxbuff[4] << 8 | rxbuff[5]);
+  26:modules/super_cap/super_cap.c ****     // Msg->cap_real_vol = Msg->vol * 0.01f;
+  27:modules/super_cap/super_cap.c ****     // Msg->referee_real_chassis_power = Msg->referee_power * 0.01f;
+  28:modules/super_cap/super_cap.c ****     // Msg->chassis_real_power = Msg->chassis_power * 0.01f;
+  29:modules/super_cap/super_cap.c **** }
+ 106              		.loc 1 29 1 view .LVU22
+ 107 0056 38BD     		pop	{r3, r4, r5, pc}
+ 108              	.LVL13:
+ 109              	.L4:
+ 110              		.loc 1 29 1 view .LVU23
+ 111              		.align	2
+ 112              	.L3:
+ 113 0058 00000000 		.word	.LANCHOR0
+ 114 005c 00408F40 		.word	1083129856
+ 115              		.cfi_endproc
+ 116              	.LFE239:
+ 118              		.section	.text.SuperCapInit,"ax",%progbits
+ 119              		.align	1
+ 120              		.global	SuperCapInit
+ 121              		.syntax unified
+ 122              		.thumb
+ 123              		.thumb_func
+ 124              		.fpu fpv4-sp-d16
+ 126              	SuperCapInit:
+ 127              	.LVL14:
+ 128              	.LFB240:
+  30:modules/super_cap/super_cap.c **** 
+  31:modules/super_cap/super_cap.c **** SuperCapInstance *SuperCapInit(SuperCap_Init_Config_s *supercap_config)
+  32:modules/super_cap/super_cap.c **** {
+ 129              		.loc 1 32 1 is_stmt 1 view -0
+ 130              		.cfi_startproc
+ 131              		@ args = 0, pretend = 0, frame = 0
+ 132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 133              		.loc 1 32 1 is_stmt 0 view .LVU25
+ 134 0000 70B5     		push	{r4, r5, r6, lr}
+ 135              	.LCFI1:
+ 136              		.cfi_def_cfa_offset 16
+ 137              		.cfi_offset 4, -16
+ 138              		.cfi_offset 5, -12
+ 139              		.cfi_offset 6, -8
+ 140              		.cfi_offset 14, -4
+ 141 0002 0546     		mov	r5, r0
+  33:modules/super_cap/super_cap.c ****     super_cap_instance = (SuperCapInstance *)malloc(sizeof(SuperCapInstance));
+ARM GAS  /tmp/cc1OrGNI.s 			page 4
+
+
+ 142              		.loc 1 33 5 is_stmt 1 view .LVU26
+ 143              		.loc 1 33 46 is_stmt 0 view .LVU27
+ 144 0004 1020     		movs	r0, #16
+ 145              	.LVL15:
+ 146              		.loc 1 33 46 view .LVU28
+ 147 0006 FFF7FEFF 		bl	malloc
+ 148              	.LVL16:
+ 149 000a 0446     		mov	r4, r0
+ 150              		.loc 1 33 24 view .LVU29
+ 151 000c 074E     		ldr	r6, .L7
+ 152 000e 3060     		str	r0, [r6]
+  34:modules/super_cap/super_cap.c ****     memset(super_cap_instance, 0, sizeof(SuperCapInstance));
+ 153              		.loc 1 34 5 is_stmt 1 view .LVU30
+ 154 0010 0023     		movs	r3, #0
+ 155 0012 0360     		str	r3, [r0]	@ unaligned
+ 156 0014 4360     		str	r3, [r0, #4]	@ unaligned
+ 157 0016 8360     		str	r3, [r0, #8]	@ unaligned
+ 158 0018 C360     		str	r3, [r0, #12]	@ unaligned
+  35:modules/super_cap/super_cap.c ****     
+  36:modules/super_cap/super_cap.c ****     supercap_config->can_config.can_module_callback = SuperCapRxCallback;
+ 159              		.loc 1 36 5 view .LVU31
+ 160              		.loc 1 36 53 is_stmt 0 view .LVU32
+ 161 001a 054B     		ldr	r3, .L7+4
+ 162 001c EB60     		str	r3, [r5, #12]
+  37:modules/super_cap/super_cap.c ****     super_cap_instance->can_ins = CANRegister(&supercap_config->can_config);
+ 163              		.loc 1 37 5 is_stmt 1 view .LVU33
+ 164              		.loc 1 37 35 is_stmt 0 view .LVU34
+ 165 001e 2846     		mov	r0, r5
+ 166 0020 FFF7FEFF 		bl	CANRegister
+ 167              	.LVL17:
+ 168              		.loc 1 37 33 view .LVU35
+ 169 0024 2060     		str	r0, [r4]
+  38:modules/super_cap/super_cap.c ****     return super_cap_instance;
+ 170              		.loc 1 38 5 is_stmt 1 view .LVU36
+  39:modules/super_cap/super_cap.c **** }
+ 171              		.loc 1 39 1 is_stmt 0 view .LVU37
+ 172 0026 3068     		ldr	r0, [r6]
+ 173 0028 70BD     		pop	{r4, r5, r6, pc}
+ 174              	.LVL18:
+ 175              	.L8:
+ 176              		.loc 1 39 1 view .LVU38
+ 177 002a 00BF     		.align	2
+ 178              	.L7:
+ 179 002c 00000000 		.word	.LANCHOR0
+ 180 0030 00000000 		.word	SuperCapRxCallback
+ 181              		.cfi_endproc
+ 182              	.LFE240:
+ 184              		.section	.text.SuperCapSend,"ax",%progbits
+ 185              		.align	1
+ 186              		.global	SuperCapSend
+ 187              		.syntax unified
+ 188              		.thumb
+ 189              		.thumb_func
+ 190              		.fpu fpv4-sp-d16
+ 192              	SuperCapSend:
+ 193              	.LVL19:
+ 194              	.LFB241:
+ARM GAS  /tmp/cc1OrGNI.s 			page 5
+
+
+  40:modules/super_cap/super_cap.c **** 
+  41:modules/super_cap/super_cap.c **** void SuperCapSend(SuperCapInstance *instance, uint8_t *data)
+  42:modules/super_cap/super_cap.c **** {
+ 195              		.loc 1 42 1 is_stmt 1 view -0
+ 196              		.cfi_startproc
+ 197              		@ args = 0, pretend = 0, frame = 0
+ 198              		@ frame_needed = 0, uses_anonymous_args = 0
+ 199              		.loc 1 42 1 is_stmt 0 view .LVU40
+ 200 0000 08B5     		push	{r3, lr}
+ 201              	.LCFI2:
+ 202              		.cfi_def_cfa_offset 8
+ 203              		.cfi_offset 3, -8
+ 204              		.cfi_offset 14, -4
+  43:modules/super_cap/super_cap.c ****     memcpy(instance->can_ins->tx_buff, data, 8);
+ 205              		.loc 1 43 5 is_stmt 1 view .LVU41
+ 206              		.loc 1 43 20 is_stmt 0 view .LVU42
+ 207 0002 0368     		ldr	r3, [r0]
+ 208              		.loc 1 43 5 view .LVU43
+ 209 0004 D1F800C0 		ldr	ip, [r1]	@ unaligned
+ 210 0008 4A68     		ldr	r2, [r1, #4]	@ unaligned
+ 211 000a C3F80CC0 		str	ip, [r3, #12]	@ unaligned
+ 212 000e 1A61     		str	r2, [r3, #16]	@ unaligned
+  44:modules/super_cap/super_cap.c ****     CANTransmit(instance->can_ins,8);
+ 213              		.loc 1 44 5 is_stmt 1 view .LVU44
+ 214 0010 0821     		movs	r1, #8
+ 215              	.LVL20:
+ 216              		.loc 1 44 5 is_stmt 0 view .LVU45
+ 217 0012 0068     		ldr	r0, [r0]
+ 218              	.LVL21:
+ 219              		.loc 1 44 5 view .LVU46
+ 220 0014 FFF7FEFF 		bl	CANTransmit
+ 221              	.LVL22:
+  45:modules/super_cap/super_cap.c **** }
+ 222              		.loc 1 45 1 view .LVU47
+ 223 0018 08BD     		pop	{r3, pc}
+ 224              		.cfi_endproc
+ 225              	.LFE241:
+ 227              		.section	.text.SuperCapGet,"ax",%progbits
+ 228              		.align	1
+ 229              		.global	SuperCapGet
+ 230              		.syntax unified
+ 231              		.thumb
+ 232              		.thumb_func
+ 233              		.fpu fpv4-sp-d16
+ 235              	SuperCapGet:
+ 236              	.LVL23:
+ 237              	.LFB242:
+  46:modules/super_cap/super_cap.c **** 
+  47:modules/super_cap/super_cap.c **** SuperCap_Msg_s SuperCapGet(SuperCapInstance *instance)
+  48:modules/super_cap/super_cap.c **** {
+ 238              		.loc 1 48 1 is_stmt 1 view -0
+ 239              		.cfi_startproc
+ 240              		@ args = 0, pretend = 0, frame = 32
+ 241              		@ frame_needed = 0, uses_anonymous_args = 0
+ 242              		@ link register save eliminated.
+ 243              		.loc 1 48 1 is_stmt 0 view .LVU49
+ 244 0000 88B0     		sub	sp, sp, #32
+ARM GAS  /tmp/cc1OrGNI.s 			page 6
+
+
+ 245              	.LCFI3:
+ 246              		.cfi_def_cfa_offset 32
+  49:modules/super_cap/super_cap.c ****     return instance->cap_msg;
+ 247              		.loc 1 49 5 is_stmt 1 view .LVU50
+ 248              		.loc 1 49 20 is_stmt 0 view .LVU51
+ 249 0002 0430     		adds	r0, r0, #4
+ 250              	.LVL24:
+ 251              		.loc 1 49 20 view .LVU52
+ 252 0004 07C8     		ldm	r0, {r0, r1, r2}
+ 253              	.LVL25:
+ 254              		.loc 1 49 20 view .LVU53
+ 255 0006 08AB     		add	r3, sp, #32
+ 256 0008 03E90700 		stmdb	r3, {r0, r1, r2}
+  50:modules/super_cap/super_cap.c **** }...
+ 257              		.loc 1 50 1 view .LVU54
+ 258 000c 9DED050A 		vldr.32	s0, [sp, #20]
+ 259 0010 DDED060A 		vldr.32	s1, [sp, #24]
+ 260 0014 9DED071A 		vldr.32	s2, [sp, #28]
+ 261 0018 08B0     		add	sp, sp, #32
+ 262              	.LCFI4:
+ 263              		.cfi_def_cfa_offset 0
+ 264              		@ sp needed
+ 265 001a 7047     		bx	lr
+ 266              		.cfi_endproc
+ 267              	.LFE242:
+ 269              		.section	.bss.super_cap_instance,"aw",%nobits
+ 270              		.align	2
+ 271              		.set	.LANCHOR0,. + 0
+ 274              	super_cap_instance:
+ 275 0000 00000000 		.space	4
+ 276              		.text
+ 277              	.Letext0:
+ 278              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 279              		.file 3 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 280              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
+ 281              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h"
+ 282              		.file 6 "bsp/can/bsp_can.h"
+ 283              		.file 7 "modules/super_cap/super_cap.h"
+ 284              		.file 8 "/usr/include/newlib/stdlib.h"
+ARM GAS  /tmp/cc1OrGNI.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 super_cap.c
+     /tmp/cc1OrGNI.s:21     .text.SuperCapRxCallback:0000000000000000 $t
+     /tmp/cc1OrGNI.s:28     .text.SuperCapRxCallback:0000000000000000 SuperCapRxCallback
+     /tmp/cc1OrGNI.s:113    .text.SuperCapRxCallback:0000000000000058 $d
+     /tmp/cc1OrGNI.s:119    .text.SuperCapInit:0000000000000000 $t
+     /tmp/cc1OrGNI.s:126    .text.SuperCapInit:0000000000000000 SuperCapInit
+     /tmp/cc1OrGNI.s:179    .text.SuperCapInit:000000000000002c $d
+     /tmp/cc1OrGNI.s:185    .text.SuperCapSend:0000000000000000 $t
+     /tmp/cc1OrGNI.s:192    .text.SuperCapSend:0000000000000000 SuperCapSend
+     /tmp/cc1OrGNI.s:228    .text.SuperCapGet:0000000000000000 $t
+     /tmp/cc1OrGNI.s:235    .text.SuperCapGet:0000000000000000 SuperCapGet
+     /tmp/cc1OrGNI.s:270    .bss.super_cap_instance:0000000000000000 $d
+     /tmp/cc1OrGNI.s:274    .bss.super_cap_instance:0000000000000000 super_cap_instance
+
+UNDEFINED SYMBOLS
+__aeabi_i2d
+__aeabi_ddiv
+__aeabi_d2f
+malloc
+CANRegister
+CANTransmit

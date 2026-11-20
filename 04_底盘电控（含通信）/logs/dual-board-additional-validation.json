@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "hardware_accessed": false,
+  "note": "Gimbal translation unit compiled using its own nav_can/nav_can_hal headers; chassis uses its own headers.",
+  "checks": [
+    {
+      "name": "gimbal_port_compile",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "name": "gimbal_can_hal_build",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "name": "gimbal_can_hal",
+      "exit_code": 0,
+      "output": "PASS independent CAN1/CAN2 hardware mailboxes: in-flight group blocks replacement, expiry aborts only the owning bus, USB reset abort"
+    },
+    {
+      "name": "locked_build",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "name": "locked",
+      "exit_code": 0,
+      "output": "PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+    },
+    {
+      "name": "enabled_build",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "name": "enabled",
+      "exit_code": 0,
+      "output": "PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs\nPASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+    }
+  ]
+}

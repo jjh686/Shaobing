@@ -12,6 +12,8 @@ compile_and_run() {
         -I"$comm_test_dir/communication_stubs" -I"$comm_test_dir/adapter_stubs" \
         -I"$comm_source_root/application/gimbal" \
         -I"$comm_source_root/application/communication" \
+        -I"$comm_source_root/modules/nav_conversion" \
+        -I"$comm_source_root/modules/chassis_link" \
         -I"$comm_source_root/modules/imu" -I"$comm_source_root/modules/master_machine" \
         "$comm_test_dir/test_robot_comm.c" \
         "$comm_source_root/modules/master_machine/master_process.c" \
@@ -22,8 +24,18 @@ compile_and_run() {
 }
 
 if [ -f "$comm_source_root/application/communication/robot_comm.c" ]; then
-    compile_and_run "$comm_source_root/application/communication/robot_comm.c"
-    compile_and_run "$comm_source_root/application/communication/robot_comm.c" -DROBOT_COMM_TEST_DIRECT
+    if [ -f "$comm_source_root/modules/nav_conversion/nav_usb_mux.c" ]; then
+        set -- "$comm_source_root/modules/nav_conversion/nav_usb_mux.c" \
+            "$comm_source_root/modules/nav_conversion/nav_can.c" \
+            "$comm_source_root/modules/nav_conversion/protocol.c" -DROBOT_COMM_TEST_NAV
+        if [ -f "$comm_source_root/modules/chassis_link/chassis_link.h" ]; then
+            set -- "$@" -DROBOT_COMM_TEST_CHASSIS_LINK
+        fi
+    else
+        set --
+    fi
+    compile_and_run "$comm_source_root/application/communication/robot_comm.c" "$@"
+    compile_and_run "$comm_source_root/application/communication/robot_comm.c" "$@" -DROBOT_COMM_TEST_DIRECT
 else
     compile_and_run
 fi

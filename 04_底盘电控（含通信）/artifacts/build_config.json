@@ -1,29 +1,29 @@
 {
-  "project_root": "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）",
+  "project_root": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）",
   "flashed_by_this_task": false,
   "hardware_validated_by_this_task": false,
   "targets": {
     "chassis": {
-      "recorded_at_utc": "2026-11-18T07:42:15.129984+00:00",
+      "recorded_at_utc": "2026-11-20T08:28:28.972105+00:00",
       "board": "chassis C board",
       "role": "CAN2 navigation endpoint; CAN1 motors",
       "bin_flash_address": "0x08000000",
       "artifacts": {
         "DiPan_Board.elf": {
-          "sha256": "eeb33f831e266616893a1936028fbadd011e7bdc535664c6e52298c72c601650",
-          "bytes": 1303748
+          "sha256": "f76d655062006a55ff41a85944841fd040be10bbbc0a2604ba8e07f06776aa02",
+          "bytes": 1305636
         },
         "DiPan_Board.hex": {
-          "sha256": "3c491bbc68e4757d4c4d0c4351b7bb8edb25bd4c4bcd38e2b228f85e1d579953",
-          "bytes": 207705
+          "sha256": "889a73193bee4ce849e68b6e36ecf1310e3f3fe3ac7cf9600a3c5e7581963d19",
+          "bytes": 207983
         },
         "DiPan_Board.bin": {
-          "sha256": "836afb0bba3b26ecdb8bf9be9435a3619fd0c2cb36b5c613fd7587880e6d752e",
-          "bytes": 73816
+          "sha256": "f536b0f98e44bc32a294d44f6a5f09a5f0242cce399a813f98f106dc57153a71",
+          "bytes": 73916
         }
       },
       "compiler": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
-      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  72912\t    896\t  77024\t 150832\t  24d30\t/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/artifacts/DiPan_Board.elf",
+      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  73012\t    896\t  77072\t 150980\t  24dc4\t/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/artifacts/DiPan_Board.elf",
       "compiled_configuration": {
         "CHASSIS_COMM_H": "",
         "CHASSIS_COMM_AXES_VERIFIED": "1",
@@ -312,7 +312,7 @@
         "chassis_driver/basic_framework/bsp/bsp_init.h": "0511609748a176a519b5aca93c3668868f2973fff6c9fd8e049ba7622d061583",
         "chassis_driver/basic_framework/bsp/bsp_tools.c": "1c1ff5755e4da345fbc0f6444f0e99cf41a47a235efe7b8f85b73fae32cb4239",
         "chassis_driver/basic_framework/bsp/bsp_tools.h": "8f8341c2f2f2783ba2129922780cb2c34d7cb1233d38cc3aeb9204faef9e9de8",
-        "chassis_driver/basic_framework/bsp/can/bsp_can.c": "67409b5a80fe8524d23af84abf89d20d7aef2121825a5e0592b53e1d29c3f984",
+        "chassis_driver/basic_framework/bsp/can/bsp_can.c": "1e4c7aa924a09985e45e98b2dc82c37f0f2d7c0c4ea241045298a39e5ccb661d",
         "chassis_driver/basic_framework/bsp/can/bsp_can.h": "65174fd852ea4a9434cf04cec44c3e5a50d9050c791b9e076f8d4e922d44420a",
         "chassis_driver/basic_framework/bsp/dwt/bsp_dwt.c": "5a59f3b7325ef4b4e6a992a368e89ef31742d6a9e7f2577f3ae183a62030f671",
         "chassis_driver/basic_framework/bsp/dwt/bsp_dwt.h": "13f8dfd303caca84077bf81f2bfab2e12d1fcf4b2f83ef5232085710179b941f",
@@ -358,12 +358,12 @@
         "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm.c": "37ca8f24e890d3fb67c92130a746432814f064295fc8ae333b4e14944e312508",
         "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm.h": "088b05682369a6ff81b997f75c068ee3d712f2385bebf8d21c869f0e15bd70d0",
         "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_config.h": "212250ca5520c444ea43b0a70c3ab578d8cdb6a59f241654f004ea310380fc61",
-        "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.c": "1553f25847db24b3fc1eec71634b4e93d5489ed50cd04574ca88e88cddbef1e2",
-        "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.h": "5947f5de9ec244ab054d80abb7439633c4d1a9286ea03d43703c72feec7cfca6",
+        "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.c": "936ab39821d22247024dabde73f853fb73954b1a6f830b822da5b38d90e9c80d",
+        "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.h": "7e8a7ed50a98d2cbb45a5e636a3d396ed6f62cd14350af1ca55c05cf2ed89968",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/mcu_link.c": "39db3b374919e9a8e5aeac1170916a83a634ac48496241065d0af65748b060a0",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.c": "80c0be2fc69d7bf5e5d4c01bcbeff99d6fabb71f2b9a5cd636543e475af2ac66",
-        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h": "85746aec1c2176803940b93a730b3bcc2bee2ca07b005277d5372bf3cbd7e495",
-        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can_hal.h": "2745cc92df229b6f0691d7f37d635d6738345e2dec988e9efa6ec5e54aad9361",
+        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h": "3d77d716892126453e7d6d7488863cd62107119d99f6922a4e8f0829bdc06710",
+        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can_hal.h": "4349cc7d025723d8538a4f762a39ecc5919b25943099ca33775b6e3b92edc66c",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/protocol.c": "9b81a3cc49c942c183bccd82280ab188101c460b9f95a970733e9c08986b1b58",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/remote_can.h": "10cf3a7cb46c01b4bea3a1aba1beb5bf9c99cbdb36daab03af8888549c85e132",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/mcu_link.h": "a5ba9c7f380833848181cd4912215a6c003e848ad0d45535c625958447f61612",
@@ -433,29 +433,29 @@
       },
       "cmake_file_sha256": "51a8462b48df095ef149fcdc75000610d75df802be1028abe9c3779f3cdd6ddc",
       "motion_note": "ARM motion gates enabled; RC, motor-online, STOP/session and TTL still required. Physical wheel verification pending.",
-      "source": "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework"
+      "source": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework"
     },
     "gimbal": {
-      "recorded_at_utc": "2026-11-18T07:45:45.175376+00:00",
+      "recorded_at_utc": "2026-11-20T08:28:32.316449+00:00",
       "board": "gimbal C board",
       "role": "USB navigation gateway; CAN1 to chassis CAN2",
       "bin_flash_address": "0x08000000",
       "artifacts": {
         "Gimbal_USB_CAN1.elf": {
-          "sha256": "fc6276559b2b3298b4063b96242412c3df679c2ed52e53f1ed45481cb123730b",
-          "bytes": 1416748
+          "sha256": "5bcc473fee23133100ba555f29e46db2812e367b486b83f294b0adb8f9c938e0",
+          "bytes": 1416480
         },
         "Gimbal_USB_CAN1.hex": {
-          "sha256": "161039d651df38c7b3d44dd36d8f7861613f28198f86a94edb3a11e800e64344",
-          "bytes": 270962
+          "sha256": "e532cfebbac02a660ed425a0c632854c0a1f8fb67973f3057013e5dd069e2cec",
+          "bytes": 270570
         },
         "Gimbal_USB_CAN1.bin": {
-          "sha256": "b1685396cf8b5d2f4f0e38961874d467e907bab95b7cb0e51d7b3e386b8d63c7",
-          "bytes": 96328
+          "sha256": "2f01a6e5c3d1a98653faaf8c9d8fa57e1ebac2db247551c1b3ee64bdb5fafc0f",
+          "bytes": 96184
         }
       },
       "compiler": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
-      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  95120\t   1184\t  78520\t 174824\t  2aae8\t/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/artifacts/Gimbal_USB_CAN1.elf",
+      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  94944\t   1216\t  78544\t 174704\t  2aa70\t/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/artifacts/Gimbal_USB_CAN1.elf",
       "source_sha256": {
         "communication_reference/gimbal_firmware/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h": "bd21220ea8b6858c2d727cca1d2a5f1077f8a81717acdac583a1e9165d858160",
         "communication_reference/gimbal_firmware/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h": "a19edea6b2f4df2ab3c567782c4d313a52319c4303bd56ad7dd1d0e077014657",
@@ -720,8 +720,8 @@
         "communication_reference/gimbal_firmware/application/cmd/control_guard.h": "12d02db4057ce15773a742038b717b9caa5154f91b17b157f9ed92483b724d41",
         "communication_reference/gimbal_firmware/application/cmd/robot_cmd.c": "90cc1ee81a5ba61600f31e43eb01e6ea54c52da67c947e53d5f590bccdd4ffcb",
         "communication_reference/gimbal_firmware/application/cmd/robot_cmd.h": "10233dfea7482dfa9d0bc8802866904a15a0f06b9c5f23570b79491b8c15ac57",
-        "communication_reference/gimbal_firmware/application/communication/nav_gateway_port.c": "ca136f4986e25c41fd6351fb12cfac5cf307d76d8e7ef9ec3e4e84fcc5a0c6ac",
-        "communication_reference/gimbal_firmware/application/communication/nav_gateway_port.h": "db46ab1140f8cc105a9d9ba26901d1b687d261afcd82ede972e89b8639a07b62",
+        "communication_reference/gimbal_firmware/application/communication/nav_gateway_port.c": "06635164ecfbfeff344ab7e98198e9c484f943c91936a64da22318b59a60a2ac",
+        "communication_reference/gimbal_firmware/application/communication/nav_gateway_port.h": "b89246d50859d4e11c54ecb1f37a1209dfc6893c1e89ea077b31952493581f72",
         "communication_reference/gimbal_firmware/application/communication/nav_joint_config.h": "0009d21d51f04b3f6cf4900d2c5c1c7325e33f6c7fd83b160bcf4a56dae0c0e2",
         "communication_reference/gimbal_firmware/application/communication/robot_comm.c": "ea18aa7e0b336c53b4880fac10fe675a2371f508a352e30a24606afed1909ac7",
         "communication_reference/gimbal_firmware/application/communication/robot_comm.h": "bcca00aac73ebb6f24e35c7175a2bdbfbc802bb4d9d924e9fd76b8ea182b1d8e",
@@ -734,7 +734,7 @@
         "communication_reference/gimbal_firmware/application/gimbal/gimbal_speed_pi.h": "c0cc6bc4ac0cc192a21f0a24183f5e31c21c7a75e9a43de973c97ec32e3656b9",
         "communication_reference/gimbal_firmware/application/robot.c": "e531fe806f1a19da7b3118dc880b9e799fbf6434d167314fd8d065d61a58e1b0",
         "communication_reference/gimbal_firmware/application/robot.h": "f13c88cbdbcdf279e99d03314b01526db4453cd9b41f731d8dded3ce09feba83",
-        "communication_reference/gimbal_firmware/application/robot_def.h": "0f205dadf3b01377c4253ac01a562baa9c21e01386425971dae010efb86186cc",
+        "communication_reference/gimbal_firmware/application/robot_def.h": "093750602ca79742177a61f929d93683d53794e31dcf27b8bcebee6d86561f4c",
         "communication_reference/gimbal_firmware/application/robot_task.h": "7534077373b3df248e05e732fe0ed935bd855bacae2fa6d1b8fb2321e260b740",
         "communication_reference/gimbal_firmware/application/shoot/shoot.c": "4bde8e1c2da0e4aa814abe193eb3c2d64b226cfa21e9e5252463abd091f60ba4",
         "communication_reference/gimbal_firmware/application/shoot/shoot.h": "de2a2b410c1b0ee2e13bcca3fc90a09d1f01862e62f4252021a782ca2b48286d",
@@ -827,7 +827,7 @@
         "communication_reference/gimbal_firmware/modules/nav_conversion/mcu_link.c": "39db3b374919e9a8e5aeac1170916a83a634ac48496241065d0af65748b060a0",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can.c": "80c0be2fc69d7bf5e5d4c01bcbeff99d6fabb71f2b9a5cd636543e475af2ac66",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can.h": "85746aec1c2176803940b93a730b3bcc2bee2ca07b005277d5372bf3cbd7e495",
-        "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can_hal.h": "2745cc92df229b6f0691d7f37d635d6738345e2dec988e9efa6ec5e54aad9361",
+        "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can_hal.h": "67edb12a8ee5869d1836e81acc986b5a97fdd01170aeb37850f4062486662048",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_gateway.c": "77f51a25df66d76a6322bdc5799791088ddd1c3008bce23568709654854c7515",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_gateway.h": "58d161aa5fcf5a4f52456930f0835e43deba45af380c0ce6e1d6cdb9c90ab0be",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_usb_mux.c": "f28e280ff90b12db9b0259b4a14d0886a7847825cf05f5f604554072bac79e41",
@@ -884,7 +884,7 @@
         "communication_reference/gimbal_firmware/tests/test_robot_comm.c": "063883b66e9d913f03519b16680463e3aed24783034c6257e03d633753571435"
       },
       "makefile_sha256": "19399e4723239b179545007198eb3def13389c5069162a42926286a88512215f",
-      "source": "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/communication_reference/gimbal_firmware"
+      "source": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/communication_reference/gimbal_firmware"
     }
   }
 }

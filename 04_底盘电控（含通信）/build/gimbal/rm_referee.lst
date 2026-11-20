@@ -1,0 +1,889 @@
+ARM GAS  /tmp/ccG1IYeD.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"rm_referee.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.RefereeLostCallback,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	RefereeLostCallback:
+  26              	.LVL0:
+  27              	.LFB282:
+  28              		.file 1 "modules/referee/rm_referee.c"
+   1:modules/referee/rm_referee.c **** /**
+   2:modules/referee/rm_referee.c ****  * @file rm_referee.C
+   3:modules/referee/rm_referee.c ****  * @author kidneygood (you@domain.com)
+   4:modules/referee/rm_referee.c ****  * @brief
+   5:modules/referee/rm_referee.c ****  * @version 0.1
+   6:modules/referee/rm_referee.c ****  * @date 2022-11-18
+   7:modules/referee/rm_referee.c ****  *
+   8:modules/referee/rm_referee.c ****  * @copyright Copyright (c) 2022
+   9:modules/referee/rm_referee.c ****  *
+  10:modules/referee/rm_referee.c ****  */
+  11:modules/referee/rm_referee.c **** 
+  12:modules/referee/rm_referee.c **** #include "rm_referee.h"
+  13:modules/referee/rm_referee.c **** #include "string.h"
+  14:modules/referee/rm_referee.c **** #include "crc_ref.h"
+  15:modules/referee/rm_referee.c **** #include "bsp_usart.h"
+  16:modules/referee/rm_referee.c **** #include "task.h"
+  17:modules/referee/rm_referee.c **** #include "daemon.h"
+  18:modules/referee/rm_referee.c **** #include "bsp_log.h"
+  19:modules/referee/rm_referee.c **** #include "cmsis_os.h"
+  20:modules/referee/rm_referee.c **** 
+  21:modules/referee/rm_referee.c **** #define RE_RX_BUFFER_SIZE 255u // 裁判系统接收缓冲区大小
+  22:modules/referee/rm_referee.c **** 
+  23:modules/referee/rm_referee.c **** static USARTInstance *referee_usart_instance; // 裁判系统串口实例
+  24:modules/referee/rm_referee.c **** static DaemonInstance *referee_daemon;		  // 裁判系统守护进程
+  25:modules/referee/rm_referee.c **** static referee_info_t referee_info;			  // 裁判系统数据
+  26:modules/referee/rm_referee.c **** 
+  27:modules/referee/rm_referee.c **** /**
+  28:modules/referee/rm_referee.c ****  * @brief  读取裁判数据,中断中读取保证速度
+  29:modules/referee/rm_referee.c ****  * @param  buff: 读取到的裁判系统原始数据
+  30:modules/referee/rm_referee.c ****  * @retval 是否对正误判断做处理
+ARM GAS  /tmp/ccG1IYeD.s 			page 2
+
+
+  31:modules/referee/rm_referee.c ****  * @attention  在此判断帧头和CRC校验,无误再写入数据，不重复判断帧头
+  32:modules/referee/rm_referee.c ****  */
+  33:modules/referee/rm_referee.c **** static void JudgeReadData(uint8_t *buff)
+  34:modules/referee/rm_referee.c **** {
+  35:modules/referee/rm_referee.c **** 	uint16_t judge_length; // 统计一帧数据长度
+  36:modules/referee/rm_referee.c **** 	if (buff == NULL)	   // 空数据包，则不作任何处理
+  37:modules/referee/rm_referee.c **** 		return;
+  38:modules/referee/rm_referee.c **** 
+  39:modules/referee/rm_referee.c **** 	// 写入帧头数据(5-byte),用于判断是否开始存储裁判数据
+  40:modules/referee/rm_referee.c **** 	memcpy(&referee_info.FrameHeader, buff, LEN_HEADER);
+  41:modules/referee/rm_referee.c **** 
+  42:modules/referee/rm_referee.c **** 	// 判断帧头数据(0)是否为0xA5
+  43:modules/referee/rm_referee.c **** 	if (buff[SOF] == REFEREE_SOF)
+  44:modules/referee/rm_referee.c **** 	{
+  45:modules/referee/rm_referee.c **** 		// 帧头CRC8校验
+  46:modules/referee/rm_referee.c **** 		if (Verify_CRC8_Check_Sum(buff, LEN_HEADER) == TRUE)
+  47:modules/referee/rm_referee.c **** 		{
+  48:modules/referee/rm_referee.c **** 			// 统计一帧数据长度(byte),用于CR16校验
+  49:modules/referee/rm_referee.c **** 			judge_length = buff[DATA_LENGTH] + LEN_HEADER + LEN_CMDID + LEN_TAIL;
+  50:modules/referee/rm_referee.c **** 			// 帧尾CRC16校验
+  51:modules/referee/rm_referee.c **** 			if (Verify_CRC16_Check_Sum(buff, judge_length) == TRUE)
+  52:modules/referee/rm_referee.c **** 			{
+  53:modules/referee/rm_referee.c **** 				// 2个8位拼成16位int
+  54:modules/referee/rm_referee.c **** 				referee_info.CmdID = (buff[6] << 8 | buff[5]);
+  55:modules/referee/rm_referee.c **** 				// 解析数据命令码,将数据拷贝到相应结构体中(注意拷贝数据的长度)
+  56:modules/referee/rm_referee.c **** 				// 第8个字节开始才是数据 data=7
+  57:modules/referee/rm_referee.c **** 				switch (referee_info.CmdID)
+  58:modules/referee/rm_referee.c **** 				{
+  59:modules/referee/rm_referee.c **** 				case ID_game_state: // 0x0001
+  60:modules/referee/rm_referee.c **** 					memcpy(&referee_info.GameState, (buff + DATA_Offset), LEN_game_state);
+  61:modules/referee/rm_referee.c **** 					break;
+  62:modules/referee/rm_referee.c **** 				case ID_game_result: // 0x0002
+  63:modules/referee/rm_referee.c **** 					memcpy(&referee_info.GameResult, (buff + DATA_Offset), LEN_game_result);
+  64:modules/referee/rm_referee.c **** 					break;
+  65:modules/referee/rm_referee.c **** 				case ID_game_robot_survivors: // 0x0003
+  66:modules/referee/rm_referee.c **** 					memcpy(&referee_info.GameRobotHP, (buff + DATA_Offset), LEN_game_robot_HP);
+  67:modules/referee/rm_referee.c **** 					break;
+  68:modules/referee/rm_referee.c **** 				case ID_event_data: // 0x0101
+  69:modules/referee/rm_referee.c **** 					memcpy(&referee_info.EventData, (buff + DATA_Offset), LEN_event_data);
+  70:modules/referee/rm_referee.c **** 					break;
+  71:modules/referee/rm_referee.c **** 				case ID_referee_warning_t://0x104
+  72:modules/referee/rm_referee.c **** 				    memcpy(&referee_info.WarnData, (buff + DATA_Offset), LEN_referee_warning_t);
+  73:modules/referee/rm_referee.c **** 					break;
+  74:modules/referee/rm_referee.c **** 				case ID_dart_info_t://0x105
+  75:modules/referee/rm_referee.c **** 				    memcpy(&referee_info.DartData, (buff + DATA_Offset), LEN_dart_info_t);
+  76:modules/referee/rm_referee.c **** 				    break;
+  77:modules/referee/rm_referee.c **** 				case ID_game_robot_state: // 0x0201
+  78:modules/referee/rm_referee.c **** 					memcpy(&referee_info.GameRobotState, (buff + DATA_Offset), LEN_game_robot_state);
+  79:modules/referee/rm_referee.c **** 					break;
+  80:modules/referee/rm_referee.c **** 				case ID_power_heat_data: // 0x0202
+  81:modules/referee/rm_referee.c **** 					memcpy(&referee_info.PowerHeatData, (buff + DATA_Offset), LEN_power_heat_data);
+  82:modules/referee/rm_referee.c **** 					break;
+  83:modules/referee/rm_referee.c **** 				case ID_game_robot_pos: // 0x0203
+  84:modules/referee/rm_referee.c **** 					memcpy(&referee_info.GameRobotPos, (buff + DATA_Offset), LEN_game_robot_pos);
+  85:modules/referee/rm_referee.c **** 					break;
+  86:modules/referee/rm_referee.c **** 				case ID_buff_musk: // 0x0204
+  87:modules/referee/rm_referee.c **** 					memcpy(&referee_info.BuffMusk, (buff + DATA_Offset), LEN_buff_musk);
+ARM GAS  /tmp/ccG1IYeD.s 			page 3
+
+
+  88:modules/referee/rm_referee.c **** 					break;
+  89:modules/referee/rm_referee.c **** 				case ID_robot_hurt: // 0x0206
+  90:modules/referee/rm_referee.c **** 					memcpy(&referee_info.RobotHurt, (buff + DATA_Offset), LEN_robot_hurt);
+  91:modules/referee/rm_referee.c **** 					break;
+  92:modules/referee/rm_referee.c **** 				case ID_shoot_data: // 0x0207
+  93:modules/referee/rm_referee.c **** 					memcpy(&referee_info.ShootData, (buff + DATA_Offset), LEN_shoot_data);
+  94:modules/referee/rm_referee.c **** 					break;
+  95:modules/referee/rm_referee.c **** 				case ID_projectile_allowance_t://0x208
+  96:modules/referee/rm_referee.c **** 				    memcpy(&referee_info.AllowanceData, (buff + DATA_Offset), LEN_projectile_allowance_t);
+  97:modules/referee/rm_referee.c **** 					break;
+  98:modules/referee/rm_referee.c **** 				case ID_rfid_status_t://0x209
+  99:modules/referee/rm_referee.c **** 				    memcpy(&referee_info.RFIDdata, (buff + DATA_Offset), LEN_rfid_status_t);
+ 100:modules/referee/rm_referee.c **** 					break;
+ 101:modules/referee/rm_referee.c **** 				case ID_student_interactive: // 0x0301   syhtodo接收代码未测试
+ 102:modules/referee/rm_referee.c **** 					memcpy(&referee_info.ReceiveData, (buff + DATA_Offset), LEN_receive_data);
+ 103:modules/referee/rm_referee.c **** 					break;
+ 104:modules/referee/rm_referee.c **** 				case ID_map_interact_data://0x303
+ 105:modules/referee/rm_referee.c **** 				    memcpy(&referee_info.MapData, (buff + DATA_Offset), LEN_map_interact_data);
+ 106:modules/referee/rm_referee.c **** 					break;
+ 107:modules/referee/rm_referee.c **** 				}
+ 108:modules/referee/rm_referee.c **** 			}
+ 109:modules/referee/rm_referee.c **** 		}
+ 110:modules/referee/rm_referee.c **** 		// 首地址加帧长度,指向CRC16下一字节,用来判断是否为0xA5,从而判断一个数�
+ 111:modules/referee/rm_referee.c **** 		if (*(buff + sizeof(xFrameHeader) + LEN_CMDID + referee_info.FrameHeader.DataLength + LEN_TAIL) =
+ 112:modules/referee/rm_referee.c **** 		{ // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包
+ 113:modules/referee/rm_referee.c **** 			JudgeReadData(buff + sizeof(xFrameHeader) + LEN_CMDID + referee_info.FrameHeader.DataLength + LE
+ 114:modules/referee/rm_referee.c **** 		}
+ 115:modules/referee/rm_referee.c **** 	}
+ 116:modules/referee/rm_referee.c **** }
+ 117:modules/referee/rm_referee.c **** 
+ 118:modules/referee/rm_referee.c **** /*裁判系统串口接收回调函数,解析数据 */
+ 119:modules/referee/rm_referee.c **** static void RefereeRxCallback()
+ 120:modules/referee/rm_referee.c **** {
+ 121:modules/referee/rm_referee.c **** 	DaemonReload(referee_daemon);
+ 122:modules/referee/rm_referee.c **** 	JudgeReadData(referee_usart_instance->recv_buff);
+ 123:modules/referee/rm_referee.c **** }
+ 124:modules/referee/rm_referee.c **** // 裁判系统丢失回调函数,重新初始化裁判系统串口
+ 125:modules/referee/rm_referee.c **** static void RefereeLostCallback(void *arg)
+ 126:modules/referee/rm_referee.c **** {
+  29              		.loc 1 126 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 126 1 is_stmt 0 view .LVU1
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+ 127:modules/referee/rm_referee.c **** 	USARTServiceInit(referee_usart_instance);
+  39              		.loc 1 127 2 is_stmt 1 view .LVU2
+  40 0002 024B     		ldr	r3, .L3
+  41 0004 1868     		ldr	r0, [r3]
+  42              	.LVL1:
+  43              		.loc 1 127 2 is_stmt 0 view .LVU3
+  44 0006 FFF7FEFF 		bl	USARTServiceInit
+  45              	.LVL2:
+ARM GAS  /tmp/ccG1IYeD.s 			page 4
+
+
+ 128:modules/referee/rm_referee.c **** 	LOGWARNING("[rm_ref] lost referee data");
+  46              		.loc 1 128 42 is_stmt 1 view .LVU4
+ 129:modules/referee/rm_referee.c **** }
+  47              		.loc 1 129 1 is_stmt 0 view .LVU5
+  48 000a 08BD     		pop	{r3, pc}
+  49              	.L4:
+  50              		.align	2
+  51              	.L3:
+  52 000c 00000000 		.word	.LANCHOR0
+  53              		.cfi_endproc
+  54              	.LFE282:
+  56              		.section	.text.JudgeReadData,"ax",%progbits
+  57              		.align	1
+  58              		.syntax unified
+  59              		.thumb
+  60              		.thumb_func
+  61              		.fpu fpv4-sp-d16
+  63              	JudgeReadData:
+  64              	.LVL3:
+  65              	.LFB280:
+  34:modules/referee/rm_referee.c **** 	uint16_t judge_length; // 统计一帧数据长度
+  66              		.loc 1 34 1 is_stmt 1 view -0
+  67              		.cfi_startproc
+  68              		@ args = 0, pretend = 0, frame = 0
+  69              		@ frame_needed = 0, uses_anonymous_args = 0
+  35:modules/referee/rm_referee.c **** 	if (buff == NULL)	   // 空数据包，则不作任何处理
+  70              		.loc 1 35 2 view .LVU7
+  36:modules/referee/rm_referee.c **** 		return;
+  71              		.loc 1 36 2 view .LVU8
+  36:modules/referee/rm_referee.c **** 		return;
+  72              		.loc 1 36 5 is_stmt 0 view .LVU9
+  73 0000 0028     		cmp	r0, #0
+  74 0002 00F02581 		beq	.L29
+  34:modules/referee/rm_referee.c **** 	uint16_t judge_length; // 统计一帧数据长度
+  75              		.loc 1 34 1 view .LVU10
+  76 0006 38B5     		push	{r3, r4, r5, lr}
+  77              	.LCFI1:
+  78              		.cfi_def_cfa_offset 16
+  79              		.cfi_offset 3, -16
+  80              		.cfi_offset 4, -12
+  81              		.cfi_offset 5, -8
+  82              		.cfi_offset 14, -4
+  83 0008 0446     		mov	r4, r0
+  40:modules/referee/rm_referee.c **** 
+  84              		.loc 1 40 2 is_stmt 1 view .LVU11
+  85 000a 924B     		ldr	r3, .L36
+  86 000c 0268     		ldr	r2, [r0]	@ unaligned
+  87 000e C3F80720 		str	r2, [r3, #7]	@ unaligned
+  88 0012 0279     		ldrb	r2, [r0, #4]	@ zero_extendqisi2
+  89 0014 DA72     		strb	r2, [r3, #11]
+  43:modules/referee/rm_referee.c **** 	{
+  90              		.loc 1 43 2 view .LVU12
+  43:modules/referee/rm_referee.c **** 	{
+  91              		.loc 1 43 10 is_stmt 0 view .LVU13
+  92 0016 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+  43:modules/referee/rm_referee.c **** 	{
+  93              		.loc 1 43 5 view .LVU14
+ARM GAS  /tmp/ccG1IYeD.s 			page 5
+
+
+  94 0018 A52B     		cmp	r3, #165
+  95 001a 00D0     		beq	.L32
+  96              	.LVL4:
+  97              	.L5:
+ 116:modules/referee/rm_referee.c **** 
+  98              		.loc 1 116 1 view .LVU15
+  99 001c 38BD     		pop	{r3, r4, r5, pc}
+ 100              	.LVL5:
+ 101              	.L32:
+  46:modules/referee/rm_referee.c **** 		{
+ 102              		.loc 1 46 3 is_stmt 1 view .LVU16
+  46:modules/referee/rm_referee.c **** 		{
+ 103              		.loc 1 46 7 is_stmt 0 view .LVU17
+ 104 001e 0521     		movs	r1, #5
+ 105 0020 FFF7FEFF 		bl	Verify_CRC8_Check_Sum
+ 106              	.LVL6:
+  46:modules/referee/rm_referee.c **** 		{
+ 107              		.loc 1 46 6 view .LVU18
+ 108 0024 0128     		cmp	r0, #1
+ 109 0026 09D0     		beq	.L33
+ 110              	.L7:
+ 111:modules/referee/rm_referee.c **** 		{ // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包
+ 111              		.loc 1 111 3 is_stmt 1 view .LVU19
+ 111:modules/referee/rm_referee.c **** 		{ // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包
+ 112              		.loc 1 111 75 is_stmt 0 view .LVU20
+ 113 0028 8A4B     		ldr	r3, .L36
+ 114 002a 1B89     		ldrh	r3, [r3, #8]
+ 111:modules/referee/rm_referee.c **** 		{ // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包
+ 115              		.loc 1 111 87 view .LVU21
+ 116 002c 0933     		adds	r3, r3, #9
+ 117 002e E018     		adds	r0, r4, r3
+ 111:modules/referee/rm_referee.c **** 		{ // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包
+ 118              		.loc 1 111 7 view .LVU22
+ 119 0030 E35C     		ldrb	r3, [r4, r3]	@ zero_extendqisi2
+ 111:modules/referee/rm_referee.c **** 		{ // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包
+ 120              		.loc 1 111 6 view .LVU23
+ 121 0032 A52B     		cmp	r3, #165
+ 122 0034 F2D1     		bne	.L5
+ 113:modules/referee/rm_referee.c **** 		}
+ 123              		.loc 1 113 4 is_stmt 1 view .LVU24
+ 124 0036 FFF7E3FF 		bl	JudgeReadData
+ 125              	.LVL7:
+ 126 003a EFE7     		b	.L5
+ 127              	.L33:
+  49:modules/referee/rm_referee.c **** 			// 帧尾CRC16校验
+ 128              		.loc 1 49 4 view .LVU25
+  49:modules/referee/rm_referee.c **** 			// 帧尾CRC16校验
+ 129              		.loc 1 49 23 is_stmt 0 view .LVU26
+ 130 003c 6178     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ 131              	.LVL8:
+  51:modules/referee/rm_referee.c **** 			{
+ 132              		.loc 1 51 4 is_stmt 1 view .LVU27
+  51:modules/referee/rm_referee.c **** 			{
+ 133              		.loc 1 51 8 is_stmt 0 view .LVU28
+ 134 003e 0931     		adds	r1, r1, #9
+ 135              	.LVL9:
+  51:modules/referee/rm_referee.c **** 			{
+ARM GAS  /tmp/ccG1IYeD.s 			page 6
+
+
+ 136              		.loc 1 51 8 view .LVU29
+ 137 0040 2046     		mov	r0, r4
+ 138 0042 FFF7FEFF 		bl	Verify_CRC16_Check_Sum
+ 139              	.LVL10:
+  51:modules/referee/rm_referee.c **** 			{
+ 140              		.loc 1 51 7 view .LVU30
+ 141 0046 0128     		cmp	r0, #1
+ 142 0048 EED1     		bne	.L7
+  54:modules/referee/rm_referee.c **** 				// 解析数据命令码,将数据拷贝到相应结构体中(注意拷贝数据的长度)
+ 143              		.loc 1 54 5 is_stmt 1 view .LVU31
+  54:modules/referee/rm_referee.c **** 				// 解析数据命令码,将数据拷贝到相应结构体中(注意拷贝数据的长度)
+ 144              		.loc 1 54 31 is_stmt 0 view .LVU32
+ 145 004a A279     		ldrb	r2, [r4, #6]	@ zero_extendqisi2
+  54:modules/referee/rm_referee.c **** 				// 解析数据命令码,将数据拷贝到相应结构体中(注意拷贝数据的长度)
+ 146              		.loc 1 54 46 view .LVU33
+ 147 004c 6379     		ldrb	r3, [r4, #5]	@ zero_extendqisi2
+  54:modules/referee/rm_referee.c **** 				// 解析数据命令码,将数据拷贝到相应结构体中(注意拷贝数据的长度)
+ 148              		.loc 1 54 40 view .LVU34
+ 149 004e 43EA0223 		orr	r3, r3, r2, lsl #8
+  54:modules/referee/rm_referee.c **** 				// 解析数据命令码,将数据拷贝到相应结构体中(注意拷贝数据的长度)
+ 150              		.loc 1 54 24 view .LVU35
+ 151 0052 804A     		ldr	r2, .L36
+ 152 0054 9381     		strh	r3, [r2, #12]	@ movhi
+  57:modules/referee/rm_referee.c **** 				{
+ 153              		.loc 1 57 5 is_stmt 1 view .LVU36
+ 154 0056 40F20922 		movw	r2, #521
+ 155 005a 9342     		cmp	r3, r2
+ 156 005c 5ED8     		bhi	.L8
+ 157 005e B3F5007F 		cmp	r3, #512
+ 158 0062 41D8     		bhi	.L9
+ 159 0064 40F20112 		movw	r2, #257
+ 160 0068 9342     		cmp	r3, r2
+ 161 006a 73D0     		beq	.L10
+ 162 006c B3F5817F 		cmp	r3, #258
+ 163 0070 0FD3     		bcc	.L34
+ 164 0072 B3F5827F 		cmp	r3, #260
+ 165 0076 73D0     		beq	.L24
+ 166 0078 40F20512 		movw	r2, #261
+ 167 007c 9342     		cmp	r3, r2
+ 168 007e D3D1     		bne	.L7
+  75:modules/referee/rm_referee.c **** 				    break;
+ 169              		.loc 1 75 9 view .LVU37
+ 170 0080 744B     		ldr	r3, .L36
+ 171 0082 B4F80710 		ldrh	r1, [r4, #7]	@ unaligned
+ 172 0086 627A     		ldrb	r2, [r4, #9]	@ zero_extendqisi2
+ 173 0088 A3F83510 		strh	r1, [r3, #53]	@ unaligned
+ 174 008c 83F83720 		strb	r2, [r3, #55]
+  76:modules/referee/rm_referee.c **** 				case ID_game_robot_state: // 0x0201
+ 175              		.loc 1 76 9 view .LVU38
+ 176 0090 CAE7     		b	.L7
+ 177              	.L34:
+  57:modules/referee/rm_referee.c **** 				{
+ 178              		.loc 1 57 5 is_stmt 0 view .LVU39
+ 179 0092 022B     		cmp	r3, #2
+ 180 0094 5AD0     		beq	.L12
+ 181 0096 032B     		cmp	r3, #3
+ 182 0098 15D1     		bne	.L35
+ARM GAS  /tmp/ccG1IYeD.s 			page 7
+
+
+  66:modules/referee/rm_referee.c **** 					break;
+ 183              		.loc 1 66 6 is_stmt 1 view .LVU40
+ 184 009a 6E4B     		ldr	r3, .L36
+ 185 009c D4F80720 		ldr	r2, [r4, #7]	@ unaligned
+ 186 00a0 D4F80BC0 		ldr	ip, [r4, #11]	@ unaligned
+ 187 00a4 D4F80F00 		ldr	r0, [r4, #15]	@ unaligned
+ 188 00a8 D4F81310 		ldr	r1, [r4, #19]	@ unaligned
+ 189 00ac C3F81A20 		str	r2, [r3, #26]	@ unaligned
+ 190 00b0 C3F81EC0 		str	ip, [r3, #30]	@ unaligned
+ 191 00b4 C3F82200 		str	r0, [r3, #34]	@ unaligned
+ 192 00b8 C3F82610 		str	r1, [r3, #38]	@ unaligned
+ 193 00bc D4F81720 		ldr	r2, [r4, #23]	@ unaligned
+ 194 00c0 C3F82A20 		str	r2, [r3, #42]	@ unaligned
+  67:modules/referee/rm_referee.c **** 				case ID_event_data: // 0x0101
+ 195              		.loc 1 67 6 view .LVU41
+ 196 00c4 B0E7     		b	.L7
+ 197              	.L35:
+  57:modules/referee/rm_referee.c **** 				{
+ 198              		.loc 1 57 5 is_stmt 0 view .LVU42
+ 199 00c6 012B     		cmp	r3, #1
+ 200 00c8 AED1     		bne	.L7
+  60:modules/referee/rm_referee.c **** 					break;
+ 201              		.loc 1 60 6 is_stmt 1 view .LVU43
+ 202 00ca 624B     		ldr	r3, .L36
+ 203 00cc D4F80710 		ldr	r1, [r4, #7]	@ unaligned
+ 204 00d0 D4F80B20 		ldr	r2, [r4, #11]	@ unaligned
+ 205 00d4 C3F80E10 		str	r1, [r3, #14]	@ unaligned
+ 206 00d8 C3F81220 		str	r2, [r3, #18]	@ unaligned
+ 207 00dc B4F80F10 		ldrh	r1, [r4, #15]	@ unaligned
+ 208 00e0 627C     		ldrb	r2, [r4, #17]	@ zero_extendqisi2
+ 209 00e2 D982     		strh	r1, [r3, #22]	@ unaligned
+ 210 00e4 1A76     		strb	r2, [r3, #24]
+  61:modules/referee/rm_referee.c **** 				case ID_game_result: // 0x0002
+ 211              		.loc 1 61 6 view .LVU44
+ 212 00e6 9FE7     		b	.L7
+ 213              	.L9:
+  57:modules/referee/rm_referee.c **** 				{
+ 214              		.loc 1 57 5 is_stmt 0 view .LVU45
+ 215 00e8 A3F20123 		subw	r3, r3, #513
+ 216 00ec 082B     		cmp	r3, #8
+ 217 00ee 9BD8     		bhi	.L7
+ 218 00f0 01A2     		adr	r2, .L16
+ 219 00f2 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 220 00f6 00BF     		.p2align 2
+ 221              	.L16:
+ 222 00f8 71010000 		.word	.L23+1
+ 223 00fc 8B010000 		.word	.L22+1
+ 224 0100 AF010000 		.word	.L21+1
+ 225 0104 D3010000 		.word	.L20+1
+ 226 0108 29000000 		.word	.L7+1
+ 227 010c E7010000 		.word	.L19+1
+ 228 0110 F1010000 		.word	.L18+1
+ 229 0114 09020000 		.word	.L17+1
+ 230 0118 1D020000 		.word	.L15+1
+ 231              		.p2align 1
+ 232              	.L8:
+ 233 011c 40F20132 		movw	r2, #769
+ARM GAS  /tmp/ccG1IYeD.s 			page 8
+
+
+ 234 0120 9342     		cmp	r3, r2
+ 235 0122 00F08480 		beq	.L26
+ 236 0126 40F20332 		movw	r2, #771
+ 237 012a 9342     		cmp	r3, r2
+ 238 012c 7FF47CAF 		bne	.L7
+ 105:modules/referee/rm_referee.c **** 					break;
+ 239              		.loc 1 105 9 is_stmt 1 view .LVU46
+ 240 0130 494B     		ldr	r3, .L36+4
+ 241 0132 D4F80700 		ldr	r0, [r4, #7]	@ unaligned
+ 242 0136 D4F80B10 		ldr	r1, [r4, #11]	@ unaligned
+ 243 013a D4F80F20 		ldr	r2, [r4, #15]	@ unaligned
+ 244 013e 07C3     		stmia	r3!, {r0, r1, r2}
+ 245 0140 B4F81310 		ldrh	r1, [r4, #19]	@ unaligned
+ 246 0144 627D     		ldrb	r2, [r4, #21]	@ zero_extendqisi2
+ 247 0146 1980     		strh	r1, [r3]	@ unaligned
+ 248 0148 9A70     		strb	r2, [r3, #2]
+ 106:modules/referee/rm_referee.c **** 				}
+ 249              		.loc 1 106 6 view .LVU47
+ 250 014a 6DE7     		b	.L7
+ 251              	.L12:
+  63:modules/referee/rm_referee.c **** 					break;
+ 252              		.loc 1 63 6 view .LVU48
+ 253 014c E279     		ldrb	r2, [r4, #7]	@ zero_extendqisi2
+ 254 014e 414B     		ldr	r3, .L36
+ 255 0150 5A76     		strb	r2, [r3, #25]
+  64:modules/referee/rm_referee.c **** 				case ID_game_robot_survivors: // 0x0003
+ 256              		.loc 1 64 6 view .LVU49
+ 257 0152 69E7     		b	.L7
+ 258              	.L10:
+  69:modules/referee/rm_referee.c **** 					break;
+ 259              		.loc 1 69 6 view .LVU50
+ 260 0154 D4F80720 		ldr	r2, [r4, #7]	@ unaligned
+ 261 0158 3E4B     		ldr	r3, .L36
+ 262 015a C3F82E20 		str	r2, [r3, #46]	@ unaligned
+  70:modules/referee/rm_referee.c **** 				case ID_referee_warning_t://0x104
+ 263              		.loc 1 70 6 view .LVU51
+ 264 015e 63E7     		b	.L7
+ 265              	.L24:
+  72:modules/referee/rm_referee.c **** 					break;
+ 266              		.loc 1 72 9 view .LVU52
+ 267 0160 3C4B     		ldr	r3, .L36
+ 268 0162 B4F80710 		ldrh	r1, [r4, #7]	@ unaligned
+ 269 0166 627A     		ldrb	r2, [r4, #9]	@ zero_extendqisi2
+ 270 0168 5986     		strh	r1, [r3, #50]	@ unaligned
+ 271 016a 83F83420 		strb	r2, [r3, #52]
+  73:modules/referee/rm_referee.c **** 				case ID_dart_info_t://0x105
+ 272              		.loc 1 73 6 view .LVU53
+ 273 016e 5BE7     		b	.L7
+ 274              	.L23:
+  78:modules/referee/rm_referee.c **** 					break;
+ 275              		.loc 1 78 6 view .LVU54
+ 276 0170 3A4D     		ldr	r5, .L36+8
+ 277 0172 D4F80700 		ldr	r0, [r4, #7]	@ unaligned
+ 278 0176 D4F80B10 		ldr	r1, [r4, #11]	@ unaligned
+ 279 017a D4F80F20 		ldr	r2, [r4, #15]	@ unaligned
+ 280 017e D4F81330 		ldr	r3, [r4, #19]	@ unaligned
+ 281 0182 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ARM GAS  /tmp/ccG1IYeD.s 			page 9
+
+
+ 282 0184 E37D     		ldrb	r3, [r4, #23]	@ zero_extendqisi2
+ 283 0186 2B70     		strb	r3, [r5]
+  79:modules/referee/rm_referee.c **** 				case ID_power_heat_data: // 0x0202
+ 284              		.loc 1 79 6 view .LVU55
+ 285 0188 4EE7     		b	.L7
+ 286              	.L22:
+  81:modules/referee/rm_referee.c **** 					break;
+ 287              		.loc 1 81 6 view .LVU56
+ 288 018a 324B     		ldr	r3, .L36
+ 289 018c D4F80700 		ldr	r0, [r4, #7]	@ unaligned
+ 290 0190 D4F80B10 		ldr	r1, [r4, #11]	@ unaligned
+ 291 0194 D4F80F20 		ldr	r2, [r4, #15]	@ unaligned
+ 292 0198 C3F84900 		str	r0, [r3, #73]	@ unaligned
+ 293 019c C3F84D10 		str	r1, [r3, #77]	@ unaligned
+ 294 01a0 C3F85120 		str	r2, [r3, #81]	@ unaligned
+ 295 01a4 B4F81320 		ldrh	r2, [r4, #19]	@ unaligned
+ 296 01a8 A3F85520 		strh	r2, [r3, #85]	@ unaligned
+  82:modules/referee/rm_referee.c **** 				case ID_game_robot_pos: // 0x0203
+ 297              		.loc 1 82 6 view .LVU57
+ 298 01ac 3CE7     		b	.L7
+ 299              	.L21:
+  84:modules/referee/rm_referee.c **** 					break;
+ 300              		.loc 1 84 6 view .LVU58
+ 301 01ae 294B     		ldr	r3, .L36
+ 302 01b0 D4F807C0 		ldr	ip, [r4, #7]	@ unaligned
+ 303 01b4 D4F80B00 		ldr	r0, [r4, #11]	@ unaligned
+ 304 01b8 D4F80F10 		ldr	r1, [r4, #15]	@ unaligned
+ 305 01bc D4F81320 		ldr	r2, [r4, #19]	@ unaligned
+ 306 01c0 C3F857C0 		str	ip, [r3, #87]	@ unaligned
+ 307 01c4 C3F85B00 		str	r0, [r3, #91]	@ unaligned
+ 308 01c8 C3F85F10 		str	r1, [r3, #95]	@ unaligned
+ 309 01cc C3F86320 		str	r2, [r3, #99]	@ unaligned
+  85:modules/referee/rm_referee.c **** 				case ID_buff_musk: // 0x0204
+ 310              		.loc 1 85 6 view .LVU59
+ 311 01d0 2AE7     		b	.L7
+ 312              	.L20:
+  87:modules/referee/rm_referee.c **** 					break;
+ 313              		.loc 1 87 6 view .LVU60
+ 314 01d2 204B     		ldr	r3, .L36
+ 315 01d4 D4F80710 		ldr	r1, [r4, #7]	@ unaligned
+ 316 01d8 D4F80B20 		ldr	r2, [r4, #11]	@ unaligned
+ 317 01dc C3F86710 		str	r1, [r3, #103]	@ unaligned
+ 318 01e0 C3F86B20 		str	r2, [r3, #107]	@ unaligned
+  88:modules/referee/rm_referee.c **** 				case ID_robot_hurt: // 0x0206
+ 319              		.loc 1 88 6 view .LVU61
+ 320 01e4 20E7     		b	.L7
+ 321              	.L19:
+  90:modules/referee/rm_referee.c **** 					break;
+ 322              		.loc 1 90 6 view .LVU62
+ 323 01e6 E279     		ldrb	r2, [r4, #7]	@ zero_extendqisi2
+ 324 01e8 1A4B     		ldr	r3, .L36
+ 325 01ea 83F86F20 		strb	r2, [r3, #111]
+  91:modules/referee/rm_referee.c **** 				case ID_shoot_data: // 0x0207
+ 326              		.loc 1 91 6 view .LVU63
+ 327 01ee 1BE7     		b	.L7
+ 328              	.L18:
+  93:modules/referee/rm_referee.c **** 					break;
+ARM GAS  /tmp/ccG1IYeD.s 			page 10
+
+
+ 329              		.loc 1 93 6 view .LVU64
+ 330 01f0 184B     		ldr	r3, .L36
+ 331 01f2 D4F80700 		ldr	r0, [r4, #7]	@ unaligned
+ 332 01f6 1867     		str	r0, [r3, #112]
+ 333 01f8 B4F80B10 		ldrh	r1, [r4, #11]	@ unaligned
+ 334 01fc 627B     		ldrb	r2, [r4, #13]	@ zero_extendqisi2
+ 335 01fe A3F87410 		strh	r1, [r3, #116]	@ unaligned
+ 336 0202 83F87620 		strb	r2, [r3, #118]
+  94:modules/referee/rm_referee.c **** 				case ID_projectile_allowance_t://0x208
+ 337              		.loc 1 94 6 view .LVU65
+ 338 0206 0FE7     		b	.L7
+ 339              	.L17:
+  96:modules/referee/rm_referee.c **** 					break;
+ 340              		.loc 1 96 9 view .LVU66
+ 341 0208 124B     		ldr	r3, .L36
+ 342 020a D4F80710 		ldr	r1, [r4, #7]	@ unaligned
+ 343 020e D4F80B20 		ldr	r2, [r4, #11]	@ unaligned
+ 344 0212 C3F87710 		str	r1, [r3, #119]	@ unaligned
+ 345 0216 C3F87B20 		str	r2, [r3, #123]	@ unaligned
+  97:modules/referee/rm_referee.c **** 				case ID_rfid_status_t://0x209
+ 346              		.loc 1 97 6 view .LVU67
+ 347 021a 05E7     		b	.L7
+ 348              	.L15:
+  99:modules/referee/rm_referee.c **** 					break;
+ 349              		.loc 1 99 9 view .LVU68
+ 350 021c 0D4B     		ldr	r3, .L36
+ 351 021e D4F80720 		ldr	r2, [r4, #7]	@ unaligned
+ 352 0222 C3F87F20 		str	r2, [r3, #127]	@ unaligned
+ 353 0226 E27A     		ldrb	r2, [r4, #11]	@ zero_extendqisi2
+ 354 0228 83F88320 		strb	r2, [r3, #131]
+ 100:modules/referee/rm_referee.c **** 				case ID_student_interactive: // 0x0301   syhtodo接收代码未测试
+ 355              		.loc 1 100 6 view .LVU69
+ 356 022c FCE6     		b	.L7
+ 357              	.L26:
+ 102:modules/referee/rm_referee.c **** 					break;
+ 358              		.loc 1 102 6 view .LVU70
+ 359 022e 094B     		ldr	r3, .L36
+ 360 0230 D4F80710 		ldr	r1, [r4, #7]	@ unaligned
+ 361 0234 D4F80B20 		ldr	r2, [r4, #11]	@ unaligned
+ 362 0238 C3F89310 		str	r1, [r3, #147]	@ unaligned
+ 363 023c C3F89720 		str	r2, [r3, #151]	@ unaligned
+ 364 0240 B4F80F10 		ldrh	r1, [r4, #15]	@ unaligned
+ 365 0244 627C     		ldrb	r2, [r4, #17]	@ zero_extendqisi2
+ 366 0246 A3F89B10 		strh	r1, [r3, #155]	@ unaligned
+ 367 024a 83F89D20 		strb	r2, [r3, #157]
+ 103:modules/referee/rm_referee.c **** 				case ID_map_interact_data://0x303
+ 368              		.loc 1 103 6 view .LVU71
+ 369 024e EBE6     		b	.L7
+ 370              	.LVL11:
+ 371              	.L29:
+ 372              	.LCFI2:
+ 373              		.cfi_def_cfa_offset 0
+ 374              		.cfi_restore 3
+ 375              		.cfi_restore 4
+ 376              		.cfi_restore 5
+ 377              		.cfi_restore 14
+ 103:modules/referee/rm_referee.c **** 				case ID_map_interact_data://0x303
+ARM GAS  /tmp/ccG1IYeD.s 			page 11
+
+
+ 378              		.loc 1 103 6 is_stmt 0 view .LVU72
+ 379 0250 7047     		bx	lr
+ 380              	.L37:
+ 381 0252 00BF     		.align	2
+ 382              	.L36:
+ 383 0254 00000000 		.word	.LANCHOR1
+ 384 0258 84000000 		.word	.LANCHOR1+132
+ 385 025c 38000000 		.word	.LANCHOR1+56
+ 386              		.cfi_endproc
+ 387              	.LFE280:
+ 389              		.section	.text.RefereeRxCallback,"ax",%progbits
+ 390              		.align	1
+ 391              		.syntax unified
+ 392              		.thumb
+ 393              		.thumb_func
+ 394              		.fpu fpv4-sp-d16
+ 396              	RefereeRxCallback:
+ 397              	.LFB281:
+ 120:modules/referee/rm_referee.c **** 	DaemonReload(referee_daemon);
+ 398              		.loc 1 120 1 is_stmt 1 view -0
+ 399              		.cfi_startproc
+ 400              		@ args = 0, pretend = 0, frame = 0
+ 401              		@ frame_needed = 0, uses_anonymous_args = 0
+ 402 0000 08B5     		push	{r3, lr}
+ 403              	.LCFI3:
+ 404              		.cfi_def_cfa_offset 8
+ 405              		.cfi_offset 3, -8
+ 406              		.cfi_offset 14, -4
+ 121:modules/referee/rm_referee.c **** 	JudgeReadData(referee_usart_instance->recv_buff);
+ 407              		.loc 1 121 2 view .LVU74
+ 408 0002 044B     		ldr	r3, .L40
+ 409 0004 1868     		ldr	r0, [r3]
+ 410 0006 FFF7FEFF 		bl	DaemonReload
+ 411              	.LVL12:
+ 122:modules/referee/rm_referee.c **** }
+ 412              		.loc 1 122 2 view .LVU75
+ 413 000a 034B     		ldr	r3, .L40+4
+ 414 000c 1868     		ldr	r0, [r3]
+ 415 000e FFF7FEFF 		bl	JudgeReadData
+ 416              	.LVL13:
+ 123:modules/referee/rm_referee.c **** // 裁判系统丢失回调函数,重新初始化裁判系统串口
+ 417              		.loc 1 123 1 is_stmt 0 view .LVU76
+ 418 0012 08BD     		pop	{r3, pc}
+ 419              	.L41:
+ 420              		.align	2
+ 421              	.L40:
+ 422 0014 00000000 		.word	.LANCHOR2
+ 423 0018 00000000 		.word	.LANCHOR0
+ 424              		.cfi_endproc
+ 425              	.LFE281:
+ 427              		.section	.text.RefereeInit,"ax",%progbits
+ 428              		.align	1
+ 429              		.global	RefereeInit
+ 430              		.syntax unified
+ 431              		.thumb
+ 432              		.thumb_func
+ 433              		.fpu fpv4-sp-d16
+ARM GAS  /tmp/ccG1IYeD.s 			page 12
+
+
+ 435              	RefereeInit:
+ 436              	.LVL14:
+ 437              	.LFB283:
+ 130:modules/referee/rm_referee.c **** 
+ 131:modules/referee/rm_referee.c **** /* 裁判系统通信初始化 */
+ 132:modules/referee/rm_referee.c **** referee_info_t *RefereeInit(UART_HandleTypeDef *referee_usart_handle)
+ 133:modules/referee/rm_referee.c **** {
+ 438              		.loc 1 133 1 is_stmt 1 view -0
+ 439              		.cfi_startproc
+ 440              		@ args = 0, pretend = 0, frame = 24
+ 441              		@ frame_needed = 0, uses_anonymous_args = 0
+ 442              		.loc 1 133 1 is_stmt 0 view .LVU78
+ 443 0000 00B5     		push	{lr}
+ 444              	.LCFI4:
+ 445              		.cfi_def_cfa_offset 4
+ 446              		.cfi_offset 14, -4
+ 447 0002 87B0     		sub	sp, sp, #28
+ 448              	.LCFI5:
+ 449              		.cfi_def_cfa_offset 32
+ 134:modules/referee/rm_referee.c **** 	USART_Init_Config_s conf;
+ 450              		.loc 1 134 2 is_stmt 1 view .LVU79
+ 135:modules/referee/rm_referee.c **** 	conf.module_callback = RefereeRxCallback;
+ 451              		.loc 1 135 2 view .LVU80
+ 452              		.loc 1 135 23 is_stmt 0 view .LVU81
+ 453 0004 0E4B     		ldr	r3, .L44
+ 454 0006 0593     		str	r3, [sp, #20]
+ 136:modules/referee/rm_referee.c **** 	conf.usart_handle = referee_usart_handle;
+ 455              		.loc 1 136 2 is_stmt 1 view .LVU82
+ 456              		.loc 1 136 20 is_stmt 0 view .LVU83
+ 457 0008 0490     		str	r0, [sp, #16]
+ 137:modules/referee/rm_referee.c **** 	conf.recv_buff_size = RE_RX_BUFFER_SIZE; // mx 255(u8)
+ 458              		.loc 1 137 2 is_stmt 1 view .LVU84
+ 459              		.loc 1 137 22 is_stmt 0 view .LVU85
+ 460 000a FF23     		movs	r3, #255
+ 461 000c 8DF80C30 		strb	r3, [sp, #12]
+ 138:modules/referee/rm_referee.c **** 	referee_usart_instance = USARTRegister(&conf);
+ 462              		.loc 1 138 2 is_stmt 1 view .LVU86
+ 463              		.loc 1 138 27 is_stmt 0 view .LVU87
+ 464 0010 03A8     		add	r0, sp, #12
+ 465              	.LVL15:
+ 466              		.loc 1 138 27 view .LVU88
+ 467 0012 FFF7FEFF 		bl	USARTRegister
+ 468              	.LVL16:
+ 469              		.loc 1 138 25 view .LVU89
+ 470 0016 0B4B     		ldr	r3, .L44+4
+ 471 0018 1860     		str	r0, [r3]
+ 139:modules/referee/rm_referee.c **** 
+ 140:modules/referee/rm_referee.c **** 	Daemon_Init_Config_s daemon_conf = {
+ 472              		.loc 1 140 2 is_stmt 1 view .LVU90
+ 473              		.loc 1 140 23 is_stmt 0 view .LVU91
+ 474 001a 0023     		movs	r3, #0
+ 475 001c 0093     		str	r3, [sp]
+ 476 001e 0193     		str	r3, [sp, #4]
+ 477 0020 0293     		str	r3, [sp, #8]
+ 478 0022 1E23     		movs	r3, #30
+ 479 0024 ADF80030 		strh	r3, [sp]	@ movhi
+ 480 0028 074B     		ldr	r3, .L44+8
+ARM GAS  /tmp/ccG1IYeD.s 			page 13
+
+
+ 481 002a 0193     		str	r3, [sp, #4]
+ 482 002c 0290     		str	r0, [sp, #8]
+ 141:modules/referee/rm_referee.c **** 		.callback = RefereeLostCallback,
+ 142:modules/referee/rm_referee.c **** 		.owner_id = referee_usart_instance,
+ 143:modules/referee/rm_referee.c **** 		.reload_count = 30, // 0.3s没有收到数据,则认为丢失,重启串口接收
+ 144:modules/referee/rm_referee.c **** 	};
+ 145:modules/referee/rm_referee.c **** 	referee_daemon = DaemonRegister(&daemon_conf);
+ 483              		.loc 1 145 2 is_stmt 1 view .LVU92
+ 484              		.loc 1 145 19 is_stmt 0 view .LVU93
+ 485 002e 6846     		mov	r0, sp
+ 486 0030 FFF7FEFF 		bl	DaemonRegister
+ 487              	.LVL17:
+ 488              		.loc 1 145 17 view .LVU94
+ 489 0034 054B     		ldr	r3, .L44+12
+ 490 0036 1860     		str	r0, [r3]
+ 146:modules/referee/rm_referee.c **** 
+ 147:modules/referee/rm_referee.c **** 	return &referee_info;
+ 491              		.loc 1 147 2 is_stmt 1 view .LVU95
+ 148:modules/referee/rm_referee.c **** }
+ 492              		.loc 1 148 1 is_stmt 0 view .LVU96
+ 493 0038 0548     		ldr	r0, .L44+16
+ 494 003a 07B0     		add	sp, sp, #28
+ 495              	.LCFI6:
+ 496              		.cfi_def_cfa_offset 4
+ 497              		@ sp needed
+ 498 003c 5DF804FB 		ldr	pc, [sp], #4
+ 499              	.L45:
+ 500              		.align	2
+ 501              	.L44:
+ 502 0040 00000000 		.word	RefereeRxCallback
+ 503 0044 00000000 		.word	.LANCHOR0
+ 504 0048 00000000 		.word	RefereeLostCallback
+ 505 004c 00000000 		.word	.LANCHOR2
+ 506 0050 00000000 		.word	.LANCHOR1
+ 507              		.cfi_endproc
+ 508              	.LFE283:
+ 510              		.section	.text.RefereeSend,"ax",%progbits
+ 511              		.align	1
+ 512              		.global	RefereeSend
+ 513              		.syntax unified
+ 514              		.thumb
+ 515              		.thumb_func
+ 516              		.fpu fpv4-sp-d16
+ 518              	RefereeSend:
+ 519              	.LVL18:
+ 520              	.LFB284:
+ 149:modules/referee/rm_referee.c **** 
+ 150:modules/referee/rm_referee.c **** /**
+ 151:modules/referee/rm_referee.c ****  * @brief 裁判系统数据发送函数
+ 152:modules/referee/rm_referee.c ****  * @param
+ 153:modules/referee/rm_referee.c ****  */
+ 154:modules/referee/rm_referee.c **** void RefereeSend(uint8_t *send, uint16_t tx_len)
+ 155:modules/referee/rm_referee.c **** {
+ 521              		.loc 1 155 1 is_stmt 1 view -0
+ 522              		.cfi_startproc
+ 523              		@ args = 0, pretend = 0, frame = 0
+ 524              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/ccG1IYeD.s 			page 14
+
+
+ 525              		.loc 1 155 1 is_stmt 0 view .LVU98
+ 526 0000 08B5     		push	{r3, lr}
+ 527              	.LCFI7:
+ 528              		.cfi_def_cfa_offset 8
+ 529              		.cfi_offset 3, -8
+ 530              		.cfi_offset 14, -4
+ 531 0002 0A46     		mov	r2, r1
+ 156:modules/referee/rm_referee.c **** 	USARTSend(referee_usart_instance, send, tx_len, USART_TRANSFER_DMA);
+ 532              		.loc 1 156 2 is_stmt 1 view .LVU99
+ 533 0004 0323     		movs	r3, #3
+ 534 0006 0146     		mov	r1, r0
+ 535              	.LVL19:
+ 536              		.loc 1 156 2 is_stmt 0 view .LVU100
+ 537 0008 0348     		ldr	r0, .L48
+ 538              	.LVL20:
+ 539              		.loc 1 156 2 view .LVU101
+ 540 000a 0068     		ldr	r0, [r0]
+ 541 000c FFF7FEFF 		bl	USARTSend
+ 542              	.LVL21:
+ 157:modules/referee/rm_referee.c **** 	osDelay(34);
+ 543              		.loc 1 157 2 is_stmt 1 view .LVU102
+ 544 0010 2220     		movs	r0, #34
+ 545 0012 FFF7FEFF 		bl	osDelay
+ 546              	.LVL22:
+ 158:modules/referee/rm_referee.c **** }
+ 547              		.loc 1 158 1 is_stmt 0 view .LVU103
+ 548 0016 08BD     		pop	{r3, pc}
+ 549              	.L49:
+ 550              		.align	2
+ 551              	.L48:
+ 552 0018 00000000 		.word	.LANCHOR0
+ 553              		.cfi_endproc
+ 554              	.LFE284:
+ 556              		.section	.bss.referee_daemon,"aw",%nobits
+ 557              		.align	2
+ 558              		.set	.LANCHOR2,. + 0
+ 561              	referee_daemon:
+ 562 0000 00000000 		.space	4
+ 563              		.section	.bss.referee_info,"aw",%nobits
+ 564              		.align	2
+ 565              		.set	.LANCHOR1,. + 0
+ 568              	referee_info:
+ 569 0000 00000000 		.space	159
+ 569      00000000 
+ 569      00000000 
+ 569      00000000 
+ 569      00000000 
+ 570              		.section	.bss.referee_usart_instance,"aw",%nobits
+ 571              		.align	2
+ 572              		.set	.LANCHOR0,. + 0
+ 575              	referee_usart_instance:
+ 576 0000 00000000 		.space	4
+ 577              		.text
+ 578              	.Letext0:
+ 579              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 580              		.file 3 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 581              		.file 4 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ARM GAS  /tmp/ccG1IYeD.s 			page 15
+
+
+ 582              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 583              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 584              		.file 7 "modules/referee/referee_protocol.h"
+ 585              		.file 8 "bsp/usart/bsp_usart.h"
+ 586              		.file 9 "modules/referee/rm_referee.h"
+ 587              		.file 10 "modules/daemon/daemon.h"
+ 588              		.file 11 "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
+ 589              		.file 12 "modules/referee/crc_ref.h"
+ARM GAS  /tmp/ccG1IYeD.s 			page 16
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 rm_referee.c
+     /tmp/ccG1IYeD.s:18     .text.RefereeLostCallback:0000000000000000 $t
+     /tmp/ccG1IYeD.s:25     .text.RefereeLostCallback:0000000000000000 RefereeLostCallback
+     /tmp/ccG1IYeD.s:52     .text.RefereeLostCallback:000000000000000c $d
+     /tmp/ccG1IYeD.s:57     .text.JudgeReadData:0000000000000000 $t
+     /tmp/ccG1IYeD.s:63     .text.JudgeReadData:0000000000000000 JudgeReadData
+     /tmp/ccG1IYeD.s:222    .text.JudgeReadData:00000000000000f8 $d
+     /tmp/ccG1IYeD.s:231    .text.JudgeReadData:000000000000011c $t
+     /tmp/ccG1IYeD.s:383    .text.JudgeReadData:0000000000000254 $d
+     /tmp/ccG1IYeD.s:390    .text.RefereeRxCallback:0000000000000000 $t
+     /tmp/ccG1IYeD.s:396    .text.RefereeRxCallback:0000000000000000 RefereeRxCallback
+     /tmp/ccG1IYeD.s:422    .text.RefereeRxCallback:0000000000000014 $d
+     /tmp/ccG1IYeD.s:428    .text.RefereeInit:0000000000000000 $t
+     /tmp/ccG1IYeD.s:435    .text.RefereeInit:0000000000000000 RefereeInit
+     /tmp/ccG1IYeD.s:502    .text.RefereeInit:0000000000000040 $d
+     /tmp/ccG1IYeD.s:511    .text.RefereeSend:0000000000000000 $t
+     /tmp/ccG1IYeD.s:518    .text.RefereeSend:0000000000000000 RefereeSend
+     /tmp/ccG1IYeD.s:552    .text.RefereeSend:0000000000000018 $d
+     /tmp/ccG1IYeD.s:557    .bss.referee_daemon:0000000000000000 $d
+     /tmp/ccG1IYeD.s:561    .bss.referee_daemon:0000000000000000 referee_daemon
+     /tmp/ccG1IYeD.s:564    .bss.referee_info:0000000000000000 $d
+     /tmp/ccG1IYeD.s:568    .bss.referee_info:0000000000000000 referee_info
+     /tmp/ccG1IYeD.s:571    .bss.referee_usart_instance:0000000000000000 $d
+     /tmp/ccG1IYeD.s:575    .bss.referee_usart_instance:0000000000000000 referee_usart_instance
+
+UNDEFINED SYMBOLS
+USARTServiceInit
+Verify_CRC8_Check_Sum
+Verify_CRC16_Check_Sum
+DaemonReload
+USARTRegister
+DaemonRegister
+USARTSend
+osDelay

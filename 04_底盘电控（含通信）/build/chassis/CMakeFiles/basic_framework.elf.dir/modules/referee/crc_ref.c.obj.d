@@ -1,6 +1,6 @@
 CMakeFiles/basic_framework.elf.dir/modules/referee/crc_ref.c.obj: \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/referee/crc_ref.c \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/referee/crc_ref.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/referee/crc_ref.c \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/referee/crc_ref.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
  /usr/include/newlib/stdio.h /usr/include/newlib/_ansi.h \
  /usr/include/newlib/newlib.h /usr/include/newlib/_newlib_version.h \

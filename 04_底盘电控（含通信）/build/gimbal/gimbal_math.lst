@@ -1,0 +1,1543 @@
+ARM GAS  /tmp/ccyHnENa.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gimbal_math.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Clamp,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	Clamp:
+  26              	.LVL0:
+  27              	.LFB0:
+  28              		.file 1 "application/gimbal/gimbal_math.c"
+   1:application/gimbal/gimbal_math.c **** /* [USB_SP 新增 01 开始] 新增与视觉M转置*R(q)*M一致的姿态、欧拉角速度及机�
+   2:application/gimbal/gimbal_math.c **** #include "gimbal_math.h"
+   3:application/gimbal/gimbal_math.c **** #include <math.h>
+   4:application/gimbal/gimbal_math.c **** 
+   5:application/gimbal/gimbal_math.c **** #define PI_F 3.14159265358979323846f
+   6:application/gimbal/gimbal_math.c **** static float Clamp(float x, float lo, float hi) { return fminf(fmaxf(x, lo), hi); }
+  29              		.loc 1 6 49 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 6 49 is_stmt 0 view .LVU1
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+  39 0002 2DED028B 		vpush.64	{d8}
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 16
+  42              		.cfi_offset 80, -16
+  43              		.cfi_offset 81, -12
+  44 0006 B0EE418A 		vmov.f32	s16, s2
+  45              		.loc 1 6 51 is_stmt 1 view .LVU2
+  46              		.loc 1 6 58 is_stmt 0 view .LVU3
+  47 000a FFF7FEFF 		bl	fmaxf
+  48              	.LVL1:
+  49              		.loc 1 6 58 view .LVU4
+  50 000e F0EE480A 		vmov.f32	s1, s16
+  51 0012 FFF7FEFF 		bl	fminf
+  52              	.LVL2:
+ARM GAS  /tmp/ccyHnENa.s 			page 2
+
+
+  53              		.loc 1 6 83 view .LVU5
+  54 0016 BDEC028B 		vldm	sp!, {d8}
+  55              	.LCFI2:
+  56              		.cfi_restore 80
+  57              		.cfi_restore 81
+  58              		.cfi_def_cfa_offset 8
+  59              	.LVL3:
+  60              		.loc 1 6 83 view .LVU6
+  61 001a 08BD     		pop	{r3, pc}
+  62              		.cfi_endproc
+  63              	.LFE0:
+  65              		.section	.text.GimbalWrapRad,"ax",%progbits
+  66              		.align	1
+  67              		.global	GimbalWrapRad
+  68              		.syntax unified
+  69              		.thumb
+  70              		.thumb_func
+  71              		.fpu fpv4-sp-d16
+  73              	GimbalWrapRad:
+  74              	.LVL4:
+  75              	.LFB1:
+   7:application/gimbal/gimbal_math.c **** 
+   8:application/gimbal/gimbal_math.c **** float GimbalWrapRad(float angle)
+   9:application/gimbal/gimbal_math.c **** {
+  76              		.loc 1 9 1 is_stmt 1 view -0
+  77              		.cfi_startproc
+  78              		@ args = 0, pretend = 0, frame = 0
+  79              		@ frame_needed = 0, uses_anonymous_args = 0
+  80              		.loc 1 9 1 is_stmt 0 view .LVU8
+  81 0000 08B5     		push	{r3, lr}
+  82              	.LCFI3:
+  83              		.cfi_def_cfa_offset 8
+  84              		.cfi_offset 3, -8
+  85              		.cfi_offset 14, -4
+  10:application/gimbal/gimbal_math.c ****     float a = remainderf(angle, 2.0f * PI_F);
+  86              		.loc 1 10 5 is_stmt 1 view .LVU9
+  87              		.loc 1 10 15 is_stmt 0 view .LVU10
+  88 0002 DFED020A 		vldr.32	s1, .L5
+  89 0006 FFF7FEFF 		bl	remainderf
+  90              	.LVL5:
+  11:application/gimbal/gimbal_math.c ****     return a;
+  91              		.loc 1 11 5 is_stmt 1 view .LVU11
+  12:application/gimbal/gimbal_math.c **** }
+  92              		.loc 1 12 1 is_stmt 0 view .LVU12
+  93 000a 08BD     		pop	{r3, pc}
+  94              	.L6:
+  95              		.align	2
+  96              	.L5:
+  97 000c DB0FC940 		.word	1086918619
+  98              		.cfi_endproc
+  99              	.LFE1:
+ 101              		.section	.text.GimbalWrapDeg,"ax",%progbits
+ 102              		.align	1
+ 103              		.global	GimbalWrapDeg
+ 104              		.syntax unified
+ 105              		.thumb
+ 106              		.thumb_func
+ARM GAS  /tmp/ccyHnENa.s 			page 3
+
+
+ 107              		.fpu fpv4-sp-d16
+ 109              	GimbalWrapDeg:
+ 110              	.LVL6:
+ 111              	.LFB2:
+  13:application/gimbal/gimbal_math.c **** 
+  14:application/gimbal/gimbal_math.c **** float GimbalWrapDeg(float angle) { return remainderf(angle, 360.0f); }
+ 112              		.loc 1 14 34 is_stmt 1 view -0
+ 113              		.cfi_startproc
+ 114              		@ args = 0, pretend = 0, frame = 0
+ 115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 116              		.loc 1 14 34 is_stmt 0 view .LVU14
+ 117 0000 08B5     		push	{r3, lr}
+ 118              	.LCFI4:
+ 119              		.cfi_def_cfa_offset 8
+ 120              		.cfi_offset 3, -8
+ 121              		.cfi_offset 14, -4
+ 122              		.loc 1 14 36 is_stmt 1 view .LVU15
+ 123              		.loc 1 14 43 is_stmt 0 view .LVU16
+ 124 0002 DFED020A 		vldr.32	s1, .L9
+ 125 0006 FFF7FEFF 		bl	remainderf
+ 126              	.LVL7:
+ 127              		.loc 1 14 70 view .LVU17
+ 128 000a 08BD     		pop	{r3, pc}
+ 129              	.L10:
+ 130              		.align	2
+ 131              	.L9:
+ 132 000c 0000B443 		.word	1135869952
+ 133              		.cfi_endproc
+ 134              	.LFE2:
+ 136              		.section	.text.GimbalRotationValid,"ax",%progbits
+ 137              		.align	1
+ 138              		.global	GimbalRotationValid
+ 139              		.syntax unified
+ 140              		.thumb
+ 141              		.thumb_func
+ 142              		.fpu fpv4-sp-d16
+ 144              	GimbalRotationValid:
+ 145              	.LVL8:
+ 146              	.LFB3:
+  15:application/gimbal/gimbal_math.c **** 
+  16:application/gimbal/gimbal_math.c **** int GimbalRotationValid(const float m[9])
+  17:application/gimbal/gimbal_math.c **** {
+ 147              		.loc 1 17 1 is_stmt 1 view -0
+ 148              		.cfi_startproc
+ 149              		@ args = 0, pretend = 0, frame = 0
+ 150              		@ frame_needed = 0, uses_anonymous_args = 0
+  18:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 9; ++i) if (!isfinite(m[i])) return 0;
+ 151              		.loc 1 18 5 view .LVU19
+ 152              	.LBB2:
+ 153              		.loc 1 18 10 view .LVU20
+ 154              		.loc 1 18 14 is_stmt 0 view .LVU21
+ 155 0000 0023     		movs	r3, #0
+ 156              		.loc 1 18 5 view .LVU22
+ 157 0002 00E0     		b	.L12
+ 158              	.LVL9:
+ 159              	.L30:
+ 160              		.loc 1 18 28 is_stmt 1 discriminator 3 view .LVU23
+ARM GAS  /tmp/ccyHnENa.s 			page 4
+
+
+ 161 0004 0133     		adds	r3, r3, #1
+ 162              	.LVL10:
+ 163              	.L12:
+ 164              		.loc 1 18 21 discriminator 4 view .LVU24
+ 165              		.loc 1 18 5 is_stmt 0 discriminator 4 view .LVU25
+ 166 0006 082B     		cmp	r3, #8
+ 167 0008 0EDC     		bgt	.L29
+ 168              		.loc 1 18 33 is_stmt 1 discriminator 5 view .LVU26
+ 169              		.loc 1 18 38 is_stmt 0 discriminator 5 view .LVU27
+ 170 000a 00EB8302 		add	r2, r0, r3, lsl #2
+ 171 000e D2ED007A 		vldr.32	s15, [r2]
+ 172 0012 F0EEE77A 		vabs.f32	s15, s15
+ 173              		.loc 1 18 36 discriminator 5 view .LVU28
+ 174 0016 9FED427A 		vldr.32	s14, .L34
+ 175 001a F4EE477A 		vcmp.f32	s15, s14
+ 176 001e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 177 0022 EFD9     		bls	.L30
+ 178              		.loc 1 18 61 view .LVU29
+ 179 0024 0020     		movs	r0, #0
+ 180              	.LVL11:
+ 181              		.loc 1 18 61 view .LVU30
+ 182              	.LBE2:
+  19:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 3; ++i)
+  20:application/gimbal/gimbal_math.c ****         for (int j = 0; j < 3; ++j) {
+  21:application/gimbal/gimbal_math.c ****             float dot = 0;
+  22:application/gimbal/gimbal_math.c ****             for (int k = 0; k < 3; ++k) dot += m[k * 3 + i] * m[k * 3 + j];
+  23:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+  24:application/gimbal/gimbal_math.c ****         }
+  25:application/gimbal/gimbal_math.c ****     float det = m[0]*(m[4]*m[8]-m[5]*m[7]) - m[1]*(m[3]*m[8]-m[5]*m[6]) +
+  26:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+  27:application/gimbal/gimbal_math.c ****     return fabsf(det - 1.0f) < 0.002f;
+  28:application/gimbal/gimbal_math.c **** }
+ 183              		.loc 1 28 1 view .LVU31
+ 184 0026 7047     		bx	lr
+ 185              	.LVL12:
+ 186              	.L29:
+  17:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 9; ++i) if (!isfinite(m[i])) return 0;
+ 187              		.loc 1 17 1 view .LVU32
+ 188 0028 00B5     		push	{lr}
+ 189              	.LCFI5:
+ 190              		.cfi_def_cfa_offset 4
+ 191              		.cfi_offset 14, -4
+ 192              	.LBB3:
+  19:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 3; ++i)
+ 193              		.loc 1 19 14 view .LVU33
+ 194 002a 4FF0000E 		mov	lr, #0
+ 195 002e 30E0     		b	.L15
+ 196              	.LVL13:
+ 197              	.L16:
+ 198              	.LBB4:
+ 199              	.LBB5:
+ 200              	.LBB6:
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 201              		.loc 1 22 41 is_stmt 1 discriminator 3 view .LVU34
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 202              		.loc 1 22 52 is_stmt 0 discriminator 3 view .LVU35
+ 203 0030 02EB4203 		add	r3, r2, r2, lsl #1
+ARM GAS  /tmp/ccyHnENa.s 			page 5
+
+
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 204              		.loc 1 22 56 discriminator 3 view .LVU36
+ 205 0034 03EB0E01 		add	r1, r3, lr
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 206              		.loc 1 22 49 discriminator 3 view .LVU37
+ 207 0038 00EB8101 		add	r1, r0, r1, lsl #2
+ 208 003c 91ED007A 		vldr.32	s14, [r1]
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 209              		.loc 1 22 71 discriminator 3 view .LVU38
+ 210 0040 6344     		add	r3, r3, ip
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 211              		.loc 1 22 64 discriminator 3 view .LVU39
+ 212 0042 00EB8303 		add	r3, r0, r3, lsl #2
+ 213 0046 D3ED006A 		vldr.32	s13, [r3]
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 214              		.loc 1 22 61 discriminator 3 view .LVU40
+ 215 004a 27EE267A 		vmul.f32	s14, s14, s13
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 216              		.loc 1 22 45 discriminator 3 view .LVU41
+ 217 004e 77EE877A 		vadd.f32	s15, s15, s14
+ 218              	.LVL14:
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 219              		.loc 1 22 36 is_stmt 1 discriminator 3 view .LVU42
+ 220 0052 0132     		adds	r2, r2, #1
+ 221              	.LVL15:
+ 222              	.L18:
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 223              		.loc 1 22 29 discriminator 1 view .LVU43
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 224              		.loc 1 22 13 is_stmt 0 discriminator 1 view .LVU44
+ 225 0054 022A     		cmp	r2, #2
+ 226 0056 EBDD     		ble	.L16
+ 227              	.LBE6:
+  23:application/gimbal/gimbal_math.c ****         }
+ 228              		.loc 1 23 13 is_stmt 1 view .LVU45
+  23:application/gimbal/gimbal_math.c ****         }
+ 229              		.loc 1 23 44 is_stmt 0 view .LVU46
+ 230 0058 E645     		cmp	lr, ip
+ 231 005a 15D0     		beq	.L31
+  23:application/gimbal/gimbal_math.c ****         }
+ 232              		.loc 1 23 44 view .LVU47
+ 233 005c 9FED317A 		vldr.32	s14, .L34+4
+ 234              	.L17:
+  23:application/gimbal/gimbal_math.c ****         }
+ 235              		.loc 1 23 27 discriminator 4 view .LVU48
+ 236 0060 77EEC77A 		vsub.f32	s15, s15, s14
+ 237              	.LVL16:
+  23:application/gimbal/gimbal_math.c ****         }
+ 238              		.loc 1 23 17 discriminator 4 view .LVU49
+ 239 0064 F0EEE77A 		vabs.f32	s15, s15
+  23:application/gimbal/gimbal_math.c ****         }
+ 240              		.loc 1 23 16 discriminator 4 view .LVU50
+ 241 0068 9FED2F7A 		vldr.32	s14, .L34+8
+ 242 006c F4EEC77A 		vcmpe.f32	s15, s14
+ 243 0070 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 244 0074 52DC     		bgt	.L22
+ 245              	.LBE5:
+ARM GAS  /tmp/ccyHnENa.s 			page 6
+
+
+  20:application/gimbal/gimbal_math.c ****             float dot = 0;
+ 246              		.loc 1 20 32 is_stmt 1 discriminator 2 view .LVU51
+ 247 0076 0CF1010C 		add	ip, ip, #1
+ 248              	.LVL17:
+ 249              	.L19:
+  20:application/gimbal/gimbal_math.c ****             float dot = 0;
+ 250              		.loc 1 20 25 discriminator 1 view .LVU52
+  20:application/gimbal/gimbal_math.c ****             float dot = 0;
+ 251              		.loc 1 20 9 is_stmt 0 discriminator 1 view .LVU53
+ 252 007a BCF1020F 		cmp	ip, #2
+ 253 007e 06DC     		bgt	.L32
+ 254              	.LBB8:
+ 255              	.LBB7:
+  22:application/gimbal/gimbal_math.c ****             if (fabsf(dot - (i == j ? 1.0f : 0.0f)) > 0.002f) return 0;
+ 256              		.loc 1 22 22 view .LVU54
+ 257 0080 0022     		movs	r2, #0
+ 258              	.LBE7:
+  21:application/gimbal/gimbal_math.c ****             for (int k = 0; k < 3; ++k) dot += m[k * 3 + i] * m[k * 3 + j];
+ 259              		.loc 1 21 19 view .LVU55
+ 260 0082 DFED287A 		vldr.32	s15, .L34+4
+ 261 0086 E5E7     		b	.L18
+ 262              	.LVL18:
+ 263              	.L31:
+  23:application/gimbal/gimbal_math.c ****         }
+ 264              		.loc 1 23 44 view .LVU56
+ 265 0088 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 266 008c E8E7     		b	.L17
+ 267              	.LVL19:
+ 268              	.L32:
+  23:application/gimbal/gimbal_math.c ****         }
+ 269              		.loc 1 23 44 view .LVU57
+ 270              	.LBE8:
+ 271              	.LBE4:
+  19:application/gimbal/gimbal_math.c ****         for (int j = 0; j < 3; ++j) {
+ 272              		.loc 1 19 28 is_stmt 1 discriminator 2 view .LVU58
+ 273 008e 0EF1010E 		add	lr, lr, #1
+ 274              	.LVL20:
+ 275              	.L15:
+  19:application/gimbal/gimbal_math.c ****         for (int j = 0; j < 3; ++j) {
+ 276              		.loc 1 19 21 discriminator 1 view .LVU59
+  19:application/gimbal/gimbal_math.c ****         for (int j = 0; j < 3; ++j) {
+ 277              		.loc 1 19 5 is_stmt 0 discriminator 1 view .LVU60
+ 278 0092 BEF1020F 		cmp	lr, #2
+ 279 0096 02DC     		bgt	.L33
+ 280              	.LBB10:
+  20:application/gimbal/gimbal_math.c ****             float dot = 0;
+ 281              		.loc 1 20 18 view .LVU61
+ 282 0098 4FF0000C 		mov	ip, #0
+ 283 009c EDE7     		b	.L19
+ 284              	.L33:
+ 285              	.LBE10:
+ 286              	.LBE3:
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 287              		.loc 1 25 5 is_stmt 1 view .LVU62
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 288              		.loc 1 25 18 is_stmt 0 view .LVU63
+ 289 009e D0ED007A 		vldr.32	s15, [r0]
+ARM GAS  /tmp/ccyHnENa.s 			page 7
+
+
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 290              		.loc 1 25 24 view .LVU64
+ 291 00a2 90ED046A 		vldr.32	s12, [r0, #16]
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 292              		.loc 1 25 29 view .LVU65
+ 293 00a6 D0ED086A 		vldr.32	s13, [r0, #32]
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 294              		.loc 1 25 27 view .LVU66
+ 295 00aa 26EE265A 		vmul.f32	s10, s12, s13
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 296              		.loc 1 25 34 view .LVU67
+ 297 00ae D0ED055A 		vldr.32	s11, [r0, #20]
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 298              		.loc 1 25 39 view .LVU68
+ 299 00b2 90ED077A 		vldr.32	s14, [r0, #28]
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 300              		.loc 1 25 37 view .LVU69
+ 301 00b6 65EE874A 		vmul.f32	s9, s11, s14
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 302              		.loc 1 25 32 view .LVU70
+ 303 00ba 35EE645A 		vsub.f32	s10, s10, s9
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 304              		.loc 1 25 21 view .LVU71
+ 305 00be 67EE857A 		vmul.f32	s15, s15, s10
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 306              		.loc 1 25 47 view .LVU72
+ 307 00c2 90ED015A 		vldr.32	s10, [r0, #4]
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 308              		.loc 1 25 53 view .LVU73
+ 309 00c6 90ED034A 		vldr.32	s8, [r0, #12]
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 310              		.loc 1 25 56 view .LVU74
+ 311 00ca 66EE846A 		vmul.f32	s13, s13, s8
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 312              		.loc 1 25 68 view .LVU75
+ 313 00ce D0ED064A 		vldr.32	s9, [r0, #24]
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 314              		.loc 1 25 66 view .LVU76
+ 315 00d2 65EEA45A 		vmul.f32	s11, s11, s9
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 316              		.loc 1 25 61 view .LVU77
+ 317 00d6 76EEE56A 		vsub.f32	s13, s13, s11
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 318              		.loc 1 25 50 view .LVU78
+ 319 00da 65EE266A 		vmul.f32	s13, s10, s13
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 320              		.loc 1 25 44 view .LVU79
+ 321 00de 77EEE67A 		vsub.f32	s15, s15, s13
+  26:application/gimbal/gimbal_math.c ****     return fabsf(det - 1.0f) < 0.002f;
+ 322              		.loc 1 26 18 view .LVU80
+ 323 00e2 D0ED026A 		vldr.32	s13, [r0, #8]
+  26:application/gimbal/gimbal_math.c ****     return fabsf(det - 1.0f) < 0.002f;
+ 324              		.loc 1 26 27 view .LVU81
+ 325 00e6 27EE047A 		vmul.f32	s14, s14, s8
+  26:application/gimbal/gimbal_math.c ****     return fabsf(det - 1.0f) < 0.002f;
+ 326              		.loc 1 26 37 view .LVU82
+ 327 00ea 26EE246A 		vmul.f32	s12, s12, s9
+ARM GAS  /tmp/ccyHnENa.s 			page 8
+
+
+  26:application/gimbal/gimbal_math.c ****     return fabsf(det - 1.0f) < 0.002f;
+ 328              		.loc 1 26 32 view .LVU83
+ 329 00ee 37EE467A 		vsub.f32	s14, s14, s12
+  26:application/gimbal/gimbal_math.c ****     return fabsf(det - 1.0f) < 0.002f;
+ 330              		.loc 1 26 21 view .LVU84
+ 331 00f2 26EE877A 		vmul.f32	s14, s13, s14
+  25:application/gimbal/gimbal_math.c ****                 m[2]*(m[3]*m[7]-m[4]*m[6]);
+ 332              		.loc 1 25 11 view .LVU85
+ 333 00f6 77EE877A 		vadd.f32	s15, s15, s14
+ 334              	.LVL21:
+  27:application/gimbal/gimbal_math.c **** }
+ 335              		.loc 1 27 5 is_stmt 1 view .LVU86
+  27:application/gimbal/gimbal_math.c **** }
+ 336              		.loc 1 27 22 is_stmt 0 view .LVU87
+ 337 00fa B7EE007A 		vmov.f32	s14, #1.0e+0
+ 338 00fe 77EEC77A 		vsub.f32	s15, s15, s14
+ 339              	.LVL22:
+  27:application/gimbal/gimbal_math.c **** }
+ 340              		.loc 1 27 12 view .LVU88
+ 341 0102 F0EEE77A 		vabs.f32	s15, s15
+  27:application/gimbal/gimbal_math.c **** }
+ 342              		.loc 1 27 30 view .LVU89
+ 343 0106 9FED087A 		vldr.32	s14, .L34+8
+ 344 010a F4EEC77A 		vcmpe.f32	s15, s14
+ 345 010e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 346 0112 4CBF     		ite	mi
+ 347 0114 0120     		movmi	r0, #1
+ 348              	.LVL23:
+  27:application/gimbal/gimbal_math.c **** }
+ 349              		.loc 1 27 30 view .LVU90
+ 350 0116 0020     		movpl	r0, #0
+ 351              	.LVL24:
+ 352              	.L11:
+ 353              		.loc 1 28 1 view .LVU91
+ 354 0118 5DF804FB 		ldr	pc, [sp], #4
+ 355              	.LVL25:
+ 356              	.L22:
+ 357              	.LBB12:
+ 358              	.LBB11:
+ 359              	.LBB9:
+  23:application/gimbal/gimbal_math.c ****         }
+ 360              		.loc 1 23 70 view .LVU92
+ 361 011c 0020     		movs	r0, #0
+ 362              	.LVL26:
+  23:application/gimbal/gimbal_math.c ****         }
+ 363              		.loc 1 23 70 view .LVU93
+ 364 011e FBE7     		b	.L11
+ 365              	.L35:
+ 366              		.align	2
+ 367              	.L34:
+ 368 0120 FFFF7F7F 		.word	2139095039
+ 369 0124 00000000 		.word	0
+ 370 0128 6F12033B 		.word	990057071
+ 371              	.LBE9:
+ 372              	.LBE11:
+ 373              	.LBE12:
+ 374              		.cfi_endproc
+ARM GAS  /tmp/ccyHnENa.s 			page 9
+
+
+ 375              	.LFE3:
+ 377              		.section	.text.GimbalPoseFromImu,"ax",%progbits
+ 378              		.align	1
+ 379              		.global	GimbalPoseFromImu
+ 380              		.syntax unified
+ 381              		.thumb
+ 382              		.thumb_func
+ 383              		.fpu fpv4-sp-d16
+ 385              	GimbalPoseFromImu:
+ 386              	.LVL27:
+ 387              	.LFB4:
+  29:application/gimbal/gimbal_math.c **** 
+  30:application/gimbal/gimbal_math.c **** int GimbalPoseFromImu(const float q[4], const float gyro[3], const float m[9], GimbalPose *pose)
+  31:application/gimbal/gimbal_math.c **** {
+ 388              		.loc 1 31 1 is_stmt 1 view -0
+ 389              		.cfi_startproc
+ 390              		@ args = 0, pretend = 0, frame = 120
+ 391              		@ frame_needed = 0, uses_anonymous_args = 0
+ 392              		.loc 1 31 1 is_stmt 0 view .LVU95
+ 393 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 394              	.LCFI6:
+ 395              		.cfi_def_cfa_offset 20
+ 396              		.cfi_offset 4, -20
+ 397              		.cfi_offset 5, -16
+ 398              		.cfi_offset 6, -12
+ 399              		.cfi_offset 7, -8
+ 400              		.cfi_offset 14, -4
+ 401 0002 2DED048B 		vpush.64	{d8, d9}
+ 402              	.LCFI7:
+ 403              		.cfi_def_cfa_offset 36
+ 404              		.cfi_offset 80, -36
+ 405              		.cfi_offset 81, -32
+ 406              		.cfi_offset 82, -28
+ 407              		.cfi_offset 83, -24
+ 408 0006 9FB0     		sub	sp, sp, #124
+ 409              	.LCFI8:
+ 410              		.cfi_def_cfa_offset 160
+ 411 0008 0746     		mov	r7, r0
+ 412 000a 0D46     		mov	r5, r1
+ 413 000c 1446     		mov	r4, r2
+ 414 000e 1E46     		mov	r6, r3
+  32:application/gimbal/gimbal_math.c ****     float n = 0;
+ 415              		.loc 1 32 5 is_stmt 1 view .LVU96
+ 416              	.LVL28:
+  33:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 4; ++i) { if (!isfinite(q[i])) return 0; n += q[i]*q[i]; }
+ 417              		.loc 1 33 5 view .LVU97
+ 418              	.LBB13:
+ 419              		.loc 1 33 10 view .LVU98
+ 420              		.loc 1 33 14 is_stmt 0 view .LVU99
+ 421 0010 0023     		movs	r3, #0
+ 422              	.LVL29:
+ 423              		.loc 1 33 14 view .LVU100
+ 424              	.LBE13:
+  32:application/gimbal/gimbal_math.c ****     float n = 0;
+ 425              		.loc 1 32 11 view .LVU101
+ 426 0012 9FEDD08A 		vldr.32	s16, .L77
+ 427              	.LVL30:
+ARM GAS  /tmp/ccyHnENa.s 			page 10
+
+
+ 428              	.L37:
+ 429              	.LBB14:
+ 430              		.loc 1 33 21 is_stmt 1 discriminator 4 view .LVU102
+ 431              		.loc 1 33 5 is_stmt 0 discriminator 4 view .LVU103
+ 432 0016 032B     		cmp	r3, #3
+ 433 0018 13DC     		bgt	.L69
+ 434              		.loc 1 33 35 is_stmt 1 discriminator 5 view .LVU104
+ 435              		.loc 1 33 40 is_stmt 0 discriminator 5 view .LVU105
+ 436 001a 07EB8302 		add	r2, r7, r3, lsl #2
+ 437 001e D2ED007A 		vldr.32	s15, [r2]
+ 438 0022 F0EEE76A 		vabs.f32	s13, s15
+ 439              		.loc 1 33 38 discriminator 5 view .LVU106
+ 440 0026 9FEDCC7A 		vldr.32	s14, .L77+4
+ 441 002a F4EE476A 		vcmp.f32	s13, s14
+ 442 002e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 443 0032 00F27D81 		bhi	.L54
+ 444              		.loc 1 33 66 is_stmt 1 discriminator 3 view .LVU107
+ 445              		.loc 1 33 75 is_stmt 0 discriminator 3 view .LVU108
+ 446 0036 67EEA77A 		vmul.f32	s15, s15, s15
+ 447              		.loc 1 33 68 discriminator 3 view .LVU109
+ 448 003a 38EE278A 		vadd.f32	s16, s16, s15
+ 449              	.LVL31:
+ 450              		.loc 1 33 28 is_stmt 1 discriminator 3 view .LVU110
+ 451 003e 0133     		adds	r3, r3, #1
+ 452              	.LVL32:
+ 453              		.loc 1 33 28 is_stmt 0 discriminator 3 view .LVU111
+ 454 0040 E9E7     		b	.L37
+ 455              	.L69:
+ 456              		.loc 1 33 28 discriminator 3 view .LVU112
+ 457              	.LBE14:
+ 458              	.LBB15:
+  34:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 3; ++i) if (!isfinite(gyro[i])) return 0;
+ 459              		.loc 1 34 14 view .LVU113
+ 460 0042 0023     		movs	r3, #0
+ 461              	.LVL33:
+ 462              	.L40:
+ 463              		.loc 1 34 21 is_stmt 1 discriminator 4 view .LVU114
+ 464              		.loc 1 34 5 is_stmt 0 discriminator 4 view .LVU115
+ 465 0044 022B     		cmp	r3, #2
+ 466 0046 0FDC     		bgt	.L70
+ 467              		.loc 1 34 33 is_stmt 1 discriminator 5 view .LVU116
+ 468              		.loc 1 34 38 is_stmt 0 discriminator 5 view .LVU117
+ 469 0048 05EB8302 		add	r2, r5, r3, lsl #2
+ 470 004c D2ED007A 		vldr.32	s15, [r2]
+ 471 0050 F0EEE77A 		vabs.f32	s15, s15
+ 472              		.loc 1 34 36 discriminator 5 view .LVU118
+ 473 0054 9FEDC07A 		vldr.32	s14, .L77+4
+ 474 0058 F4EE477A 		vcmp.f32	s15, s14
+ 475 005c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 476 0060 00F26881 		bhi	.L55
+ 477              		.loc 1 34 28 is_stmt 1 discriminator 3 view .LVU119
+ 478 0064 0133     		adds	r3, r3, #1
+ 479              	.LVL34:
+ 480              		.loc 1 34 28 is_stmt 0 discriminator 3 view .LVU120
+ 481 0066 EDE7     		b	.L40
+ 482              	.L70:
+ 483              		.loc 1 34 28 discriminator 3 view .LVU121
+ARM GAS  /tmp/ccyHnENa.s 			page 11
+
+
+ 484              	.LBE15:
+  35:application/gimbal/gimbal_math.c ****     if (n < 0.25f || n > 2.25f || !GimbalRotationValid(m)) return 0;
+ 485              		.loc 1 35 5 is_stmt 1 view .LVU122
+ 486              		.loc 1 35 8 is_stmt 0 view .LVU123
+ 487 0068 F5EE007A 		vmov.f32	s15, #2.5e-1
+ 488 006c B4EEE78A 		vcmpe.f32	s16, s15
+ 489 0070 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 490 0074 00F16081 		bmi	.L56
+ 491              		.loc 1 35 19 discriminator 2 view .LVU124
+ 492 0078 F0EE027A 		vmov.f32	s15, #2.25e+0
+ 493 007c B4EEE78A 		vcmpe.f32	s16, s15
+ 494 0080 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 495 0084 00F35D81 		bgt	.L57
+ 496              		.loc 1 35 36 discriminator 4 view .LVU125
+ 497 0088 2046     		mov	r0, r4
+ 498              	.LVL35:
+ 499              		.loc 1 35 36 discriminator 4 view .LVU126
+ 500 008a FFF7FEFF 		bl	GimbalRotationValid
+ 501              	.LVL36:
+ 502              		.loc 1 35 32 discriminator 4 view .LVU127
+ 503 008e 0028     		cmp	r0, #0
+ 504 0090 00F05381 		beq	.L36
+  36:application/gimbal/gimbal_math.c ****     float scale = 1.0f / sqrtf(n);
+ 505              		.loc 1 36 5 is_stmt 1 view .LVU128
+ 506              		.loc 1 36 26 is_stmt 0 view .LVU129
+ 507 0094 B0EE480A 		vmov.f32	s0, s16
+ 508 0098 FFF7FEFF 		bl	sqrtf
+ 509              	.LVL37:
+ 510              		.loc 1 36 11 view .LVU130
+ 511 009c F7EE003A 		vmov.f32	s7, #1.0e+0
+ 512 00a0 83EE807A 		vdiv.f32	s14, s7, s0
+ 513              	.LVL38:
+  37:application/gimbal/gimbal_math.c ****     float w=q[0]*scale, x=q[1]*scale, y=q[2]*scale, z=q[3]*scale;
+ 514              		.loc 1 37 5 is_stmt 1 view .LVU131
+ 515              		.loc 1 37 14 is_stmt 0 view .LVU132
+ 516 00a4 D7ED006A 		vldr.32	s13, [r7]
+ 517              		.loc 1 37 11 view .LVU133
+ 518 00a8 66EE876A 		vmul.f32	s13, s13, s14
+ 519              	.LVL39:
+ 520              		.loc 1 37 28 view .LVU134
+ 521 00ac 97ED015A 		vldr.32	s10, [r7, #4]
+ 522              		.loc 1 37 25 view .LVU135
+ 523 00b0 25EE075A 		vmul.f32	s10, s10, s14
+ 524              	.LVL40:
+ 525              		.loc 1 37 42 view .LVU136
+ 526 00b4 D7ED027A 		vldr.32	s15, [r7, #8]
+ 527              		.loc 1 37 39 view .LVU137
+ 528 00b8 67EE877A 		vmul.f32	s15, s15, s14
+ 529              	.LVL41:
+ 530              		.loc 1 37 56 view .LVU138
+ 531 00bc D7ED034A 		vldr.32	s9, [r7, #12]
+ 532              		.loc 1 37 53 view .LVU139
+ 533 00c0 64EE874A 		vmul.f32	s9, s9, s14
+ 534              	.LVL42:
+  38:application/gimbal/gimbal_math.c ****     float r[9] = {1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y),
+ 535              		.loc 1 38 5 is_stmt 1 view .LVU140
+ 536              		.loc 1 38 25 is_stmt 0 view .LVU141
+ARM GAS  /tmp/ccyHnENa.s 			page 12
+
+
+ 537 00c4 27EEA76A 		vmul.f32	s12, s15, s15
+ 538              		.loc 1 38 29 view .LVU142
+ 539 00c8 24EEA47A 		vmul.f32	s14, s9, s9
+ 540              	.LVL43:
+ 541              		.loc 1 38 27 view .LVU143
+ 542 00cc 76EE075A 		vadd.f32	s11, s12, s14
+ 543              		.loc 1 38 22 view .LVU144
+ 544 00d0 75EEA55A 		vadd.f32	s11, s11, s11
+ 545              		.loc 1 38 20 view .LVU145
+ 546 00d4 73EEE55A 		vsub.f32	s11, s7, s11
+ 547              		.loc 1 38 11 view .LVU146
+ 548 00d8 CDED155A 		vstr.32	s11, [sp, #84]
+ 549              		.loc 1 38 38 view .LVU147
+ 550 00dc 25EE274A 		vmul.f32	s8, s10, s15
+ 551              		.loc 1 38 42 view .LVU148
+ 552 00e0 26EEA42A 		vmul.f32	s4, s13, s9
+ 553              		.loc 1 38 40 view .LVU149
+ 554 00e4 74EE425A 		vsub.f32	s11, s8, s4
+ 555              		.loc 1 38 35 view .LVU150
+ 556 00e8 75EEA55A 		vadd.f32	s11, s11, s11
+ 557              		.loc 1 38 11 view .LVU151
+ 558 00ec CDED165A 		vstr.32	s11, [sp, #88]
+ 559              		.loc 1 38 51 view .LVU152
+ 560 00f0 65EE245A 		vmul.f32	s11, s10, s9
+ 561              		.loc 1 38 55 view .LVU153
+ 562 00f4 66EEA72A 		vmul.f32	s5, s13, s15
+ 563              		.loc 1 38 53 view .LVU154
+ 564 00f8 35EEA23A 		vadd.f32	s6, s11, s5
+ 565              		.loc 1 38 48 view .LVU155
+ 566 00fc 33EE033A 		vadd.f32	s6, s6, s6
+ 567              		.loc 1 38 11 view .LVU156
+ 568 0100 8DED173A 		vstr.32	s6, [sp, #92]
+  39:application/gimbal/gimbal_math.c ****                   2*(x*y+w*z), 1-2*(x*x+z*z), 2*(y*z-w*x),
+ 569              		.loc 1 39 25 view .LVU157
+ 570 0104 34EE024A 		vadd.f32	s8, s8, s4
+ 571              		.loc 1 39 20 view .LVU158
+ 572 0108 34EE044A 		vadd.f32	s8, s8, s8
+  38:application/gimbal/gimbal_math.c ****     float r[9] = {1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y),
+ 573              		.loc 1 38 11 view .LVU159
+ 574 010c 8DED184A 		vstr.32	s8, [sp, #96]
+ 575              		.loc 1 39 38 view .LVU160
+ 576 0110 25EE054A 		vmul.f32	s8, s10, s10
+ 577              		.loc 1 39 40 view .LVU161
+ 578 0114 37EE047A 		vadd.f32	s14, s14, s8
+ 579              		.loc 1 39 35 view .LVU162
+ 580 0118 37EE077A 		vadd.f32	s14, s14, s14
+ 581              		.loc 1 39 33 view .LVU163
+ 582 011c 33EEC77A 		vsub.f32	s14, s7, s14
+  38:application/gimbal/gimbal_math.c ****     float r[9] = {1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y),
+ 583              		.loc 1 38 11 view .LVU164
+ 584 0120 8DED197A 		vstr.32	s14, [sp, #100]
+ 585              		.loc 1 39 51 view .LVU165
+ 586 0124 67EEA47A 		vmul.f32	s15, s15, s9
+ 587              	.LVL44:
+ 588              		.loc 1 39 55 view .LVU166
+ 589 0128 66EE856A 		vmul.f32	s13, s13, s10
+ 590              	.LVL45:
+ARM GAS  /tmp/ccyHnENa.s 			page 13
+
+
+ 591              		.loc 1 39 53 view .LVU167
+ 592 012c 37EEE65A 		vsub.f32	s10, s15, s13
+ 593              	.LVL46:
+ 594              		.loc 1 39 48 view .LVU168
+ 595 0130 35EE055A 		vadd.f32	s10, s10, s10
+  38:application/gimbal/gimbal_math.c ****     float r[9] = {1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y),
+ 596              		.loc 1 38 11 view .LVU169
+ 597 0134 8DED1A5A 		vstr.32	s10, [sp, #104]
+  40:application/gimbal/gimbal_math.c ****                   2*(x*z-w*y), 2*(y*z+w*x), 1-2*(x*x+y*y)};
+ 598              		.loc 1 40 25 view .LVU170
+ 599 0138 35EEE27A 		vsub.f32	s14, s11, s5
+ 600              		.loc 1 40 20 view .LVU171
+ 601 013c 37EE077A 		vadd.f32	s14, s14, s14
+  38:application/gimbal/gimbal_math.c ****     float r[9] = {1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y),
+ 602              		.loc 1 38 11 view .LVU172
+ 603 0140 8DED1B7A 		vstr.32	s14, [sp, #108]
+ 604              		.loc 1 40 38 view .LVU173
+ 605 0144 77EEA67A 		vadd.f32	s15, s15, s13
+ 606              		.loc 1 40 33 view .LVU174
+ 607 0148 77EEA77A 		vadd.f32	s15, s15, s15
+  38:application/gimbal/gimbal_math.c ****     float r[9] = {1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y),
+ 608              		.loc 1 38 11 view .LVU175
+ 609 014c CDED1C7A 		vstr.32	s15, [sp, #112]
+ 610              		.loc 1 40 53 view .LVU176
+ 611 0150 76EE047A 		vadd.f32	s15, s12, s8
+ 612              		.loc 1 40 48 view .LVU177
+ 613 0154 77EEA77A 		vadd.f32	s15, s15, s15
+ 614              		.loc 1 40 46 view .LVU178
+ 615 0158 73EEE77A 		vsub.f32	s15, s7, s15
+  38:application/gimbal/gimbal_math.c ****     float r[9] = {1-2*(y*y+z*z), 2*(x*y-w*z), 2*(x*z+w*y),
+ 616              		.loc 1 38 11 view .LVU179
+ 617 015c CDED1D7A 		vstr.32	s15, [sp, #116]
+  41:application/gimbal/gimbal_math.c ****     float temp[9] = {0}, g[9] = {0}, omega[3] = {0};
+ 618              		.loc 1 41 5 is_stmt 1 view .LVU180
+ 619              		.loc 1 41 11 is_stmt 0 view .LVU181
+ 620 0160 2427     		movs	r7, #36
+ 621              	.LVL47:
+ 622              		.loc 1 41 11 view .LVU182
+ 623 0162 3A46     		mov	r2, r7
+ 624 0164 0021     		movs	r1, #0
+ 625 0166 0CA8     		add	r0, sp, #48
+ 626 0168 FFF7FEFF 		bl	memset
+ 627              	.LVL48:
+ 628              		.loc 1 41 26 view .LVU183
+ 629 016c 3A46     		mov	r2, r7
+ 630 016e 0021     		movs	r1, #0
+ 631 0170 03A8     		add	r0, sp, #12
+ 632 0172 FFF7FEFF 		bl	memset
+ 633              	.LVL49:
+ 634              		.loc 1 41 38 view .LVU184
+ 635 0176 0023     		movs	r3, #0
+ 636 0178 0093     		str	r3, [sp]
+ 637 017a 0193     		str	r3, [sp, #4]
+ 638 017c 0293     		str	r3, [sp, #8]
+  42:application/gimbal/gimbal_math.c ****     /* Match Solver::set_R_gimbal2world exactly: M^T R(q) M. */
+  43:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 639              		.loc 1 43 5 is_stmt 1 view .LVU185
+ARM GAS  /tmp/ccyHnENa.s 			page 14
+
+
+ 640              	.LBB16:
+ 641              		.loc 1 43 10 view .LVU186
+ 642              	.LVL50:
+ 643              		.loc 1 43 14 is_stmt 0 view .LVU187
+ 644 017e 9C46     		mov	ip, r3
+ 645              		.loc 1 43 5 view .LVU188
+ 646 0180 23E0     		b	.L42
+ 647              	.LVL51:
+ 648              	.L43:
+ 649              	.LBB17:
+ 650              	.LBB18:
+  44:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 651              		.loc 1 44 9 is_stmt 1 discriminator 5 view .LVU189
+ 652              		.loc 1 44 21 is_stmt 0 discriminator 5 view .LVU190
+ 653 0182 0CEB4C03 		add	r3, ip, ip, lsl #1
+ 654 0186 1918     		adds	r1, r3, r0
+ 655              		.loc 1 44 29 discriminator 5 view .LVU191
+ 656 0188 1344     		add	r3, r3, r2
+ 657              		.loc 1 44 25 discriminator 5 view .LVU192
+ 658 018a 1EAF     		add	r7, sp, #120
+ 659 018c 07EB8303 		add	r3, r7, r3, lsl #2
+ 660 0190 53ED097A 		vldr.32	s15, [r3, #-36]
+ 661              		.loc 1 44 38 discriminator 5 view .LVU193
+ 662 0194 02EB4203 		add	r3, r2, r2, lsl #1
+ 663              		.loc 1 44 40 discriminator 5 view .LVU194
+ 664 0198 0344     		add	r3, r3, r0
+ 665              		.loc 1 44 36 discriminator 5 view .LVU195
+ 666 019a 04EB8303 		add	r3, r4, r3, lsl #2
+ 667 019e 93ED007A 		vldr.32	s14, [r3]
+ 668              		.loc 1 44 33 discriminator 5 view .LVU196
+ 669 01a2 27EE877A 		vmul.f32	s14, s15, s14
+ 670              		.loc 1 44 21 discriminator 5 view .LVU197
+ 671 01a6 07EB8103 		add	r3, r7, r1, lsl #2
+ 672 01aa 53ED127A 		vldr.32	s15, [r3, #-72]
+ 673 01ae 77EE877A 		vadd.f32	s15, s15, s14
+ 674 01b2 43ED127A 		vstr.32	s15, [r3, #-72]
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 675              		.loc 1 43 66 is_stmt 1 discriminator 5 view .LVU198
+ 676 01b6 0132     		adds	r2, r2, #1
+ 677              	.LVL52:
+ 678              	.L44:
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 679              		.loc 1 43 62 discriminator 3 view .LVU199
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 680              		.loc 1 43 49 is_stmt 0 discriminator 3 view .LVU200
+ 681 01b8 022A     		cmp	r2, #2
+ 682 01ba E2DD     		ble	.L43
+ 683              	.LBE18:
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 684              		.loc 1 43 44 is_stmt 1 discriminator 6 view .LVU201
+ 685 01bc 0130     		adds	r0, r0, #1
+ 686              	.LVL53:
+ 687              	.L45:
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 688              		.loc 1 43 40 discriminator 7 view .LVU202
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 689              		.loc 1 43 27 is_stmt 0 discriminator 7 view .LVU203
+ARM GAS  /tmp/ccyHnENa.s 			page 15
+
+
+ 690 01be 0228     		cmp	r0, #2
+ 691 01c0 01DC     		bgt	.L71
+ 692              	.LBB19:
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 693              		.loc 1 43 58 view .LVU204
+ 694 01c2 0022     		movs	r2, #0
+ 695 01c4 F8E7     		b	.L44
+ 696              	.L71:
+ 697              	.LBE19:
+ 698              	.LBE17:
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 699              		.loc 1 43 22 is_stmt 1 discriminator 9 view .LVU205
+ 700 01c6 0CF1010C 		add	ip, ip, #1
+ 701              	.LVL54:
+ 702              	.L42:
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 703              		.loc 1 43 18 discriminator 10 view .LVU206
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 704              		.loc 1 43 5 is_stmt 0 discriminator 10 view .LVU207
+ 705 01ca BCF1020F 		cmp	ip, #2
+ 706 01ce 01DC     		bgt	.L72
+ 707              	.LBB20:
+  43:application/gimbal/gimbal_math.c ****         temp[i*3+j] += r[i*3+k] * m[k*3+j];
+ 708              		.loc 1 43 36 view .LVU208
+ 709 01d0 0020     		movs	r0, #0
+ 710 01d2 F4E7     		b	.L45
+ 711              	.L72:
+ 712              	.LBE20:
+ 713              	.LBE16:
+ 714              	.LBB21:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 715              		.loc 1 45 14 view .LVU209
+ 716 01d4 0021     		movs	r1, #0
+ 717 01d6 25E0     		b	.L46
+ 718              	.LVL55:
+ 719              	.L47:
+ 720              	.LBB22:
+ 721              	.LBB23:
+  46:application/gimbal/gimbal_math.c ****         g[i*3+j] += m[k*3+i] * temp[k*3+j];
+ 722              		.loc 1 46 9 is_stmt 1 discriminator 5 view .LVU210
+ 723              		.loc 1 46 18 is_stmt 0 discriminator 5 view .LVU211
+ 724 01d8 01EB4100 		add	r0, r1, r1, lsl #1
+ 725 01dc 7044     		add	r0, r0, lr
+ 726              		.loc 1 46 24 discriminator 5 view .LVU212
+ 727 01de 03EB430C 		add	ip, r3, r3, lsl #1
+ 728              		.loc 1 46 26 discriminator 5 view .LVU213
+ 729 01e2 0CEB0102 		add	r2, ip, r1
+ 730              		.loc 1 46 22 discriminator 5 view .LVU214
+ 731 01e6 04EB8202 		add	r2, r4, r2, lsl #2
+ 732 01ea D2ED007A 		vldr.32	s15, [r2]
+ 733              		.loc 1 46 40 discriminator 5 view .LVU215
+ 734 01ee F444     		add	ip, ip, lr
+ 735              		.loc 1 46 36 discriminator 5 view .LVU216
+ 736 01f0 1EAA     		add	r2, sp, #120
+ 737 01f2 02EB8C0C 		add	ip, r2, ip, lsl #2
+ 738 01f6 1CED127A 		vldr.32	s14, [ip, #-72]
+ 739              		.loc 1 46 30 discriminator 5 view .LVU217
+ARM GAS  /tmp/ccyHnENa.s 			page 16
+
+
+ 740 01fa 27EE877A 		vmul.f32	s14, s15, s14
+ 741              		.loc 1 46 18 discriminator 5 view .LVU218
+ 742 01fe 02EB8000 		add	r0, r2, r0, lsl #2
+ 743 0202 50ED1B7A 		vldr.32	s15, [r0, #-108]
+ 744 0206 77EE877A 		vadd.f32	s15, s15, s14
+ 745 020a 40ED1B7A 		vstr.32	s15, [r0, #-108]
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 746              		.loc 1 45 66 is_stmt 1 discriminator 5 view .LVU219
+ 747 020e 0133     		adds	r3, r3, #1
+ 748              	.LVL56:
+ 749              	.L48:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 750              		.loc 1 45 62 discriminator 3 view .LVU220
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 751              		.loc 1 45 49 is_stmt 0 discriminator 3 view .LVU221
+ 752 0210 022B     		cmp	r3, #2
+ 753 0212 E1DD     		ble	.L47
+ 754              	.LBE23:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 755              		.loc 1 45 44 is_stmt 1 discriminator 6 view .LVU222
+ 756 0214 0EF1010E 		add	lr, lr, #1
+ 757              	.LVL57:
+ 758              	.L49:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 759              		.loc 1 45 40 discriminator 7 view .LVU223
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 760              		.loc 1 45 27 is_stmt 0 discriminator 7 view .LVU224
+ 761 0218 BEF1020F 		cmp	lr, #2
+ 762 021c 01DC     		bgt	.L73
+ 763              	.LBB24:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 764              		.loc 1 45 58 view .LVU225
+ 765 021e 0023     		movs	r3, #0
+ 766 0220 F6E7     		b	.L48
+ 767              	.L73:
+ 768              	.LBE24:
+ 769              	.LBE22:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 770              		.loc 1 45 22 is_stmt 1 discriminator 9 view .LVU226
+ 771 0222 0131     		adds	r1, r1, #1
+ 772              	.LVL58:
+ 773              	.L46:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 774              		.loc 1 45 18 discriminator 10 view .LVU227
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 775              		.loc 1 45 5 is_stmt 0 discriminator 10 view .LVU228
+ 776 0224 0229     		cmp	r1, #2
+ 777 0226 02DC     		bgt	.L74
+ 778              	.LBB25:
+  45:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int j=0;j<3;++j) for (int k=0;k<3;++k)
+ 779              		.loc 1 45 36 view .LVU229
+ 780 0228 4FF0000E 		mov	lr, #0
+ 781 022c F4E7     		b	.L49
+ 782              	.L74:
+ 783              	.LBE25:
+ 784              	.LBE21:
+ 785              	.LBB26:
+ARM GAS  /tmp/ccyHnENa.s 			page 17
+
+
+  47:application/gimbal/gimbal_math.c ****     for (int i=0;i<3;++i) for (int k=0;k<3;++k) omega[i] += m[k*3+i] * gyro[k];
+ 786              		.loc 1 47 14 view .LVU230
+ 787 022e 0021     		movs	r1, #0
+ 788              	.LVL59:
+ 789              		.loc 1 47 14 view .LVU231
+ 790 0230 00E0     		b	.L50
+ 791              	.LVL60:
+ 792              	.L76:
+ 793              		.loc 1 47 22 is_stmt 1 discriminator 5 view .LVU232
+ 794 0232 0131     		adds	r1, r1, #1
+ 795              	.LVL61:
+ 796              	.L50:
+ 797              		.loc 1 47 18 discriminator 6 view .LVU233
+ 798              		.loc 1 47 5 is_stmt 0 discriminator 6 view .LVU234
+ 799 0234 0229     		cmp	r1, #2
+ 800 0236 1ADC     		bgt	.L75
+ 801              	.LBB27:
+ 802              		.loc 1 47 36 view .LVU235
+ 803 0238 0023     		movs	r3, #0
+ 804              	.L52:
+ 805              	.LVL62:
+ 806              		.loc 1 47 40 is_stmt 1 discriminator 2 view .LVU236
+ 807              		.loc 1 47 27 is_stmt 0 discriminator 2 view .LVU237
+ 808 023a 022B     		cmp	r3, #2
+ 809 023c F9DC     		bgt	.L76
+ 810              		.loc 1 47 49 is_stmt 1 discriminator 4 view .LVU238
+ 811              		.loc 1 47 64 is_stmt 0 discriminator 4 view .LVU239
+ 812 023e 03EB4302 		add	r2, r3, r3, lsl #1
+ 813              		.loc 1 47 66 discriminator 4 view .LVU240
+ 814 0242 0A44     		add	r2, r2, r1
+ 815              		.loc 1 47 62 discriminator 4 view .LVU241
+ 816 0244 04EB8202 		add	r2, r4, r2, lsl #2
+ 817 0248 D2ED007A 		vldr.32	s15, [r2]
+ 818              		.loc 1 47 76 discriminator 4 view .LVU242
+ 819 024c 05EB8302 		add	r2, r5, r3, lsl #2
+ 820 0250 92ED007A 		vldr.32	s14, [r2]
+ 821              		.loc 1 47 70 discriminator 4 view .LVU243
+ 822 0254 27EE877A 		vmul.f32	s14, s15, s14
+ 823              		.loc 1 47 58 discriminator 4 view .LVU244
+ 824 0258 1EAA     		add	r2, sp, #120
+ 825 025a 02EB8102 		add	r2, r2, r1, lsl #2
+ 826 025e 52ED1E7A 		vldr.32	s15, [r2, #-120]
+ 827 0262 77EE877A 		vadd.f32	s15, s15, s14
+ 828 0266 42ED1E7A 		vstr.32	s15, [r2, #-120]
+ 829              		.loc 1 47 44 is_stmt 1 discriminator 4 view .LVU245
+ 830 026a 0133     		adds	r3, r3, #1
+ 831              	.LVL63:
+ 832              		.loc 1 47 44 is_stmt 0 discriminator 4 view .LVU246
+ 833 026c E5E7     		b	.L52
+ 834              	.LVL64:
+ 835              	.L75:
+ 836              		.loc 1 47 44 discriminator 4 view .LVU247
+ 837              	.LBE27:
+ 838              	.LBE26:
+  48:application/gimbal/gimbal_math.c ****     pose->yaw = atan2f(g[3], g[0]);
+ 839              		.loc 1 48 5 is_stmt 1 view .LVU248
+ 840              		.loc 1 48 17 is_stmt 0 view .LVU249
+ARM GAS  /tmp/ccyHnENa.s 			page 18
+
+
+ 841 026e DDED030A 		vldr.32	s1, [sp, #12]
+ 842 0272 9DED060A 		vldr.32	s0, [sp, #24]
+ 843 0276 FFF7FEFF 		bl	atan2f
+ 844              	.LVL65:
+ 845              		.loc 1 48 15 view .LVU250
+ 846 027a 86ED000A 		vstr.32	s0, [r6]
+  49:application/gimbal/gimbal_math.c ****     pose->pitch = asinf(Clamp(-g[6], -1, 1));
+ 847              		.loc 1 49 5 is_stmt 1 view .LVU251
+ 848              		.loc 1 49 19 is_stmt 0 view .LVU252
+ 849 027e B7EE001A 		vmov.f32	s2, #1.0e+0
+ 850              		.loc 1 49 19 view .LVU253
+ 851 0282 FFEE000A 		vmov.f32	s1, #-1.0e+0
+ 852 0286 9DED090A 		vldr.32	s0, [sp, #36]
+ 853 028a B1EE400A 		vneg.f32	s0, s0
+ 854 028e FFF7FEFF 		bl	Clamp
+ 855              	.LVL66:
+ 856              		.loc 1 49 19 view .LVU254
+ 857 0292 FFF7FEFF 		bl	asinf
+ 858              	.LVL67:
+ 859              		.loc 1 49 17 view .LVU255
+ 860 0296 86ED010A 		vstr.32	s0, [r6, #4]
+  50:application/gimbal/gimbal_math.c ****     pose->roll = atan2f(g[7], g[8]);
+ 861              		.loc 1 50 5 is_stmt 1 view .LVU256
+ 862              		.loc 1 50 18 is_stmt 0 view .LVU257
+ 863 029a DDED0B0A 		vldr.32	s1, [sp, #44]
+ 864 029e 9DED0A0A 		vldr.32	s0, [sp, #40]
+ 865 02a2 FFF7FEFF 		bl	atan2f
+ 866              	.LVL68:
+ 867 02a6 B0EE408A 		vmov.f32	s16, s0
+ 868              	.LVL69:
+ 869              		.loc 1 50 16 view .LVU258
+ 870 02aa 86ED020A 		vstr.32	s0, [r6, #8]
+  51:application/gimbal/gimbal_math.c ****     float cp = cosf(pose->pitch), sr = sinf(pose->roll), cr = cosf(pose->roll);
+ 871              		.loc 1 51 5 is_stmt 1 view .LVU259
+ 872              		.loc 1 51 16 is_stmt 0 view .LVU260
+ 873 02ae 96ED010A 		vldr.32	s0, [r6, #4]
+ 874 02b2 FFF7FEFF 		bl	cosf
+ 875              	.LVL70:
+ 876 02b6 F0EE408A 		vmov.f32	s17, s0
+ 877              	.LVL71:
+ 878              		.loc 1 51 40 view .LVU261
+ 879 02ba B0EE480A 		vmov.f32	s0, s16
+ 880              	.LVL72:
+ 881              		.loc 1 51 40 view .LVU262
+ 882 02be FFF7FEFF 		bl	sinf
+ 883              	.LVL73:
+ 884 02c2 B0EE409A 		vmov.f32	s18, s0
+ 885              	.LVL74:
+ 886              		.loc 1 51 63 view .LVU263
+ 887 02c6 B0EE480A 		vmov.f32	s0, s16
+ 888              	.LVL75:
+ 889              		.loc 1 51 63 view .LVU264
+ 890 02ca FFF7FEFF 		bl	cosf
+ 891              	.LVL76:
+  52:application/gimbal/gimbal_math.c ****     if (fabsf(cp) < 0.1f) return 0; /* Euler singularity is outside this gimbal's limits. */
+ 892              		.loc 1 52 5 is_stmt 1 view .LVU265
+ 893              		.loc 1 52 9 is_stmt 0 view .LVU266
+ARM GAS  /tmp/ccyHnENa.s 			page 19
+
+
+ 894 02ce B0EEE87A 		vabs.f32	s14, s17
+ 895              		.loc 1 52 8 view .LVU267
+ 896 02d2 DFED227A 		vldr.32	s15, .L77+8
+ 897 02d6 B4EEE77A 		vcmpe.f32	s14, s15
+ 898 02da F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 899 02de 32D4     		bmi	.L63
+  53:application/gimbal/gimbal_math.c ****     pose->pitch_vel = cr * omega[1] - sr * omega[2];
+ 900              		.loc 1 53 5 is_stmt 1 view .LVU268
+ 901              		.loc 1 53 33 is_stmt 0 view .LVU269
+ 902 02e0 DDED017A 		vldr.32	s15, [sp, #4]
+ 903              		.loc 1 53 26 view .LVU270
+ 904 02e4 27EE807A 		vmul.f32	s14, s15, s0
+ 905              		.loc 1 53 49 view .LVU271
+ 906 02e8 DDED026A 		vldr.32	s13, [sp, #8]
+ 907              		.loc 1 53 42 view .LVU272
+ 908 02ec 26EE896A 		vmul.f32	s12, s13, s18
+ 909              		.loc 1 53 37 view .LVU273
+ 910 02f0 37EE467A 		vsub.f32	s14, s14, s12
+ 911              		.loc 1 53 21 view .LVU274
+ 912 02f4 86ED047A 		vstr.32	s14, [r6, #16]
+  54:application/gimbal/gimbal_math.c ****     pose->yaw_vel = (sr * omega[1] + cr * omega[2]) / cp;
+ 913              		.loc 1 54 5 is_stmt 1 view .LVU275
+ 914              		.loc 1 54 25 is_stmt 0 view .LVU276
+ 915 02f8 67EE897A 		vmul.f32	s15, s15, s18
+ 916              		.loc 1 54 41 view .LVU277
+ 917 02fc 26EE800A 		vmul.f32	s0, s13, s0
+ 918              	.LVL77:
+ 919              		.loc 1 54 36 view .LVU278
+ 920 0300 77EE807A 		vadd.f32	s15, s15, s0
+ 921              		.loc 1 54 53 view .LVU279
+ 922 0304 C7EEA86A 		vdiv.f32	s13, s15, s17
+ 923              		.loc 1 54 19 view .LVU280
+ 924 0308 C6ED036A 		vstr.32	s13, [r6, #12]
+  55:application/gimbal/gimbal_math.c ****     return isfinite(pose->yaw_vel) && isfinite(pose->pitch_vel);
+ 925              		.loc 1 55 5 is_stmt 1 view .LVU281
+ 926              		.loc 1 55 12 is_stmt 0 view .LVU282
+ 927 030c F0EEE66A 		vabs.f32	s13, s13
+ 928              		.loc 1 55 36 view .LVU283
+ 929 0310 DFED117A 		vldr.32	s15, .L77+4
+ 930 0314 F4EE676A 		vcmp.f32	s13, s15
+ 931 0318 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 932 031c 15D8     		bhi	.L64
+ 933              		.loc 1 55 39 discriminator 1 view .LVU284
+ 934 031e B0EEC77A 		vabs.f32	s14, s14
+ 935              		.loc 1 55 36 discriminator 1 view .LVU285
+ 936 0322 B4EE677A 		vcmp.f32	s14, s15
+ 937 0326 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 938 032a 10D9     		bls	.L67
+ 939              		.loc 1 55 36 view .LVU286
+ 940 032c 0020     		movs	r0, #0
+ 941 032e 04E0     		b	.L36
+ 942              	.LVL78:
+ 943              	.L54:
+ 944              	.LBB28:
+  33:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 3; ++i) if (!isfinite(gyro[i])) return 0;
+ 945              		.loc 1 33 63 view .LVU287
+ 946 0330 0020     		movs	r0, #0
+ARM GAS  /tmp/ccyHnENa.s 			page 20
+
+
+ 947              	.LVL79:
+  33:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 3; ++i) if (!isfinite(gyro[i])) return 0;
+ 948              		.loc 1 33 63 view .LVU288
+ 949 0332 02E0     		b	.L36
+ 950              	.LVL80:
+ 951              	.L55:
+  33:application/gimbal/gimbal_math.c ****     for (int i = 0; i < 3; ++i) if (!isfinite(gyro[i])) return 0;
+ 952              		.loc 1 33 63 view .LVU289
+ 953              	.LBE28:
+ 954              	.LBB29:
+  34:application/gimbal/gimbal_math.c ****     if (n < 0.25f || n > 2.25f || !GimbalRotationValid(m)) return 0;
+ 955              		.loc 1 34 64 view .LVU290
+ 956 0334 0020     		movs	r0, #0
+ 957              	.LVL81:
+  34:application/gimbal/gimbal_math.c ****     if (n < 0.25f || n > 2.25f || !GimbalRotationValid(m)) return 0;
+ 958              		.loc 1 34 64 view .LVU291
+ 959 0336 00E0     		b	.L36
+ 960              	.LVL82:
+ 961              	.L56:
+  34:application/gimbal/gimbal_math.c ****     if (n < 0.25f || n > 2.25f || !GimbalRotationValid(m)) return 0;
+ 962              		.loc 1 34 64 view .LVU292
+ 963              	.LBE29:
+  35:application/gimbal/gimbal_math.c ****     float scale = 1.0f / sqrtf(n);
+ 964              		.loc 1 35 67 view .LVU293
+ 965 0338 0020     		movs	r0, #0
+ 966              	.LVL83:
+ 967              	.L36:
+  56:application/gimbal/gimbal_math.c **** }
+ 968              		.loc 1 56 1 view .LVU294
+ 969 033a 1FB0     		add	sp, sp, #124
+ 970              	.LCFI9:
+ 971              		.cfi_remember_state
+ 972              		.cfi_def_cfa_offset 36
+ 973              		@ sp needed
+ 974 033c BDEC048B 		vldm	sp!, {d8-d9}
+ 975              	.LCFI10:
+ 976              		.cfi_restore 82
+ 977              		.cfi_restore 83
+ 978              		.cfi_restore 80
+ 979              		.cfi_restore 81
+ 980              		.cfi_def_cfa_offset 20
+ 981 0340 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 982              	.LVL84:
+ 983              	.L57:
+ 984              	.LCFI11:
+ 985              		.cfi_restore_state
+  35:application/gimbal/gimbal_math.c ****     float scale = 1.0f / sqrtf(n);
+ 986              		.loc 1 35 67 view .LVU295
+ 987 0342 0020     		movs	r0, #0
+ 988              	.LVL85:
+  35:application/gimbal/gimbal_math.c ****     float scale = 1.0f / sqrtf(n);
+ 989              		.loc 1 35 67 view .LVU296
+ 990 0344 F9E7     		b	.L36
+ 991              	.LVL86:
+ 992              	.L63:
+  52:application/gimbal/gimbal_math.c ****     pose->pitch_vel = cr * omega[1] - sr * omega[2];
+ 993              		.loc 1 52 34 view .LVU297
+ARM GAS  /tmp/ccyHnENa.s 			page 21
+
+
+ 994 0346 0020     		movs	r0, #0
+ 995 0348 F7E7     		b	.L36
+ 996              	.LVL87:
+ 997              	.L64:
+  55:application/gimbal/gimbal_math.c **** }
+ 998              		.loc 1 55 36 view .LVU298
+ 999 034a 0020     		movs	r0, #0
+ 1000 034c F5E7     		b	.L36
+ 1001              	.L67:
+ 1002 034e 0120     		movs	r0, #1
+ 1003 0350 F3E7     		b	.L36
+ 1004              	.L78:
+ 1005 0352 00BF     		.align	2
+ 1006              	.L77:
+ 1007 0354 00000000 		.word	0
+ 1008 0358 FFFF7F7F 		.word	2139095039
+ 1009 035c CDCCCC3D 		.word	1036831949
+ 1010              		.cfi_endproc
+ 1011              	.LFE4:
+ 1013              		.section	.text.GimbalEncoderTarget,"ax",%progbits
+ 1014              		.align	1
+ 1015              		.global	GimbalEncoderTarget
+ 1016              		.syntax unified
+ 1017              		.thumb
+ 1018              		.thumb_func
+ 1019              		.fpu fpv4-sp-d16
+ 1021              	GimbalEncoderTarget:
+ 1022              	.LVL88:
+ 1023              	.LFB5:
+  57:application/gimbal/gimbal_math.c **** 
+  58:application/gimbal/gimbal_math.c **** int GimbalEncoderTarget(float target, float current, float encoder, float direction,
+  59:application/gimbal/gimbal_math.c ****                         float lo, float hi, float max_error, float *result)
+  60:application/gimbal/gimbal_math.c **** {
+ 1024              		.loc 1 60 1 is_stmt 1 view -0
+ 1025              		.cfi_startproc
+ 1026              		@ args = 0, pretend = 0, frame = 0
+ 1027              		@ frame_needed = 0, uses_anonymous_args = 0
+  61:application/gimbal/gimbal_math.c ****     if (!isfinite(target) || !isfinite(current) || !isfinite(encoder) ||
+ 1028              		.loc 1 61 5 view .LVU300
+ 1029              		.loc 1 61 10 is_stmt 0 view .LVU301
+ 1030 0000 B0EEC07A 		vabs.f32	s14, s0
+ 1031              		.loc 1 61 8 view .LVU302
+ 1032 0004 DFED457A 		vldr.32	s15, .L95
+ 1033 0008 B4EE677A 		vcmp.f32	s14, s15
+ 1034 000c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1035 0010 70D8     		bhi	.L82
+  60:application/gimbal/gimbal_math.c ****     if (!isfinite(target) || !isfinite(current) || !isfinite(encoder) ||
+ 1036              		.loc 1 60 1 discriminator 1 view .LVU303
+ 1037 0012 10B5     		push	{r4, lr}
+ 1038              	.LCFI12:
+ 1039              		.cfi_def_cfa_offset 8
+ 1040              		.cfi_offset 4, -8
+ 1041              		.cfi_offset 14, -4
+ 1042 0014 2DED068B 		vpush.64	{d8, d9, d10}
+ 1043              	.LCFI13:
+ 1044              		.cfi_def_cfa_offset 32
+ 1045              		.cfi_offset 80, -32
+ARM GAS  /tmp/ccyHnENa.s 			page 22
+
+
+ 1046              		.cfi_offset 81, -28
+ 1047              		.cfi_offset 82, -24
+ 1048              		.cfi_offset 83, -20
+ 1049              		.cfi_offset 84, -16
+ 1050              		.cfi_offset 85, -12
+ 1051 0018 B0EE418A 		vmov.f32	s16, s2
+ 1052 001c B0EE61AA 		vmov.f32	s20, s3
+ 1053 0020 F0EE428A 		vmov.f32	s17, s4
+ 1054 0024 B0EE629A 		vmov.f32	s18, s5
+ 1055 0028 F0EE439A 		vmov.f32	s19, s6
+ 1056 002c 0446     		mov	r4, r0
+ 1057              		.loc 1 61 31 discriminator 1 view .LVU304
+ 1058 002e F0EEE07A 		vabs.f32	s15, s1
+ 1059              		.loc 1 61 27 discriminator 1 view .LVU305
+ 1060 0032 9FED3A7A 		vldr.32	s14, .L95
+ 1061 0036 F4EE477A 		vcmp.f32	s15, s14
+ 1062 003a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1063 003e 5BD8     		bhi	.L83
+ 1064              		.loc 1 61 53 discriminator 2 view .LVU306
+ 1065 0040 F0EEC17A 		vabs.f32	s15, s2
+ 1066              		.loc 1 61 49 discriminator 2 view .LVU307
+ 1067 0044 F4EE477A 		vcmp.f32	s15, s14
+ 1068 0048 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1069 004c 58D8     		bhi	.L84
+  62:application/gimbal/gimbal_math.c ****         !isfinite(lo) || !isfinite(hi) || !isfinite(max_error) || lo >= hi ||
+ 1070              		.loc 1 62 10 discriminator 3 view .LVU308
+ 1071 004e F0EEC27A 		vabs.f32	s15, s4
+  61:application/gimbal/gimbal_math.c ****     if (!isfinite(target) || !isfinite(current) || !isfinite(encoder) ||
+ 1072              		.loc 1 61 71 discriminator 3 view .LVU309
+ 1073 0052 F4EE477A 		vcmp.f32	s15, s14
+ 1074 0056 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1075 005a 53D8     		bhi	.L85
+ 1076              		.loc 1 62 27 view .LVU310
+ 1077 005c F0EEE27A 		vabs.f32	s15, s5
+ 1078              		.loc 1 62 23 view .LVU311
+ 1079 0060 F4EE477A 		vcmp.f32	s15, s14
+ 1080 0064 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1081 0068 4ED8     		bhi	.L86
+ 1082              		.loc 1 62 44 discriminator 1 view .LVU312
+ 1083 006a F0EEC37A 		vabs.f32	s15, s6
+ 1084              		.loc 1 62 40 discriminator 1 view .LVU313
+ 1085 006e F4EE477A 		vcmp.f32	s15, s14
+ 1086 0072 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1087 0076 49D8     		bhi	.L87
+ 1088              		.loc 1 62 64 discriminator 2 view .LVU314
+ 1089 0078 B4EEE22A 		vcmpe.f32	s4, s5
+ 1090 007c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1091 0080 46DA     		bge	.L88
+ 1092              		.loc 1 62 76 discriminator 3 view .LVU315
+ 1093 0082 B5EEC03A 		vcmpe.f32	s6, #0
+ 1094 0086 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1095 008a 43D9     		bls	.L89
+  63:application/gimbal/gimbal_math.c ****         max_error <= 0 || (direction != 1 && direction != -1)) return 0;
+ 1096              		.loc 1 63 24 view .LVU316
+ 1097 008c F7EE007A 		vmov.f32	s15, #1.0e+0
+ 1098 0090 F4EE671A 		vcmp.f32	s3, s15
+ 1099 0094 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ARM GAS  /tmp/ccyHnENa.s 			page 23
+
+
+ 1100 0098 06D0     		beq	.L81
+ 1101              		.loc 1 63 43 discriminator 1 view .LVU317
+ 1102 009a FFEE007A 		vmov.f32	s15, #-1.0e+0
+ 1103 009e F4EE671A 		vcmp.f32	s3, s15
+ 1104 00a2 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1105 00a6 37D1     		bne	.L90
+ 1106              	.L81:
+  64:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1107              		.loc 1 64 5 is_stmt 1 view .LVU318
+ 1108              		.loc 1 64 19 is_stmt 0 view .LVU319
+ 1109 00a8 30EE600A 		vsub.f32	s0, s0, s1
+ 1110              	.LVL89:
+ 1111              		.loc 1 64 19 view .LVU320
+ 1112 00ac FFF7FEFF 		bl	GimbalWrapRad
+ 1113              	.LVL90:
+  65:application/gimbal/gimbal_math.c ****     error = Clamp(error, -max_error, max_error);
+ 1114              		.loc 1 65 5 is_stmt 1 view .LVU321
+ 1115              		.loc 1 65 13 is_stmt 0 view .LVU322
+ 1116 00b0 B0EE691A 		vmov.f32	s2, s19
+ 1117 00b4 F1EE690A 		vneg.f32	s1, s19
+ 1118 00b8 DFED197A 		vldr.32	s15, .L95+4
+ 1119 00bc 20EE270A 		vmul.f32	s0, s0, s15
+ 1120              	.LVL91:
+ 1121              		.loc 1 65 13 view .LVU323
+ 1122 00c0 FFF7FEFF 		bl	Clamp
+ 1123              	.LVL92:
+  66:application/gimbal/gimbal_math.c ****     /* encoder and result both use degrees relative to the SAME mechanical zero. */
+  67:application/gimbal/gimbal_math.c ****     *result = Clamp(encoder + direction * error, lo, hi);
+ 1124              		.loc 1 67 5 is_stmt 1 view .LVU324
+ 1125              		.loc 1 67 41 is_stmt 0 view .LVU325
+ 1126 00c4 2AEE000A 		vmul.f32	s0, s20, s0
+ 1127              	.LVL93:
+ 1128              		.loc 1 67 15 view .LVU326
+ 1129 00c8 B0EE491A 		vmov.f32	s2, s18
+ 1130 00cc F0EE680A 		vmov.f32	s1, s17
+ 1131 00d0 30EE080A 		vadd.f32	s0, s0, s16
+ 1132 00d4 FFF7FEFF 		bl	Clamp
+ 1133              	.LVL94:
+ 1134              		.loc 1 67 13 view .LVU327
+ 1135 00d8 84ED000A 		vstr.32	s0, [r4]
+  68:application/gimbal/gimbal_math.c ****     return isfinite(*result);
+ 1136              		.loc 1 68 5 is_stmt 1 view .LVU328
+ 1137              		.loc 1 68 12 is_stmt 0 view .LVU329
+ 1138 00dc B0EEC00A 		vabs.f32	s0, s0
+ 1139 00e0 DFED0E7A 		vldr.32	s15, .L95
+ 1140 00e4 B4EE670A 		vcmp.f32	s0, s15
+ 1141 00e8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1142 00ec 94BF     		ite	ls
+ 1143 00ee 0120     		movls	r0, #1
+ 1144 00f0 0020     		movhi	r0, #0
+ 1145 00f2 02E0     		b	.L79
+ 1146              	.LVL95:
+ 1147              	.L82:
+ 1148              	.LCFI14:
+ 1149              		.cfi_def_cfa_offset 0
+ 1150              		.cfi_restore 4
+ 1151              		.cfi_restore 14
+ARM GAS  /tmp/ccyHnENa.s 			page 24
+
+
+ 1152              		.cfi_restore 80
+ 1153              		.cfi_restore 81
+ 1154              		.cfi_restore 82
+ 1155              		.cfi_restore 83
+ 1156              		.cfi_restore 84
+ 1157              		.cfi_restore 85
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1158              		.loc 1 63 71 view .LVU330
+ 1159 00f4 0020     		movs	r0, #0
+ 1160              	.LVL96:
+  69:application/gimbal/gimbal_math.c **** }
+ 1161              		.loc 1 69 1 view .LVU331
+ 1162 00f6 7047     		bx	lr
+ 1163              	.LVL97:
+ 1164              	.L83:
+ 1165              	.LCFI15:
+ 1166              		.cfi_def_cfa_offset 32
+ 1167              		.cfi_offset 4, -8
+ 1168              		.cfi_offset 14, -4
+ 1169              		.cfi_offset 80, -32
+ 1170              		.cfi_offset 81, -28
+ 1171              		.cfi_offset 82, -24
+ 1172              		.cfi_offset 83, -20
+ 1173              		.cfi_offset 84, -16
+ 1174              		.cfi_offset 85, -12
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1175              		.loc 1 63 71 view .LVU332
+ 1176 00f8 0020     		movs	r0, #0
+ 1177              	.LVL98:
+ 1178              	.L79:
+ 1179              		.loc 1 69 1 view .LVU333
+ 1180 00fa BDEC068B 		vldm	sp!, {d8-d10}
+ 1181              	.LCFI16:
+ 1182              		.cfi_remember_state
+ 1183              		.cfi_restore 84
+ 1184              		.cfi_restore 85
+ 1185              		.cfi_restore 82
+ 1186              		.cfi_restore 83
+ 1187              		.cfi_restore 80
+ 1188              		.cfi_restore 81
+ 1189              		.cfi_def_cfa_offset 8
+ 1190              	.LVL99:
+ 1191              		.loc 1 69 1 view .LVU334
+ 1192 00fe 10BD     		pop	{r4, pc}
+ 1193              	.LVL100:
+ 1194              	.L84:
+ 1195              	.LCFI17:
+ 1196              		.cfi_restore_state
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1197              		.loc 1 63 71 view .LVU335
+ 1198 0100 0020     		movs	r0, #0
+ 1199              	.LVL101:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1200              		.loc 1 63 71 view .LVU336
+ 1201 0102 FAE7     		b	.L79
+ 1202              	.LVL102:
+ 1203              	.L85:
+ARM GAS  /tmp/ccyHnENa.s 			page 25
+
+
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1204              		.loc 1 63 71 view .LVU337
+ 1205 0104 0020     		movs	r0, #0
+ 1206              	.LVL103:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1207              		.loc 1 63 71 view .LVU338
+ 1208 0106 F8E7     		b	.L79
+ 1209              	.LVL104:
+ 1210              	.L86:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1211              		.loc 1 63 71 view .LVU339
+ 1212 0108 0020     		movs	r0, #0
+ 1213              	.LVL105:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1214              		.loc 1 63 71 view .LVU340
+ 1215 010a F6E7     		b	.L79
+ 1216              	.LVL106:
+ 1217              	.L87:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1218              		.loc 1 63 71 view .LVU341
+ 1219 010c 0020     		movs	r0, #0
+ 1220              	.LVL107:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1221              		.loc 1 63 71 view .LVU342
+ 1222 010e F4E7     		b	.L79
+ 1223              	.LVL108:
+ 1224              	.L88:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1225              		.loc 1 63 71 view .LVU343
+ 1226 0110 0020     		movs	r0, #0
+ 1227              	.LVL109:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1228              		.loc 1 63 71 view .LVU344
+ 1229 0112 F2E7     		b	.L79
+ 1230              	.LVL110:
+ 1231              	.L89:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1232              		.loc 1 63 71 view .LVU345
+ 1233 0114 0020     		movs	r0, #0
+ 1234              	.LVL111:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1235              		.loc 1 63 71 view .LVU346
+ 1236 0116 F0E7     		b	.L79
+ 1237              	.LVL112:
+ 1238              	.L90:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1239              		.loc 1 63 71 view .LVU347
+ 1240 0118 0020     		movs	r0, #0
+ 1241              	.LVL113:
+  63:application/gimbal/gimbal_math.c ****     float error = GimbalWrapRad(target - current) * (180.0f / PI_F);
+ 1242              		.loc 1 63 71 view .LVU348
+ 1243 011a EEE7     		b	.L79
+ 1244              	.L96:
+ 1245              		.align	2
+ 1246              	.L95:
+ 1247 011c FFFF7F7F 		.word	2139095039
+ 1248 0120 E02E6542 		.word	1113927392
+ARM GAS  /tmp/ccyHnENa.s 			page 26
+
+
+ 1249              		.cfi_endproc
+ 1250              	.LFE5:
+ 1252              		.text
+ 1253              	.Letext0:
+ 1254              		.file 2 "application/gimbal/gimbal_math.h"
+ 1255              		.file 3 "/usr/include/newlib/math.h"
+ 1256              		.file 4 "<built-in>"
+ARM GAS  /tmp/ccyHnENa.s 			page 27
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gimbal_math.c
+     /tmp/ccyHnENa.s:18     .text.Clamp:0000000000000000 $t
+     /tmp/ccyHnENa.s:25     .text.Clamp:0000000000000000 Clamp
+     /tmp/ccyHnENa.s:66     .text.GimbalWrapRad:0000000000000000 $t
+     /tmp/ccyHnENa.s:73     .text.GimbalWrapRad:0000000000000000 GimbalWrapRad
+     /tmp/ccyHnENa.s:97     .text.GimbalWrapRad:000000000000000c $d
+     /tmp/ccyHnENa.s:102    .text.GimbalWrapDeg:0000000000000000 $t
+     /tmp/ccyHnENa.s:109    .text.GimbalWrapDeg:0000000000000000 GimbalWrapDeg
+     /tmp/ccyHnENa.s:132    .text.GimbalWrapDeg:000000000000000c $d
+     /tmp/ccyHnENa.s:137    .text.GimbalRotationValid:0000000000000000 $t
+     /tmp/ccyHnENa.s:144    .text.GimbalRotationValid:0000000000000000 GimbalRotationValid
+     /tmp/ccyHnENa.s:368    .text.GimbalRotationValid:0000000000000120 $d
+     /tmp/ccyHnENa.s:378    .text.GimbalPoseFromImu:0000000000000000 $t
+     /tmp/ccyHnENa.s:385    .text.GimbalPoseFromImu:0000000000000000 GimbalPoseFromImu
+     /tmp/ccyHnENa.s:1007   .text.GimbalPoseFromImu:0000000000000354 $d
+     /tmp/ccyHnENa.s:1014   .text.GimbalEncoderTarget:0000000000000000 $t
+     /tmp/ccyHnENa.s:1021   .text.GimbalEncoderTarget:0000000000000000 GimbalEncoderTarget
+     /tmp/ccyHnENa.s:1247   .text.GimbalEncoderTarget:000000000000011c $d
+
+UNDEFINED SYMBOLS
+fmaxf
+fminf
+remainderf
+sqrtf
+memset
+atan2f
+asinf
+cosf
+sinf

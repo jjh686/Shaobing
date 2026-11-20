@@ -1,0 +1,38 @@
+{
+  "release": "云台通信模块版-20261120",
+  "packaged_at": "2026-11-20T14:23:30+08:00",
+  "target": "05云台C板，STM32F407，CAN1板间通信及yaw，CAN2 pitch",
+  "source_project": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台",
+  "source_commit": "4f034eb08afacc1d3e310b1cfa1ee25b15b90ba4",
+  "source_includes_uncommitted_changes": true,
+  "build_command": "make -j4 all",
+  "compiler": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
+  "flash_origin": "0x08000000",
+  "initial_stack_pointer": "0x20020000",
+  "reset_vector": "0x080176D9",
+  "firmware": {
+    "01_云台C板_USB_CAN1/Gimbal_ChassisLink.elf": {
+      "source": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台/build/basic_framework.elf",
+      "bytes": 1463136,
+      "sha256": "1a40a7e1455caf4d82908822d577c64507da22c9d85cb5f34fcf8d2f4ec06a6c"
+    },
+    "01_云台C板_USB_CAN1/Gimbal_ChassisLink.hex": {
+      "source": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台/build/basic_framework.hex",
+      "bytes": 288954,
+      "sha256": "84e5aab9b6b786dceef6605c9d1950e09ec694de84638428131c8a395374f0df"
+    },
+    "01_云台C板_USB_CAN1/Gimbal_ChassisLink.bin": {
+      "source": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台/build/basic_framework.bin",
+      "bytes": 102724,
+      "sha256": "5a131f42a9dbb0eb836295741937c19c6a5f2b7bef39eae221be4f5f5a048511"
+    }
+  },
+  "source_files_hashed": 450,
+  "elf_bin_hex_consistent": true,
+  "host_tests": "tests/run_all_host_tests.sh passed; 7 CAN compatibility executables; 10000 round trips per variant",
+  "hardware_accessed": false,
+  "flashed": false,
+  "paired_chassis": "04_DiPan_Board/release/底盘配套版-20261120/02_底盘C板_CAN2_方向修正/DiPan_Board.elf",
+  "reorganized_at": "2026-11-20T14:39:01+08:00",
+  "package_verified_at": "2026-11-20T14:40:12+08:00"
+}

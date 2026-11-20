@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
+intrinsics.h
+-
+machine.h
+-
+
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
+../Config/SEGGER_RTT_Conf.h
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
+stdlib.h
+-
+stdarg.h
+-
+
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT_ASM_ARMv7M.s
+SEGGER_RTT.h
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
+
+/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework/startup_stm32f407xx.s
+

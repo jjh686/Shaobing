@@ -1,0 +1,1 @@
+/* No timing calls are needed by the real CAN BSP. */

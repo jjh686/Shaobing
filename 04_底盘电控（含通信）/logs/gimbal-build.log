@@ -1,20 +1,20 @@
-make: 进入目录“/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/communication_reference/gimbal_firmware”
-modules/imu/BMI088driver.c:8:9: note: '#pragma message: this is a legacy support. test the new BMI088 module as soon as possible.'
-    8 | #pragma message "this is a legacy support. test the new BMI088 module as soon as possible."
-      |         ^~~~~~~
+make: 进入目录“/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/communication_reference/gimbal_firmware”
 modules/BMI088/bmi088.c:297:9: note: '#pragma message: REMEMBER TO SET PRE CALIBRATE PARAMETER IF YOU CHOOSE NOT TO CALIBRATE'
   297 | #pragma message "REMEMBER TO SET PRE CALIBRATE PARAMETER IF YOU CHOOSE NOT TO CALIBRATE"
+      |         ^~~~~~~
+modules/imu/BMI088driver.c:8:9: note: '#pragma message: this is a legacy support. test the new BMI088 module as soon as possible.'
+    8 | #pragma message "this is a legacy support. test the new BMI088 module as soon as possible."
       |         ^~~~~~~
 application/robot.c:9:9: note: '#pragma message: check if you have configured the parameters in robot_def.h, IF NOT, please refer to the comments AND DO IT, otherwise the robot will have FATAL ERRORS!!!'
     9 | #pragma message "check if you have configured the parameters in robot_def.h, IF NOT, please refer to the comments AND DO IT, otherwise the robot will have FATAL ERRORS!!!"
       |         ^~~~~~~
 Memory region         Used Size  Region Size  %age Used
-             RAM:       79696 B       128 KB     60.80%
+             RAM:       79752 B       128 KB     60.85%
           CCMRAM:          0 GB        64 KB      0.00%
-           FLASH:       96328 B         1 MB      9.19%
+           FLASH:       96184 B         1 MB      9.17%
 arm-none-eabi-size ../../build/gimbal/basic_framework.elf
    text	   data	    bss	    dec	    hex	filename
-  95120	   1184	  78520	 174824	  2aae8	../../build/gimbal/basic_framework.elf
+  94944	   1216	  78544	 174704	  2aa70	../../build/gimbal/basic_framework.elf
 arm-none-eabi-objcopy -O ihex ../../build/gimbal/basic_framework.elf ../../build/gimbal/basic_framework.hex
 arm-none-eabi-objcopy -O binary -S ../../build/gimbal/basic_framework.elf ../../build/gimbal/basic_framework.bin	
-make: 离开目录“/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/communication_reference/gimbal_firmware”
+make: 离开目录“/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/communication_reference/gimbal_firmware”

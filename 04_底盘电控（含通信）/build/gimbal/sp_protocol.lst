@@ -1,0 +1,854 @@
+ARM GAS  /tmp/ccKAVHww.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"sp_protocol.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.CommandValid,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	CommandValid:
+  26              	.LVL0:
+  27              	.LFB3:
+  28              		.file 1 "modules/master_machine/sp_protocol.c"
+   1:modules/master_machine/sp_protocol.c **** /* [USB_SP 新增 01 开始] 新增SP CRC与流式拆包、粘包/噪声恢复、有限数值检查
+   2:modules/master_machine/sp_protocol.c **** #include "sp_protocol.h"
+   3:modules/master_machine/sp_protocol.c **** #include <math.h>
+   4:modules/master_machine/sp_protocol.c **** #include <string.h>
+   5:modules/master_machine/sp_protocol.c **** 
+   6:modules/master_machine/sp_protocol.c **** uint16_t SP_CRC16(const uint8_t *data, size_t size)
+   7:modules/master_machine/sp_protocol.c **** {
+   8:modules/master_machine/sp_protocol.c ****     uint16_t crc = 0xffffu;
+   9:modules/master_machine/sp_protocol.c ****     for (size_t i = 0; i < size; ++i) {
+  10:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+  11:modules/master_machine/sp_protocol.c ****         for (unsigned bit = 0; bit < 8; ++bit)
+  12:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+  13:modules/master_machine/sp_protocol.c ****     }
+  14:modules/master_machine/sp_protocol.c ****     return crc;
+  15:modules/master_machine/sp_protocol.c **** }
+  16:modules/master_machine/sp_protocol.c **** 
+  17:modules/master_machine/sp_protocol.c **** void SP_ParserInit(SP_Parser *parser)
+  18:modules/master_machine/sp_protocol.c **** {
+  19:modules/master_machine/sp_protocol.c ****     memset(parser, 0, sizeof(*parser));
+  20:modules/master_machine/sp_protocol.c **** }
+  21:modules/master_machine/sp_protocol.c **** 
+  22:modules/master_machine/sp_protocol.c **** static void DropByte(SP_Parser *parser)
+  23:modules/master_machine/sp_protocol.c **** {
+  24:modules/master_machine/sp_protocol.c ****     --parser->used;
+  25:modules/master_machine/sp_protocol.c ****     memmove(parser->data, parser->data + 1, parser->used);
+  26:modules/master_machine/sp_protocol.c **** }
+  27:modules/master_machine/sp_protocol.c **** 
+  28:modules/master_machine/sp_protocol.c **** static int CommandValid(const SP_Command *c)
+  29:modules/master_machine/sp_protocol.c **** {
+  29              		.loc 1 29 1 view -0
+ARM GAS  /tmp/ccKAVHww.s 			page 2
+
+
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  30:modules/master_machine/sp_protocol.c ****     return c->mode <= 2u && isfinite(c->yaw) && isfinite(c->pitch) &&
+  34              		.loc 1 30 5 view .LVU1
+  35              		.loc 1 30 13 is_stmt 0 view .LVU2
+  36 0000 8378     		ldrb	r3, [r0, #2]	@ zero_extendqisi2
+  31:modules/master_machine/sp_protocol.c ****            isfinite(c->yaw_vel) && isfinite(c->pitch_vel) &&
+  32:modules/master_machine/sp_protocol.c ****            isfinite(c->yaw_acc) && isfinite(c->pitch_acc) &&
+  33:modules/master_machine/sp_protocol.c ****            fabsf(c->yaw) <= 3.141593f && fabsf(c->pitch) <= 1.570797f;
+  37              		.loc 1 33 39 view .LVU3
+  38 0002 022B     		cmp	r3, #2
+  39 0004 57D8     		bhi	.L4
+  30:modules/master_machine/sp_protocol.c ****     return c->mode <= 2u && isfinite(c->yaw) && isfinite(c->pitch) &&
+  40              		.loc 1 30 29 view .LVU4
+  41 0006 D0F80330 		ldr	r3, [r0, #3]	@ unaligned
+  42 000a 07EE903A 		vmov	s15, r3	@ int
+  43 000e F0EEE77A 		vabs.f32	s15, s15
+  30:modules/master_machine/sp_protocol.c ****     return c->mode <= 2u && isfinite(c->yaw) && isfinite(c->pitch) &&
+  44              		.loc 1 30 26 view .LVU5
+  45 0012 9FED327A 		vldr.32	s14, .L15
+  46 0016 F4EE477A 		vcmp.f32	s15, s14
+  47 001a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  48 001e 4CD8     		bhi	.L5
+  30:modules/master_machine/sp_protocol.c ****     return c->mode <= 2u && isfinite(c->yaw) && isfinite(c->pitch) &&
+  49              		.loc 1 30 49 discriminator 1 view .LVU6
+  50 0020 D0F80F30 		ldr	r3, [r0, #15]	@ unaligned
+  51 0024 07EE103A 		vmov	s14, r3	@ int
+  52 0028 B0EEC77A 		vabs.f32	s14, s14
+  30:modules/master_machine/sp_protocol.c ****     return c->mode <= 2u && isfinite(c->yaw) && isfinite(c->pitch) &&
+  53              		.loc 1 30 46 discriminator 1 view .LVU7
+  54 002c DFED2B6A 		vldr.32	s13, .L15
+  55 0030 B4EE667A 		vcmp.f32	s14, s13
+  56 0034 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  57 0038 41D8     		bhi	.L6
+  31:modules/master_machine/sp_protocol.c ****            isfinite(c->yaw_vel) && isfinite(c->pitch_vel) &&
+  58              		.loc 1 31 12 discriminator 2 view .LVU8
+  59 003a D0F80730 		ldr	r3, [r0, #7]	@ unaligned
+  60 003e 06EE903A 		vmov	s13, r3	@ int
+  61 0042 F0EEE66A 		vabs.f32	s13, s13
+  30:modules/master_machine/sp_protocol.c ****     return c->mode <= 2u && isfinite(c->yaw) && isfinite(c->pitch) &&
+  62              		.loc 1 30 68 discriminator 2 view .LVU9
+  63 0046 9FED256A 		vldr.32	s12, .L15
+  64 004a F4EE466A 		vcmp.f32	s13, s12
+  65 004e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  66 0052 36D8     		bhi	.L7
+  31:modules/master_machine/sp_protocol.c ****            isfinite(c->yaw_vel) && isfinite(c->pitch_vel) &&
+  67              		.loc 1 31 36 view .LVU10
+  68 0054 D0F81330 		ldr	r3, [r0, #19]	@ unaligned
+  69 0058 06EE903A 		vmov	s13, r3	@ int
+  70 005c F0EEE66A 		vabs.f32	s13, s13
+  31:modules/master_machine/sp_protocol.c ****            isfinite(c->yaw_vel) && isfinite(c->pitch_vel) &&
+  71              		.loc 1 31 33 view .LVU11
+  72 0060 F4EE466A 		vcmp.f32	s13, s12
+  73 0064 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  74 0068 2DD8     		bhi	.L8
+ARM GAS  /tmp/ccKAVHww.s 			page 3
+
+
+  32:modules/master_machine/sp_protocol.c ****            fabsf(c->yaw) <= 3.141593f && fabsf(c->pitch) <= 1.570797f;
+  75              		.loc 1 32 12 discriminator 1 view .LVU12
+  76 006a D0F80B30 		ldr	r3, [r0, #11]	@ unaligned
+  77 006e 06EE903A 		vmov	s13, r3	@ int
+  78 0072 F0EEE66A 		vabs.f32	s13, s13
+  31:modules/master_machine/sp_protocol.c ****            isfinite(c->yaw_vel) && isfinite(c->pitch_vel) &&
+  79              		.loc 1 31 59 discriminator 1 view .LVU13
+  80 0076 F4EE466A 		vcmp.f32	s13, s12
+  81 007a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  82 007e 24D8     		bhi	.L9
+  32:modules/master_machine/sp_protocol.c ****            fabsf(c->yaw) <= 3.141593f && fabsf(c->pitch) <= 1.570797f;
+  83              		.loc 1 32 36 view .LVU14
+  84 0080 D0F81730 		ldr	r3, [r0, #23]	@ unaligned
+  85 0084 06EE903A 		vmov	s13, r3	@ int
+  86 0088 F0EEE66A 		vabs.f32	s13, s13
+  32:modules/master_machine/sp_protocol.c ****            fabsf(c->yaw) <= 3.141593f && fabsf(c->pitch) <= 1.570797f;
+  87              		.loc 1 32 33 view .LVU15
+  88 008c F4EE466A 		vcmp.f32	s13, s12
+  89 0090 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  90 0094 1BD8     		bhi	.L10
+  32:modules/master_machine/sp_protocol.c ****            fabsf(c->yaw) <= 3.141593f && fabsf(c->pitch) <= 1.570797f;
+  91              		.loc 1 32 59 discriminator 1 view .LVU16
+  92 0096 DFED126A 		vldr.32	s13, .L15+4
+  93 009a F4EEE67A 		vcmpe.f32	s15, s13
+  94 009e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  95 00a2 16D8     		bhi	.L14
+  96              		.loc 1 33 39 discriminator 3 view .LVU17
+  97 00a4 DFED0F7A 		vldr.32	s15, .L15+8
+  98 00a8 B4EEE77A 		vcmpe.f32	s14, s15
+  99 00ac F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 100 00b0 11D9     		bls	.L12
+ 101              		.loc 1 33 39 view .LVU18
+ 102 00b2 0020     		movs	r0, #0
+ 103              	.LVL1:
+ 104              		.loc 1 33 39 view .LVU19
+ 105 00b4 7047     		bx	lr
+ 106              	.LVL2:
+ 107              	.L4:
+ 108              		.loc 1 33 39 view .LVU20
+ 109 00b6 0020     		movs	r0, #0
+ 110              	.LVL3:
+ 111              		.loc 1 33 39 view .LVU21
+ 112 00b8 7047     		bx	lr
+ 113              	.LVL4:
+ 114              	.L5:
+ 115              		.loc 1 33 39 view .LVU22
+ 116 00ba 0020     		movs	r0, #0
+ 117              	.LVL5:
+ 118              		.loc 1 33 39 view .LVU23
+ 119 00bc 7047     		bx	lr
+ 120              	.LVL6:
+ 121              	.L6:
+ 122              		.loc 1 33 39 view .LVU24
+ 123 00be 0020     		movs	r0, #0
+ 124              	.LVL7:
+ 125              		.loc 1 33 39 view .LVU25
+ 126 00c0 7047     		bx	lr
+ARM GAS  /tmp/ccKAVHww.s 			page 4
+
+
+ 127              	.LVL8:
+ 128              	.L7:
+ 129              		.loc 1 33 39 view .LVU26
+ 130 00c2 0020     		movs	r0, #0
+ 131              	.LVL9:
+ 132              		.loc 1 33 39 view .LVU27
+ 133 00c4 7047     		bx	lr
+ 134              	.LVL10:
+ 135              	.L8:
+ 136              		.loc 1 33 39 view .LVU28
+ 137 00c6 0020     		movs	r0, #0
+ 138              	.LVL11:
+ 139              		.loc 1 33 39 view .LVU29
+ 140 00c8 7047     		bx	lr
+ 141              	.LVL12:
+ 142              	.L9:
+ 143              		.loc 1 33 39 view .LVU30
+ 144 00ca 0020     		movs	r0, #0
+ 145              	.LVL13:
+ 146              		.loc 1 33 39 view .LVU31
+ 147 00cc 7047     		bx	lr
+ 148              	.LVL14:
+ 149              	.L10:
+ 150              		.loc 1 33 39 view .LVU32
+ 151 00ce 0020     		movs	r0, #0
+ 152              	.LVL15:
+ 153              		.loc 1 33 39 view .LVU33
+ 154 00d0 7047     		bx	lr
+ 155              	.LVL16:
+ 156              	.L14:
+ 157              		.loc 1 33 39 view .LVU34
+ 158 00d2 0020     		movs	r0, #0
+ 159              	.LVL17:
+ 160              		.loc 1 33 39 view .LVU35
+ 161 00d4 7047     		bx	lr
+ 162              	.LVL18:
+ 163              	.L12:
+ 164              		.loc 1 33 39 view .LVU36
+ 165 00d6 0120     		movs	r0, #1
+ 166              	.LVL19:
+  34:modules/master_machine/sp_protocol.c **** }
+ 167              		.loc 1 34 1 view .LVU37
+ 168 00d8 7047     		bx	lr
+ 169              	.L16:
+ 170 00da 00BF     		.align	2
+ 171              	.L15:
+ 172 00dc FFFF7F7F 		.word	2139095039
+ 173 00e0 DC0F4940 		.word	1078530012
+ 174 00e4 E00FC93F 		.word	1070141408
+ 175              		.cfi_endproc
+ 176              	.LFE3:
+ 178              		.section	.text.DropByte,"ax",%progbits
+ 179              		.align	1
+ 180              		.syntax unified
+ 181              		.thumb
+ 182              		.thumb_func
+ 183              		.fpu fpv4-sp-d16
+ARM GAS  /tmp/ccKAVHww.s 			page 5
+
+
+ 185              	DropByte:
+ 186              	.LVL20:
+ 187              	.LFB2:
+  23:modules/master_machine/sp_protocol.c ****     --parser->used;
+ 188              		.loc 1 23 1 is_stmt 1 view -0
+ 189              		.cfi_startproc
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+  23:modules/master_machine/sp_protocol.c ****     --parser->used;
+ 192              		.loc 1 23 1 is_stmt 0 view .LVU39
+ 193 0000 08B5     		push	{r3, lr}
+ 194              	.LCFI0:
+ 195              		.cfi_def_cfa_offset 8
+ 196              		.cfi_offset 3, -8
+ 197              		.cfi_offset 14, -4
+ 198 0002 0146     		mov	r1, r0
+  24:modules/master_machine/sp_protocol.c ****     memmove(parser->data, parser->data + 1, parser->used);
+ 199              		.loc 1 24 5 is_stmt 1 view .LVU40
+  24:modules/master_machine/sp_protocol.c ****     memmove(parser->data, parser->data + 1, parser->used);
+ 200              		.loc 1 24 13 is_stmt 0 view .LVU41
+ 201 0004 026A     		ldr	r2, [r0, #32]
+  24:modules/master_machine/sp_protocol.c ****     memmove(parser->data, parser->data + 1, parser->used);
+ 202              		.loc 1 24 5 view .LVU42
+ 203 0006 013A     		subs	r2, r2, #1
+ 204 0008 0262     		str	r2, [r0, #32]
+  25:modules/master_machine/sp_protocol.c **** }
+ 205              		.loc 1 25 5 is_stmt 1 view .LVU43
+ 206 000a 0131     		adds	r1, r1, #1
+ 207 000c FFF7FEFF 		bl	memmove
+ 208              	.LVL21:
+  26:modules/master_machine/sp_protocol.c **** 
+ 209              		.loc 1 26 1 is_stmt 0 view .LVU44
+ 210 0010 08BD     		pop	{r3, pc}
+ 211              		.cfi_endproc
+ 212              	.LFE2:
+ 214              		.section	.text.SP_CRC16,"ax",%progbits
+ 215              		.align	1
+ 216              		.global	SP_CRC16
+ 217              		.syntax unified
+ 218              		.thumb
+ 219              		.thumb_func
+ 220              		.fpu fpv4-sp-d16
+ 222              	SP_CRC16:
+ 223              	.LVL22:
+ 224              	.LFB0:
+   7:modules/master_machine/sp_protocol.c ****     uint16_t crc = 0xffffu;
+ 225              		.loc 1 7 1 is_stmt 1 view -0
+ 226              		.cfi_startproc
+ 227              		@ args = 0, pretend = 0, frame = 0
+ 228              		@ frame_needed = 0, uses_anonymous_args = 0
+   7:modules/master_machine/sp_protocol.c ****     uint16_t crc = 0xffffu;
+ 229              		.loc 1 7 1 is_stmt 0 view .LVU46
+ 230 0000 00B5     		push	{lr}
+ 231              	.LCFI1:
+ 232              		.cfi_def_cfa_offset 4
+ 233              		.cfi_offset 14, -4
+ 234 0002 8646     		mov	lr, r0
+ARM GAS  /tmp/ccKAVHww.s 			page 6
+
+
+   8:modules/master_machine/sp_protocol.c ****     for (size_t i = 0; i < size; ++i) {
+ 235              		.loc 1 8 5 is_stmt 1 view .LVU47
+ 236              	.LVL23:
+   9:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+ 237              		.loc 1 9 5 view .LVU48
+ 238              	.LBB2:
+   9:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+ 239              		.loc 1 9 10 view .LVU49
+   9:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+ 240              		.loc 1 9 17 is_stmt 0 view .LVU50
+ 241 0004 4FF0000C 		mov	ip, #0
+ 242              	.LBE2:
+   8:modules/master_machine/sp_protocol.c ****     for (size_t i = 0; i < size; ++i) {
+ 243              		.loc 1 8 14 view .LVU51
+ 244 0008 4FF6FF70 		movw	r0, #65535
+ 245              	.LVL24:
+ 246              	.LBB5:
+   9:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+ 247              		.loc 1 9 5 view .LVU52
+ 248 000c 0DE0     		b	.L20
+ 249              	.LVL25:
+ 250              	.L22:
+ 251              	.LBB3:
+  12:modules/master_machine/sp_protocol.c ****     }
+ 252              		.loc 1 12 17 discriminator 2 view .LVU53
+ 253 000e 4008     		lsrs	r0, r0, #1
+ 254              	.LVL26:
+ 255              	.L23:
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 256              		.loc 1 11 41 is_stmt 1 discriminator 4 view .LVU54
+ 257 0010 0133     		adds	r3, r3, #1
+ 258              	.LVL27:
+ 259              	.L21:
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 260              		.loc 1 11 32 discriminator 2 view .LVU55
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 261              		.loc 1 11 9 is_stmt 0 discriminator 2 view .LVU56
+ 262 0012 072B     		cmp	r3, #7
+ 263 0014 07D8     		bhi	.L27
+  12:modules/master_machine/sp_protocol.c ****     }
+ 264              		.loc 1 12 13 is_stmt 1 view .LVU57
+  12:modules/master_machine/sp_protocol.c ****     }
+ 265              		.loc 1 12 17 is_stmt 0 view .LVU58
+ 266 0016 10F0010F 		tst	r0, #1
+ 267 001a F8D0     		beq	.L22
+  12:modules/master_machine/sp_protocol.c ****     }
+ 268              		.loc 1 12 17 discriminator 1 view .LVU59
+ 269 001c 48F20842 		movw	r2, #33800
+ 270 0020 82EA5000 		eor	r0, r2, r0, lsr #1
+ 271              	.LVL28:
+  12:modules/master_machine/sp_protocol.c ****     }
+ 272              		.loc 1 12 17 discriminator 1 view .LVU60
+ 273 0024 F4E7     		b	.L23
+ 274              	.LVL29:
+ 275              	.L27:
+  12:modules/master_machine/sp_protocol.c ****     }
+ 276              		.loc 1 12 17 discriminator 1 view .LVU61
+ARM GAS  /tmp/ccKAVHww.s 			page 7
+
+
+ 277              	.LBE3:
+   9:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+ 278              		.loc 1 9 34 is_stmt 1 discriminator 2 view .LVU62
+ 279 0026 0CF1010C 		add	ip, ip, #1
+ 280              	.LVL30:
+ 281              	.L20:
+   9:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+ 282              		.loc 1 9 24 discriminator 1 view .LVU63
+   9:modules/master_machine/sp_protocol.c ****         crc ^= data[i];
+ 283              		.loc 1 9 5 is_stmt 0 discriminator 1 view .LVU64
+ 284 002a 8C45     		cmp	ip, r1
+ 285 002c 04D2     		bcs	.L28
+  10:modules/master_machine/sp_protocol.c ****         for (unsigned bit = 0; bit < 8; ++bit)
+ 286              		.loc 1 10 9 is_stmt 1 view .LVU65
+  10:modules/master_machine/sp_protocol.c ****         for (unsigned bit = 0; bit < 8; ++bit)
+ 287              		.loc 1 10 20 is_stmt 0 view .LVU66
+ 288 002e 1EF80C30 		ldrb	r3, [lr, ip]	@ zero_extendqisi2
+  10:modules/master_machine/sp_protocol.c ****         for (unsigned bit = 0; bit < 8; ++bit)
+ 289              		.loc 1 10 13 view .LVU67
+ 290 0032 5840     		eors	r0, r0, r3
+ 291              	.LVL31:
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 292              		.loc 1 11 9 is_stmt 1 view .LVU68
+ 293              	.LBB4:
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 294              		.loc 1 11 14 view .LVU69
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 295              		.loc 1 11 23 is_stmt 0 view .LVU70
+ 296 0034 0023     		movs	r3, #0
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 297              		.loc 1 11 9 view .LVU71
+ 298 0036 ECE7     		b	.L21
+ 299              	.LVL32:
+ 300              	.L28:
+  11:modules/master_machine/sp_protocol.c ****             crc = (crc & 1u) ? (uint16_t)((crc >> 1) ^ 0x8408u) : (uint16_t)(crc >> 1);
+ 301              		.loc 1 11 9 view .LVU72
+ 302              	.LBE4:
+ 303              	.LBE5:
+  14:modules/master_machine/sp_protocol.c **** }
+ 304              		.loc 1 14 5 is_stmt 1 view .LVU73
+  15:modules/master_machine/sp_protocol.c **** 
+ 305              		.loc 1 15 1 is_stmt 0 view .LVU74
+ 306 0038 5DF804FB 		ldr	pc, [sp], #4
+ 307              		.cfi_endproc
+ 308              	.LFE0:
+ 310              		.section	.text.SP_ParserInit,"ax",%progbits
+ 311              		.align	1
+ 312              		.global	SP_ParserInit
+ 313              		.syntax unified
+ 314              		.thumb
+ 315              		.thumb_func
+ 316              		.fpu fpv4-sp-d16
+ 318              	SP_ParserInit:
+ 319              	.LVL33:
+ 320              	.LFB1:
+  18:modules/master_machine/sp_protocol.c ****     memset(parser, 0, sizeof(*parser));
+ 321              		.loc 1 18 1 is_stmt 1 view -0
+ARM GAS  /tmp/ccKAVHww.s 			page 8
+
+
+ 322              		.cfi_startproc
+ 323              		@ args = 0, pretend = 0, frame = 0
+ 324              		@ frame_needed = 0, uses_anonymous_args = 0
+  18:modules/master_machine/sp_protocol.c ****     memset(parser, 0, sizeof(*parser));
+ 325              		.loc 1 18 1 is_stmt 0 view .LVU76
+ 326 0000 08B5     		push	{r3, lr}
+ 327              	.LCFI2:
+ 328              		.cfi_def_cfa_offset 8
+ 329              		.cfi_offset 3, -8
+ 330              		.cfi_offset 14, -4
+  19:modules/master_machine/sp_protocol.c **** }
+ 331              		.loc 1 19 5 is_stmt 1 view .LVU77
+ 332 0002 3022     		movs	r2, #48
+ 333 0004 0021     		movs	r1, #0
+ 334 0006 FFF7FEFF 		bl	memset
+ 335              	.LVL34:
+  20:modules/master_machine/sp_protocol.c **** 
+ 336              		.loc 1 20 1 is_stmt 0 view .LVU78
+ 337 000a 08BD     		pop	{r3, pc}
+ 338              		.cfi_endproc
+ 339              	.LFE1:
+ 341              		.section	.text.SP_ParserFeed,"ax",%progbits
+ 342              		.align	1
+ 343              		.global	SP_ParserFeed
+ 344              		.syntax unified
+ 345              		.thumb
+ 346              		.thumb_func
+ 347              		.fpu fpv4-sp-d16
+ 349              	SP_ParserFeed:
+ 350              	.LVL35:
+ 351              	.LFB4:
+  35:modules/master_machine/sp_protocol.c **** 
+  36:modules/master_machine/sp_protocol.c **** void SP_ParserFeed(SP_Parser *parser, const uint8_t *data, size_t size,
+  37:modules/master_machine/sp_protocol.c ****                    SP_CommandCallback callback, void *context)
+  38:modules/master_machine/sp_protocol.c **** {
+ 352              		.loc 1 38 1 is_stmt 1 view -0
+ 353              		.cfi_startproc
+ 354              		@ args = 4, pretend = 0, frame = 32
+ 355              		@ frame_needed = 0, uses_anonymous_args = 0
+  39:modules/master_machine/sp_protocol.c ****     if (!parser || (!data && size)) return;
+ 356              		.loc 1 39 5 view .LVU80
+ 357              		.loc 1 39 8 is_stmt 0 view .LVU81
+ 358 0000 0028     		cmp	r0, #0
+ 359 0002 63D0     		beq	.L46
+  38:modules/master_machine/sp_protocol.c ****     if (!parser || (!data && size)) return;
+ 360              		.loc 1 38 1 discriminator 2 view .LVU82
+ 361 0004 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 362              	.LCFI3:
+ 363              		.cfi_def_cfa_offset 28
+ 364              		.cfi_offset 4, -28
+ 365              		.cfi_offset 5, -24
+ 366              		.cfi_offset 6, -20
+ 367              		.cfi_offset 7, -16
+ 368              		.cfi_offset 8, -12
+ 369              		.cfi_offset 9, -8
+ 370              		.cfi_offset 14, -4
+ 371 0008 89B0     		sub	sp, sp, #36
+ARM GAS  /tmp/ccKAVHww.s 			page 9
+
+
+ 372              	.LCFI4:
+ 373              		.cfi_def_cfa_offset 64
+ 374 000a 0F46     		mov	r7, r1
+ 375 000c 1646     		mov	r6, r2
+ 376 000e 9846     		mov	r8, r3
+ 377 0010 0446     		mov	r4, r0
+ 378              		.loc 1 39 17 discriminator 2 view .LVU83
+ 379 0012 09B1     		cbz	r1, .L49
+ 380 0014 0025     		movs	r5, #0
+ 381 0016 40E0     		b	.L42
+ 382              	.L49:
+ 383              		.loc 1 39 27 discriminator 3 view .LVU84
+ 384 0018 002A     		cmp	r2, #0
+ 385 001a 54D1     		bne	.L31
+ 386 001c 1546     		mov	r5, r2
+ 387 001e 3CE0     		b	.L42
+ 388              	.LVL36:
+ 389              	.L36:
+ 390              	.LBB6:
+ 391              	.LBB7:
+  40:modules/master_machine/sp_protocol.c ****     for (size_t i = 0; i < size; ++i) {
+  41:modules/master_machine/sp_protocol.c ****         parser->data[parser->used++] = data[i];
+  42:modules/master_machine/sp_protocol.c ****         /* Retain a trailing S. Recover one byte at a time after a corrupt frame. */
+  43:modules/master_machine/sp_protocol.c ****         while (parser->used &&
+  44:modules/master_machine/sp_protocol.c ****                (parser->data[0] != 'S' || (parser->used > 1 && parser->data[1] != 'P')))
+  45:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 392              		.loc 1 45 13 is_stmt 1 view .LVU85
+ 393 0020 2046     		mov	r0, r4
+ 394 0022 FFF7FEFF 		bl	DropByte
+ 395              	.LVL37:
+ 396              	.L34:
+  43:modules/master_machine/sp_protocol.c ****                (parser->data[0] != 'S' || (parser->used > 1 && parser->data[1] != 'P')))
+ 397              		.loc 1 43 15 view .LVU86
+  43:modules/master_machine/sp_protocol.c ****                (parser->data[0] != 'S' || (parser->used > 1 && parser->data[1] != 'P')))
+ 398              		.loc 1 43 22 is_stmt 0 view .LVU87
+ 399 0026 206A     		ldr	r0, [r4, #32]
+  43:modules/master_machine/sp_protocol.c ****                (parser->data[0] != 'S' || (parser->used > 1 && parser->data[1] != 'P')))
+ 400              		.loc 1 43 15 view .LVU88
+ 401 0028 58B1     		cbz	r0, .L35
+  44:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 402              		.loc 1 44 29 discriminator 1 view .LVU89
+ 403 002a 94F800C0 		ldrb	ip, [r4]	@ zero_extendqisi2
+  43:modules/master_machine/sp_protocol.c ****                (parser->data[0] != 'S' || (parser->used > 1 && parser->data[1] != 'P')))
+ 404              		.loc 1 43 29 discriminator 1 view .LVU90
+ 405 002e BCF1530F 		cmp	ip, #83
+ 406 0032 F5D1     		bne	.L36
+  44:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 407              		.loc 1 44 40 view .LVU91
+ 408 0034 0128     		cmp	r0, #1
+ 409 0036 04D9     		bls	.L35
+  44:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 410              		.loc 1 44 76 discriminator 1 view .LVU92
+ 411 0038 94F801C0 		ldrb	ip, [r4, #1]	@ zero_extendqisi2
+  44:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 412              		.loc 1 44 61 discriminator 1 view .LVU93
+ 413 003c BCF1500F 		cmp	ip, #80
+ 414 0040 EED1     		bne	.L36
+ARM GAS  /tmp/ccKAVHww.s 			page 10
+
+
+ 415              	.L35:
+  46:modules/master_machine/sp_protocol.c ****         if (parser->used != SP_COMMAND_SIZE) continue;
+ 416              		.loc 1 46 9 is_stmt 1 view .LVU94
+ 417              		.loc 1 46 12 is_stmt 0 view .LVU95
+ 418 0042 1D28     		cmp	r0, #29
+ 419 0044 28D1     		bne	.L41
+  47:modules/master_machine/sp_protocol.c ****         uint16_t received = (uint16_t)parser->data[27] | ((uint16_t)parser->data[28] << 8);
+ 420              		.loc 1 47 9 is_stmt 1 view .LVU96
+ 421              		.loc 1 47 51 is_stmt 0 view .LVU97
+ 422 0046 94F81B90 		ldrb	r9, [r4, #27]	@ zero_extendqisi2
+ 423              		.loc 1 47 81 view .LVU98
+ 424 004a 237F     		ldrb	r3, [r4, #28]	@ zero_extendqisi2
+ 425              		.loc 1 47 18 view .LVU99
+ 426 004c 49EA0329 		orr	r9, r9, r3, lsl #8
+ 427              	.LVL38:
+  48:modules/master_machine/sp_protocol.c ****         if (SP_CRC16(parser->data, SP_COMMAND_SIZE - 2) != received) {
+ 428              		.loc 1 48 9 is_stmt 1 view .LVU100
+ 429              		.loc 1 48 13 is_stmt 0 view .LVU101
+ 430 0050 1B21     		movs	r1, #27
+ 431 0052 2046     		mov	r0, r4
+ 432 0054 FFF7FEFF 		bl	SP_CRC16
+ 433              	.LVL39:
+ 434              		.loc 1 48 12 view .LVU102
+ 435 0058 4845     		cmp	r0, r9
+ 436 005a 26D1     		bne	.L50
+  49:modules/master_machine/sp_protocol.c ****             ++parser->crc_errors;
+  50:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+  51:modules/master_machine/sp_protocol.c ****             continue;
+  52:modules/master_machine/sp_protocol.c ****         }
+  53:modules/master_machine/sp_protocol.c ****         SP_Command command;
+ 437              		.loc 1 53 9 is_stmt 1 view .LVU103
+  54:modules/master_machine/sp_protocol.c ****         memcpy(&command, parser->data, sizeof(command));
+ 438              		.loc 1 54 9 view .LVU104
+ 439 005c EC46     		mov	ip, sp
+ 440 005e 2068     		ldr	r0, [r4]	@ unaligned
+ 441 0060 6168     		ldr	r1, [r4, #4]	@ unaligned
+ 442 0062 A268     		ldr	r2, [r4, #8]	@ unaligned
+ 443 0064 E368     		ldr	r3, [r4, #12]	@ unaligned
+ 444 0066 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 445 006a 2069     		ldr	r0, [r4, #16]	@ unaligned
+ 446 006c 6169     		ldr	r1, [r4, #20]	@ unaligned
+ 447 006e A269     		ldr	r2, [r4, #24]	@ unaligned
+ 448 0070 ACE80700 		stmia	ip!, {r0, r1, r2}
+ 449 0074 237F     		ldrb	r3, [r4, #28]	@ zero_extendqisi2
+ 450 0076 8CF80030 		strb	r3, [ip]
+  55:modules/master_machine/sp_protocol.c ****         if (!CommandValid(&command)) {
+ 451              		.loc 1 55 9 view .LVU105
+ 452              		.loc 1 55 14 is_stmt 0 view .LVU106
+ 453 007a 6846     		mov	r0, sp
+ 454 007c FFF7FEFF 		bl	CommandValid
+ 455              	.LVL40:
+ 456              		.loc 1 55 12 view .LVU107
+ 457 0080 D0B1     		cbz	r0, .L51
+  56:modules/master_machine/sp_protocol.c ****             ++parser->invalid_frames;
+  57:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+  58:modules/master_machine/sp_protocol.c ****             continue;
+  59:modules/master_machine/sp_protocol.c ****         }
+ARM GAS  /tmp/ccKAVHww.s 			page 11
+
+
+  60:modules/master_machine/sp_protocol.c ****         parser->used = 0;
+ 458              		.loc 1 60 9 is_stmt 1 view .LVU108
+ 459              		.loc 1 60 22 is_stmt 0 view .LVU109
+ 460 0082 0023     		movs	r3, #0
+ 461 0084 2362     		str	r3, [r4, #32]
+  61:modules/master_machine/sp_protocol.c ****         ++parser->accepted;
+ 462              		.loc 1 61 9 is_stmt 1 view .LVU110
+ 463              		.loc 1 61 17 is_stmt 0 view .LVU111
+ 464 0086 636A     		ldr	r3, [r4, #36]
+ 465              		.loc 1 61 9 view .LVU112
+ 466 0088 0133     		adds	r3, r3, #1
+ 467 008a 6362     		str	r3, [r4, #36]
+  62:modules/master_machine/sp_protocol.c ****         if (callback) callback(&command, context);
+ 468              		.loc 1 62 9 is_stmt 1 view .LVU113
+ 469              		.loc 1 62 12 is_stmt 0 view .LVU114
+ 470 008c B8F1000F 		cmp	r8, #0
+ 471 0090 02D0     		beq	.L41
+ 472              		.loc 1 62 23 is_stmt 1 discriminator 1 view .LVU115
+ 473 0092 1099     		ldr	r1, [sp, #64]
+ 474 0094 6846     		mov	r0, sp
+ 475 0096 C047     		blx	r8
+ 476              	.LVL41:
+ 477              	.L41:
+ 478              		.loc 1 62 23 is_stmt 0 discriminator 1 view .LVU116
+ 479              	.LBE7:
+  40:modules/master_machine/sp_protocol.c ****         parser->data[parser->used++] = data[i];
+ 480              		.loc 1 40 34 is_stmt 1 discriminator 2 view .LVU117
+ 481 0098 0135     		adds	r5, r5, #1
+ 482              	.LVL42:
+ 483              	.L42:
+  40:modules/master_machine/sp_protocol.c ****         parser->data[parser->used++] = data[i];
+ 484              		.loc 1 40 24 discriminator 1 view .LVU118
+  40:modules/master_machine/sp_protocol.c ****         parser->data[parser->used++] = data[i];
+ 485              		.loc 1 40 5 is_stmt 0 discriminator 1 view .LVU119
+ 486 009a B542     		cmp	r5, r6
+ 487 009c 13D2     		bcs	.L31
+ 488              	.LBB8:
+  41:modules/master_machine/sp_protocol.c ****         /* Retain a trailing S. Recover one byte at a time after a corrupt frame. */
+ 489              		.loc 1 41 9 is_stmt 1 view .LVU120
+  41:modules/master_machine/sp_protocol.c ****         /* Retain a trailing S. Recover one byte at a time after a corrupt frame. */
+ 490              		.loc 1 41 28 is_stmt 0 view .LVU121
+ 491 009e 236A     		ldr	r3, [r4, #32]
+  41:modules/master_machine/sp_protocol.c ****         /* Retain a trailing S. Recover one byte at a time after a corrupt frame. */
+ 492              		.loc 1 41 34 view .LVU122
+ 493 00a0 5A1C     		adds	r2, r3, #1
+ 494 00a2 2262     		str	r2, [r4, #32]
+  41:modules/master_machine/sp_protocol.c ****         /* Retain a trailing S. Recover one byte at a time after a corrupt frame. */
+ 495              		.loc 1 41 44 view .LVU123
+ 496 00a4 7A5D     		ldrb	r2, [r7, r5]	@ zero_extendqisi2
+  41:modules/master_machine/sp_protocol.c ****         /* Retain a trailing S. Recover one byte at a time after a corrupt frame. */
+ 497              		.loc 1 41 38 view .LVU124
+ 498 00a6 E254     		strb	r2, [r4, r3]
+  43:modules/master_machine/sp_protocol.c ****                (parser->data[0] != 'S' || (parser->used > 1 && parser->data[1] != 'P')))
+ 499              		.loc 1 43 9 is_stmt 1 view .LVU125
+  43:modules/master_machine/sp_protocol.c ****                (parser->data[0] != 'S' || (parser->used > 1 && parser->data[1] != 'P')))
+ 500              		.loc 1 43 15 is_stmt 0 view .LVU126
+ 501 00a8 BDE7     		b	.L34
+ARM GAS  /tmp/ccKAVHww.s 			page 12
+
+
+ 502              	.LVL43:
+ 503              	.L50:
+  49:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 504              		.loc 1 49 13 is_stmt 1 view .LVU127
+  49:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 505              		.loc 1 49 21 is_stmt 0 view .LVU128
+ 506 00aa A36A     		ldr	r3, [r4, #40]
+  49:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 507              		.loc 1 49 13 view .LVU129
+ 508 00ac 0133     		adds	r3, r3, #1
+ 509 00ae A362     		str	r3, [r4, #40]
+  50:modules/master_machine/sp_protocol.c ****             continue;
+ 510              		.loc 1 50 13 is_stmt 1 view .LVU130
+ 511 00b0 2046     		mov	r0, r4
+ 512 00b2 FFF7FEFF 		bl	DropByte
+ 513              	.LVL44:
+  51:modules/master_machine/sp_protocol.c ****         }
+ 514              		.loc 1 51 13 view .LVU131
+ 515 00b6 EFE7     		b	.L41
+ 516              	.L51:
+  56:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 517              		.loc 1 56 13 view .LVU132
+  56:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 518              		.loc 1 56 21 is_stmt 0 view .LVU133
+ 519 00b8 E36A     		ldr	r3, [r4, #44]
+  56:modules/master_machine/sp_protocol.c ****             DropByte(parser);
+ 520              		.loc 1 56 13 view .LVU134
+ 521 00ba 0133     		adds	r3, r3, #1
+ 522 00bc E362     		str	r3, [r4, #44]
+  57:modules/master_machine/sp_protocol.c ****             continue;
+ 523              		.loc 1 57 13 is_stmt 1 view .LVU135
+ 524 00be 2046     		mov	r0, r4
+ 525 00c0 FFF7FEFF 		bl	DropByte
+ 526              	.LVL45:
+  58:modules/master_machine/sp_protocol.c ****         }
+ 527              		.loc 1 58 13 view .LVU136
+ 528 00c4 E8E7     		b	.L41
+ 529              	.LVL46:
+ 530              	.L31:
+  58:modules/master_machine/sp_protocol.c ****         }
+ 531              		.loc 1 58 13 is_stmt 0 view .LVU137
+ 532              	.LBE8:
+ 533              	.LBE6:
+  63:modules/master_machine/sp_protocol.c ****     }
+  64:modules/master_machine/sp_protocol.c **** }
+ 534              		.loc 1 64 1 view .LVU138
+ 535 00c6 09B0     		add	sp, sp, #36
+ 536              	.LCFI5:
+ 537              		.cfi_def_cfa_offset 28
+ 538              		@ sp needed
+ 539 00c8 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 540              	.LVL47:
+ 541              	.L46:
+ 542              	.LCFI6:
+ 543              		.cfi_def_cfa_offset 0
+ 544              		.cfi_restore 4
+ 545              		.cfi_restore 5
+ARM GAS  /tmp/ccKAVHww.s 			page 13
+
+
+ 546              		.cfi_restore 6
+ 547              		.cfi_restore 7
+ 548              		.cfi_restore 8
+ 549              		.cfi_restore 9
+ 550              		.cfi_restore 14
+ 551              		.loc 1 64 1 view .LVU139
+ 552 00cc 7047     		bx	lr
+ 553              		.cfi_endproc
+ 554              	.LFE4:
+ 556              		.section	.text.SP_PackStatus,"ax",%progbits
+ 557              		.align	1
+ 558              		.global	SP_PackStatus
+ 559              		.syntax unified
+ 560              		.thumb
+ 561              		.thumb_func
+ 562              		.fpu fpv4-sp-d16
+ 564              	SP_PackStatus:
+ 565              	.LVL48:
+ 566              	.LFB5:
+  65:modules/master_machine/sp_protocol.c **** 
+  66:modules/master_machine/sp_protocol.c **** void SP_PackStatus(const SP_Status *status, uint8_t out[SP_STATUS_SIZE])
+  67:modules/master_machine/sp_protocol.c **** {
+ 567              		.loc 1 67 1 is_stmt 1 view -0
+ 568              		.cfi_startproc
+ 569              		@ args = 0, pretend = 0, frame = 0
+ 570              		@ frame_needed = 0, uses_anonymous_args = 0
+ 571              		.loc 1 67 1 is_stmt 0 view .LVU141
+ 572 0000 38B5     		push	{r3, r4, r5, lr}
+ 573              	.LCFI7:
+ 574              		.cfi_def_cfa_offset 16
+ 575              		.cfi_offset 3, -16
+ 576              		.cfi_offset 4, -12
+ 577              		.cfi_offset 5, -8
+ 578              		.cfi_offset 14, -4
+ 579 0002 0C46     		mov	r4, r1
+  68:modules/master_machine/sp_protocol.c ****     memcpy(out, status, SP_STATUS_SIZE);
+ 580              		.loc 1 68 5 is_stmt 1 view .LVU142
+ 581 0004 0346     		mov	r3, r0
+ 582 0006 0A46     		mov	r2, r1
+ 583 0008 2030     		adds	r0, r0, #32
+ 584              	.LVL49:
+ 585              	.L53:
+ 586              		.loc 1 68 5 is_stmt 0 view .LVU143
+ 587 000a 1D68     		ldr	r5, [r3]	@ unaligned
+ 588 000c D3F804E0 		ldr	lr, [r3, #4]	@ unaligned
+ 589 0010 D3F808C0 		ldr	ip, [r3, #8]	@ unaligned
+ 590 0014 D968     		ldr	r1, [r3, #12]	@ unaligned
+ 591 0016 1560     		str	r5, [r2]	@ unaligned
+ 592 0018 C2F804E0 		str	lr, [r2, #4]	@ unaligned
+ 593 001c C2F808C0 		str	ip, [r2, #8]	@ unaligned
+ 594 0020 D160     		str	r1, [r2, #12]	@ unaligned
+ 595 0022 1033     		adds	r3, r3, #16
+ 596 0024 1032     		adds	r2, r2, #16
+ 597 0026 8342     		cmp	r3, r0
+ 598 0028 EFD1     		bne	.L53
+ 599 002a 1868     		ldr	r0, [r3]	@ unaligned
+ 600              	.LVL50:
+ARM GAS  /tmp/ccKAVHww.s 			page 14
+
+
+ 601              		.loc 1 68 5 view .LVU144
+ 602 002c 5968     		ldr	r1, [r3, #4]	@ unaligned
+ 603 002e 1060     		str	r0, [r2]	@ unaligned
+ 604 0030 5160     		str	r1, [r2, #4]	@ unaligned
+ 605 0032 1989     		ldrh	r1, [r3, #8]	@ unaligned
+ 606 0034 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 607 0036 1181     		strh	r1, [r2, #8]	@ unaligned
+ 608 0038 9372     		strb	r3, [r2, #10]
+  69:modules/master_machine/sp_protocol.c ****     out[0] = 'S';
+ 609              		.loc 1 69 5 is_stmt 1 view .LVU145
+ 610              		.loc 1 69 12 is_stmt 0 view .LVU146
+ 611 003a 5323     		movs	r3, #83
+ 612 003c 2370     		strb	r3, [r4]
+  70:modules/master_machine/sp_protocol.c ****     out[1] = 'P';
+ 613              		.loc 1 70 5 is_stmt 1 view .LVU147
+ 614              		.loc 1 70 12 is_stmt 0 view .LVU148
+ 615 003e 5023     		movs	r3, #80
+ 616 0040 6370     		strb	r3, [r4, #1]
+  71:modules/master_machine/sp_protocol.c ****     uint16_t crc = SP_CRC16(out, SP_STATUS_SIZE - 2);
+ 617              		.loc 1 71 5 is_stmt 1 view .LVU149
+ 618              		.loc 1 71 20 is_stmt 0 view .LVU150
+ 619 0042 2921     		movs	r1, #41
+ 620 0044 2046     		mov	r0, r4
+ 621 0046 FFF7FEFF 		bl	SP_CRC16
+ 622              	.LVL51:
+  72:modules/master_machine/sp_protocol.c ****     out[41] = (uint8_t)crc;
+ 623              		.loc 1 72 5 is_stmt 1 view .LVU151
+ 624              		.loc 1 72 13 is_stmt 0 view .LVU152
+ 625 004a 84F82900 		strb	r0, [r4, #41]
+  73:modules/master_machine/sp_protocol.c ****     out[42] = (uint8_t)(crc >> 8);
+ 626              		.loc 1 73 5 is_stmt 1 view .LVU153
+ 627              		.loc 1 73 15 is_stmt 0 view .LVU154
+ 628 004e C0F30720 		ubfx	r0, r0, #8, #8
+ 629              	.LVL52:
+ 630              		.loc 1 73 13 view .LVU155
+ 631 0052 84F82A00 		strb	r0, [r4, #42]
+  74:modules/master_machine/sp_protocol.c **** }
+ 632              		.loc 1 74 1 view .LVU156
+ 633 0056 38BD     		pop	{r3, r4, r5, pc}
+ 634              		.loc 1 74 1 view .LVU157
+ 635              		.cfi_endproc
+ 636              	.LFE5:
+ 638              		.text
+ 639              	.Letext0:
+ 640              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h"
+ 641              		.file 3 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 642              		.file 4 "modules/master_machine/sp_protocol.h"
+ 643              		.file 5 "/usr/include/newlib/string.h"
+ 644              		.file 6 "<built-in>"
+ARM GAS  /tmp/ccKAVHww.s 			page 15
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 sp_protocol.c
+     /tmp/ccKAVHww.s:18     .text.CommandValid:0000000000000000 $t
+     /tmp/ccKAVHww.s:25     .text.CommandValid:0000000000000000 CommandValid
+     /tmp/ccKAVHww.s:172    .text.CommandValid:00000000000000dc $d
+     /tmp/ccKAVHww.s:179    .text.DropByte:0000000000000000 $t
+     /tmp/ccKAVHww.s:185    .text.DropByte:0000000000000000 DropByte
+     /tmp/ccKAVHww.s:215    .text.SP_CRC16:0000000000000000 $t
+     /tmp/ccKAVHww.s:222    .text.SP_CRC16:0000000000000000 SP_CRC16
+     /tmp/ccKAVHww.s:311    .text.SP_ParserInit:0000000000000000 $t
+     /tmp/ccKAVHww.s:318    .text.SP_ParserInit:0000000000000000 SP_ParserInit
+     /tmp/ccKAVHww.s:342    .text.SP_ParserFeed:0000000000000000 $t
+     /tmp/ccKAVHww.s:349    .text.SP_ParserFeed:0000000000000000 SP_ParserFeed
+     /tmp/ccKAVHww.s:557    .text.SP_PackStatus:0000000000000000 $t
+     /tmp/ccKAVHww.s:564    .text.SP_PackStatus:0000000000000000 SP_PackStatus
+
+UNDEFINED SYMBOLS
+memmove
+memset

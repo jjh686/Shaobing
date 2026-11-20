@@ -1,8 +1,8 @@
 CMakeFiles/basic_framework.elf.dir/modules/chassis_comm/protocol/mcu_link.c.obj: \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/mcu_link.c \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/mcu_link.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/mcu_link.c \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/mcu_link.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/protocol.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/protocol.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
  /usr/include/newlib/math.h /usr/include/newlib/sys/reent.h \

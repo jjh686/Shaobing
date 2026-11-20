@@ -7,6 +7,30 @@
 #include "gimbal_config.h"
 #include "ins_task.h"
 #include "master_process.h"
+#ifdef ROBOT_COMM_TEST_NAV
+#ifdef ROBOT_COMM_TEST_CHASSIS_LINK
+#include "chassis_link.h"
+#define StubGatewayInit ChassisLinkInit
+#define StubGatewayReset ChassisLinkResetUsbSession
+#define StubGatewayReceive ChassisLinkReceiveUsb
+#else
+#include "nav_gateway_port.h"
+#define StubGatewayInit NavGatewayInit
+#define StubGatewayReset NavGatewayReset
+#define StubGatewayReceive NavGatewayReceive
+#endif
+#include "rm_chassis_comm/protocol.h"
+static unsigned nav_init_calls,nav_reset_calls,nav_receive_calls;
+static uint8_t nav_received[RM_FRAME_SIZE];
+static uint32_t nav_received_ms;
+void StubGatewayInit(void) { ++nav_init_calls; }
+void StubGatewayReset(void) { ++nav_reset_calls; }
+void StubGatewayReceive(const uint8_t *bytes,unsigned length,uint32_t received)
+{
+    if(length!=RM_FRAME_SIZE) abort();
+    memcpy(nav_received,bytes,length);nav_received_ms=received;++nav_receive_calls;
+}
+#endif
 
 #ifdef ROBOT_COMM_TEST_DIRECT
 #include "robot_comm.h"
@@ -321,6 +345,30 @@ int main(void)
     InvalidFeedbackAndBusyTransport();
     ModeAndLegacySpeedSetting();
     TickWraparound();
+#ifdef ROBOT_COMM_TEST_NAV
+    Prepare();
+    CHECK(nav_init_calls == 8);
+    rm_command_t navigation = {.route=2,.session=0x12345678,.sequence=1};
+    uint8_t frame[RM_FRAME_SIZE], mixed[SP_COMMAND_SIZE + RM_FRAME_SIZE];
+    CHECK(rm_encode_command(&navigation,frame));
+    SP_Command vision = Command(1);
+    memcpy(mixed,&vision,sizeof(vision));memcpy(mixed+sizeof(vision),frame,sizeof(frame));
+    unsigned nav_before=nav_receive_calls;
+    Inject(mixed,sizeof(mixed));
+    Vision_Recv_s received;
+    CHECK(ReadCommand(&received) && received.sequence==1 && received.mode==1);
+    CHECK(nav_receive_calls==nav_before+1 && nav_received_ms==now);
+    CHECK(memcmp(nav_received,frame,sizeof(frame))==0);
+    Inject(frame,12);
+    unsigned resets=nav_reset_calls;
+    receive_callback(0);
+    CHECK(nav_reset_calls==resets+1 && !ReadCommand(&received));
+    Inject(frame+12,sizeof(frame)-12);
+    CHECK(nav_receive_calls==nav_before+1);
+    Inject(frame,sizeof(frame));
+    CHECK(nav_receive_calls==nav_before+2);
+    puts("robot communication: mixed SP/navigation stream and USB session reset passed");
+#endif
 #ifdef ROBOT_COMM_TEST_DIRECT
     puts("robot communication: 7 test groups passed (unified API)");
 #else

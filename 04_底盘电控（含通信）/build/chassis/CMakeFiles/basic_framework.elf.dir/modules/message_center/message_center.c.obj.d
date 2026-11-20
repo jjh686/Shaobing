@@ -1,6 +1,6 @@
 CMakeFiles/basic_framework.elf.dir/modules/message_center/message_center.c.obj: \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/message_center/message_center.c \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/message_center/message_center.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/message_center/message_center.c \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/modules/message_center/message_center.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
  /usr/include/newlib/stdlib.h /usr/include/newlib/machine/ieeefp.h \
  /usr/include/newlib/_ansi.h /usr/include/newlib/newlib.h \
@@ -14,11 +14,11 @@ CMakeFiles/basic_framework.elf.dir/modules/message_center/message_center.c.obj: 
  /usr/include/newlib/machine/stdlib.h /usr/include/newlib/alloca.h \
  /usr/include/newlib/string.h /usr/include/newlib/sys/_locale.h \
  /usr/include/newlib/strings.h /usr/include/newlib/sys/string.h \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/bsp/log/bsp_log.h \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/RTT/../Config/SEGGER_RTT_Conf.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/bsp/log/bsp_log.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/RTT/../Config/SEGGER_RTT_Conf.h \
  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
- /home/wangjiaming/桌面/the\ using\ code/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h \
+ /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h \
  /usr/include/newlib/stdio.h /usr/include/newlib/sys/types.h \
  /usr/include/newlib/sys/_stdint.h /usr/include/newlib/machine/endian.h \
  /usr/include/newlib/machine/_endian.h /usr/include/newlib/sys/select.h \

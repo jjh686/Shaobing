@@ -1,0 +1,336 @@
+--- DiPan_Board/README.md
++++ 当前底盘/README.md
+@@ -1,3 +1,11 @@
++# 现用底盘工程（2026-11-18 迁移）
++
++本目录已由桌面 DiPan_Board 完整替换，并在新路径重新构建验证。当前入口见 [迁移与运行说明](docs/迁移与运行说明-20261118.md)。本次未烧录、未驱动实物。
++
++底盘源码、方向修正、遥控 CAN 转发、保护逻辑与 10 秒测试全部保留。配套云台是本目录 communication_reference/gimbal_firmware；03_云台电控（含通信）是另一个独立工程，不能据此认定兼容。原对话中间歇 fault=2 尚未解决。下文保留来源工程历史记录，其中旧绝对路径与旧 ELF 哈希不作为迁移后的构建入口。
++
++---
++
+ # DiPan_Board 当前版本（2026-11-17）
+ 
+ **本目录已经同步方向修正和10秒测试脚本，并重新编译、测试通过；本次未烧录、未进行实物转动。**
+--- DiPan_Board/chassis_driver/basic_framework/bsp/can/bsp_can.c
++++ 当前底盘/chassis_driver/basic_framework/bsp/can/bsp_can.c
+@@ -50,7 +50,10 @@
+     }
+ 
+     can_filter_conf.SlaveStartFilterBank = 14;                                                                // 从第14个过滤器开始配置从机过滤器(在STM32的BxCAN控制器中CAN2是CAN1的从机)
++    /* 16-bit IDLIST mode holds TWO ids per bank. Leaving FilterIdHigh at 0 made the
++     * filter also accept STDID 0x000, which polluted the board-to-board counters. */
+     can_filter_conf.FilterIdLow = _instance->rx_id << 5;                                                      // 过滤器寄存器的低16位,因为使用STDID,所以只有低11位有效,高5位要填0
++    can_filter_conf.FilterIdHigh = _instance->rx_id << 5;                                                     // 高16位的第二个ID同样填,避免额外放行0x000
+     can_filter_conf.FilterBank = _instance->can_handle == &hcan1 ? (can1_filter_idx++) : (can2_filter_idx++); // 根据can_handle判断是CAN1还是CAN2,然后自增
+     can_filter_conf.FilterActivation = CAN_FILTER_ENABLE;                                                     // 启用过滤器
+ 
+--- DiPan_Board/chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.c
++++ 当前底盘/chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.c
+@@ -27,6 +27,35 @@
+ volatile uint32_t chassis_comm_decode_errors;
+ volatile uint32_t chassis_comm_can_esr, chassis_comm_can_tsr;
+ volatile uint32_t chassis_comm_task_ticks, chassis_comm_feedback_groups;
++volatile uint32_t chassis_nav_rx_frames, chassis_remote_rx_frames;
++volatile uint32_t chassis_feedback_tx_mailbox_loaded_frames;
++volatile uint32_t chassis_feedback_tx_addtx_errors;
++volatile uint32_t chassis_feedback_tx_timeout_groups;
++volatile uint32_t chassis_feedback_tx_aborted_groups;
++/* Self-healing guard: nch_pump() aborts the software group but a frame already on the
++ * wire keeps its request bit set, which latches nch_busy() forever and stops the
++ * feedback stream. Release the mask after NC_TX_STALL_MS. */
++#define NC_TX_STALL_MS 500u
++volatile uint32_t chassis_feedback_tx_stall_recoveries;
++static uint32_t feedback_stall_since;
++static void recover_stalled_feedback_tx(uint32_t now)
++{
++    if (!nch_busy(&sender)) { feedback_stall_since = 0; return; }
++    if (!feedback_stall_since) { feedback_stall_since = now ? now : 1u; return; }
++    if ((uint32_t)(now - feedback_stall_since) > NC_TX_STALL_MS) {
++        chassis_feedback_tx_stall_recoveries++;
++        nch_reset(&sender);
++        feedback_stall_since = 0;
++    }
++}
++
++static void update_feedback_tx_debug(void)
++{
++    chassis_feedback_tx_mailbox_loaded_frames=sender.tx_mailbox_loaded_frames;
++    chassis_feedback_tx_addtx_errors=sender.tx_addtx_errors;
++    chassis_feedback_tx_timeout_groups=sender.tx_timeout_groups;
++    chassis_feedback_tx_aborted_groups=sender.tx_aborted_groups;
++}
+ 
+ static ChassisCommSafety read_safety(int motors_online)
+ {
+@@ -49,6 +78,8 @@
+ /* ISR only copies a frame. Decode/safety/control are owned by the chassis task. */
+ static void receive_can(CANInstance *can)
+ {
++    if(can->rx_id>=NC_COMMAND_BASE&&can->rx_id<=NC_COMMAND_BASE+2u)chassis_nav_rx_frames++;
++    else if(can->rx_id>=RC_CAN_BASE&&can->rx_id<=RC_CAN_BASE+2u)chassis_remote_rx_frames++;
+     const uint8_t next = (head + 1u) % CHASSIS_COMM_RX_QUEUE_SIZE;
+     if (next == tail) {
+         overrun = 1;
+@@ -136,7 +167,9 @@
+ void ChassisCommPortFeedback(const Chassis_Upload_Data_s *measured, int motors_online)
+ {
+     const uint32_t now = HAL_GetTick();
++    recover_stalled_feedback_tx(now);
+     nch_pump(&sender, now);
++    update_feedback_tx_debug();
+     if ((uint32_t)(now - feedback_ms) < CHASSIS_COMM_FEEDBACK_PERIOD_MS) {
+         return;
+     }
+@@ -152,4 +185,5 @@
+         chassis_comm_feedback_groups++;
+         nch_pump(&sender, now);
+     }
++    update_feedback_tx_debug();
+ }
+--- DiPan_Board/chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.h
++++ 当前底盘/chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.h
+@@ -12,4 +12,15 @@
+ extern volatile uint32_t chassis_comm_accepted_commands;
+ extern volatile uint32_t chassis_comm_rx_overruns;
+ extern volatile uint32_t chassis_comm_decode_errors;
++extern volatile uint32_t chassis_nav_rx_frames, chassis_remote_rx_frames;
++extern volatile uint32_t chassis_feedback_tx_mailbox_loaded_frames;
++extern volatile uint32_t chassis_feedback_tx_addtx_errors;
++extern volatile uint32_t chassis_feedback_tx_timeout_groups;
++extern volatile uint32_t chassis_feedback_tx_aborted_groups;
++extern volatile uint32_t chassis_feedback_tx_stall_recoveries;
++extern volatile uint32_t chassis_rc_online, chassis_rc_navigation, chassis_rc_estop;
++extern volatile uint32_t chassis_rc_accepted, chassis_rc_rejected;
++extern volatile int16_t chassis_rc_channels[10];
++extern volatile uint32_t chassis_comm_can_esr, chassis_comm_can_tsr;
++extern volatile uint32_t chassis_comm_task_ticks, chassis_comm_feedback_groups;
+ #endif
+--- DiPan_Board/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h
++++ 当前底盘/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h
+@@ -6,7 +6,7 @@
+ #define NC_FEEDBACK_BASE 0x338u
+ #define NC_VERSION 0x0100u
+ #define NC_GROUP_MS 10u
+-#define NC_TX_MS 8u
++#define NC_TX_MS 20u
+ #define NC_MAX_TTL_MS 150u
+ #define NC_FAULT_LOCK 0x0001u
+ #define NC_FAULT_RC 0x0002u
+--- DiPan_Board/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can_hal.h
++++ 当前底盘/chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can_hal.h
+@@ -5,10 +5,15 @@
+ /* Own the hardware mailboxes until completion as well as the software group.
+  * NART alone cannot remove a frame waiting for a busy bus to become idle. */
+ /* Each board selects its local controller; the wire protocol is identical. */
+-typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;} nch_tx_t;
++typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;
++    uint32_t tx_mailbox_loaded_frames,tx_addtx_errors,tx_timeout_groups,tx_aborted_groups;} nch_tx_t;
+ static inline void nch_reset(nch_tx_t *s)
+ {
++    if(s->tx.active||s->mailboxes)s->tx_aborted_groups++;
+     if(s->mailboxes)HAL_CAN_AbortTxRequest(s->can,s->mailboxes);
++    /* Abort can fail while a frame is already on the wire; the request bit then stays
++     * set and nch_busy() would latch forever, stalling the feedback stream. */
++    s->mailboxes=0;
+     s->tx.active=0;
+ }
+ static inline void nch_pump(nch_tx_t *s,uint32_t now)
+@@ -17,13 +22,14 @@
+     for(uint32_t bit=1;bit<=4;bit<<=1)
+         if((s->mailboxes&bit)&&HAL_CAN_IsTxMessagePending(s->can,bit))pending|=bit;
+     s->mailboxes=pending;
+-    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){nch_reset(s);return;}
++    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){s->tx_timeout_groups++;nch_reset(s);return;}
+     uint8_t bytes[8];uint16_t id;uint32_t mailbox;
+     CAN_TxHeaderTypeDef h={0};h.IDE=CAN_ID_STD;h.RTR=CAN_RTR_DATA;h.DLC=8;
+     while(HAL_CAN_GetTxMailboxesFreeLevel(s->can)&&nc_tx_peek(&s->tx,now,&id,bytes)){
+         h.StdId=id;
+-        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK)break;
++        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK){s->tx_addtx_errors++;break;}
+         s->mailboxes|=mailbox;nc_tx_commit(&s->tx);
++        s->tx_mailbox_loaded_frames++;
+     }
+ }
+ static inline bool nch_busy(const nch_tx_t *s){return s->mailboxes||s->tx.active;}
+--- DiPan_Board/communication_reference/chassis_firmware/modules/nav_conversion/nav_can_hal.h
++++ 当前底盘/communication_reference/chassis_firmware/modules/nav_conversion/nav_can_hal.h
+@@ -5,9 +5,11 @@
+ /* Own the hardware mailboxes until completion as well as the software group.
+  * NART alone cannot remove a frame waiting for a busy bus to become idle. */
+ /* Each board selects its local controller; the wire protocol is identical. */
+-typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;} nch_tx_t;
++typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;
++    uint32_t tx_mailbox_loaded_frames,tx_addtx_errors,tx_timeout_groups,tx_aborted_groups;} nch_tx_t;
+ static inline void nch_reset(nch_tx_t *s)
+ {
++    if(s->tx.active||s->mailboxes)s->tx_aborted_groups++;
+     if(s->mailboxes)HAL_CAN_AbortTxRequest(s->can,s->mailboxes);
+     s->tx.active=0;
+ }
+@@ -17,13 +19,14 @@
+     for(uint32_t bit=1;bit<=4;bit<<=1)
+         if((s->mailboxes&bit)&&HAL_CAN_IsTxMessagePending(s->can,bit))pending|=bit;
+     s->mailboxes=pending;
+-    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){nch_reset(s);return;}
++    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){s->tx_timeout_groups++;nch_reset(s);return;}
+     uint8_t bytes[8];uint16_t id;uint32_t mailbox;
+     CAN_TxHeaderTypeDef h={0};h.IDE=CAN_ID_STD;h.RTR=CAN_RTR_DATA;h.DLC=8;
+     while(HAL_CAN_GetTxMailboxesFreeLevel(s->can)&&nc_tx_peek(&s->tx,now,&id,bytes)){
+         h.StdId=id;
+-        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK)break;
++        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK){s->tx_addtx_errors++;break;}
+         s->mailboxes|=mailbox;nc_tx_commit(&s->tx);
++        s->tx_mailbox_loaded_frames++;
+     }
+ }
+ static inline bool nch_busy(const nch_tx_t *s){return s->mailboxes||s->tx.active;}
+--- DiPan_Board/communication_reference/common/nav_can_hal.h
++++ 当前底盘/communication_reference/common/nav_can_hal.h
+@@ -5,9 +5,11 @@
+ /* Own the hardware mailboxes until completion as well as the software group.
+  * NART alone cannot remove a frame waiting for a busy bus to become idle. */
+ /* Each board selects its local controller; the wire protocol is identical. */
+-typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;} nch_tx_t;
++typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;
++    uint32_t tx_mailbox_loaded_frames,tx_addtx_errors,tx_timeout_groups,tx_aborted_groups;} nch_tx_t;
+ static inline void nch_reset(nch_tx_t *s)
+ {
++    if(s->tx.active||s->mailboxes)s->tx_aborted_groups++;
+     if(s->mailboxes)HAL_CAN_AbortTxRequest(s->can,s->mailboxes);
+     s->tx.active=0;
+ }
+@@ -17,13 +19,14 @@
+     for(uint32_t bit=1;bit<=4;bit<<=1)
+         if((s->mailboxes&bit)&&HAL_CAN_IsTxMessagePending(s->can,bit))pending|=bit;
+     s->mailboxes=pending;
+-    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){nch_reset(s);return;}
++    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){s->tx_timeout_groups++;nch_reset(s);return;}
+     uint8_t bytes[8];uint16_t id;uint32_t mailbox;
+     CAN_TxHeaderTypeDef h={0};h.IDE=CAN_ID_STD;h.RTR=CAN_RTR_DATA;h.DLC=8;
+     while(HAL_CAN_GetTxMailboxesFreeLevel(s->can)&&nc_tx_peek(&s->tx,now,&id,bytes)){
+         h.StdId=id;
+-        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK)break;
++        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK){s->tx_addtx_errors++;break;}
+         s->mailboxes|=mailbox;nc_tx_commit(&s->tx);
++        s->tx_mailbox_loaded_frames++;
+     }
+ }
+ static inline bool nch_busy(const nch_tx_t *s){return s->mailboxes||s->tx.active;}
+--- DiPan_Board/communication_reference/gimbal_firmware/application/communication/nav_gateway_port.c
++++ 当前底盘/communication_reference/gimbal_firmware/application/communication/nav_gateway_port.c
+@@ -53,6 +53,21 @@
+  * HAL ErrorCode alone stays zero unless CAN error notifications are enabled. */
+ volatile uint32_t nav_can_esr,nav_can_tsr,nav_can_rx_frames,nav_can_decode_errors;
+ volatile uint32_t nav_can_task_ticks;
++volatile uint32_t nav_command_tx_mailbox_loaded_frames,nav_command_tx_addtx_errors;
++volatile uint32_t nav_command_tx_timeout_groups,nav_command_tx_aborted_groups;
++volatile uint32_t nav_remote_tx_mailbox_loaded_frames,nav_remote_tx_addtx_errors;
++volatile uint32_t nav_remote_tx_timeout_groups,nav_remote_tx_aborted_groups;
++static void update_tx_debug(void)
++{
++    nav_command_tx_mailbox_loaded_frames=sender.tx_mailbox_loaded_frames;
++    nav_command_tx_addtx_errors=sender.tx_addtx_errors;
++    nav_command_tx_timeout_groups=sender.tx_timeout_groups;
++    nav_command_tx_aborted_groups=sender.tx_aborted_groups;
++    nav_remote_tx_mailbox_loaded_frames=remote_sender.tx_mailbox_loaded_frames;
++    nav_remote_tx_addtx_errors=remote_sender.tx_addtx_errors;
++    nav_remote_tx_timeout_groups=remote_sender.tx_timeout_groups;
++    nav_remote_tx_aborted_groups=remote_sender.tx_aborted_groups;
++}
+ static void can_receive(CANInstance *can)
+ {
+     nav_can_rx_frames++;
+@@ -89,6 +104,7 @@
+     nav_can_task_ticks=now;
+     /* RC transport runs independently of USB connection / navigation sessions. */
+     forward_remote(now);
++    update_tx_debug();
+ #ifndef CHASSIS_COMM_HOST_TEST
+     nav_can_esr=hcan1.Instance->ESR;
+     nav_can_tsr=hcan1.Instance->TSR;
+@@ -96,7 +112,7 @@
+     if(reset_requested||!USBIsConfigured()){
+         uint32_t irq=__get_PRIMASK();__disable_irq();qh=qt=rh=rt=0;reset_requested=0;__set_PRIMASK(irq);
+         ng_init(&gateway);memset(&receiver,0,sizeof(receiver));nch_reset(&sender);pending_valid=0;
+-        if(!USBIsConfigured())return;
++        if(!USBIsConfigured()){update_tx_debug();return;}
+     }
+     pump(now);
+     while(qt!=qh){
+@@ -120,6 +136,7 @@
+      * buffers and arbitrates with the original high-priority SP status sender. */
+     if(pending_valid){
+         if((uint32_t)(now-pending_ms)>NC_GROUP_MS||USBTransmit(pending,sizeof(pending))==USBD_OK)pending_valid=0;
++        update_tx_debug();
+         return;
+     }
+     if(gateway.gate.ack_valid&&(uint32_t)(now-joint_ms)>=20){
+@@ -133,4 +150,5 @@
+         uint8_t frame[RM_GIMBAL_FRAME_SIZE];
+         if(rm_encode_gimbal(&g,frame))USBTransmit(frame,sizeof(frame));
+     }
++    update_tx_debug();
+ }
+--- DiPan_Board/communication_reference/gimbal_firmware/application/communication/nav_gateway_port.h
++++ 当前底盘/communication_reference/gimbal_firmware/application/communication/nav_gateway_port.h
+@@ -1,6 +1,17 @@
+ #ifndef NAV_GATEWAY_PORT_H
+ #define NAV_GATEWAY_PORT_H
+ #include <stdint.h>
++
++/* Debugger counters; these snapshots do not affect command or safety decisions. */
++extern volatile uint32_t nav_usb_received, nav_can_groups, nav_feedback_received, nav_gateway_drops;
++extern volatile uint32_t nav_rc_groups, nav_rc_online, nav_rc_estop, nav_rc_age_ms;
++extern volatile uint32_t nav_can_esr, nav_can_tsr, nav_can_rx_frames, nav_can_decode_errors;
++extern volatile uint32_t nav_can_task_ticks;
++extern volatile uint32_t nav_command_tx_mailbox_loaded_frames, nav_command_tx_addtx_errors;
++extern volatile uint32_t nav_command_tx_timeout_groups, nav_command_tx_aborted_groups;
++extern volatile uint32_t nav_remote_tx_mailbox_loaded_frames, nav_remote_tx_addtx_errors;
++extern volatile uint32_t nav_remote_tx_timeout_groups, nav_remote_tx_aborted_groups;
++
+ void NavGatewayInit(void);
+ void NavGatewayReset(void); /* USB IRQ, requests foreground reset. */
+ void NavGatewayReceive(const uint8_t *,unsigned,uint32_t); /* USB IRQ: copy only. */
+--- DiPan_Board/communication_reference/gimbal_firmware/modules/nav_conversion/nav_can_hal.h
++++ 当前底盘/communication_reference/gimbal_firmware/modules/nav_conversion/nav_can_hal.h
+@@ -5,9 +5,11 @@
+ /* Own the hardware mailboxes until completion as well as the software group.
+  * NART alone cannot remove a frame waiting for a busy bus to become idle. */
+ /* Each board selects its local controller; the wire protocol is identical. */
+-typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;} nch_tx_t;
++typedef struct {nc_tx_t tx;uint32_t mailboxes;CAN_HandleTypeDef *can;
++    uint32_t tx_mailbox_loaded_frames,tx_addtx_errors,tx_timeout_groups,tx_aborted_groups;} nch_tx_t;
+ static inline void nch_reset(nch_tx_t *s)
+ {
++    if(s->tx.active||s->mailboxes)s->tx_aborted_groups++;
+     if(s->mailboxes)HAL_CAN_AbortTxRequest(s->can,s->mailboxes);
+     s->tx.active=0;
+ }
+@@ -17,13 +19,14 @@
+     for(uint32_t bit=1;bit<=4;bit<<=1)
+         if((s->mailboxes&bit)&&HAL_CAN_IsTxMessagePending(s->can,bit))pending|=bit;
+     s->mailboxes=pending;
+-    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){nch_reset(s);return;}
++    if(pending&&(uint32_t)(now-s->tx.started_ms)>NC_TX_MS){s->tx_timeout_groups++;nch_reset(s);return;}
+     uint8_t bytes[8];uint16_t id;uint32_t mailbox;
+     CAN_TxHeaderTypeDef h={0};h.IDE=CAN_ID_STD;h.RTR=CAN_RTR_DATA;h.DLC=8;
+     while(HAL_CAN_GetTxMailboxesFreeLevel(s->can)&&nc_tx_peek(&s->tx,now,&id,bytes)){
+         h.StdId=id;
+-        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK)break;
++        if(HAL_CAN_AddTxMessage(s->can,&h,bytes,&mailbox)!=HAL_OK){s->tx_addtx_errors++;break;}
+         s->mailboxes|=mailbox;nc_tx_commit(&s->tx);
++        s->tx_mailbox_loaded_frames++;
+     }
+ }
+ static inline bool nch_busy(const nch_tx_t *s){return s->mailboxes||s->tx.active;}
+--- DiPan_Board/当前烧录说明.md
++++ 当前底盘/当前烧录说明.md
+@@ -1,3 +1,7 @@
++# 2026-11-18 当前入口
++
++请先看 [迁移与运行说明](docs/迁移与运行说明-20261118.md)。当前固定快照：release/现用迁移验证版-20261118/。本次未烧录，间歇fault=2仍待排查。下文保留历史路径与哈希。
++
+ # DiPan_Board 当前代码、方向修正和烧录说明
+ 
+ 更新日期：2026-11-17。本次直接修改目标工程：/home/wangjiaming/桌面/DiPan_Board。

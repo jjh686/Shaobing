@@ -1,0 +1,8 @@
+整理校验时间：2026-11-20T14:40:12+08:00
+PASS 源文件校验：450个文件与构建记录一致。
+PASS Gimbal_ChassisLink.elf：与来源固件逐字节一致；SHA256=1a40a7e1455caf4d82908822d577c64507da22c9d85cb5f34fcf8d2f4ec06a6c
+PASS Gimbal_ChassisLink.hex：与来源固件逐字节一致；SHA256=84e5aab9b6b786dceef6605c9d1950e09ec694de84638428131c8a395374f0df
+PASS Gimbal_ChassisLink.bin：与来源固件逐字节一致；SHA256=5a131f42a9dbb0eb836295741937c19c6a5f2b7bef39eae221be4f5f5a048511
+PASS 从ELF重新导出BIN和HEX，与包内文件逐字节一致。
+PASS 配套板固件路径存在。
+本次仅文件整理与软件校验，未访问硬件或烧录。

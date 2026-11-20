@@ -166,7 +166,8 @@ application/cmd/robot_cmd.c \
 application/vision/auto_aim_boot.c \
 application/cmd/control_guard.c \
 application/communication/robot_comm.c \
-application/communication/nav_gateway_port.c \
+modules/chassis_link/chassis_link.c \
+modules/chassis_link/chassis_link_task.c \
 modules/nav_conversion/gimbal_protocol.c \
 modules/nav_conversion/mcu_link.c \
 modules/nav_conversion/nav_can.c \
@@ -287,6 +288,7 @@ C_INCLUDES =  \
 -Imodules/remote \
 -Imodules/super_cap \
 -Imodules/can_comm \
+-Imodules/chassis_link \
 -Imodules/nav_conversion \
 -Imodules/nav_conversion/rm_chassis_comm \
 -Imodules/message_center \

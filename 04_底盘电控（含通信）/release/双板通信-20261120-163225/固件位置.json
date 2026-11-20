@@ -1,0 +1,16 @@
+{
+  "release": "双板通信-20261120-163225",
+  "flashed": false,
+  "targets": [
+    {
+      "board": "底盘 C 板",
+      "directory": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/release/双板通信-20261120-163225",
+      "elf": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/release/双板通信-20261120-163225/DiPan_Board.elf"
+    },
+    {
+      "board": "云台 C 板",
+      "directory": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/communication_reference/gimbal_firmware/release/双板通信-20261120-163225",
+      "elf": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/communication_reference/gimbal_firmware/release/双板通信-20261120-163225/Gimbal_USB_CAN1.elf"
+    }
+  ]
+}

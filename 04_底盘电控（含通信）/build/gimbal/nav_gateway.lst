@@ -1,0 +1,338 @@
+ARM GAS  /tmp/ccJLr1d5.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"nav_gateway.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.ng_init,"ax",%progbits
+  18              		.align	1
+  19              		.global	ng_init
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	ng_init:
+  27              	.LVL0:
+  28              	.LFB0:
+  29              		.file 1 "modules/nav_conversion/nav_gateway.c"
+   1:modules/nav_conversion/nav_gateway.c **** #include "nav_gateway.h"
+   2:modules/nav_conversion/nav_gateway.c **** #include <string.h>
+   3:modules/nav_conversion/nav_gateway.c **** void ng_init(nav_gateway_t *g)
+   4:modules/nav_conversion/nav_gateway.c **** {
+  30              		.loc 1 4 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 4 1 is_stmt 0 view .LVU1
+  35 0000 10B5     		push	{r4, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 4, -8
+  39              		.cfi_offset 14, -4
+  40 0002 82B0     		sub	sp, sp, #8
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 16
+  43 0004 0446     		mov	r4, r0
+   5:modules/nav_conversion/nav_gateway.c ****     memset(g,0,sizeof(*g));rm_mcu_init(&g->gate,2);
+  44              		.loc 1 5 5 is_stmt 1 view .LVU2
+  45 0006 3022     		movs	r2, #48
+  46 0008 0021     		movs	r1, #0
+  47 000a FFF7FEFF 		bl	memset
+  48              	.LVL1:
+  49              		.loc 1 5 28 view .LVU3
+  50 000e 0221     		movs	r1, #2
+  51 0010 2046     		mov	r0, r4
+  52 0012 FFF7FEFF 		bl	rm_mcu_init
+  53              	.LVL2:
+ARM GAS  /tmp/ccJLr1d5.s 			page 2
+
+
+   6:modules/nav_conversion/nav_gateway.c ****     /* This gate enforces transport/session freshness only. Actual RC/actuator
+   7:modules/nav_conversion/nav_gateway.c ****      * authorization is independently evaluated by the chassis board. */
+   8:modules/nav_conversion/nav_gateway.c ****     rm_mcu_set_safety(&g->gate,true,false,false,0);
+  54              		.loc 1 8 5 view .LVU4
+  55 0016 0022     		movs	r2, #0
+  56 0018 0092     		str	r2, [sp]
+  57 001a 1346     		mov	r3, r2
+  58 001c 0121     		movs	r1, #1
+  59 001e 2046     		mov	r0, r4
+  60 0020 FFF7FEFF 		bl	rm_mcu_set_safety
+  61              	.LVL3:
+   9:modules/nav_conversion/nav_gateway.c **** }
+  62              		.loc 1 9 1 is_stmt 0 view .LVU5
+  63 0024 02B0     		add	sp, sp, #8
+  64              	.LCFI2:
+  65              		.cfi_def_cfa_offset 8
+  66              		@ sp needed
+  67 0026 10BD     		pop	{r4, pc}
+  68              		.loc 1 9 1 view .LVU6
+  69              		.cfi_endproc
+  70              	.LFE0:
+  72              		.section	.text.ng_command,"ax",%progbits
+  73              		.align	1
+  74              		.global	ng_command
+  75              		.syntax unified
+  76              		.thumb
+  77              		.thumb_func
+  78              		.fpu fpv4-sp-d16
+  80              	ng_command:
+  81              	.LVL4:
+  82              	.LFB1:
+  10:modules/nav_conversion/nav_gateway.c **** bool ng_command(nav_gateway_t *g,const uint8_t usb[RM_FRAME_SIZE],uint32_t received,
+  11:modules/nav_conversion/nav_gateway.c ****                 uint32_t now,nc_group_t *out)
+  12:modules/nav_conversion/nav_gateway.c **** {
+  83              		.loc 1 12 1 is_stmt 1 view -0
+  84              		.cfi_startproc
+  85              		@ args = 4, pretend = 0, frame = 64
+  86              		@ frame_needed = 0, uses_anonymous_args = 0
+  87              		.loc 1 12 1 is_stmt 0 view .LVU8
+  88 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  89              	.LCFI3:
+  90              		.cfi_def_cfa_offset 20
+  91              		.cfi_offset 4, -20
+  92              		.cfi_offset 5, -16
+  93              		.cfi_offset 6, -12
+  94              		.cfi_offset 7, -8
+  95              		.cfi_offset 14, -4
+  96 0002 91B0     		sub	sp, sp, #68
+  97              	.LCFI4:
+  98              		.cfi_def_cfa_offset 88
+  13:modules/nav_conversion/nav_gateway.c ****     rm_command_t c;uint8_t normalized[RM_FRAME_SIZE];
+  99              		.loc 1 13 5 is_stmt 1 view .LVU9
+ 100              		.loc 1 13 20 view .LVU10
+  14:modules/nav_conversion/nav_gateway.c ****     if(!g||!out||!rm_decode_command(usb,RM_FRAME_SIZE,&c)||c.route!=2)return false;
+ 101              		.loc 1 14 5 view .LVU11
+ 102              		.loc 1 14 7 is_stmt 0 view .LVU12
+ 103 0004 78B1     		cbz	r0, .L4
+ARM GAS  /tmp/ccJLr1d5.s 			page 3
+
+
+ 104 0006 8C46     		mov	ip, r1
+ 105 0008 1646     		mov	r6, r2
+ 106 000a 1D46     		mov	r5, r3
+ 107 000c 0746     		mov	r7, r0
+ 108              		.loc 1 14 10 discriminator 2 view .LVU13
+ 109 000e 169B     		ldr	r3, [sp, #88]
+ 110              	.LVL5:
+ 111              		.loc 1 14 10 discriminator 2 view .LVU14
+ 112 0010 4BB1     		cbz	r3, .L4
+ 113              		.loc 1 14 19 discriminator 4 view .LVU15
+ 114 0012 09AA     		add	r2, sp, #36
+ 115              	.LVL6:
+ 116              		.loc 1 14 19 discriminator 4 view .LVU16
+ 117 0014 2221     		movs	r1, #34
+ 118              	.LVL7:
+ 119              		.loc 1 14 19 discriminator 4 view .LVU17
+ 120 0016 6046     		mov	r0, ip
+ 121              	.LVL8:
+ 122              		.loc 1 14 19 discriminator 4 view .LVU18
+ 123 0018 FFF7FEFF 		bl	rm_decode_command
+ 124              	.LVL9:
+ 125              		.loc 1 14 16 discriminator 4 view .LVU19
+ 126 001c 18B1     		cbz	r0, .L4
+ 127              		.loc 1 14 61 discriminator 6 view .LVU20
+ 128 001e 9DF83230 		ldrb	r3, [sp, #50]	@ zero_extendqisi2
+ 129              		.loc 1 14 58 discriminator 6 view .LVU21
+ 130 0022 022B     		cmp	r3, #2
+ 131 0024 03D0     		beq	.L5
+ 132              	.LVL10:
+ 133              	.L4:
+ 134              		.loc 1 14 71 is_stmt 1 discriminator 7 view .LVU22
+ 135              		.loc 1 14 78 is_stmt 0 discriminator 7 view .LVU23
+ 136 0026 0024     		movs	r4, #0
+ 137              	.L6:
+  15:modules/nav_conversion/nav_gateway.c ****     uint32_t age=now-received;
+  16:modules/nav_conversion/nav_gateway.c ****     if(age>NC_GROUP_MS)return false; /* No stale queue replay, including STOP ACK. */
+  17:modules/nav_conversion/nav_gateway.c ****     if(c.flags&RM_FLAG_ENABLE){
+  18:modules/nav_conversion/nav_gateway.c ****         if(c.ttl_ms>NC_MAX_TTL_MS||c.ttl_ms<age+NC_GROUP_MS+20u)return false;
+  19:modules/nav_conversion/nav_gateway.c ****         c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
+  20:modules/nav_conversion/nav_gateway.c ****     }
+  21:modules/nav_conversion/nav_gateway.c ****     if(!nc_command_group(&c,out)||!rm_encode_command(&c,normalized))return false;
+  22:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+  23:modules/nav_conversion/nav_gateway.c ****     g->command_received_ms=received;return true;
+  24:modules/nav_conversion/nav_gateway.c **** }
+ 138              		.loc 1 24 1 view .LVU24
+ 139 0028 2046     		mov	r0, r4
+ 140 002a 11B0     		add	sp, sp, #68
+ 141              	.LCFI5:
+ 142              		.cfi_remember_state
+ 143              		.cfi_def_cfa_offset 20
+ 144              		@ sp needed
+ 145 002c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 146              	.LVL11:
+ 147              	.L5:
+ 148              	.LCFI6:
+ 149              		.cfi_restore_state
+  15:modules/nav_conversion/nav_gateway.c ****     uint32_t age=now-received;
+ARM GAS  /tmp/ccJLr1d5.s 			page 4
+
+
+ 150              		.loc 1 15 5 is_stmt 1 view .LVU25
+  15:modules/nav_conversion/nav_gateway.c ****     uint32_t age=now-received;
+ 151              		.loc 1 15 14 is_stmt 0 view .LVU26
+ 152 002e AB1B     		subs	r3, r5, r6
+ 153              	.LVL12:
+  16:modules/nav_conversion/nav_gateway.c ****     if(c.flags&RM_FLAG_ENABLE){
+ 154              		.loc 1 16 5 is_stmt 1 view .LVU27
+  16:modules/nav_conversion/nav_gateway.c ****     if(c.flags&RM_FLAG_ENABLE){
+ 155              		.loc 1 16 7 is_stmt 0 view .LVU28
+ 156 0030 0A2B     		cmp	r3, #10
+ 157 0032 27D8     		bhi	.L10
+  17:modules/nav_conversion/nav_gateway.c ****         if(c.ttl_ms>NC_MAX_TTL_MS||c.ttl_ms<age+NC_GROUP_MS+20u)return false;
+ 158              		.loc 1 17 5 is_stmt 1 view .LVU29
+  17:modules/nav_conversion/nav_gateway.c ****         if(c.ttl_ms>NC_MAX_TTL_MS||c.ttl_ms<age+NC_GROUP_MS+20u)return false;
+ 159              		.loc 1 17 9 is_stmt 0 view .LVU30
+ 160 0034 BDF83020 		ldrh	r2, [sp, #48]
+  17:modules/nav_conversion/nav_gateway.c ****         if(c.ttl_ms>NC_MAX_TTL_MS||c.ttl_ms<age+NC_GROUP_MS+20u)return false;
+ 161              		.loc 1 17 7 view .LVU31
+ 162 0038 12F0010F 		tst	r2, #1
+ 163 003c 0BD0     		beq	.L7
+  18:modules/nav_conversion/nav_gateway.c ****         c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
+ 164              		.loc 1 18 9 is_stmt 1 view .LVU32
+  18:modules/nav_conversion/nav_gateway.c ****         c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
+ 165              		.loc 1 18 13 is_stmt 0 view .LVU33
+ 166 003e BDF82E20 		ldrh	r2, [sp, #46]
+  18:modules/nav_conversion/nav_gateway.c ****         c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
+ 167              		.loc 1 18 11 view .LVU34
+ 168 0042 962A     		cmp	r2, #150
+ 169 0044 20D8     		bhi	.L11
+  18:modules/nav_conversion/nav_gateway.c ****         c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
+ 170              		.loc 1 18 60 discriminator 2 view .LVU35
+ 171 0046 03F11E01 		add	r1, r3, #30
+  18:modules/nav_conversion/nav_gateway.c ****         c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
+ 172              		.loc 1 18 34 discriminator 2 view .LVU36
+ 173 004a 8A42     		cmp	r2, r1
+ 174 004c 1ED3     		bcc	.L12
+  19:modules/nav_conversion/nav_gateway.c ****     }
+ 175              		.loc 1 19 9 is_stmt 1 view .LVU37
+  19:modules/nav_conversion/nav_gateway.c ****     }
+ 176              		.loc 1 19 17 is_stmt 0 view .LVU38
+ 177 004e D31A     		subs	r3, r2, r3
+ 178              	.LVL13:
+  19:modules/nav_conversion/nav_gateway.c ****     }
+ 179              		.loc 1 19 17 view .LVU39
+ 180 0050 0A3B     		subs	r3, r3, #10
+ 181 0052 ADF82E30 		strh	r3, [sp, #46]	@ movhi
+ 182              	.LVL14:
+ 183              	.L7:
+  21:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+ 184              		.loc 1 21 5 is_stmt 1 view .LVU40
+  21:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+ 185              		.loc 1 21 9 is_stmt 0 view .LVU41
+ 186 0056 1699     		ldr	r1, [sp, #88]
+ 187 0058 09A8     		add	r0, sp, #36
+ 188 005a FFF7FEFF 		bl	nc_command_group
+ 189              	.LVL15:
+  21:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+ARM GAS  /tmp/ccJLr1d5.s 			page 5
+
+
+ 190              		.loc 1 21 7 view .LVU42
+ 191 005e 0446     		mov	r4, r0
+ 192 0060 08B9     		cbnz	r0, .L15
+ 193              	.L8:
+  21:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+ 194              		.loc 1 21 69 is_stmt 1 discriminator 3 view .LVU43
+  21:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+ 195              		.loc 1 21 76 is_stmt 0 discriminator 3 view .LVU44
+ 196 0062 0024     		movs	r4, #0
+ 197 0064 E0E7     		b	.L6
+ 198              	.L15:
+  21:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+ 199              		.loc 1 21 36 discriminator 2 view .LVU45
+ 200 0066 6946     		mov	r1, sp
+ 201 0068 09A8     		add	r0, sp, #36
+ 202 006a FFF7FEFF 		bl	rm_encode_command
+ 203              	.LVL16:
+  21:modules/nav_conversion/nav_gateway.c ****     if(!rm_mcu_receive(&g->gate,normalized,sizeof(normalized),now))return false;
+ 204              		.loc 1 21 33 discriminator 2 view .LVU46
+ 205 006e 0028     		cmp	r0, #0
+ 206 0070 F7D0     		beq	.L8
+  22:modules/nav_conversion/nav_gateway.c ****     g->command_received_ms=received;return true;
+ 207              		.loc 1 22 5 is_stmt 1 view .LVU47
+  22:modules/nav_conversion/nav_gateway.c ****     g->command_received_ms=received;return true;
+ 208              		.loc 1 22 9 is_stmt 0 view .LVU48
+ 209 0072 2B46     		mov	r3, r5
+ 210 0074 2222     		movs	r2, #34
+ 211 0076 6946     		mov	r1, sp
+ 212 0078 3846     		mov	r0, r7
+ 213 007a FFF7FEFF 		bl	rm_mcu_receive
+ 214              	.LVL17:
+  22:modules/nav_conversion/nav_gateway.c ****     g->command_received_ms=received;return true;
+ 215              		.loc 1 22 7 view .LVU49
+ 216 007e 38B1     		cbz	r0, .L13
+  23:modules/nav_conversion/nav_gateway.c **** }
+ 217              		.loc 1 23 5 is_stmt 1 view .LVU50
+  23:modules/nav_conversion/nav_gateway.c **** }
+ 218              		.loc 1 23 27 is_stmt 0 view .LVU51
+ 219 0080 FE62     		str	r6, [r7, #44]
+  23:modules/nav_conversion/nav_gateway.c **** }
+ 220              		.loc 1 23 37 is_stmt 1 view .LVU52
+  23:modules/nav_conversion/nav_gateway.c **** }
+ 221              		.loc 1 23 44 is_stmt 0 view .LVU53
+ 222 0082 D1E7     		b	.L6
+ 223              	.LVL18:
+ 224              	.L10:
+  16:modules/nav_conversion/nav_gateway.c ****     if(c.flags&RM_FLAG_ENABLE){
+ 225              		.loc 1 16 31 view .LVU54
+ 226 0084 0024     		movs	r4, #0
+ 227 0086 CFE7     		b	.L6
+ 228              	.L11:
+  18:modules/nav_conversion/nav_gateway.c ****         c.ttl_ms-=(uint16_t)(age+NC_GROUP_MS); /* Reserve time for CAN delivery. */
+ 229              		.loc 1 18 72 view .LVU55
+ 230 0088 0024     		movs	r4, #0
+ 231 008a CDE7     		b	.L6
+ 232              	.L12:
+ 233 008c 0024     		movs	r4, #0
+ARM GAS  /tmp/ccJLr1d5.s 			page 6
+
+
+ 234 008e CBE7     		b	.L6
+ 235              	.LVL19:
+ 236              	.L13:
+  22:modules/nav_conversion/nav_gateway.c ****     g->command_received_ms=received;return true;
+ 237              		.loc 1 22 75 view .LVU56
+ 238 0090 0024     		movs	r4, #0
+ 239 0092 C9E7     		b	.L6
+ 240              		.cfi_endproc
+ 241              	.LFE1:
+ 243              		.text
+ 244              	.Letext0:
+ 245              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 246              		.file 3 "modules/nav_conversion/rm_chassis_comm/protocol.h"
+ 247              		.file 4 "modules/nav_conversion/nav_can.h"
+ 248              		.file 5 "modules/nav_conversion/rm_chassis_comm/mcu_link.h"
+ 249              		.file 6 "modules/nav_conversion/nav_gateway.h"
+ 250              		.file 7 "<built-in>"
+ARM GAS  /tmp/ccJLr1d5.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 nav_gateway.c
+     /tmp/ccJLr1d5.s:18     .text.ng_init:0000000000000000 $t
+     /tmp/ccJLr1d5.s:26     .text.ng_init:0000000000000000 ng_init
+     /tmp/ccJLr1d5.s:73     .text.ng_command:0000000000000000 $t
+     /tmp/ccJLr1d5.s:80     .text.ng_command:0000000000000000 ng_command
+
+UNDEFINED SYMBOLS
+memset
+rm_mcu_init
+rm_mcu_set_safety
+rm_decode_command
+nc_command_group
+rm_encode_command
+rm_mcu_receive

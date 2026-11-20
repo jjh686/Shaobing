@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/chassis_driver/basic_framework"
+CMAKE_SOURCE_DIR = /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis"
+CMAKE_BINARY_DIR = /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/build/chassis
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis/CMakeFiles" "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis//CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/build/chassis/CMakeFiles /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/build/chassis//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/wangjiaming/桌面/the using code/04_底盘电控（含通信）/build/chassis/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/build/chassis/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
