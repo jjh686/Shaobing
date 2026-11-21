@@ -1,0 +1,44 @@
+{
+  "intents-default": {
+    "observed_modes": [
+      "Disabled"
+    ],
+    "intent_messages": 37,
+    "state_messages": 0,
+    "navigation_statuses": [],
+    "passed": true
+  },
+  "intents-enabled-no-input": {
+    "observed_modes": [
+      "WaitState"
+    ],
+    "intent_messages": 38,
+    "state_messages": 0,
+    "navigation_statuses": [],
+    "passed": true
+  },
+  "three-nodes-default": {
+    "observed_modes": [
+      "Disabled"
+    ],
+    "intent_messages": 38,
+    "state_messages": 72,
+    "navigation_statuses": [
+      "waiting:intent:Disabled"
+    ],
+    "passed": true
+  },
+  "three-nodes-synthetic-input": {
+    "observed_modes": [
+      "Patrol",
+      "WaitGame",
+      "WaitState"
+    ],
+    "preview_target": true,
+    "after_input_stops": "WaitState",
+    "fire_permission_frames": 0,
+    "physical_uart_opened": false,
+    "execute_navigation": false,
+    "passed": true
+  }
+}

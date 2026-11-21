@@ -1,0 +1,27 @@
+{
+  "protocol2026": {
+    "source": "RoboMaster 2026 机甲大师高校系列赛通信协议 V2.0.0（20260626）.pdf",
+    "pages": 85,
+    "chars": 102806
+  },
+  "construction2027": {
+    "source": "RoboMaster 2027 机甲大师高校系列赛机器人制作规范手册V1.0.0（20261015） (1).pdf",
+    "pages": 91,
+    "chars": 76566
+  },
+  "protocol2027": {
+    "source": "RoboMaster 2027 机甲大师高校系列赛通信协议 V1.0.0（20261029）.pdf",
+    "pages": 85,
+    "chars": 103326
+  },
+  "entry2027": {
+    "source": "RoboMaster 2027 机甲大师高校联盟赛参赛手册V1.0.0（20261015）.pdf",
+    "pages": 28,
+    "chars": 29993
+  },
+  "rules2027": {
+    "source": "RoboMaster 2027 机甲大师高校联盟赛比赛规则手册 V1.0.0（20261015）.pdf",
+    "pages": 68,
+    "chars": 60069
+  }
+}

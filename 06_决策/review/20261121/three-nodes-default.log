@@ -1,0 +1,16 @@
+[INFO] [launch]: All log files can be found below /tmp/rm06-review-20261121-pgahuyo9/ros-log/2026-11-21-17-36-10-602609-wangjiaming-NUC11PAHi7-14726
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [referee_state_adapter.py-1]: process started with pid [14727]
+[INFO] [rm2027_tree-2]: process started with pid [14729]
+[INFO] [intent_nav_bridge.py-3]: process started with pid [14731]
+[rm2027_tree-2] [INFO] [1795253770.654750828] [decision2027.rm2027_tree]: Intent inspection only: profile=rmul_3v3, enabled=0
+[rm2027_tree-2] [INFO] [1795253770.754933360] [decision2027.rm2027_tree]: Disabled||unknown|heavy=unknown|infantry=unknown|disabled: disabled
+[intent_nav_bridge.py-3] [INFO] [1795253771.021976192] [decision2027.intent_nav_bridge]: waiting:intent:Disabled
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [intent_nav_bridge.py-3]: sending signal 'SIGINT' to process[intent_nav_bridge.py-3]
+[INFO] [rm2027_tree-2]: sending signal 'SIGINT' to process[rm2027_tree-2]
+[INFO] [referee_state_adapter.py-1]: sending signal 'SIGINT' to process[referee_state_adapter.py-1]
+[rm2027_tree-2] [INFO] [1795253774.457048846] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [rm2027_tree-2]: process has finished cleanly [pid 14729]
+[INFO] [referee_state_adapter.py-1]: process has finished cleanly [pid 14727]
+[INFO] [intent_nav_bridge.py-3]: process has finished cleanly [pid 14731]

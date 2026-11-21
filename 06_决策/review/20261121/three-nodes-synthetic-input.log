@@ -1,0 +1,22 @@
+[INFO] [launch]: All log files can be found below /tmp/rm06-review-20261121-pgahuyo9/ros-log/2026-11-21-17-36-14-983167-wangjiaming-NUC11PAHi7-14767
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [referee_state_adapter.py-1]: process started with pid [14768]
+[INFO] [rm2027_tree-2]: process started with pid [14770]
+[INFO] [intent_nav_bridge.py-3]: process started with pid [14772]
+[rm2027_tree-2] [INFO] [1795253775.036801573] [decision2027.rm2027_tree]: Intent inspection only: profile=rmul_3v3, enabled=1
+[rm2027_tree-2] [INFO] [1795253775.137095450] [decision2027.rm2027_tree]: WaitState||unknown|heavy=unknown|infantry=unknown|critical_state_missing_or_stale: critical_state_missing_or_stale
+[intent_nav_bridge.py-3] [INFO] [1795253775.398184593] [decision2027.intent_nav_bridge]: waiting:intent:WaitState
+[rm2027_tree-2] [INFO] [1795253776.936931029] [decision2027.rm2027_tree]: WaitGame||unknown|heavy=unknown|infantry=unknown|game_not_running: game_not_running
+[intent_nav_bridge.py-3] [INFO] [1795253776.988710787] [decision2027.intent_nav_bridge]: waiting:intent:WaitGame
+[rm2027_tree-2] [INFO] [1795253777.837053863] [decision2027.rm2027_tree]: Patrol|review_patrol|unknown|heavy=unknown|infantry=unknown|explicit_verified_patrol: explicit_verified_patrol
+[intent_nav_bridge.py-3] [INFO] [1795253777.888552008] [decision2027.intent_nav_bridge]: preview:review_patrol
+[rm2027_tree-2] [INFO] [1795253780.536943428] [decision2027.rm2027_tree]: WaitState||unknown|heavy=unknown|infantry=unknown|critical_state_missing_or_stale: critical_state_missing_or_stale
+[intent_nav_bridge.py-3] [INFO] [1795253780.588313786] [decision2027.intent_nav_bridge]: waiting:intent:WaitState
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [intent_nav_bridge.py-3]: sending signal 'SIGINT' to process[intent_nav_bridge.py-3]
+[INFO] [rm2027_tree-2]: sending signal 'SIGINT' to process[rm2027_tree-2]
+[INFO] [referee_state_adapter.py-1]: sending signal 'SIGINT' to process[referee_state_adapter.py-1]
+[rm2027_tree-2] [INFO] [1795253782.860120358] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [rm2027_tree-2]: process has finished cleanly [pid 14770]
+[INFO] [referee_state_adapter.py-1]: process has finished cleanly [pid 14768]
+[INFO] [intent_nav_bridge.py-3]: process has finished cleanly [pid 14772]

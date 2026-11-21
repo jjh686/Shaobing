@@ -1,0 +1,9 @@
+[INFO] [launch]: All log files can be found below /tmp/rm06-review-20261121-pgahuyo9/ros-log/2026-11-21-17-36-01-886660-wangjiaming-NUC11PAHi7-14687
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [rm2027_tree-1]: process started with pid [14688]
+[rm2027_tree-1] [INFO] [1795253761.947477185] [decision2027.rm2027_tree]: Intent inspection only: profile=rmul_3v3, enabled=0
+[rm2027_tree-1] [INFO] [1795253762.047689700] [decision2027.rm2027_tree]: Disabled||unknown|heavy=unknown|infantry=unknown|disabled: disabled
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [rm2027_tree-1]: sending signal 'SIGINT' to process[rm2027_tree-1]
+[rm2027_tree-1] [INFO] [1795253765.689412145] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [rm2027_tree-1]: process has finished cleanly [pid 14688]

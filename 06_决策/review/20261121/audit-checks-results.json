@@ -1,0 +1,32 @@
+{
+  "receiver": {
+    "fragmented_frame": "pass",
+    "bad_crc_rejected": "pass",
+    "resynchronization": "pass",
+    "central_owner_bit": "pass",
+    "2026_hp_length_rejected": "pass"
+  },
+  "observed_round_and_respawn": "pass",
+  "unknown_life_does_not_recover_on_supply": {
+    "late_start_known": false,
+    "after_gap_known": false,
+    "finding_reproduced": true
+  },
+  "confirmed_dead_teammate_dropped": {
+    "heavy_hp": 0,
+    "heavy_health_valid": false,
+    "infantry_health_valid": true,
+    "finding_reproduced": true
+  },
+  "shooting_evidence_unimplemented": {
+    "ammunition_valid": false,
+    "shooter_enabled": false
+  },
+  "same_target_not_reissued": {
+    "after_aborted": false,
+    "after_rejected": false,
+    "after_succeeded_then_new_need": false,
+    "after_canceled": true,
+    "finding_reproduced": true
+  }
+}

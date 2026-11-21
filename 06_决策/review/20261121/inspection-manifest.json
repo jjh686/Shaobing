@@ -1,0 +1,196 @@
+{
+  "reviewed_at": "2026-11-21T17:40:52.142925+08:00",
+  "root": "/home/wangjiaming/文档/GitHub/RM_11_13/06_决策",
+  "original_file_count": 33,
+  "source_files": [
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 1890,
+      "sha256": "f46f74b95807ff5ee547e0baeeac9099dd026ba7c0697e47e7f44a4af255fcd3"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 11558,
+      "sha256": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 10196,
+      "sha256": "ddcbaa24b276f5d22c5ae9b73a713ed8c4697f74dba2bdd628891a3635adfee1"
+    },
+    {
+      "path": "config/approved_tasks.yaml",
+      "bytes": 239,
+      "sha256": "cfee76b99649e7ffa6ec4ae7be5f9e471db0e7f977dac822dbd19d45994bf289"
+    },
+    {
+      "path": "config/decision.yaml",
+      "bytes": 519,
+      "sha256": "d5d47cc8ecb5667d6a42f80b5e174395eda4d92cb0fd4ddd67a8f24ef754d19c"
+    },
+    {
+      "path": "include/rm2027_decision/freshness.hpp",
+      "bytes": 969,
+      "sha256": "c3582e4acf1015f25f130dea61f1968297ffcf22214e5e916ab6c29a6c18d620"
+    },
+    {
+      "path": "include/rm2027_decision/policy.hpp",
+      "bytes": 15522,
+      "sha256": "3d649f4bb852b55d5b6af56f1a7bda2e9611ecd88201d6d1299e2530b40ac347"
+    },
+    {
+      "path": "launch/intents.launch.py",
+      "bytes": 1341,
+      "sha256": "151b8ec561203b2b639ed2d1dce196e770b5fdd223a9c6674ece216dcef4a319"
+    },
+    {
+      "path": "launch/intents.launch.pyc",
+      "bytes": 1758,
+      "sha256": "dbe164caf8ba7729e4c57debf4e4664963f05e41241cc5a4c86d9827cafe0c3c"
+    },
+    {
+      "path": "launch/rm_11_13.launch.py",
+      "bytes": 3053,
+      "sha256": "a6406ca5ed644ce6b1ade5ba337952d140bab7e81b85d3642c88beb019ee4b71"
+    },
+    {
+      "path": "launch/rm_11_13.launch.pyc",
+      "bytes": 3520,
+      "sha256": "b7ede9c22ad62b0c24b4b50d3e426605666d0aca3117f702d7f0e0ce0ca7bf35"
+    },
+    {
+      "path": "msg/DecisionIntent.msg",
+      "bytes": 537,
+      "sha256": "d08450f360f697684f65da09d5cff4376b1b7d8f9dd52ac60f7c52c6009bf24e"
+    },
+    {
+      "path": "msg/DecisionState.msg",
+      "bytes": 2230,
+      "sha256": "a8405e4e671ba82b6841bea290388aa69deb182f26ddc2bdf2dbc203e8bb0552"
+    },
+    {
+      "path": "msg/NavigationEvidence.msg",
+      "bytes": 544,
+      "sha256": "3c55c5ea67781cb86ad9496833fb80fe6e9592306fa7ff642497ce3f090ef40e"
+    },
+    {
+      "path": "msg/TacticalObjective.msg",
+      "bytes": 984,
+      "sha256": "8edf5b1dfe07f47dbf3b5cfae706a69fba2f0eb7f45520450ca8da39ab8cf205"
+    },
+    {
+      "path": "msg/TeammateState.msg",
+      "bytes": 563,
+      "sha256": "37c0509285a5ac2a601580e5e1228c6df52fb83cd16a0189d44b8460404603fa"
+    },
+    {
+      "path": "package.xml",
+      "bytes": 1009,
+      "sha256": "1f7aea3574226181d2853fa722a837a336ca96438c0c3209841309642eb16702"
+    },
+    {
+      "path": "race rule text/RoboMaster 2026 机甲大师高校系列赛通信协议 V2.0.0（20260626）.pdf",
+      "bytes": 2039054,
+      "sha256": "8fdc484c58d503a3fb68f7c0515ae618b68eb2b058a8c876e1add5eeb8a7d81b"
+    },
+    {
+      "path": "race rule text/RoboMaster 2027 机甲大师高校系列赛机器人制作规范手册V1.0.0（20261015） (1).pdf",
+      "bytes": 18240763,
+      "sha256": "3287fe5f521f8801ce69632032ea17a9c8d8a099091558f58618cd7721154a3c"
+    },
+    {
+      "path": "race rule text/RoboMaster 2027 机甲大师高校系列赛通信协议 V1.0.0（20261029）.pdf",
+      "bytes": 3435583,
+      "sha256": "109a5e2a82afd3f253a5ac15aef7bb5e0aa354c6b41e3a6ceca7fed889e619e1"
+    },
+    {
+      "path": "race rule text/RoboMaster 2027 机甲大师高校联盟赛参赛手册V1.0.0（20261015）.pdf",
+      "bytes": 1130880,
+      "sha256": "969fb865b7dca28360325d198fd47a7158cb7c8cfe3e0fd6d51bc556b67b2950"
+    },
+    {
+      "path": "race rule text/RoboMaster 2027 机甲大师高校联盟赛比赛规则手册 V1.0.0（20261015）.pdf",
+      "bytes": 13455593,
+      "sha256": "a8fd7b7f6ea5212b9e4dfa590b478827992598d91912ed671653c8bdd9727fd6"
+    },
+    {
+      "path": "scripts/intent_nav_bridge.py",
+      "bytes": 15113,
+      "sha256": "7a939fc7a1822ebf1afda3b5d237a2c16ab2cdb28cee040d7bea1c61ba10896d"
+    },
+    {
+      "path": "scripts/intent_nav_bridge.pyc",
+      "bytes": 23915,
+      "sha256": "dee9be990b5ef85db4a4c37ea344050aa1fc139fa15bbb42c8cebfc585e32006"
+    },
+    {
+      "path": "scripts/referee_rx.py",
+      "bytes": 3389,
+      "sha256": "1be249e277762dd9f806fe0bfd480e24f7797949256c316d1d8f4b9896779db1"
+    },
+    {
+      "path": "scripts/referee_rx.pyc",
+      "bytes": 5692,
+      "sha256": "5587dfe4e67f40df74d88a29112964d68640aca6829c3093b7404d24cbe6794a"
+    },
+    {
+      "path": "scripts/referee_state_adapter.py",
+      "bytes": 9264,
+      "sha256": "d3e0e78f64b85493d33c6ba56c1a933153cff0dc3f887840d301423dce591920"
+    },
+    {
+      "path": "scripts/referee_state_adapter.pyc",
+      "bytes": 15308,
+      "sha256": "8fb496708aa5f684062a7905ef6592b2e8a288f52fd5eab2b1571737388cc6c7"
+    },
+    {
+      "path": "src/decision_node.cpp",
+      "bytes": 12104,
+      "sha256": "fedfcde3a279f01d3e89c7ea480e82e05d2643e897e403b0caf0bd81cbad3668"
+    },
+    {
+      "path": "test/freshness_test.cpp",
+      "bytes": 3614,
+      "sha256": "419d82cfc9bcd0458b5fbd6297acc6e8fcc70dfb0b908fe26e6ad1c49c7d6c1c"
+    },
+    {
+      "path": "test/policy_test.cpp",
+      "bytes": 17591,
+      "sha256": "119f0a84107d43d75790a16ef46b1510563981408a1e656170ca65e3474c29b8"
+    },
+    {
+      "path": "trees/intents.xml",
+      "bytes": 308,
+      "sha256": "0967915ef84c54806e3a5ad9aeb9bcd13bb572015463c8513952d97baae41c67"
+    },
+    {
+      "path": "团队决策需求.md",
+      "bytes": 8990,
+      "sha256": "d50406cd1c74d74f1df8920670cba0583a6feed22d3074d9f715c89c04f1a21f"
+    }
+  ],
+  "machine": {
+    "os": "Linux-6.8.0-149-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "logical_cpus": 8,
+    "mem_total_kib": 32505136,
+    "ros": "humble",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz"
+  },
+  "baseline_full_build": "failed_missing_behaviortree_cpp_v4",
+  "temporary_dependency": {
+    "package": "ros-humble-behaviortree-cpp",
+    "version": "4.11.0-1jammy.20261110.093757",
+    "sha256": "f0c187ba1d954661e6939eec8ee04c2840faed39e6d565b0853ea2ffef55d670",
+    "system_installed": false,
+    "extracted_prefix": "/tmp/rm06-review-20261121-pgahuyo9/bt4-extracted/opt/ros/humble"
+  },
+  "isolated_build": "pass",
+  "ctest_passed": 2,
+  "ctest_failed": 0,
+  "physical_uart_opened": false,
+  "actual_navigation_executed": false,
+  "ros_domain_id": 173,
+  "source_logic_modified": false,
+  "scratch": "/tmp/rm06-review-20261121-pgahuyo9"
+}

@@ -1,0 +1,38 @@
+{
+  "source": "2027 communication protocol Appendix 1, printed pp.75-77",
+  "official_crc8_entries": 256,
+  "official_crc16_entries": 256,
+  "vectors": [
+    {
+      "bytes": 0,
+      "crc8": "0xff",
+      "crc16": "0xffff",
+      "matches_official_tables": true
+    },
+    {
+      "bytes": 9,
+      "crc8": "0xb",
+      "crc16": "0x6f91",
+      "matches_official_tables": true
+    },
+    {
+      "bytes": 256,
+      "crc8": "0x99",
+      "crc16": "0xcfc3",
+      "matches_official_tables": true
+    },
+    {
+      "bytes": 4,
+      "crc8": "0x2",
+      "crc16": "0xe6ed",
+      "matches_official_tables": true
+    },
+    {
+      "bytes": 512,
+      "crc8": "0xeb",
+      "crc16": "0x2c68",
+      "matches_official_tables": true
+    }
+  ],
+  "passed": true
+}

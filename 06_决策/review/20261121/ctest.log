@@ -1,0 +1,33 @@
+Start testing: Nov 21 17:33 CST
+----------------------------------------------------------
+1/2 Testing: rm2027_policy
+1/2 Test: rm2027_policy
+Command: "/tmp/rm06-review-20261121-pgahuyo9/overlay-build/rm2027_decision/policy_test"
+Directory: /tmp/rm06-review-20261121-pgahuyo9/overlay-build/rm2027_decision
+"rm2027_policy" start time: Nov 21 17:33 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"rm2027_policy" end time: Nov 21 17:33 CST
+"rm2027_policy" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: rm2027_freshness
+2/2 Test: rm2027_freshness
+Command: "/tmp/rm06-review-20261121-pgahuyo9/overlay-build/rm2027_decision/freshness_test"
+Directory: /tmp/rm06-review-20261121-pgahuyo9/overlay-build/rm2027_decision
+"rm2027_freshness" start time: Nov 21 17:33 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"rm2027_freshness" end time: Nov 21 17:33 CST
+"rm2027_freshness" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 21 17:33 CST
