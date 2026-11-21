@@ -1,0 +1,5 @@
+map_frame: map
+# Add surveyed, approved points for the active competition map.
+# Each item requires id, kind (recovery, zone, defence or patrol), x, y and yaw.
+# The central control zone, if approved, uses id: central_zone.
+objectives: []

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="RM2027Intents">
+  <BehaviorTree ID="RM2027Intents">
+    <Sequence>
+      <ReadState state="{state}"/>
+      <SelectIntent state="{state}" intent="{intent}"/>
+      <PublishIntent intent="{intent}"/>
+    </Sequence>
+  </BehaviorTree>
+</root>

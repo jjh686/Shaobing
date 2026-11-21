@@ -1,0 +1,11 @@
+/**:
+  ros__parameters:
+    profile: rmul_3v3  # Confirmed: RMUL 2027 3V3; execution remains disabled.
+    enabled: false
+    map_frame: map  # All teammate and task positions must be transformed here.
+    source_timeout: 2.5  # seconds; 1 Hz referee sources need >1 s tolerance.
+    low_hp_ratio: 0.30   # Initial engineering defaults, NOT official rules.
+    resume_hp_ratio: 0.80
+    max_task_risk: 0.50  # Engineering score budget, not death probability.
+    max_recovery_risk: 0.50
+    cautious_capture_risk: 0.25
