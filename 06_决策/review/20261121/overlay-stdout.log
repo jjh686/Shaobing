@@ -1,0 +1,385 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Found rosidl_default_generators: 1.2.1 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 3.1.9 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rclcpp: 16.0.21 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rmw_implementation_cmake: 6.1.4 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+-- Found FastRTPS: /opt/ros/humble/include  
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found behaviortree_cpp: 4.11.0 (/tmp/rm06-review-20261121-pgahuyo9/bt4-extracted/opt/ros/humble/share/behaviortree_cpp/cmake)
+-- Found ament_cmake_ros: 0.10.1 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+-- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+-- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+-- Found PythonExtra: .so  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/rm06-review-20261121-pgahuyo9/overlay-build/rm2027_decision
+[  1%] Generating C code for ROS interfaces
+[  4%] Building CXX object CMakeFiles/policy_test.dir/test/policy_test.cpp.o
+[  4%] Generating Rust code for ROS interfaces
+[  5%] Building CXX object CMakeFiles/freshness_test.dir/test/freshness_test.cpp.o
+[  7%] Generating C++ code for ROS interfaces
+[  7%] Built target ament_cmake_python_copy_rm2027_decision
+[  8%] Linking CXX executable freshness_test
+running egg_info
+creating rm2027_decision.egg-info
+writing rm2027_decision.egg-info/PKG-INFO
+writing dependency_links to rm2027_decision.egg-info/dependency_links.txt
+writing top-level names to rm2027_decision.egg-info/top_level.txt
+writing manifest file 'rm2027_decision.egg-info/SOURCES.txt'
+reading manifest file 'rm2027_decision.egg-info/SOURCES.txt'
+writing manifest file 'rm2027_decision.egg-info/SOURCES.txt'
+[  8%] Built target freshness_test
+[  8%] Built target ament_cmake_python_build_rm2027_decision_egg
+[  8%] Built target rm2027_decision__rs
+[  8%] Built target rm2027_decision__cpp
+[ 10%] Generating C++ introspection for ROS interfaces
+[ 11%] Generating C++ type support dispatch for ROS interfaces
+[ 12%] Generating C++ type support for eProsima Fast-RTPS
+[ 14%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_c.dir/rosidl_generator_c/rm2027_decision/msg/detail/teammate_state__functions.c.o
+[ 15%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_c.dir/rosidl_generator_c/rm2027_decision/msg/detail/decision_state__functions.c.o
+[ 18%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_c.dir/rosidl_generator_c/rm2027_decision/msg/detail/tactical_objective__functions.c.o
+[ 17%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_c.dir/rosidl_generator_c/rm2027_decision/msg/detail/decision_intent__functions.c.o
+[ 20%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_c.dir/rosidl_generator_c/rm2027_decision/msg/detail/navigation_evidence__functions.c.o
+[ 21%] Linking C shared library librm2027_decision__rosidl_generator_c.so
+[ 21%] Built target rm2027_decision__rosidl_generator_c
+[ 22%] Generating C type support for eProsima Fast-RTPS
+[ 24%] Generating C type support dispatch for ROS interfaces
+[ 25%] Generating C introspection for ROS interfaces
+[ 27%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rm2027_decision/msg/teammate_state__type_support.cpp.o
+[ 28%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rm2027_decision/msg/tactical_objective__type_support.cpp.o
+[ 30%] Linking CXX executable policy_test
+[ 30%] Built target policy_test
+[ 31%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rm2027_decision/msg/decision_state__type_support.cpp.o
+[ 32%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rm2027_decision/msg/decision_intent__type_support.cpp.o
+[ 34%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rm2027_decision/msg/detail/teammate_state__type_support.cpp.o
+[ 35%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rm2027_decision/msg/detail/dds_fastrtps/teammate_state__type_support.cpp.o
+[ 37%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rm2027_decision/msg/detail/tactical_objective__type_support.cpp.o
+[ 38%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rm2027_decision/msg/detail/dds_fastrtps/tactical_objective__type_support.cpp.o
+[ 40%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rm2027_decision/msg/navigation_evidence__type_support.cpp.o
+[ 41%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rm2027_decision/msg/detail/decision_state__type_support.cpp.o
+[ 42%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rm2027_decision/msg/detail/teammate_state__type_support.c.o
+[ 44%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_c.dir/rosidl_typesupport_c/rm2027_decision/msg/teammate_state__type_support.cpp.o
+[ 45%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rm2027_decision/msg/detail/teammate_state__type_support_c.cpp.o
+[ 47%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_c.dir/rosidl_typesupport_c/rm2027_decision/msg/tactical_objective__type_support.cpp.o
+[ 48%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rm2027_decision/msg/detail/tactical_objective__type_support.c.o
+[ 50%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_c.dir/rosidl_typesupport_c/rm2027_decision/msg/decision_state__type_support.cpp.o
+[ 51%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rm2027_decision/msg/detail/decision_state__type_support.c.o
+[ 52%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rm2027_decision/msg/detail/decision_intent__type_support.c.o
+[ 54%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rm2027_decision/msg/detail/tactical_objective__type_support_c.cpp.o
+[ 55%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_c.dir/rosidl_typesupport_c/rm2027_decision/msg/decision_intent__type_support.cpp.o
+[ 57%] Linking CXX shared library librm2027_decision__rosidl_typesupport_cpp.so
+[ 58%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_c.dir/rosidl_typesupport_c/rm2027_decision/msg/navigation_evidence__type_support.cpp.o
+[ 60%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rm2027_decision/msg/detail/decision_state__type_support_c.cpp.o
+[ 61%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rm2027_decision/msg/detail/navigation_evidence__type_support.c.o
+[ 61%] Built target rm2027_decision__rosidl_typesupport_cpp
+[ 62%] Linking CXX shared library librm2027_decision__rosidl_typesupport_c.so
+[ 64%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rm2027_decision/msg/detail/dds_fastrtps/decision_state__type_support.cpp.o
+[ 65%] Linking C shared library librm2027_decision__rosidl_typesupport_introspection_c.so
+[ 67%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rm2027_decision/msg/detail/decision_intent__type_support.cpp.o
+[ 67%] Built target rm2027_decision__rosidl_typesupport_c
+[ 68%] Building CXX object CMakeFiles/rm2027_tree.dir/src/decision_node.cpp.o
+[ 68%] Built target rm2027_decision__rosidl_typesupport_introspection_c
+[ 70%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rm2027_decision/msg/detail/decision_intent__type_support_c.cpp.o
+[ 71%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rm2027_decision/msg/detail/dds_fastrtps/decision_intent__type_support.cpp.o
+[ 72%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rm2027_decision/msg/detail/dds_fastrtps/navigation_evidence__type_support.cpp.o
+[ 74%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rm2027_decision/msg/detail/navigation_evidence__type_support_c.cpp.o
+[ 75%] Building CXX object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rm2027_decision/msg/detail/navigation_evidence__type_support.cpp.o
+[ 77%] Linking CXX shared library librm2027_decision__rosidl_typesupport_fastrtps_c.so
+[ 78%] Linking CXX shared library librm2027_decision__rosidl_typesupport_fastrtps_cpp.so
+[ 78%] Built target rm2027_decision__rosidl_typesupport_fastrtps_c
+[ 78%] Built target rm2027_decision__rosidl_typesupport_fastrtps_cpp
+[ 80%] Linking CXX shared library librm2027_decision__rosidl_typesupport_introspection_cpp.so
+[ 80%] Built target rm2027_decision__rosidl_typesupport_introspection_cpp
+[ 80%] Built target rm2027_decision
+[ 81%] Generating Python code for ROS interfaces
+[ 81%] Built target rm2027_decision__py
+[ 82%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_py.dir/rosidl_generator_py/rm2027_decision/msg/_teammate_state_s.c.o
+[ 87%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_py.dir/rosidl_generator_py/rm2027_decision/msg/_decision_intent_s.c.o
+[ 87%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_py.dir/rosidl_generator_py/rm2027_decision/msg/_decision_state_s.c.o
+[ 87%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_py.dir/rosidl_generator_py/rm2027_decision/msg/_tactical_objective_s.c.o
+[ 88%] Building C object CMakeFiles/rm2027_decision__rosidl_generator_py.dir/rosidl_generator_py/rm2027_decision/msg/_navigation_evidence_s.c.o
+[ 90%] Linking C shared library rosidl_generator_py/rm2027_decision/librm2027_decision__rosidl_generator_py.so
+[ 90%] Built target rm2027_decision__rosidl_generator_py
+[ 92%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/rm2027_decision/_rm2027_decision_s.ep.rosidl_typesupport_c.c.o
+[ 92%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/rm2027_decision/_rm2027_decision_s.ep.rosidl_typesupport_fastrtps_c.c.o
+[ 94%] Building C object CMakeFiles/rm2027_decision__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/rm2027_decision/_rm2027_decision_s.ep.rosidl_typesupport_introspection_c.c.o
+[ 95%] Linking C shared library rosidl_generator_py/rm2027_decision/rm2027_decision_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[ 97%] Linking C shared library rosidl_generator_py/rm2027_decision/rm2027_decision_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[ 98%] Linking C shared library rosidl_generator_py/rm2027_decision/rm2027_decision_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[ 98%] Built target rm2027_decision__rosidl_typesupport_fastrtps_c__pyext
+[ 98%] Built target rm2027_decision__rosidl_typesupport_c__pyext
+[ 98%] Built target rm2027_decision__rosidl_typesupport_introspection_c__pyext
+[100%] Linking CXX executable rm2027_tree
+[100%] Built target rm2027_tree
+-- Install configuration: "Release"
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/ament_index/resource_index/rosidl_interfaces/rm2027_decision
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/rosidl_generator_c__visibility_control.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/navigation_evidence.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/decision_state.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/tactical_objective.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/teammate_state.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/decision_intent.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__functions.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__type_support.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__functions.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__struct.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__type_support.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__type_support.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__functions.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__struct.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__functions.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__functions.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__functions.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__type_support.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__functions.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__struct.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__functions.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__functions.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__struct.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__functions.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__struct.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__type_support.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/library_path.sh
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/library_path.dsv
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_generator_c.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_generator_c.so" to ""
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__rosidl_typesupport_fastrtps_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__rosidl_typesupport_fastrtps_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__rosidl_typesupport_fastrtps_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__rosidl_typesupport_fastrtps_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__rosidl_typesupport_fastrtps_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_fastrtps_c.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_fastrtps_c.so" to ""
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__type_support.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__rosidl_typesupport_introspection_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__type_support.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__type_support.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__rosidl_typesupport_introspection_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__rosidl_typesupport_introspection_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__rosidl_typesupport_introspection_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__rosidl_typesupport_introspection_c.h
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__type_support.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__type_support.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_introspection_c.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_c.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_c.so" to ""
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/teammate_state.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/decision_state.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/decision_intent.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/rosidl_generator_cpp__visibility_control.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/tactical_objective.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/navigation_evidence.hpp
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__builder.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__builder.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__traits.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__type_support.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__builder.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__struct.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__struct.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__struct.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__type_support.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__struct.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__struct.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__type_support.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__traits.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__type_support.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__traits.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__traits.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__builder.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__builder.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__traits.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__type_support.hpp
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/dds_fastrtps
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_fastrtps_cpp.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_fastrtps_cpp.so" to ""
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__type_support.cpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__type_support.cpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__type_support.cpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/navigation_evidence__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__type_support.cpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_state__type_support.cpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/tactical_objective__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/decision_intent__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/rm2027_decision/msg/detail/teammate_state__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_introspection_cpp.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_introspection_cpp.so" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_cpp.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_typesupport_cpp.so" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/pythonpath.sh
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/pythonpath.dsv
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision-0.3.0-py3.10.egg-info
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision-0.3.0-py3.10.egg-info/SOURCES.txt
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision-0.3.0-py3.10.egg-info/dependency_links.txt
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision-0.3.0-py3.10.egg-info/top_level.txt
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision-0.3.0-py3.10.egg-info/PKG-INFO
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/librm2027_decision__rosidl_generator_py.so
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/_rm2027_decision_s.ep.rosidl_typesupport_introspection_c.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/_rm2027_decision_s.ep.rosidl_typesupport_c.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_decision_intent.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_navigation_evidence.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_tactical_objective.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_navigation_evidence_s.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_decision_state_s.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_tactical_objective_s.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_decision_state.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/__init__.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_teammate_state.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_teammate_state_s.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_decision_intent_s.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/__init__.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/_rm2027_decision_s.ep.rosidl_typesupport_fastrtps_c.c
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+Listing '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision'...
+Compiling '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/__init__.py'...
+Listing '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg'...
+Compiling '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/__init__.py'...
+Compiling '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_decision_intent.py'...
+Compiling '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_decision_state.py'...
+Compiling '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_navigation_evidence.py'...
+Compiling '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_tactical_objective.py'...
+Compiling '/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/msg/_teammate_state.py'...
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/local/lib/python3.10/dist-packages/rm2027_decision/rm2027_decision_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_generator_py.so
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/librm2027_decision__rosidl_generator_py.so" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust/Cargo.toml
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust/build.rs
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust/src
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust/src/lib.rs
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust/src/msg.rs
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust/src/msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/rust/src/msg/rmw.rs
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/TeammateState.idl
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/TacticalObjective.idl
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/DecisionState.idl
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/DecisionIntent.idl
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/NavigationEvidence.idl
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/TeammateState.msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/TacticalObjective.msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/DecisionState.msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/DecisionIntent.msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/msg/NavigationEvidence.msg
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/rm2027_decision/rm2027_tree
+-- Set runtime path of "/tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/rm2027_decision/rm2027_tree" to ""
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/rm2027_decision/referee_state_adapter.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/rm2027_decision/intent_nav_bridge.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/lib/rm2027_decision/referee_rx.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/launch
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/launch/rm_11_13.launch.pyc
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/launch/rm_11_13.launch.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/launch/intents.launch.py
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/launch/intents.launch.pyc
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/config
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/config/approved_tasks.yaml
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/config/decision.yaml
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/trees
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/trees/intents.xml
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include
+-- Up-to-date: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/freshness.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/include/rm2027_decision/policy.hpp
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/ament_index/resource_index/package_run_dependencies/rm2027_decision
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/ament_index/resource_index/parent_prefix_path/rm2027_decision
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/ament_prefix_path.sh
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/ament_prefix_path.dsv
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/path.sh
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/environment/path.dsv
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/local_setup.bash
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/local_setup.sh
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/local_setup.zsh
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/local_setup.dsv
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/package.dsv
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/ament_index/resource_index/packages/rm2027_decision
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_generator_cExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_generator_cExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_typesupport_fastrtps_cExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_typesupport_fastrtps_cExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_introspection_cExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_cExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_cExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_generator_cppExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_typesupport_fastrtps_cppExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_introspection_cppExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_cppExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decision__rosidl_typesupport_cppExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_generator_pyExport.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/export_rm2027_decision__rosidl_generator_pyExport-release.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rosidl_cmake-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/ament_cmake_export_libraries-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/ament_cmake_export_targets-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rosidl_cmake_aggregate_target-extras.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decisionConfig.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/cmake/rm2027_decisionConfig-version.cmake
+-- Installing: /tmp/rm06-review-20261121-pgahuyo9/overlay-install/rm2027_decision/share/rm2027_decision/package.xml
