@@ -8,6 +8,7 @@ import rclpy
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import OccupancyGrid, Odometry
+from rclpy.parameter import Parameter
 from sensor_msgs.msg import PointCloud2, LaserScan
 from std_msgs.msg import Bool
 from std_srvs.srv import SetBool
@@ -133,6 +134,41 @@ class GateTests(unittest.TestCase):
         self.assertEqual(self.gate.health(), '')
         self.gate.tick()
         self.assertFalse(self.gate.armed)
+        self.assertIn('/live/exploration_active', {sub.topic_name for sub in self.gate.subscriptions})
+
+    def test_decision_owner_uses_its_own_heartbeat_and_preserves_interlocks(self):
+        self.gate.destroy_node()
+        self.gate = MotionGate(parameter_overrides=[Parameter('goal_owner', value='decision')])
+        self.populate()
+        activity_topics = {sub.topic_name for sub in self.gate.subscriptions}
+        self.assertIn('/decision2027/navigation_active', activity_topics)
+        self.assertNotIn('/live/exploration_active', activity_topics)
+        self.assertTrue(self.gate.describe_parameter('goal_owner').read_only)
+        self.assertFalse(self.gate.armed)
+
+        owners, readiness, outputs = [], [], []
+        self.gate.owner_pub = SimpleNamespace(publish=owners.append)
+        self.gate.ready_pub = SimpleNamespace(publish=readiness.append)
+        self.gate.output = SimpleNamespace(publish=outputs.append)
+        self.gate.publish_owner()
+        self.assertEqual(owners[-1].data, 'decision')
+        self.arm()
+        command = Twist()
+        command.linear.x = .05
+        self.gate.cmd(command)
+        self.gate.tick()
+        self.assertTrue(readiness[-1].data)
+        self.assertEqual(outputs[-1].twist.linear.x, 0.)
+
+        self.gate.active(Bool(data=True))
+        self.gate.cmd(command)
+        self.gate.tick()
+        self.assertAlmostEqual(outputs[-1].twist.linear.x, .05)
+        self.gate.activity = (True, time.monotonic() - 1.)
+        self.gate.tick()
+        self.assertFalse(self.gate.armed)
+        self.assertFalse(readiness[-1].data)
+        self.assertEqual(outputs[-1].twist.linear.x, 0.)
 
     def test_stale_cloud_latches_off_until_manual_enable(self):
         self.arm()

@@ -17,6 +17,7 @@ from rm_live_nav.geometry import validate_mounting
 def setup(context):
     value = lambda key: LaunchConfiguration(key).perform(context)
     nav = value('navigation').lower() == 'true'
+    goal_owner = value('goal_owner')
     root, runtime = Path(value('source_root')), Path(value('runtime'))
     footprint = None
     if nav:
@@ -107,13 +108,16 @@ def setup(context):
                               'frame_id': 'base_footprint', 'use_stamped_commands': True,
                               'require_frame_ready': True, 'require_gimbal_state': False}],
                  remappings=[('cmd_vel_stamped', 'live/cmd_vel'), ('cmd_vel', 'unused_cmd_vel')]),
-            Node(package='rm_live_nav', executable='motion_gate', output='screen', parameters=[{'stop_radius': radius}]),
-            Node(package='rm_live_nav', executable='frontier_explorer', output='screen', parameters=[{'clearance': radius}]),
+            Node(package='rm_live_nav', executable='motion_gate', output='screen',
+                 parameters=[{'stop_radius': radius, 'goal_owner': goal_owner}]),
             Node(package='tf2_ros', executable='static_transform_publisher', name='live_lidar_mount',
                  arguments=['--x', str(xyz[0]), '--y', str(xyz[1]), '--z', str(xyz[2]),
                             '--roll', str(rpy[0]), '--pitch', str(rpy[1]), '--yaw', str(rpy[2]),
                             '--frame-id', 'base_footprint', '--child-frame-id', 'front_mid360']),
         ]
+        if goal_owner == 'exploration':
+            nodes.append(Node(package='rm_live_nav', executable='frontier_explorer', output='screen',
+                              parameters=[{'clearance': radius}]))
     if value('rviz').lower() == 'true':
         nodes.append(Node(package='rviz2', executable='rviz2', arguments=['-d', str(
             Path(get_package_share_directory('rm_live_nav'))/'config/live.rviz')]))
@@ -126,4 +130,5 @@ def generate_launch_description():
                 'rviz': 'false'}
     return LaunchDescription([DeclareLaunchArgument(key, default_value=value) for key, value in defaults.items()]+[
         DeclareLaunchArgument(key) for key in ('source_root', 'runtime', 'mounting_config', 'output_dir')]+[
+        DeclareLaunchArgument('goal_owner', default_value='exploration', choices=['exploration', 'decision']),
         OpaqueFunction(function=setup)])

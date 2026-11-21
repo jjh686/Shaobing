@@ -240,8 +240,11 @@ void test_team_matrix_and_hysteresis()
   assert(p.evaluate(s).team_situation.find("heavy=healthy") != std::string::npos);
   s.heavy.hp = 0; s.heavy.life_state_valid = false;
   out = p.evaluate(s);
+  assert(out.team_situation.find("heavy=unknown") != std::string::npos);
+  s.heavy.life_state_valid = true;
+  out = p.evaluate(s);
   assert(out.team_situation.find("heavy=dead") != std::string::npos);
-  s.heavy.hp = 100;
+  s.heavy.hp = 100; s.heavy.life_state_valid = false;
   assert(p.evaluate(s).team_situation.find("heavy=unknown") != std::string::npos);
   s.heavy.life_state_valid = true; s.heavy.weakened = true;
   assert(p.evaluate(s).team_situation.find("heavy=weakened") != std::string::npos);

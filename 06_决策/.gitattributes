@@ -1,0 +1,2 @@
+# Python entry points must remain executable after a Windows checkout is copied to Linux.
+scripts/*.py text eol=lf

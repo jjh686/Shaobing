@@ -3,6 +3,8 @@ import math
 import time
 import numpy as np
 import rclpy
+from rcl_interfaces.msg import ParameterDescriptor
+from rclpy.clock import Clock, ClockType
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data, QoSProfile, DurabilityPolicy
 from diagnostic_msgs.msg import DiagnosticArray
@@ -15,8 +17,14 @@ from .geometry import quaternion_matrix
 
 
 class MotionGate(Node):
-    def __init__(self):
-        super().__init__('motion_gate')
+    def __init__(self, *, parameter_overrides=None):
+        super().__init__('motion_gate', parameter_overrides=parameter_overrides)
+        self.goal_owner = self.declare_parameter(
+            'goal_owner', 'exploration', ParameterDescriptor(read_only=True)).value
+        activity_topics = {'exploration': 'live/exploration_active',
+                           'decision': '/decision2027/navigation_active'}
+        if self.goal_owner not in activity_topics:
+            raise ValueError('goal_owner must be exploration or decision')
         self.armed = False
         self.activity = (False, 0.)
         self.received = {}
@@ -30,6 +38,9 @@ class MotionGate(Node):
         self.radius = self.declare_parameter('stop_radius', 0.7).value
         self.output = self.create_publisher(TwistStamped, 'live/cmd_vel', 1)
         self.ready_pub = self.create_publisher(Bool, 'live/navigation_ready', 1)
+        self.owner_pub = self.create_publisher(
+            String, 'live/navigation_owner',
+            QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.frame_pub = self.create_publisher(Bool, 'frame_ready', 1)
         self.state_pub = self.create_publisher(String, 'live/motion_state', 1)
         self.create_subscription(PointCloud2, 'livox/lidar/pointcloud', lambda msg: self.mark('raw_cloud', msg, bool(msg.width*msg.height)), qos_profile_sensor_data)
@@ -39,9 +50,11 @@ class MotionGate(Node):
                                  QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.create_subscription(DiagnosticArray, 'diagnostics', self.diagnose, 5)
         self.create_subscription(Twist, 'live/cmd_vel_raw', self.cmd, 1)
-        self.create_subscription(Bool, 'live/exploration_active', self.active, 1)
+        self.create_subscription(Bool, activity_topics[self.goal_owner], self.active, 1)
         self.create_service(SetBool, 'motion_gate/set_enabled', self.enable)
-        self.create_timer(0.02, self.tick)
+        self.watchdog_clock = Clock(clock_type=ClockType.STEADY_TIME)
+        self.create_timer(0.02, self.tick, clock=self.watchdog_clock)
+        self.create_timer(0.2, self.publish_owner, clock=self.watchdog_clock)
         self.last_reason = None
 
     def mark(self, name, msg, valid=True):
@@ -115,13 +128,18 @@ class MotionGate(Node):
             self.start_position = self.position.copy()
         self.command = None
         response.success = not reason
-        response.message = reason or ('Gate enabled; enable chassis and start exploration separately' if self.armed else 'Gate disabled')
+        response.message = reason or (
+            f'Gate enabled; enable chassis and start {self.goal_owner} separately'
+            if self.armed else 'Gate disabled')
         return response
+
+    def publish_owner(self):
+        self.owner_pub.publish(String(data=self.goal_owner))
 
     def tick(self):
         reason = self.health()
         if self.armed and self.activity[0] and time.monotonic()-self.activity[1] >= .3:
-            reason = 'stale exploration heartbeat'
+            reason = f'stale {self.goal_owner} heartbeat'
         if reason:
             self.armed = False
             self.command = None

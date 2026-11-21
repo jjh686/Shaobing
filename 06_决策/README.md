@@ -1,6 +1,6 @@
 # RMUL 3V3 哨兵团队决策
 
-版本：0.2.0；日期：2026-11-01。状态：Ubuntu 构建、策略/时间断言与禁用态启动检查通过；真实状态联调与实车验收待完成。本文与代码由 AI 协助编写，待队伍复核。
+版本 0.3.0。默认用于状态和导航目标预览，实车输入与场地数据待验收。本文与代码由 AI 协助编写，待队伍复核。
 
 详细的车辆约束、八种血量组合、补位条件和未解决情境见 [团队决策需求](团队决策需求.md)。本版替换了“只看自身低血，否则找第一个占点或默认巡逻”的旧策略。
 
@@ -8,9 +8,9 @@
 
 采用浮舟湿地/COD 的 ROS 2 → 黑板 → BehaviorTree.CPP 4 → 输出适配结构。本包是独立新入口，原 `cod_behavior`、本地整合树、北极熊导航、串口驱动均未替换。
 
-父工程基线为 `fzsd_xky` 提交 `6c65a992b0bb029f9cd83db6e6d6136f92af6e75`，已有本地整合修改；来源见 `../UPSTREAM_SOURCES.json`。复用了架构组织与持守/恢复设计思路，未宣称所有本地集成功能均为浮舟湿地原版。
+父工程基线为 `fzsd_xky` 提交 `6c65a992b0bb029f9cd83db6e6d6136f92af6e75`。本包借鉴其架构组织与持守、恢复设计。
 
-协议依据为 [2027 通信协议 V1.0.0（20261029）](https://bbs.robomaster.com/wiki/20204847/1969151)，对照 [2026 最终 V2.0.0（20260626）](https://bbs.robomaster.com/wiki/20204847/811363)。赛事依据为本机《RoboMaster 2027 机甲大师高校联盟赛比赛规则手册 V1.0.0（20261015）》，位于 `C:/Users/zbh26/Desktop/大学/ROBOMASTER/01_规则与官方资料/`。
+规则及协议原件见 [race rule text](race%20rule%20text/)。本包依据 2027 联盟赛比赛规则 V1.0.0 和 2027 通信协议 V1.0.0。
 
 - 官方串口使用 0xA5、两字节命令码；北极熊私有协议使用 0x5A、一字节 ID。两层须分别解码映射，私有 0x0D Buff 不等于官方 0x020D。
 - 2027 的 HP、场地事件、伤害、RFID 与部分字段发生变化；0x020D 姿态反馈和 0x0120 指令在 2026 最终版已存在。协议中存在某功能不代表适用于 RMUL 哨兵。
@@ -40,12 +40,13 @@
 
 ## 状态与地图契约
 
+- `NavigationEvidence.msg`：定位有效性、路线和任务证据，以及可选的本车队友观察。
 - `DecisionState.msg`：本车状态、两台队友观察、候选任务与分组时间；这是软件契约，不是裁判或电控原始包。
 - `TeammateState.msg`：HP/最大 HP/规则状态及其时间；XY 位置及其独立时间。
 - `TacticalObjective.msg`：任务 ID、用途、坐标、地形、路线验证、风险、控制归属、维护/空缺/交接证据。
 - `DecisionIntent.msg`：模式、目标 ID、原因、射击许可、团队状态和本机补位提示。提示不等于已通知/命令队友。
 
-所有 XY 数据须转换到 `map_frame`，默认 `map`；输入 `header.frame_id` 不一致则拒绝。目标 ID 以后由执行层映射到已批准点位，不由本包编造坐标。
+所有 XY 数据须转换到 `map_frame`，默认 `map`。三节点共享策略配置，并验证批准点位文件的地图帧。桥接器只接受点位表中坐标、类型和路线证据一致的目标。
 
 各分组时间是本机收到有效原始动态证据的 ROS 时间；重复汇总不得刷新。组合字段取所需动态证据中最旧的时间。静态地图和标定按版本校验，不靠周期重打时间戳伪装动态观察。
 
@@ -62,64 +63,56 @@
 
 这些措施限制本模块缓存和陈旧状态使用，不构成 Gazebo 图形进程内存泄漏的修复结论。
 
-## 当前接入状态
+## 节点与执行链路
 
-默认 `profile: rmul_3v3`、`enabled: false`。本包不打开串口，不创建 Nav2 Action client，不发布 cmd_vel 或实际射击命令。
+| 构成 | 职责 |
+| --- | --- |
+| `scripts/referee_rx.py`、`referee_state_adapter.py` | 校验和解码裁判帧，结合本车定位、路线和队友观察生成 `DecisionState`。配置 UART 后只读接收，断开清除旧状态并重试。 |
+| `src/decision_node.cpp`、`trees/intents.xml` | 校验各来源时间，通过行为树读取状态、选择并发布 `DecisionIntent`。 |
+| `include/rm2027_decision/policy.hpp` | 定义恢复、守点、补位、掩护、占点及巡逻的优先顺序。 |
+| `scripts/intent_nav_bridge.py`、`config/approved_tasks.yaml` | 校验获批点位和最新路线，预览目标，或在显式启用后发送本车 Nav2 Action。失败按退避最多尝试三次，证据失效撤销目标，等待终态期间不发送下一目标。 |
+| `02_导航（含通信）` 的 Nav2 与 MotionGate | Nav2 负责规划和速度指令。live 模式由 MotionGate 检查传感器、姿态、手动使能及任务心跳，再经车内底盘通信执行。 |
 
-真实分包适配、地图任务生成、队友观察来源、Nav2 执行仲裁及失败/取消/到达处理尚未接入。没有这些输入时，正常输出应为等待，不能用伪造可达性、时间戳或风险分数让它强行运行。
+整合入口默认 `enabled:=false`、`execute_navigation:=false`，采用 `fixed_map`，Action 为 `/red_standard_robot1/navigate_to_pose`。当前 live 入口对应 `navigation_backend:=live` 和 `/navigate_to_pose`，需由 02 的启动入口选择 `goal_owner:=decision`。此模式禁用自带探索器，MotionGate 仅接收决策节点的活动心跳，保留原手动使能与底盘保护。测试中不启用实车执行。
 
-北极熊已有地面队友位置话题可作为待更新的适配来源；0x020B 是否在本赛项实际稳定下发仍需联调确认。视觉可作为本车观察来源，不能据此增加未经许可的队间通信。
+赛场点位、禁行区、经核验的路线证据发布端、雷达外参和真实裁判数据接线仍需实车验收。官方协议的 `0x020B` 不能直接作为 RMUL 队友定位来源。本车可以基于可靠的本地观察补充，缺少证据时保留未知。
+
+决策发送的是车内导航目标。裁判系统的 `0x0120` 属于另一条链路，本包的 UART 不发送上行帧。当前仓库底盘源码的周期上报与实车烧录版本需单独核对。
 
 ## Ubuntu 构建与查看
 
-本轮通过 WSL Ubuntu-22.04 完成隔离构建和短时禁用态节点检查，未启动 Gazebo、导航或车辆控制。以下为后续持久构建与查看命令。
-
-前提：ROS 2 Humble、ament、rosidl 和 BehaviorTree.CPP 4 已准备。`behaviortree_cpp` 不等于 Nav2 使用的 `behaviortree_cpp_v3`。若既有 `~/fzsd_nav_ws` 已成功构建所需依赖，可加载其环境。
+在 Ubuntu 上打开 `RM_11_13` 仓库根目录。构建依赖包括 ROS 2 Humble、ament、rosidl 和 BehaviorTree.CPP 4 软件包 `behaviortree_cpp`。Nav2 的 Python 接口使用 `nav2_msgs`。
 
 ```bash
 source /opt/ros/humble/setup.bash
-# 仅在此工作区已成功构建时加载：
-source ~/fzsd_nav_ws/install/local_setup.bash
-cd /mnt/c/Users/zbh26/Desktop/code/robomaster/导航/fzsd_xky
 colcon --log-base ~/rm2027_decision_ws/log build \
-  --base-paths rm2027_decision \
+  --base-paths '06_决策' \
   --build-base ~/rm2027_decision_ws/build \
   --install-base ~/rm2027_decision_ws/install \
   --cmake-args -DBUILD_TESTING=ON
 ctest --test-dir ~/rm2027_decision_ws/build/rm2027_decision --output-on-failure
 source ~/rm2027_decision_ws/install/local_setup.bash
-ros2 launch rm2027_decision intents.launch.py
+ros2 launch rm2027_decision rm_11_13.launch.py
 ```
 
-默认输出 Disabled。仅打开意图计算（仍不执行车辆控制）：
+默认输出 `Disabled`。打开策略预览时保持执行禁用。
 
 ```bash
-ros2 launch rm2027_decision intents.launch.py enabled:=true
+ros2 launch rm2027_decision rm_11_13.launch.py enabled:=true execute_navigation:=false
 ```
 
 另一个加载相同环境的终端：
 
 ```bash
 ros2 topic echo /decision2027/intent
+ros2 topic echo /decision2027/navigation_status
 ros2 interface show rm2027_decision/msg/DecisionState
 ```
 
-没有有效状态时应 WaitState；本车状态完整但缺少任务地图时应 WaitPlan。仿真输入才添加 `use_sim_time:=true` 并共享 /clock。参数启动后只读，改配置需重启本节点。消息结构从 0.1.x 扩展至 0.2.0，需重新生成接口并更新发布端，旧发布端不能直接混用。
+没有有效裁判状态时应为 `WaitState`。缺少定位证据时为 `LocalizationLost`，有定位但无合格任务时为 `WaitPlan`。仿真预览使用 `use_sim_time:=true` 并共享 `/clock`。修改启动参数后需重启节点。
 
 ## 验证与待办
 
 已编写断言：本车门控和 HP 滞回、八种团队低血组合、队友滞回/最大血量、死亡/虚弱/未知、位置防堆叠、持守与交接、岗位漏项/争夺中不离岗、地形/路线硬过滤、风险预算/非法数值、无图等待与全低血不排队。`freshness_test.cpp` 检查重复来源时间、暂停、未来/乱序时间及超时边界。
 
-2026-11-01 实测结果：
-
-- Ubuntu-22.04 下纯 C++17 策略与新鲜度测试通过；使用 `-Wall -Wextra -Wpedantic -Werror` 编译通过。
-- 加载 ROS 2 Humble 与既有 FZSD 依赖后，隔离 `colcon build` 成功，新增四种消息与节点共同编译通过。
-- CTest 的 `rm2027_policy`、`rm2027_freshness` 两项均通过。Release 构建中测试显式保留 assert，未因 NDEBUG 跳过检查。
-- 实际加载 `trees/intents.xml`，运行默认禁用节点约 3 秒；输出 Disabled，SIGINT 正常退出。
-- 最后隔离构建临时路径为 `/tmp/rm2027-ros-final-Is0jlw`，该路径可能随 WSL 临时目录清理而消失，不作为部署安装目录。
-
-尚未完成真实 DDS 输入回放、全场仿真、Nav2 执行仲裁、长期内存或车辆验收。上述测试证明的是已列场景下的程序行为，不证明战术最优或可直接上车。
-
-待确认地图点位、队友状态来源、虚弱确认、风险分数和控制区维护证据；随后接入仲裁执行层，并补控制度/时间/敌情评分。
-
-修改前快照：首版前为 `_backups/版本015_20261031-231430`；确认 3V3 前为 `版本016_20261031-233603`；本轮团队策略前为 `版本017_20261101-000930`。回退应只处理本次包和对应差异，避免整工作区恢复覆盖其他修改。
+原始审查记录保存在 [docs](docs/) 和 [review](review/)。实际裁判串口、真实 Nav2、场地禁区、长时间联合运行和实车停车仍待验收。控制度、比赛剩余时间及双方占领进度尚未进入策略。

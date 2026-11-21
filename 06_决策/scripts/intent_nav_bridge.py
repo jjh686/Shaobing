@@ -2,6 +2,7 @@
 """Convert validated onboard decision intents into local Nav2 goals."""
 
 import math
+import signal
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,9 +17,10 @@ from rclpy.action import ActionClient
 from rclpy.clock import Clock, ClockType
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from rclpy.signals import SignalHandlerOptions
 from rm2027_decision.msg import DecisionIntent, DecisionState, TacticalObjective
-from std_msgs.msg import String
+from std_msgs.msg import Bool, String
 
 
 KIND_BY_NAME = {
@@ -33,6 +35,10 @@ MODE_KINDS = {
     'Capture': {TacticalObjective.ZONE},
     'Patrol': {TacticalObjective.PATROL},
 }
+MAX_ATTEMPTS = 3
+ACK_TIMEOUT = 2.0
+GOAL_TIMEOUT = 90.0
+SHUTDOWN_TIMEOUT = 2.5
 
 
 @dataclass(frozen=True)
@@ -51,6 +57,8 @@ class Observation:
 
 
 def stamp_ns(stamp):
+    if stamp.sec < 0 or not 0 <= stamp.nanosec < 1_000_000_000:
+        return 0
     return stamp.sec * 1_000_000_000 + stamp.nanosec
 
 
@@ -73,7 +81,8 @@ def load_points(filename):
         target = item.get('id')
         if not isinstance(target, str) or not target.strip() or len(target) > 64 or target in points:
             raise ValueError('Objective ids must be nonempty, unique, and at most 64 characters')
-        kind = KIND_BY_NAME.get(item.get('kind'))
+        kind_name = item.get('kind')
+        kind = KIND_BY_NAME.get(kind_name) if isinstance(kind_name, str) else None
         if kind is None:
             raise ValueError(f'Invalid objective kind for {target}')
         coords = [item.get('x'), item.get('y'), item.get('yaw', 0.0)]
@@ -88,6 +97,8 @@ class IntentNavBridge(Node):
         super().__init__('intent_nav_bridge')
         self.execute = self.fixed('execute_navigation', False)
         self.frame, self.points = load_points(self.fixed('tasks_file', ''))
+        if self.fixed('map_frame', self.frame) != self.frame:
+            raise ValueError('Configured map_frame must match the approved task file')
         self.intent_timeout = self.fixed('intent_timeout', 0.5)
         self.state_timeout = self.fixed('source_timeout', 2.5)
         self.max_task_risk = self.fixed('max_task_risk', 0.50)
@@ -103,6 +114,11 @@ class IntentNavBridge(Node):
             raise ValueError('Live navigation requires a task file with approved points')
 
         action = self.fixed('navigation_action', '/red_standard_robot1/navigate_to_pose')
+        self.backend = self.fixed('navigation_backend', 'fixed_map')
+        if self.backend not in ('fixed_map', 'live'):
+            raise ValueError('Unknown navigation backend')
+        if self.backend == 'live' and action != '/navigate_to_pose':
+            raise ValueError('Live navigation requires /navigate_to_pose')
         self.client = ActionClient(self, NavigateToPose, action) if self.execute else None
         self.status_pub = self.create_publisher(String, 'navigation_status', 10)
         self.create_subscription(DecisionIntent, 'intent', self.receive_intent, 1)
@@ -114,13 +130,29 @@ class IntentNavBridge(Node):
         self.source_times = {}
         self.last_clock_ns = 0
         self.last_status = ''
-        self.last_attempt = None
+        self.request = None
+        self.request_generation = 0
+        self.attempts = 0
+        self.retry_at = 0.0
+        self.outcome = None
+        self.confirmed_present = False
         self.active_target = None
+        self.active_generation = None
+        self.goal_deadline = 0.0
         self.goal_handle = None
         self._stopping = False
         self._cancel_pending = False
         self._cancel_accepted = False
         self._cancel_retry_at = 0.0
+        self.shutting_down = False
+        self.live_ready = (False, 0.0)
+        self.live_owner = ('', 0.0)
+        self.heartbeat = None
+        if self.execute and self.backend == 'live':
+            self.heartbeat = self.create_publisher(Bool, '/decision2027/navigation_active', 1)
+            self.create_subscription(Bool, '/live/navigation_ready', self.on_ready, 1)
+            self.create_subscription(String, '/live/navigation_owner', self.on_owner,
+                QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         # Expire commands even if simulation time pauses.
         self.watchdog_clock = Clock(clock_type=ClockType.STEADY_TIME)
         self.create_timer(0.1, self.tick, clock=self.watchdog_clock)
@@ -136,6 +168,7 @@ class IntentNavBridge(Node):
             self.intent = None
             self.state = None
             self.source_times.clear()
+            self.update_request(None)
             self.stop_active()
         self.last_clock_ns = now_ns
         return now_ns
@@ -180,7 +213,8 @@ class IntentNavBridge(Node):
         source_ns = stamp_ns(getattr(message, name + '_stamp'))
         sample = self.source_times.get(name)
         return (
-            getattr(message, name + '_valid') and sample is not None and source_ns == sample[0]
+            getattr(message, name + '_valid') and sample is not None
+            and 0 < source_ns == sample[0] <= stamp_ns(message.header.stamp)
             and 0 <= now_ns - source_ns < self.state_timeout * 1e9
             and wall - sample[1] < self.state_timeout
         )
@@ -237,20 +271,60 @@ class IntentNavBridge(Node):
             self.status_pub.publish(String(data=text))
             self.get_logger().info(text)
 
+    def on_ready(self, message):
+        self.live_ready = (message.data, time.monotonic())
+
+    def on_owner(self, message):
+        self.live_owner = (message.data, time.monotonic())
+
+    def live_gate_ready(self, wall):
+        ready, ready_at = self.live_ready
+        owner, owner_at = self.live_owner
+        return ready and owner == 'decision' and wall - ready_at < 0.25 and wall - owner_at < 1
+
+    def update_request(self, request):
+        if request != self.request:
+            self.request = request
+            self.request_generation += 1
+            self.attempts = 0
+            self.retry_at = 0
+            self.outcome = None
+            self.confirmed_present = False
+
     def tick(self):
-        target, reason = self.select(self.observe_clock(), time.monotonic())
+        now_ns = self.observe_clock()
+        wall = time.monotonic()
+        target, reason = self.select(now_ns, wall)
         if not self.execute:
             self.report(f'preview:{target}' if target else f'waiting:{reason}')
             return
+        if self.shutting_down or (self.backend == 'live' and not self.live_gate_ready(wall)):
+            target, reason = None, 'shutdown' if self.shutting_down else 'live_gate_or_owner'
+        self.update_request((self.intent.message.mode, target) if target is not None else None)
         if self.active_target is not None:
-            if target != self.active_target or self._stopping:
+            stop = self.active_generation != self.request_generation or wall >= self.goal_deadline
+            if stop or self._stopping:
                 self.stop_active()
-                self.report(f'stopping:{self.active_target}')
+                if wall >= self.goal_deadline:
+                    self.report(f'waiting:terminal_confirmation:{self.active_target}')
+            if self.heartbeat is not None:
+                self.heartbeat.publish(Bool(data=self.goal_handle is not None and not self._stopping))
             return
+        if self.heartbeat is not None:
+            self.heartbeat.publish(Bool(data=False))
         if target is None:
             self.report(f'waiting:{reason}')
             return
-        if target == self.last_attempt:
+        if self.outcome == 'succeeded':
+            # Only an observed departure from a previously confirmed point is a new need.
+            point_present = any(obj.id == target and obj.self_present for obj in self.state.message.objectives)
+            if not self.confirmed_present or point_present or self.intent.message.mode == 'Patrol':
+                self.confirmed_present |= point_present
+                return
+            request = self.request
+            self.update_request(None)
+            self.update_request(request)
+        if self.attempts >= MAX_ATTEMPTS or wall < self.retry_at:
             return
         if not self.client.server_is_ready():
             self.report('waiting:navigate_to_pose_unavailable')
@@ -266,24 +340,30 @@ class IntentNavBridge(Node):
         goal.pose.pose.position.y = point.y
         goal.pose.pose.orientation.z = math.sin(point.yaw / 2)
         goal.pose.pose.orientation.w = math.cos(point.yaw / 2)
-        self.active_target = self.last_attempt = target
+        self.active_target = target
+        self.active_generation = self.request_generation
+        self.attempts += 1
+        self.goal_deadline = time.monotonic() + ACK_TIMEOUT
         self.report(f'sending:{target}')
         try:
             self.client.send_goal_async(goal).add_done_callback(self.accepted)
         except Exception as exc:
             self.report(f'goal_transport_error:{exc}')
+            self.stop_active()
 
     def accepted(self, future):
         try:
             handle = future.result()
         except Exception as exc:
-            # Unknown outcome: keep the slot occupied to avoid overlapping goals.
             self.report(f'goal_transport_error:{exc}')
+            self.stop_active()
             return
         if not handle.accepted:
             self.finish('rejected')
             return
         self.goal_handle = handle
+        expired = time.monotonic() >= self.goal_deadline
+        self.goal_deadline = time.monotonic() + GOAL_TIMEOUT
         try:
             handle.get_result_async().add_done_callback(self.result)
         except Exception as exc:
@@ -291,7 +371,9 @@ class IntentNavBridge(Node):
             self.stop_active()
             return
         target, _ = self.select(self.observe_clock(), time.monotonic())
-        if self._stopping or target != self.active_target:
+        if (expired or self._stopping or self.shutting_down or target != self.active_target
+                or self.active_generation != self.request_generation
+                or (self.backend == 'live' and not self.live_gate_ready(time.monotonic()))):
             self.stop_active()
         else:
             self.report(f'active:{self.active_target}')
@@ -299,6 +381,8 @@ class IntentNavBridge(Node):
     def stop_active(self):
         if self.active_target is None:
             return
+        if not self._stopping and self.heartbeat is not None:
+            self.heartbeat.publish(Bool(data=False))
         self._stopping = True
         if self.goal_handle is None or self._cancel_pending or self._cancel_accepted:
             return
@@ -330,6 +414,7 @@ class IntentNavBridge(Node):
             code = future.result().status
         except Exception as exc:
             self.report(f'result_transport_error:{exc}')
+            self.stop_active()
             return
         outcome = {
             GoalStatus.STATUS_SUCCEEDED: 'succeeded',
@@ -338,15 +423,22 @@ class IntentNavBridge(Node):
         }.get(code)
         if outcome is None:
             self.report(f'unknown_goal_status:{code}')
+            self.stop_active()
             return
         self.finish(outcome)
 
     def finish(self, outcome):
         self.report(f'{outcome}:{self.active_target}')
-        if outcome == 'canceled':
-            # An interrupted goal can be resumed once it becomes valid again.
-            self.last_attempt = None
+        if self.active_generation == self.request_generation:
+            self.outcome = outcome
+            if outcome != 'succeeded':
+                self.retry_at = time.monotonic() + min(2.0, 0.5 * 2 ** (self.attempts - 1))
+                if self.attempts >= MAX_ATTEMPTS:
+                    self.report(f'attempts_exhausted:{self.active_target}')
+        if self.heartbeat is not None:
+            self.heartbeat.publish(Bool(data=False))
         self.active_target = None
+        self.active_generation = None
         self.goal_handle = None
         self._stopping = False
         self._cancel_pending = False
@@ -355,16 +447,32 @@ class IntentNavBridge(Node):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    rclpy.init(args=args, signal_handler_options=SignalHandlerOptions.NO)
+    stopping = False
+
+    def request_stop(_signum, _frame):
+        nonlocal stopping
+        stopping = True
+
+    signal.signal(signal.SIGINT, request_stop)
+    signal.signal(signal.SIGTERM, request_stop)
     node = None
     try:
         node = IntentNavBridge()
-        rclpy.spin(node)
+        while rclpy.ok() and not stopping:
+            rclpy.spin_once(node, timeout_sec=0.1)
     except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
+        if node is not None and rclpy.ok():
+            node.shutting_down = True
+            node.tick()
+            deadline = time.monotonic() + SHUTDOWN_TIMEOUT
+            while node.active_target is not None and rclpy.ok() and time.monotonic() < deadline:
+                rclpy.spin_once(node, timeout_sec=0.1)
+            if node.active_target is not None:
+                node.get_logger().error('No terminal Nav2 result before shutdown; verify the motion gate')
         if node is not None:
-            node.stop_active()
             node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()

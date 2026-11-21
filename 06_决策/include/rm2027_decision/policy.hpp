@@ -273,14 +273,13 @@ private:
   }
   Health health(const Teammate & robot, AllyProgress & progress)
   {
-    if (!robot.health_fresh || !valid_hp(robot.hp, robot.max_hp)) {
+    if (!robot.health_fresh || !robot.life_state_valid || !valid_hp(robot.hp, robot.max_hp)) {
       return progress.status = Health::Unknown;
     }
     if (robot.hp == 0) {
       progress.seen = progress.recovering = true;
       return progress.status = Health::Dead;
     }
-    if (!robot.life_state_valid) return progress.status = Health::Unknown;
     if (robot.weakened) {
       progress.seen = progress.recovering = true;
       return progress.status = Health::Weakened;

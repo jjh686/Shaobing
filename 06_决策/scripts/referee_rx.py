@@ -69,7 +69,7 @@ def decode(command, data):
 
 
 class OwnLife:
-    """Infer weakness only from a continuously observed round or a verified respawn."""
+    """Track weakness across continuous HP observations within a match."""
 
     def __init__(self):
         self.phase = None
@@ -79,7 +79,10 @@ class OwnLife:
         self.weakened = False
 
     def game(self, kind, phase):
-        if kind != 4 or phase != 4:
+        same_round = kind == 4 and (
+            (phase == 3 and self.phase == 3) or (phase == 4 and self.phase in (3, 4))
+        )
+        if not same_round:
             self.known = self.weakened = False
             self.hp = self.hp_stamp = None
         self.phase = phase if kind == 4 else None
@@ -102,5 +105,6 @@ class OwnLife:
 
     def supply_tag(self, detected, now):
         if (detected and self.phase == 4 and self.hp and self.hp_stamp is not None
-                and 0 <= now - self.hp_stamp < 1.0 and self.known):
-            self.weakened = False
+                and 0 <= now - self.hp_stamp < 0.75):
+            # Own supply RFID clears weakness under the RMUL respawn rule.
+            self.known, self.weakened = True, False

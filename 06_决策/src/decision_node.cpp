@@ -167,7 +167,7 @@ private:
     }
     const auto times = stamps(data); const auto flags = valid(data);
     const auto wall = Steady::now();
-    for (size_t i=0;i<sources_.size();++i) sources_[i].observe(times[i],flags[i],ros_now,wall);
+    for (size_t i=0;i<sources_.size();++i) sources_[i].observe(times[i],flags[i],stamp,wall);
     sample_ = data; sample_stamp_ = stamp; received_ = wall;
   }
   void tick() {
@@ -179,7 +179,10 @@ private:
       const auto & in = *sample_;
       const auto times = stamps(in); const auto flags = valid(in);
       std::array<bool,10> fresh{};
-      for (size_t i=0;i<fresh.size();++i) fresh[i]=sources_[i].fresh(times[i],flags[i],ros_now,wall,timeout_);
+      for (size_t i=0;i<fresh.size();++i) {
+        fresh[i] = times[i] <= sample_stamp_ &&
+          sources_[i].fresh(times[i],flags[i],ros_now,wall,timeout_);
+      }
       state.game_fresh=fresh[0]; state.robot_fresh=fresh[1]; state.ammo_fresh=fresh[2];
       state.localization_fresh=fresh[3]; state.objectives_fresh=fresh[4]; state.sentry_fresh=fresh[5];
       state.manual_override=in.manual_override;
@@ -219,7 +222,14 @@ private:
     }
     ctx_->state=std::move(state);
     ctx_->intent={Mode::Disabled,"tree_not_evaluated",""};
-    if (tree_.tickOnce() != BT::NodeStatus::SUCCESS) {
+    bool tree_ok = false;
+    try {
+      tree_ok = tree_.tickOnce() == BT::NodeStatus::SUCCESS;
+    } catch (const std::exception & error) {
+      RCLCPP_ERROR_THROTTLE(get_logger(),*get_clock(),2000,"Decision tree failed: %s",error.what());
+      tree_.haltTree();
+    }
+    if (!tree_ok) {
       ctx_->intent={Mode::Disabled,"tree_failed",""};
       msg::DecisionIntent out;
       out.header.stamp=now(); out.mode=mode_name(ctx_->intent.mode); out.reason=ctx_->intent.reason;

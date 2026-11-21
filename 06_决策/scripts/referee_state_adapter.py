@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Normalize official referee data and local navigation evidence into DecisionState."""
 
+from copy import deepcopy
 import math
 import os
 import re
@@ -15,25 +16,27 @@ from referee_rx import OwnLife, Receiver, decode
 from rm2027_decision.msg import DecisionState, NavigationEvidence, TacticalObjective
 
 
+UART_PATH = re.compile(r'/dev/(?:serial/by-id/[^/]+|tty(?:USB|ACM|S|AMA)[0-9]+|pts/[0-9]+)')
+
+
 def read_only_uart(path):
     import termios
     import tty
 
-    if not re.fullmatch(r'/dev/(?:serial/by-id/[^/]+|tty(?:USB|ACM|S|AMA)[0-9]+|pts/[0-9]+)', path):
-        raise ValueError('Expected an explicit local referee UART device')
     fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOCTTY)
     try:
         tty.setraw(fd, termios.TCSANOW)
         settings = termios.tcgetattr(fd)
-        settings[2] &= ~(termios.PARENB | termios.CSTOPB | termios.CSIZE | termios.HUPCL)
+        settings[2] &= ~(termios.PARENB | termios.CSTOPB | termios.CSIZE | termios.HUPCL
+                         | getattr(termios, 'CRTSCTS', 0))
         settings[2] |= termios.CS8 | termios.CLOCAL | termios.CREAD
         settings[4] = settings[5] = termios.B115200
         termios.tcsetattr(fd, termios.TCSANOW, settings)
         termios.tcflush(fd, termios.TCIFLUSH)
         return fd
-    except Exception:
+    except termios.error as exc:
         os.close(fd)
-        raise
+        raise OSError(*exc.args) from exc
 
 
 class Adapter(Node):
@@ -46,12 +49,16 @@ class Adapter(Node):
             raise ValueError('Invalid robot ID or map frame')
         if self.uart and self.robot_id == 0:
             raise ValueError('Dedicated UART requires confirmed robot_id 7 or 107')
+        if self.uart and not UART_PATH.fullmatch(self.uart):
+            raise ValueError('Expected an explicit local referee UART device')
         self.receiver = Receiver()
         self.sources = {}
         self.evidence = None
         self.last_ros_time = None
         self.life = OwnLife()
-        self.fd = read_only_uart(self.uart) if self.uart else None
+        self.fd = None
+        self.uart_retry_at = 0.0
+        self.uart_retry_delay = 1.0
         if not self.uart:
             self.create_subscription(UInt8MultiArray, 'referee_bytes',
                                      lambda msg: self.ingest(msg.data), qos_profile_sensor_data)
@@ -60,18 +67,23 @@ class Adapter(Node):
         self.pub = self.create_publisher(DecisionState, 'state', 1)
         self.timer = self.create_timer(0.05, self.tick)
 
+    def reset_referee(self):
+        self.receiver.buffer.clear()
+        self.sources.clear()
+        self.life = OwnLife()
+
     def now(self):
         stamp = self.get_clock().now()
         if self.last_ros_time is not None and stamp.nanoseconds < self.last_ros_time:
-            self.receiver = Receiver()
-            self.sources.clear()
+            self.reset_referee()
             self.evidence = None
-            self.life = OwnLife()
         self.last_ros_time = stamp.nanoseconds
         return stamp
 
     @staticmethod
     def stamp_ns(stamp):
+        if not 0 <= stamp.nanosec < 1_000_000_000:
+            return 0
         return stamp.sec * 1_000_000_000 + stamp.nanosec
 
     def on_evidence(self, evidence):
@@ -91,21 +103,34 @@ class Adapter(Node):
         now = time.monotonic()
         for command, payload in self.receiver.feed(bytes(chunk)):
             data = decode(command, payload)
+            game = self.recent(0x0001, stamp.nanoseconds, 2.0)
             if command == 0x0201:
                 robot_id, hp, max_hp, _ = data
+                previous_robot = self.sources.get(0x0201)
                 if robot_id not in (7, 107) or (self.robot_id and self.robot_id != robot_id):
-                    self.sources.pop(command, None)
-                    self.life = OwnLife()
-                    continue
+                    self.reset_referee()
+                    return
+                if previous_robot and previous_robot[0][0] != robot_id:
+                    self.reset_referee()
+                    return
                 if not 0 < max_hp or hp > max_hp:
                     self.sources.pop(command, None)
+                    self.life = OwnLife()
                     continue
-                self.life.robot(hp, now)
+                if game:
+                    self.life.game(*game[0])
+                    self.life.robot(hp, now)
+                else:
+                    self.life = OwnLife()
             elif command == 0x0001:
-                if not self.recent(command, stamp.nanoseconds, 2.0):
+                if not game or game[0] != data:
+                    for expired in (0x0003, 0x0101, 0x0209):
+                        self.sources.pop(expired, None)
+                if not game or (game[0] != data and (game[0], data) != ((4, 3), (4, 4))):
+                    self.sources.pop(0x0201, None)
                     self.life = OwnLife()
                 self.life.game(*data)
-            elif command == 0x0209:
+            elif command == 0x0209 and game:
                 self.life.supply_tag(data, now)
             self.sources[command] = data, stamp.to_msg(), now
 
@@ -113,8 +138,9 @@ class Adapter(Node):
         sample = self.sources.get(command)
         if sample is None:
             return None
-        if (0 <= time.monotonic() - sample[2] < seconds
-                and 0 <= now - self.stamp_ns(sample[1]) < seconds * 1e9):
+        stamp = self.stamp_ns(sample[1])
+        if (stamp > 0 and 0 <= time.monotonic() - sample[2] < seconds
+                and 0 <= now - stamp < seconds * 1e9):
             return sample
         return None
 
@@ -128,26 +154,28 @@ class Adapter(Node):
             if observations is None:
                 continue
             source = getattr(observations, name)
-            if (source.position_valid and self.is_recent(source.position_stamp, now, 1)
+            if (source.position_valid and self.evidence_is_recent(source.position_stamp, observations, now, 1)
                     and math.isfinite(source.x) and math.isfinite(source.y)):
                 ally.x, ally.y = source.x, source.y
                 ally.position_stamp, ally.position_valid = source.position_stamp, True
             # Official HP does not identify absence, penalty, max HP or weakness.
-            if (health and source.health_valid and source.life_state_valid
-                    and self.is_recent(source.health_stamp, now, 1)
-                    and 0 < ally.hp <= source.max_hp):
+            life_matches = (ally.hp == 0) == (source.hp == 0) and (ally.hp > 0 or not source.weakened)
+            if (health and source.health_valid and source.life_state_valid and source.max_hp > 0
+                    and self.evidence_is_recent(source.health_stamp, observations, now, 1)
+                    and max(ally.hp, source.hp) <= source.max_hp and life_matches):
                 ally.max_hp = source.max_hp
                 ally.life_state_valid, ally.health_valid = True, True
                 ally.weakened = source.weakened
                 if self.stamp_ns(source.health_stamp) < self.stamp_ns(ally.health_stamp):
                     ally.health_stamp = source.health_stamp
 
-    def is_recent(self, stamp, now, seconds):
+    def evidence_is_recent(self, stamp, evidence, now, seconds):
         source_ns = self.stamp_ns(stamp)
-        return source_ns > 0 and 0 <= now - source_ns < seconds * 1e9
+        return (0 < source_ns <= self.stamp_ns(evidence.header.stamp)
+                and 0 <= now - source_ns < seconds * 1e9)
 
     def active_evidence(self):
-        if self.evidence and time.monotonic() - self.evidence[1] < 1.0:
+        if self.evidence and 0 <= time.monotonic() - self.evidence[1] < 1.0:
             return self.evidence[0]
         return None
 
@@ -157,9 +185,9 @@ class Adapter(Node):
             return
         out.localization_stamp = evidence.localization_stamp
         out.localization_valid = (evidence.localization_valid and
-                                  self.is_recent(out.localization_stamp, now, 1))
+                                  self.evidence_is_recent(out.localization_stamp, evidence, now, 1))
         if (not evidence.objectives_valid or
-                not self.is_recent(evidence.objectives_stamp, now, 2)):
+                not self.evidence_is_recent(evidence.objectives_stamp, evidence, now, 2)):
             return
         event = self.recent(0x0101, now, 2.0)
         out.objectives_stamp = evidence.objectives_stamp
@@ -168,25 +196,55 @@ class Adapter(Node):
                 # Only the central ground zone has an official ownership mapping here.
                 if objective.id != 'central_zone' or not event:
                     continue
+                objective = deepcopy(objective)
                 objective.owner = (1, 2, 3, 0)[event[0]]
                 if self.stamp_ns(event[1]) < self.stamp_ns(out.objectives_stamp):
                     out.objectives_stamp = event[1]
             out.objectives.append(objective)
         out.objectives_valid = bool(out.objectives)
 
-    def tick(self):
+    def close_uart(self):
         if self.fd is not None:
+            fd, self.fd = self.fd, None
             try:
-                chunk = os.read(self.fd, 4096)
-                if chunk:
-                    self.ingest(chunk)
-            except BlockingIOError:
-                pass
+                os.close(fd)
             except OSError as exc:
-                self.get_logger().error(f'Referee UART disconnected: {exc}')
-                os.close(self.fd)
-                self.fd = None
-                self.sources.clear()
+                self.get_logger().warning(f'Could not close referee UART: {exc}')
+
+    def poll_uart(self):
+        now = time.monotonic()
+        if self.fd is None:
+            if now < self.uart_retry_at:
+                return
+            try:
+                self.fd = read_only_uart(self.uart)
+            except OSError as exc:
+                self.schedule_uart_retry(now)
+                self.get_logger().warning(f'Waiting for referee UART: {exc}')
+                return
+            self.get_logger().info('Referee UART opened read-only')
+        try:
+            chunk = os.read(self.fd, 4096)
+            if not chunk:
+                raise OSError('End of referee UART input')
+        except BlockingIOError:
+            return
+        except OSError as exc:
+            self.get_logger().warning(f'Referee UART disconnected: {exc}')
+            self.close_uart()
+            self.reset_referee()
+            self.schedule_uart_retry(now)
+            return
+        self.uart_retry_delay = 1.0
+        self.ingest(chunk)
+
+    def schedule_uart_retry(self, now):
+        self.uart_retry_at = now + self.uart_retry_delay
+        self.uart_retry_delay = min(5.0, 2 * self.uart_retry_delay)
+
+    def tick(self):
+        if self.uart:
+            self.poll_uart()
         stamp = self.now()
         now = stamp.nanoseconds
         out = DecisionState()
@@ -207,9 +265,7 @@ class Adapter(Node):
         self.pub.publish(out)
 
     def destroy_node(self):
-        if self.fd is not None:
-            os.close(self.fd)
-            self.fd = None
+        self.close_uart()
         super().destroy_node()
 
 

@@ -37,7 +37,8 @@ install(TARGETS rm2027_tree DESTINATION lib/${PROJECT_NAME})
 install(PROGRAMS scripts/referee_state_adapter.py scripts/intent_nav_bridge.py
   DESTINATION lib/${PROJECT_NAME})
 install(FILES scripts/referee_rx.py DESTINATION lib/${PROJECT_NAME})
-install(DIRECTORY launch config trees DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch config trees DESTINATION share/${PROJECT_NAME}
+  PATTERN "*.pyc" EXCLUDE)
 install(DIRECTORY include/ DESTINATION include)
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()
