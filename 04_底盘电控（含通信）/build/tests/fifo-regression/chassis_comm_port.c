@@ -28,6 +28,12 @@ volatile uint32_t chassis_comm_rx_overruns;
 volatile uint32_t chassis_comm_decode_errors;
 volatile uint32_t chassis_comm_can_esr, chassis_comm_can_tsr;
 volatile uint32_t chassis_comm_task_ticks, chassis_comm_feedback_groups;
+volatile uint32_t chassis_task_max_gap_ms,chassis_rx_max_age_ms,chassis_rx_queue_high_water;
+volatile uint32_t chassis_command_expired,chassis_remote_expired;
+static uint32_t task_last_ms;static uint8_t task_seen;
+volatile nc_rx_stats_t chassis_command_rx_stats;
+volatile RemoteCanDiagnostics chassis_rc_diagnostics;
+volatile uint32_t chassis_rc_generation,chassis_rc_source_age_ms;
 volatile uint32_t chassis_nav_rx_frames, chassis_remote_rx_frames;
 volatile uint32_t chassis_feedback_tx_mailbox_loaded_frames;
 volatile uint32_t chassis_feedback_tx_addtx_errors;
@@ -66,6 +72,9 @@ static ChassisCommSafety read_safety(int motors_online)
     chassis_rc_online=online;chassis_rc_navigation=navigation;
     chassis_rc_estop=!online||(remote.sample.flags&RC_CAN_ESTOP)!=0;
     chassis_rc_accepted=remote.accepted;chassis_rc_rejected=remote.rejected;
+    chassis_rc_diagnostics=remote.diagnostics;
+    chassis_rc_generation=remote.generation;chassis_rc_source_age_ms=remote.sample.age_ms;
+    chassis_command_rx_stats=endpoint.receiver.stats;
     for(unsigned i=0;i<6;i++)chassis_rc_channels[i]=remote.sample.axes[i];
     for(unsigned i=0;i<4;i++)chassis_rc_channels[6+i]=remote.sample.switches[i];
     ChassisCommSafety safety = {
@@ -93,6 +102,8 @@ static void receive_can(CANInstance *can)
     inbox[head].received_ms = HAL_GetTick();
     __DMB();
     head = next;
+    uint32_t used=(head+CHASSIS_COMM_RX_QUEUE_SIZE-tail)%CHASSIS_COMM_RX_QUEUE_SIZE;
+    if(used>chassis_rx_queue_high_water)chassis_rx_queue_high_water=used;
     chassis_comm_rx_frames++;
 }
 
@@ -111,12 +122,16 @@ void ChassisCommPortInit(void)
         };
         CANRegister(&config);
     }
+    CANEnableDiagnostics(&CHASSIS_COMM_CAN_HANDLE);
 }
 
 void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
 {
-    const uint32_t now = HAL_GetTick();
+    uint32_t now = HAL_GetTick();
+    if(task_seen&&(uint32_t)(now-task_last_ms)>chassis_task_max_gap_ms)chassis_task_max_gap_ms=now-task_last_ms;
+    task_last_ms=now;task_seen=1;
     chassis_comm_task_ticks = now;
+    CANUpdateDiagnostics(&CHASSIS_COMM_CAN_HANDLE);
 #ifndef CHASSIS_COMM_HOST_TEST
     chassis_comm_can_esr = CHASSIS_COMM_CAN_HANDLE.Instance->ESR;
     chassis_comm_can_tsr = CHASSIS_COMM_CAN_HANDLE.Instance->TSR;
@@ -135,10 +150,16 @@ void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
         const QueuedCanFrame frame = inbox[tail];
         __DMB();
         tail = (tail + 1u) % CHASSIS_COMM_RX_QUEUE_SIZE;
+        /* Sample after copying: IRQ producers can advance the queue's time. */
+        now=HAL_GetTick();uint32_t age=now-frame.received_ms;
+        if(age>chassis_rx_max_age_ms)chassis_rx_max_age_ms=age;
         if(frame.id>=RC_CAN_BASE&&frame.id<=RC_CAN_BASE+2){
+            if(age>NC_GROUP_MS)chassis_remote_expired++;
             rc_can_push(&remote,frame.id,frame.dlc,frame.bytes,frame.received_ms,now);
         }else{
             ChassisCommSetSafety(&endpoint,read_safety(motors_online));
+            now=HAL_GetTick();
+            if((uint32_t)(now-frame.received_ms)>NC_GROUP_MS)chassis_command_expired++;
             ChassisCommReceive(&endpoint, frame.id, frame.dlc, frame.bytes, frame.received_ms, now);
         }
         /* Apply each transition, including a brief failsafe followed by recovery. */
@@ -147,7 +168,7 @@ void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
     chassis_comm_accepted_commands = endpoint.accepted_commands;
     chassis_comm_decode_errors = endpoint.decode_errors;
     rm_output_t output;
-    ChassisCommGetCommand(&endpoint, now, &output);
+    ChassisCommGetCommand(&endpoint, HAL_GetTick(), &output);
     memset(command, 0, sizeof(*command));
     command->chassis_mode = CHASSIS_ZERO_FORCE;
     if (!output.enabled) {

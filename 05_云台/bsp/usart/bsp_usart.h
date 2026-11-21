@@ -24,6 +24,9 @@ typedef enum
 typedef struct
 {
     uint8_t recv_buff[USART_RXBUFF_LIMIT]; // 预先定义的最大buff大小,如果太小请修改USART_RXBUFF_LIMIT
+    uint8_t dma_buff[USART_RXBUFF_LIMIT]; /* Rearm DMA before parsing the stable recv_buff. */
+    volatile uint32_t rx_events,rx_bytes,rx_short_events,error_events,last_error;
+    volatile uint32_t parity_errors,framing_errors,noise_errors,overrun_errors,dma_errors,restart_errors;
     uint8_t recv_buff_size;                // 模块接收一包数据的大小
 /* [USB_SP 修改 01 开始] 新增实际接收长度成员，区分buffer容量与本次真实长度。 */
     uint16_t recv_len;                     // Actual length of the latest DMA/IDLE event

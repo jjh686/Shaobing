@@ -6,13 +6,13 @@
       "variant": "legacy_alternating",
       "exit_code": -6,
       "expected_result_observed": true,
-      "output": "legacy_alternating: tests/test_chain.c:74: main: Assertion `ack_count==1&&ack.sequence==1&&(ack.status&RM_STATUS_ACK_VALID)' failed."
+      "output": "legacy_alternating: tests/test_chain.c:81: main: Assertion `ack_count==1&&ack.sequence==1&&(ack.status&RM_STATUS_ACK_VALID)' failed."
     },
     {
       "variant": "fixed_single_fifo",
       "exit_code": 0,
       "expected_result_observed": true,
-      "output": "PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs\nPASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+      "output": "PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs\nPASS IRQ timing: RC snapshot, chassis queue, USB ingress and feedback cross 1ms; tick wrap; genuine 11ms expiry still rejected\nPASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
     }
   ],
   "negative_test_sources": "Generated only under build/tests/fifo-regression; not firmware inputs",

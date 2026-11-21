@@ -1,0 +1,16 @@
+{
+  "mode": "observe",
+  "topic": "/lidar_link_test/livox/lidar",
+  "passed": true,
+  "stop_confirmed": null,
+  "command_accepted": false,
+  "motion_observed": false,
+  "lidar": {
+    "accepted": 105,
+    "rejected": 0,
+    "points": 9984,
+    "sampled_valid_points": 136,
+    "last_source_stamp_ns": 1795236083062874884,
+    "failure": ""
+  }
+}

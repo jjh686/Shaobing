@@ -12,6 +12,9 @@ root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('target', choices=('chassis', 'gimbal'))
 args = parser.parse_args()
+if args.target == 'gimbal':
+    subprocess.run(['python3', str(root.parent/'05_云台/tools/record_build.py')], check=True)
+    raise SystemExit(0)
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -25,7 +28,7 @@ metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else 
 metadata.update({'project_root': str(root), 'flashed_by_this_task': False,
                  'hardware_validated_by_this_task': False})
 targets = metadata.setdefault('targets', {})
-prefix = 'DiPan_Board' if args.target == 'chassis' else 'Gimbal_USB_CAN1'
+prefix = 'DiPan_Board'
 entry = {'recorded_at_utc': datetime.now(timezone.utc).isoformat(),
          'board': 'chassis C board' if args.target == 'chassis' else 'gimbal C board',
          'role': 'CAN2 navigation endpoint; CAN1 motors' if args.target == 'chassis'
@@ -67,10 +70,6 @@ if args.target == 'chassis':
                   ('CHASSIS_COMM_ALLOW_MOTION', 'CHASSIS_COMM_AXES_VERIFIED'))
     entry['motion_note'] = ('ARM motion gates enabled; RC, motor-online, STOP/session and TTL still required. Physical wheel verification pending.'
                             if enabled else 'See compiled_configuration for the ARM motion gates; host simulation variants are independent.')
-else:
-    source = root/'communication_reference/gimbal_firmware'
-    entry['source_sha256'] = inventory(source)
-    entry['makefile_sha256'] = digest(source/'Makefile')
 entry['source'] = str(source)
 targets[args.target] = entry
 metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2)+chr(10))

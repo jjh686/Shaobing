@@ -53,7 +53,7 @@
  Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h \
  Middlewares/Third_Party/SEGGER/RTT/../Config/SEGGER_RTT_Conf.h \
  Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h \
- bsp/dwt/bsp_dwt.h Inc/main.h
+ bsp/dwt/bsp_dwt.h Inc/main.h bsp/usb/usb_tx_queue.h
 bsp/usb/bsp_usb.h:
 Inc/usb_device.h:
 Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
@@ -117,3 +117,4 @@ Middlewares/Third_Party/SEGGER/RTT/../Config/SEGGER_RTT_Conf.h:
 Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h:
 bsp/dwt/bsp_dwt.h:
 Inc/main.h:
+bsp/usb/usb_tx_queue.h:

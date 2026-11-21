@@ -14,7 +14,7 @@ import time
 import tty
 
 from check_port import check
-from usb_protocol import Stream, command
+from usb_protocol import Stream, FeedbackStats, command
 
 DIRECTIONS = {
     'forward': (1, 0, 0), 'back': (-1, 0, 0),
@@ -22,7 +22,7 @@ DIRECTIONS = {
     'ccw': (0, 0, 1), 'cw': (0, 0, -1),
 }
 FAULTS = {1: '运动锁', 2: '遥控器/导航档未许可', 4: '四电机未全部在线',
-          8: '坐标开关未解锁', 16: 'CAN接收故障'}
+          8: '坐标开关未解锁', 16: '接收队列溢出/命令排队超时'}
 
 
 class Link:
@@ -34,14 +34,18 @@ class Link:
         self.started = time.monotonic()
         self.last_uptime = None
         self.last = None
+        self.ack_stats = FeedbackStats()
 
-    def phase(self, duration, velocity=(0., 0., 0.), enabled=False, ready=False):
+    def phase(self, duration, velocity=(0., 0., 0.), enabled=False, ready=False,
+              poll=None, on_ack=None):
         start = time.monotonic()
         next_send = start
         last_ack = None
         count = 0
         sent = {}
         while time.monotonic() - start < duration:
+            if poll is not None:
+                poll()
             now = time.monotonic()
             if enabled and now - (last_ack if last_ack is not None else start) > .15:
                 raise RuntimeError('运动阶段150ms内没有新鲜底盘ACK，已停止发送ENABLE')
@@ -63,7 +67,7 @@ class Link:
                         continue
                 sent[seq] = time.monotonic()
                 self.sequence = (seq + 1) & 65535
-                sent = {s: t for s, t in sent.items() if now-t < .15}
+                sent = {s: t for s, t in sent.items() if now-t < 2.}
                 next_send = time.monotonic() + .02
             if not select.select([self.fd], [], [], .005)[0]:
                 continue
@@ -76,23 +80,35 @@ class Link:
             for f in self.parser.push(data):
                 self.last = f
                 now = time.monotonic()
-                if f['session'] != self.session or not f['status'] & 64 or \
-                        f['sequence'] not in sent or now-sent[f['sequence']] > .15:
+                self.ack_stats.received(f, now)
+                reason = ('wrong_session' if f['session'] != self.session else
+                          'no_ack_flag' if not f['status'] & 64 else
+                          'unknown_sequence' if f['sequence'] not in sent else
+                          'stale_ack' if now-sent[f['sequence']] > .15 else None)
+                if reason:
+                    self.ack_stats.reject(reason)
                     continue
                 if self.last_uptime is not None and not \
                         0 < ((f['uptime']-self.last_uptime)&0xffffffff) < 0x80000000:
+                    self.ack_stats.reject('nonincreasing_uptime')
                     continue
                 self.last_uptime = f['uptime']
                 if bool(f['status'] & 2) != enabled:
+                    self.ack_stats.reject('active_mismatch')
                     raise RuntimeError('底盘ACTIVE与本阶段命令不一致')
                 permitted = f['fault'] == 0 and f['status'] & 9 == 9 and not f['status'] & 52
                 if enabled and not permitted:
+                    self.ack_stats.reject('not_permitted')
                     raise RuntimeError('底盘撤销许可：' + json.dumps(f, ensure_ascii=False))
                 if ready and not permitted:
+                    self.ack_stats.reject('not_permitted')
                     count = 0
                     continue
                 last_ack = now
+                self.ack_stats.accept(now)
                 count += 1
+                if on_ack is not None:
+                    on_ack(f)
         if count < (10 if ready else 3) or last_ack is None or time.monotonic()-last_ack > .15:
             detail = ''
             if self.last:
@@ -148,6 +164,8 @@ def run(port, direction='forward', duration=1., speed=None, wheels_raised=False,
                 print('STOP未确认，请断开电机主电源。' + report['stop_error'], flush=True)
             report['last_feedback'] = link.last
             report['frames'] = link.parser.frames
+            report['stream_diagnostics'] = link.parser.diagnostics
+            report['ack_diagnostics'] = link.ack_stats.report()
         if exclusive:
             try:
                 fcntl.ioctl(fd, termios.TIOCNXCL)

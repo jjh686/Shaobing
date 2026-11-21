@@ -1,4 +1,4 @@
-ARM GAS  /tmp/cct7RteR.s 			page 1
+ARM GAS  /tmp/ccN1j5v4.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/cct7RteR.s 			page 1
   17:application/cmd/robot_cmd.c **** /* [USB_SP 修改 02 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS
   18:application/cmd/robot_cmd.c **** #include "gimbal.h"
   19:application/cmd/robot_cmd.c **** #include "control_guard.h"
-ARM GAS  /tmp/cct7RteR.s 			page 2
+ARM GAS  /tmp/ccN1j5v4.s 			page 2
 
 
   20:application/cmd/robot_cmd.c **** /* [USB_SP 上电自瞄 新增 开始] 自主流程集中在独立模块。 */
@@ -118,7 +118,7 @@ ARM GAS  /tmp/cct7RteR.s 			page 1
   58:application/cmd/robot_cmd.c ****     /* [USB_SP 上电自瞄 新增 结束] */
   59:application/cmd/robot_cmd.c ****     RobotCommInit();
   52              		.loc 1 59 5 view .LVU3
-ARM GAS  /tmp/cct7RteR.s 			page 3
+ARM GAS  /tmp/ccN1j5v4.s 			page 3
 
 
   53 000c FFF7FEFF 		bl	RobotCommInit
@@ -178,7 +178,7 @@ ARM GAS  /tmp/cct7RteR.s 			page 1
   73:application/cmd/robot_cmd.c **** /* [新增] 零力或输入来源切换时同步目标，不积累停止期间的摇杆位移。 */
   74:application/cmd/robot_cmd.c **** static void HoldCurrent(const GimbalState *s)
   75:application/cmd/robot_cmd.c **** /* [USB_SP 修改 08 结束] */
-ARM GAS  /tmp/cct7RteR.s 			page 4
+ARM GAS  /tmp/ccN1j5v4.s 			page 4
 
 
   76:application/cmd/robot_cmd.c **** {
@@ -238,7 +238,7 @@ ARM GAS  /tmp/cct7RteR.s 			page 1
  118:application/cmd/robot_cmd.c **** #if GIMBAL_AUTO_AIM_ON_BOOT
  119:application/cmd/robot_cmd.c ****     AutoAimBootUpdate(&command);
  108              		.loc 1 119 5 view .LVU12
-ARM GAS  /tmp/cct7RteR.s 			page 5
+ARM GAS  /tmp/ccN1j5v4.s 			page 5
 
 
  109 0004 0B4C     		ldr	r4, .L7
@@ -298,7 +298,7 @@ ARM GAS  /tmp/cct7RteR.s 			page 1
  170:application/cmd/robot_cmd.c ****     uint8_t source = 0;
  171:application/cmd/robot_cmd.c ****     command.gimbal_mode = GIMBAL_ZERO_FORCE;
  172:application/cmd/robot_cmd.c ****     if (armed && !recovery_up && GIMBAL_INSTALLATION_CONFIRMED) {
-ARM GAS  /tmp/cct7RteR.s 			page 6
+ARM GAS  /tmp/ccN1j5v4.s 			page 6
 
 
  173:application/cmd/robot_cmd.c ****         int use_visual = selected_visual && received_since_entry && fresh && rx.mode != 0;
@@ -358,7 +358,7 @@ ARM GAS  /tmp/cct7RteR.s 			page 1
  136              		.cfi_def_cfa_offset 8
  137              		@ sp needed
  138 0032 10BD     		pop	{r4, pc}
-ARM GAS  /tmp/cct7RteR.s 			page 7
+ARM GAS  /tmp/ccN1j5v4.s 			page 7
 
 
  139              	.L8:
@@ -401,24 +401,24 @@ ARM GAS  /tmp/cct7RteR.s 			page 1
  180              		.file 11 "modules/remote/remote_control.h"
  181              		.file 12 "application/communication/robot_comm.h"
  182              		.file 13 "Inc/usart.h"
-ARM GAS  /tmp/cct7RteR.s 			page 8
+ARM GAS  /tmp/ccN1j5v4.s 			page 8
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 robot_cmd.c
-     /tmp/cct7RteR.s:18     .rodata.RobotCMDInit.str1.4:0000000000000000 $d
-     /tmp/cct7RteR.s:25     .text.RobotCMDInit:0000000000000000 $t
-     /tmp/cct7RteR.s:33     .text.RobotCMDInit:0000000000000000 RobotCMDInit
-     /tmp/cct7RteR.s:78     .text.RobotCMDInit:000000000000002c $d
-     /tmp/cct7RteR.s:87     .text.RobotCMDTask:0000000000000000 $t
-     /tmp/cct7RteR.s:94     .text.RobotCMDTask:0000000000000000 RobotCMDTask
-     /tmp/cct7RteR.s:142    .text.RobotCMDTask:0000000000000034 $d
-     /tmp/cct7RteR.s:149    .bss.command:0000000000000000 $d
-     /tmp/cct7RteR.s:153    .bss.command:0000000000000000 command
-     /tmp/cct7RteR.s:156    .bss.gimbal_pub:0000000000000000 $d
-     /tmp/cct7RteR.s:160    .bss.gimbal_pub:0000000000000000 gimbal_pub
-     /tmp/cct7RteR.s:163    .bss.shoot_pub:0000000000000000 $d
-     /tmp/cct7RteR.s:167    .bss.shoot_pub:0000000000000000 shoot_pub
+     /tmp/ccN1j5v4.s:18     .rodata.RobotCMDInit.str1.4:0000000000000000 $d
+     /tmp/ccN1j5v4.s:25     .text.RobotCMDInit:0000000000000000 $t
+     /tmp/ccN1j5v4.s:33     .text.RobotCMDInit:0000000000000000 RobotCMDInit
+     /tmp/ccN1j5v4.s:78     .text.RobotCMDInit:000000000000002c $d
+     /tmp/ccN1j5v4.s:87     .text.RobotCMDTask:0000000000000000 $t
+     /tmp/ccN1j5v4.s:94     .text.RobotCMDTask:0000000000000000 RobotCMDTask
+     /tmp/ccN1j5v4.s:142    .text.RobotCMDTask:0000000000000034 $d
+     /tmp/ccN1j5v4.s:149    .bss.command:0000000000000000 $d
+     /tmp/ccN1j5v4.s:153    .bss.command:0000000000000000 command
+     /tmp/ccN1j5v4.s:156    .bss.gimbal_pub:0000000000000000 $d
+     /tmp/ccN1j5v4.s:160    .bss.gimbal_pub:0000000000000000 gimbal_pub
+     /tmp/ccN1j5v4.s:163    .bss.shoot_pub:0000000000000000 $d
+     /tmp/ccN1j5v4.s:167    .bss.shoot_pub:0000000000000000 shoot_pub
 
 UNDEFINED SYMBOLS
 FS_RemoteControlInit

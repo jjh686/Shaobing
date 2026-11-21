@@ -1,4 +1,4 @@
-ARM GAS  /tmp/ccI0xV2x.s 			page 1
+ARM GAS  /tmp/ccvVBzpG.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   28:application/gimbal/gimbal.c **** typedef struct {
   29:application/gimbal/gimbal.c ****     GimbalSpeedPi pi;
   30:application/gimbal/gimbal.c ****     DJIMotorInstance *motor;
-ARM GAS  /tmp/ccI0xV2x.s 			page 2
+ARM GAS  /tmp/ccvVBzpG.s 			page 2
 
 
   31:application/gimbal/gimbal.c ****     float pose_to_encoder_sign, min_deg, max_deg;
@@ -118,7 +118,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   85:application/gimbal/gimbal.c ****     pid->Last_Output = pid->Output;
   86:application/gimbal/gimbal.c ****     pid->Last_Dout = 0.0f;
   87:application/gimbal/gimbal.c ****     return output;
-ARM GAS  /tmp/ccI0xV2x.s 			page 3
+ARM GAS  /tmp/ccvVBzpG.s 			page 3
 
 
   88:application/gimbal/gimbal.c **** }
@@ -178,7 +178,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   42 0008 D0F8B431 		ldr	r3, [r0, #436]
   43              		.loc 1 128 37 discriminator 3 view .LVU6
   44 000c C91A     		subs	r1, r1, r3
-ARM GAS  /tmp/ccI0xV2x.s 			page 4
+ARM GAS  /tmp/ccvVBzpG.s 			page 4
 
 
   45              	.LVL1:
@@ -238,7 +238,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   98              		.cfi_offset 14, -4
   99 0002 89B0     		sub	sp, sp, #36
  100              	.LCFI1:
-ARM GAS  /tmp/ccI0xV2x.s 			page 5
+ARM GAS  /tmp/ccvVBzpG.s 			page 5
 
 
  101              		.cfi_def_cfa_offset 48
@@ -298,7 +298,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  137 0032 8DF81820 		strb	r2, [sp, #24]
  138 0036 8DED070A 		vstr.32	s0, [sp, #28]
  116:application/gimbal/gimbal.c ****         !isfinite(min_deg) || !isfinite(max_deg) || min_deg >= max_deg ||
-ARM GAS  /tmp/ccI0xV2x.s 			page 6
+ARM GAS  /tmp/ccvVBzpG.s 			page 6
 
 
  139              		.loc 1 116 5 is_stmt 1 view .LVU36
@@ -358,7 +358,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  182 0088 30BD     		pop	{r4, r5, pc}
  183              	.LVL12:
  184              	.L12:
-ARM GAS  /tmp/ccI0xV2x.s 			page 7
+ARM GAS  /tmp/ccvVBzpG.s 			page 7
 
 
  185              	.LCFI3:
@@ -418,7 +418,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  234              		.cfi_def_cfa_offset 16
  235              		.cfi_offset 3, -16
  236              		.cfi_offset 4, -12
-ARM GAS  /tmp/ccI0xV2x.s 			page 8
+ARM GAS  /tmp/ccvVBzpG.s 			page 8
 
 
  237              		.cfi_offset 5, -8
@@ -478,7 +478,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  282              		.cfi_offset 14, -4
  283 0002 2DED048B 		vpush.64	{d8, d9}
  284              	.LCFI6:
-ARM GAS  /tmp/ccI0xV2x.s 			page 9
+ARM GAS  /tmp/ccvVBzpG.s 			page 9
 
 
  285              		.cfi_def_cfa_offset 32
@@ -538,7 +538,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   48:application/gimbal/gimbal.c ****     float output = (pid->Kd == 0.0f && pid->DeadBand == 0.0f)
  323              		.loc 1 48 34 is_stmt 0 view .LVU82
  324 002a E368     		ldr	r3, [r4, #12]	@ float
-ARM GAS  /tmp/ccI0xV2x.s 			page 10
+ARM GAS  /tmp/ccvVBzpG.s 			page 10
 
 
   48:application/gimbal/gimbal.c ****     float output = (pid->Kd == 0.0f && pid->DeadBand == 0.0f)
@@ -598,7 +598,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  366              	.LBI39:
  367              		.file 2 "Drivers/CMSIS/Include/cmsis_gcc.h"
    1:Drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
-ARM GAS  /tmp/ccI0xV2x.s 			page 11
+ARM GAS  /tmp/ccvVBzpG.s 			page 11
 
 
    2:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
@@ -658,7 +658,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   56:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
   57:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
   58:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
-ARM GAS  /tmp/ccI0xV2x.s 			page 12
+ARM GAS  /tmp/ccvVBzpG.s 			page 12
 
 
   59:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
@@ -718,7 +718,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  113:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
  114:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
  115:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
-ARM GAS  /tmp/ccI0xV2x.s 			page 13
+ARM GAS  /tmp/ccvVBzpG.s 			page 13
 
 
  116:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __COMPILER_BARRIER
@@ -778,7 +778,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  170:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __INITIAL_SP              __StackTop
  171:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
  172:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  /tmp/ccI0xV2x.s 			page 14
+ARM GAS  /tmp/ccvVBzpG.s 			page 14
 
 
  173:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __STACK_LIMIT
@@ -838,7 +838,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  227:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
  228:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __NOP()                             __ASM volatile ("nop")
  229:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  /tmp/ccI0xV2x.s 			page 15
+ARM GAS  /tmp/ccvVBzpG.s 			page 15
 
 
  230:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
@@ -898,7 +898,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  284:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  285:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  286:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
-ARM GAS  /tmp/ccI0xV2x.s 			page 16
+ARM GAS  /tmp/ccvVBzpG.s 			page 16
 
 
  287:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Reverse byte order (32 bit)
@@ -958,7 +958,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  341:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Rotate Right (immediate) provides the value of the contents of a register rotated by a v
  342:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    op1  Value to rotate
  343:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    op2  Number of Bits to rotate
-ARM GAS  /tmp/ccI0xV2x.s 			page 17
+ARM GAS  /tmp/ccvVBzpG.s 			page 17
 
 
  344:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               Rotated value
@@ -1018,7 +1018,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  398:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Count leading zeros
  399:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Counts the number of leading zeros of a data value.
  400:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]  value  Value to count the leading zeros
-ARM GAS  /tmp/ccI0xV2x.s 			page 18
+ARM GAS  /tmp/ccvVBzpG.s 			page 18
 
 
  401:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return             number of leading zeros in value
@@ -1078,7 +1078,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  455:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  456:Drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t result;
  457:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  /tmp/ccI0xV2x.s 			page 19
+ARM GAS  /tmp/ccvVBzpG.s 			page 19
 
 
  458:Drivers/CMSIS/Include/cmsis_gcc.h **** #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
@@ -1138,7 +1138,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  512:Drivers/CMSIS/Include/cmsis_gcc.h ****    uint32_t result;
  513:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  514:Drivers/CMSIS/Include/cmsis_gcc.h ****    __ASM volatile ("strexh %0, %2, %1" : "=&r" (result), "=Q" (*addr) : "r" ((uint32_t)value) );
-ARM GAS  /tmp/ccI0xV2x.s 			page 20
+ARM GAS  /tmp/ccvVBzpG.s 			page 20
 
 
  515:Drivers/CMSIS/Include/cmsis_gcc.h ****    return(result);
@@ -1198,7 +1198,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  569:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  570:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
  571:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Unsigned Saturate
-ARM GAS  /tmp/ccI0xV2x.s 			page 21
+ARM GAS  /tmp/ccvVBzpG.s 			page 21
 
 
  572:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Saturates an unsigned value.
@@ -1258,7 +1258,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  626:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Executes a Unprivileged LDRT instruction for 16 bit values.
  627:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    ptr  Pointer to data
  628:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return        value of type uint16_t at (*ptr)
-ARM GAS  /tmp/ccI0xV2x.s 			page 22
+ARM GAS  /tmp/ccvVBzpG.s 			page 22
 
 
  629:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
@@ -1318,7 +1318,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  683:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  684:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  685:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
-ARM GAS  /tmp/ccI0xV2x.s 			page 23
+ARM GAS  /tmp/ccvVBzpG.s 			page 23
 
 
  686:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   STRT Unprivileged (32 bit)
@@ -1378,7 +1378,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  740:Drivers/CMSIS/Include/cmsis_gcc.h ****     }
  741:Drivers/CMSIS/Include/cmsis_gcc.h ****     else if (val < 0)
  742:Drivers/CMSIS/Include/cmsis_gcc.h ****     {
-ARM GAS  /tmp/ccI0xV2x.s 			page 24
+ARM GAS  /tmp/ccvVBzpG.s 			page 24
 
 
  743:Drivers/CMSIS/Include/cmsis_gcc.h ****       return 0U;
@@ -1438,7 +1438,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  797:Drivers/CMSIS/Include/cmsis_gcc.h ****    return(result);
  798:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  799:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  /tmp/ccI0xV2x.s 			page 25
+ARM GAS  /tmp/ccvVBzpG.s 			page 25
 
 
  800:Drivers/CMSIS/Include/cmsis_gcc.h **** 
@@ -1498,7 +1498,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  854:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Executes a LDAH exclusive instruction for 16 bit values.
  855:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    ptr  Pointer to data
  856:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return        value of type uint16_t at (*ptr)
-ARM GAS  /tmp/ccI0xV2x.s 			page 26
+ARM GAS  /tmp/ccvVBzpG.s 			page 26
 
 
  857:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
@@ -1558,7 +1558,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  911:Drivers/CMSIS/Include/cmsis_gcc.h ****    __ASM volatile ("stlexh %0, %2, %1" : "=&r" (result), "=Q" (*ptr) : "r" ((uint32_t)value) : "mem
  912:Drivers/CMSIS/Include/cmsis_gcc.h ****    return(result);
  913:Drivers/CMSIS/Include/cmsis_gcc.h **** }
-ARM GAS  /tmp/ccI0xV2x.s 			page 27
+ARM GAS  /tmp/ccvVBzpG.s 			page 27
 
 
  914:Drivers/CMSIS/Include/cmsis_gcc.h **** 
@@ -1618,7 +1618,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  968:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the Control Register.
  969:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               Control Register value
  970:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
-ARM GAS  /tmp/ccI0xV2x.s 			page 28
+ARM GAS  /tmp/ccvVBzpG.s 			page 28
 
 
  971:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_CONTROL(void)
@@ -1678,7 +1678,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
 1025:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               IPSR Register value
 1026:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
 1027:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_IPSR(void)
-ARM GAS  /tmp/ccI0xV2x.s 			page 29
+ARM GAS  /tmp/ccvVBzpG.s 			page 29
 
 
 1028:Drivers/CMSIS/Include/cmsis_gcc.h **** {
@@ -1738,7 +1738,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
 1082:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               PSP Register value
 1083:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
 1084:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_PSP_NS(void)
-ARM GAS  /tmp/ccI0xV2x.s 			page 30
+ARM GAS  /tmp/ccvVBzpG.s 			page 30
 
 
 1085:Drivers/CMSIS/Include/cmsis_gcc.h **** {
@@ -1798,7 +1798,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
 1139:Drivers/CMSIS/Include/cmsis_gcc.h **** {
 1140:Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
 1141:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  /tmp/ccI0xV2x.s 			page 31
+ARM GAS  /tmp/ccvVBzpG.s 			page 31
 
 
 1142:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msp_ns" : "=r" (result) );
@@ -1858,7 +1858,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
 1196:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
 1197:Drivers/CMSIS/Include/cmsis_gcc.h **** 
 1198:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  /tmp/ccI0xV2x.s 			page 32
+ARM GAS  /tmp/ccvVBzpG.s 			page 32
 
 
 1199:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
@@ -1918,7 +1918,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   59:application/gimbal/gimbal.c ****     __set_PRIMASK(mask);
  404              		.loc 1 59 11 view .LVU108
  405 0078 77EEC77A 		vsub.f32	s15, s15, s14
-ARM GAS  /tmp/ccI0xV2x.s 			page 33
+ARM GAS  /tmp/ccvVBzpG.s 			page 33
 
 
  406              	.LVL33:
@@ -1978,7 +1978,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  429 008c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  430 0090 32D8     		bhi	.L29
   63:application/gimbal/gimbal.c ****         float encoder_effort = output * axis->pose_to_encoder_sign;
-ARM GAS  /tmp/ccI0xV2x.s 			page 34
+ARM GAS  /tmp/ccvVBzpG.s 			page 34
 
 
  431              		.loc 1 63 12 is_stmt 1 view .LVU116
@@ -2038,7 +2038,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  470              		.loc 1 69 58 is_stmt 1 discriminator 1 view .LVU131
  471 00d4 0133     		adds	r3, r3, #1
  472 00d6 EB64     		str	r3, [r5, #76]
-ARM GAS  /tmp/ccI0xV2x.s 			page 35
+ARM GAS  /tmp/ccvVBzpG.s 			page 35
 
 
   68:application/gimbal/gimbal.c ****             if (axis->envelope_block_count < UINT32_MAX) ++axis->envelope_block_count;
@@ -2098,7 +2098,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   77:application/gimbal/gimbal.c ****     pid->Iout = pi->state.i;
  512              		.loc 1 77 5 is_stmt 1 view .LVU147
   77:application/gimbal/gimbal.c ****     pid->Iout = pi->state.i;
-ARM GAS  /tmp/ccI0xV2x.s 			page 36
+ARM GAS  /tmp/ccvVBzpG.s 			page 36
 
 
  513              		.loc 1 77 17 is_stmt 0 view .LVU148
@@ -2158,7 +2158,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
   83:application/gimbal/gimbal.c ****     pid->Last_ITerm = pid->ITerm;
  551              		.loc 1 83 5 is_stmt 1 discriminator 4 view .LVU165
   83:application/gimbal/gimbal.c ****     pid->Last_ITerm = pid->ITerm;
-ARM GAS  /tmp/ccI0xV2x.s 			page 37
+ARM GAS  /tmp/ccvVBzpG.s 			page 37
 
 
  552              		.loc 1 83 19 is_stmt 0 discriminator 4 view .LVU166
@@ -2218,7 +2218,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  593              		.loc 1 80 56 view .LVU179
  594 0166 0023     		movs	r3, #0
  595 0168 E9E7     		b	.L26
-ARM GAS  /tmp/ccI0xV2x.s 			page 38
+ARM GAS  /tmp/ccvVBzpG.s 			page 38
 
 
  596              	.L38:
@@ -2278,7 +2278,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  137:application/gimbal/gimbal.c ****     uint32_t mask=__get_PRIMASK(); __disable_irq();
  644              		.loc 1 137 5 is_stmt 1 view .LVU187
  645              	.LBB47:
-ARM GAS  /tmp/ccI0xV2x.s 			page 39
+ARM GAS  /tmp/ccvVBzpG.s 			page 39
 
 
  646              	.LBI47:
@@ -2338,7 +2338,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  690              		.loc 1 140 12 view .LVU203
  691 0026 002B     		cmp	r3, #0
  692 0028 3CD1     		bne	.L42
-ARM GAS  /tmp/ccI0xV2x.s 			page 40
+ARM GAS  /tmp/ccvVBzpG.s 			page 40
 
 
  693              		.loc 1 140 26 is_stmt 1 discriminator 1 view .LVU204
@@ -2398,7 +2398,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  146:application/gimbal/gimbal.c ****         yaw_speed=pose.yaw_vel;pitch_speed=pose.pitch_vel;
  742              		.loc 1 146 9 is_stmt 1 view .LVU223
  743              		.loc 1 146 18 is_stmt 0 view .LVU224
-ARM GAS  /tmp/ccI0xV2x.s 			page 41
+ARM GAS  /tmp/ccvVBzpG.s 			page 41
 
 
  744 006a 039A     		ldr	r2, [sp, #12]	@ float
@@ -2458,7 +2458,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  790 0088 01D9     		bls	.L48
  135:application/gimbal/gimbal.c ****         GimbalPoseFromImu(ins.q,ins.gyro,mount,&pose);
  791              		.loc 1 135 67 view .LVU236
-ARM GAS  /tmp/ccI0xV2x.s 			page 42
+ARM GAS  /tmp/ccvVBzpG.s 			page 42
 
 
  792 008a 0023     		movs	r3, #0
@@ -2518,7 +2518,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  841              		.section	.text.GimbalGetState,"ax",%progbits
  842              		.align	1
  843              		.global	GimbalGetState
-ARM GAS  /tmp/ccI0xV2x.s 			page 43
+ARM GAS  /tmp/ccvVBzpG.s 			page 43
 
 
  844              		.syntax unified
@@ -2578,7 +2578,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  889              	.LBI55:
  960:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  890              		.loc 2 960 27 view .LVU254
-ARM GAS  /tmp/ccI0xV2x.s 			page 44
+ARM GAS  /tmp/ccvVBzpG.s 			page 44
 
 
  891              	.LBB56:
@@ -2638,7 +2638,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  940              		.loc 1 157 24 is_stmt 0 discriminator 6 view .LVU270
  941 0046 3F4B     		ldr	r3, .L71+4
  942 0048 1868     		ldr	r0, [r3]
-ARM GAS  /tmp/ccI0xV2x.s 			page 45
+ARM GAS  /tmp/ccvVBzpG.s 			page 45
 
 
  943              	.LVL61:
@@ -2698,7 +2698,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  994              		.loc 1 159 31 discriminator 1 view .LVU289
  995 0084 93F8CC21 		ldrb	r2, [r3, #460]	@ zero_extendqisi2
  996              		.loc 1 159 19 discriminator 1 view .LVU290
-ARM GAS  /tmp/ccI0xV2x.s 			page 46
+ARM GAS  /tmp/ccvVBzpG.s 			page 46
 
 
  997 0088 3AB1     		cbz	r2, .L57
@@ -2758,7 +2758,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1045              		.loc 1 164 5 is_stmt 1 view .LVU310
  1046              		.loc 1 164 10 is_stmt 0 view .LVU311
  1047 00ba D5ED067A 		vldr.32	s15, [r5, #24]
-ARM GAS  /tmp/ccI0xV2x.s 			page 47
+ARM GAS  /tmp/ccvVBzpG.s 			page 47
 
 
  1048 00be F0EEE76A 		vabs.f32	s13, s15
@@ -2818,7 +2818,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1096              		.loc 1 158 52 discriminator 1 view .LVU323
  1097 012a 2146     		mov	r1, r4
  1098 012c 064B     		ldr	r3, .L71+8
-ARM GAS  /tmp/ccI0xV2x.s 			page 48
+ARM GAS  /tmp/ccvVBzpG.s 			page 48
 
 
  1099 012e 1868     		ldr	r0, [r3]
@@ -2878,7 +2878,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  169:application/gimbal/gimbal.c **** void GimbalInit(void)
  170:application/gimbal/gimbal.c **** {
  1148              		.loc 1 170 1 is_stmt 1 view -0
-ARM GAS  /tmp/ccI0xV2x.s 			page 49
+ARM GAS  /tmp/ccvVBzpG.s 			page 49
 
 
  1149              		.cfi_startproc
@@ -2938,7 +2938,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1200 0058 8DF89F40 		strb	r4, [sp, #159]
  1201 005c 3A4B     		ldr	r3, .L75+36
  1202 005e 2893     		str	r3, [sp, #160]
-ARM GAS  /tmp/ccI0xV2x.s 			page 50
+ARM GAS  /tmp/ccvVBzpG.s 			page 50
 
 
  1203 0060 2994     		str	r4, [sp, #164]
@@ -2998,7 +2998,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1229 007a 364B     		ldr	r3, .L75+48
  1230 007c 1193     		str	r3, [sp, #68]	@ float
  202:application/gimbal/gimbal.c ****     c.controller_param_init_config.speed_PID.IntegralLimit=GIMBAL_PITCH_SPEED_I_LIMIT;
-ARM GAS  /tmp/ccI0xV2x.s 			page 51
+ARM GAS  /tmp/ccvVBzpG.s 			page 51
 
 
  1231              		.loc 1 202 5 is_stmt 1 view .LVU343
@@ -3058,7 +3058,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1273              	.LVL73:
  215:application/gimbal/gimbal.c ****         GIMBAL_YAW_POSE_TO_ENCODER_SIGN, GIMBAL_YAW_MIN_DEG, GIMBAL_YAW_MAX_DEG);
  216:application/gimbal/gimbal.c ****     GimbalBindSpeedPi(pitch_motor, &pitch_speed_axis, 0, GIMBAL_PITCH_REVERSAL_REF_RAD_S,
-ARM GAS  /tmp/ccI0xV2x.s 			page 52
+ARM GAS  /tmp/ccvVBzpG.s 			page 52
 
 
  1274              		.loc 1 216 5 view .LVU360
@@ -3118,7 +3118,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1321 0110 1860     		str	r0, [r3]
  224:application/gimbal/gimbal.c ****     gimbal_sub=SubRegister("gimbal_cmd",sizeof(Gimbal_Ctrl_Cmd_s));
  1322              		.loc 1 224 5 is_stmt 1 view .LVU377
-ARM GAS  /tmp/ccI0xV2x.s 			page 53
+ARM GAS  /tmp/ccvVBzpG.s 			page 53
 
 
  1323              		.loc 1 224 16 is_stmt 0 view .LVU378
@@ -3178,7 +3178,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1376              		.thumb
  1377              		.thumb_func
  1378              		.fpu fpv4-sp-d16
-ARM GAS  /tmp/ccI0xV2x.s 			page 54
+ARM GAS  /tmp/ccvVBzpG.s 			page 54
 
 
  1380              	GimbalClearMotorFaults:
@@ -3238,7 +3238,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
 1204:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  1422              		.loc 2 1204 31 view .LVU391
  1423              	.LBB60:
-ARM GAS  /tmp/ccI0xV2x.s 			page 55
+ARM GAS  /tmp/ccvVBzpG.s 			page 55
 
 
 1206:Drivers/CMSIS/Include/cmsis_gcc.h **** 
@@ -3298,7 +3298,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1466              	.LBI63:
 1234:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  1467              		.loc 2 1234 27 discriminator 6 view .LVU404
-ARM GAS  /tmp/ccI0xV2x.s 			page 56
+ARM GAS  /tmp/ccvVBzpG.s 			page 56
 
 
  1468              	.LBB64:
@@ -3358,7 +3358,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1517              		.cfi_startproc
  1518              		@ args = 0, pretend = 0, frame = 176
  1519              		@ frame_needed = 0, uses_anonymous_args = 0
-ARM GAS  /tmp/ccI0xV2x.s 			page 57
+ARM GAS  /tmp/ccvVBzpG.s 			page 57
 
 
  1520 0000 30B5     		push	{r4, r5, lr}
@@ -3418,7 +3418,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  262:application/gimbal/gimbal.c ****     uint32_t mask=__get_PRIMASK();__disable_irq();
  1552              		.loc 1 262 5 view .LVU423
  1553              	.LBB65:
-ARM GAS  /tmp/ccI0xV2x.s 			page 58
+ARM GAS  /tmp/ccvVBzpG.s 			page 58
 
 
  1554              	.LBI65:
@@ -3478,7 +3478,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  279:application/gimbal/gimbal.c ****     } else {DJIMotorStop(yaw_motor);DJIMotorStop(pitch_motor);}
  1585              		.loc 1 279 13 view .LVU433
  1586 0026 1D4B     		ldr	r3, .L90+4
-ARM GAS  /tmp/ccI0xV2x.s 			page 59
+ARM GAS  /tmp/ccvVBzpG.s 			page 59
 
 
  1587 0028 1868     		ldr	r0, [r3]
@@ -3538,7 +3538,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1633 0052 FFF7FEFF 		bl	INS_GetSnapshot
  1634              	.LVL94:
  1635              		.loc 1 286 8 view .LVU449
-ARM GAS  /tmp/ccI0xV2x.s 			page 60
+ARM GAS  /tmp/ccvVBzpG.s 			page 60
 
 
  1636 0056 78B1     		cbz	r0, .L88
@@ -3598,7 +3598,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1681              		.loc 1 288 52 is_stmt 0 view .LVU462
  1682 007e 074A     		ldr	r2, .L90+4
  1683 0080 1268     		ldr	r2, [r2]
-ARM GAS  /tmp/ccI0xV2x.s 			page 61
+ARM GAS  /tmp/ccvVBzpG.s 			page 61
 
 
  1684              		.loc 1 288 61 view .LVU463
@@ -3658,7 +3658,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1737 0000 00000000 		.space	4
  1738              		.section	.bss.gimbal_pub,"aw",%nobits
  1739              		.align	2
-ARM GAS  /tmp/ccI0xV2x.s 			page 62
+ARM GAS  /tmp/ccvVBzpG.s 			page 62
 
 
  1740              		.set	.LANCHOR14,. + 0
@@ -3718,7 +3718,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1812 0000 00000000 		.space	40
  1812      00000000 
  1812      00000000 
-ARM GAS  /tmp/ccI0xV2x.s 			page 63
+ARM GAS  /tmp/ccvVBzpG.s 			page 63
 
 
  1812      00000000 
@@ -3778,7 +3778,7 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1873              		.file 12 "bsp/can/bsp_can.h"
  1874              		.file 13 "modules/algorithm/controller.h"
  1875              		.file 14 "modules/motor/motor_def.h"
-ARM GAS  /tmp/ccI0xV2x.s 			page 64
+ARM GAS  /tmp/ccvVBzpG.s 			page 64
 
 
  1876              		.file 15 "modules/daemon/daemon.h"
@@ -3788,76 +3788,76 @@ ARM GAS  /tmp/ccI0xV2x.s 			page 1
  1880              		.file 19 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
  1881              		.file 20 "bsp/dwt/bsp_dwt.h"
  1882              		.file 21 "<built-in>"
-ARM GAS  /tmp/ccI0xV2x.s 			page 65
+ARM GAS  /tmp/ccvVBzpG.s 			page 65
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 gimbal.c
-     /tmp/ccI0xV2x.s:18     .text.MotorFresh:0000000000000000 $t
-     /tmp/ccI0xV2x.s:25     .text.MotorFresh:0000000000000000 MotorFresh
-     /tmp/ccI0xV2x.s:79     .text.GimbalBindSpeedPi:0000000000000000 $t
-     /tmp/ccI0xV2x.s:85     .text.GimbalBindSpeedPi:0000000000000000 GimbalBindSpeedPi
-     /tmp/ccI0xV2x.s:210    .text.GimbalBindSpeedPi:00000000000000a4 $d
-     /tmp/ccI0xV2x.s:224    .text.GimbalSpeedReset:0000000000000000 GimbalSpeedReset
-     /tmp/ccI0xV2x.s:268    .text.GimbalSpeedUpdate:0000000000000000 GimbalSpeedUpdate
-     /tmp/ccI0xV2x.s:218    .text.GimbalSpeedReset:0000000000000000 $t
-     /tmp/ccI0xV2x.s:262    .text.GimbalSpeedUpdate:0000000000000000 $t
-     /tmp/ccI0xV2x.s:599    .text.GimbalSpeedUpdate:000000000000016c $d
-     /tmp/ccI0xV2x.s:607    .text.GimbalUpdateFeedback:0000000000000000 $t
-     /tmp/ccI0xV2x.s:614    .text.GimbalUpdateFeedback:0000000000000000 GimbalUpdateFeedback
-     /tmp/ccI0xV2x.s:828    .text.GimbalUpdateFeedback:00000000000000c8 $d
-     /tmp/ccI0xV2x.s:842    .text.GimbalGetState:0000000000000000 $t
-     /tmp/ccI0xV2x.s:849    .text.GimbalGetState:0000000000000000 GimbalGetState
-     /tmp/ccI0xV2x.s:1122   .text.GimbalGetState:0000000000000140 $d
-     /tmp/ccI0xV2x.s:1132   .rodata.GimbalInit.str1.4:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1139   .text.GimbalInit:0000000000000000 $t
-     /tmp/ccI0xV2x.s:1146   .text.GimbalInit:0000000000000000 GimbalInit
-     /tmp/ccI0xV2x.s:1340   .text.GimbalInit:0000000000000124 $d
-     /tmp/ccI0xV2x.s:1373   .text.GimbalClearMotorFaults:0000000000000000 $t
-     /tmp/ccI0xV2x.s:1380   .text.GimbalClearMotorFaults:0000000000000000 GimbalClearMotorFaults
-     /tmp/ccI0xV2x.s:1501   .text.GimbalClearMotorFaults:0000000000000048 $d
-     /tmp/ccI0xV2x.s:1507   .text.GimbalTask:0000000000000000 $t
-     /tmp/ccI0xV2x.s:1514   .text.GimbalTask:0000000000000000 GimbalTask
-     /tmp/ccI0xV2x.s:1722   .text.GimbalTask:0000000000000098 $d
-     /tmp/ccI0xV2x.s:1732   .bss.continuous_yaw:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1736   .bss.continuous_yaw:0000000000000000 continuous_yaw
-     /tmp/ccI0xV2x.s:1739   .bss.gimbal_pub:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1743   .bss.gimbal_pub:0000000000000000 gimbal_pub
-     /tmp/ccI0xV2x.s:1746   .bss.gimbal_sub:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1750   .bss.gimbal_sub:0000000000000000 gimbal_sub
-     /tmp/ccI0xV2x.s:1753   .bss.pitch_feedback:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1757   .bss.pitch_feedback:0000000000000000 pitch_feedback
-     /tmp/ccI0xV2x.s:1760   .bss.pitch_motor:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1764   .bss.pitch_motor:0000000000000000 pitch_motor
-     /tmp/ccI0xV2x.s:1767   .bss.pitch_speed:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1771   .bss.pitch_speed:0000000000000000 pitch_speed
-     /tmp/ccI0xV2x.s:1774   .bss.pitch_speed_axis:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1778   .bss.pitch_speed_axis:0000000000000000 pitch_speed_axis
-     /tmp/ccI0xV2x.s:1784   .bss.pose_seen:0000000000000000 pose_seen
-     /tmp/ccI0xV2x.s:1785   .bss.pose_seen:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1787   .bss.pose_tick:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1791   .bss.pose_tick:0000000000000000 pose_tick
-     /tmp/ccI0xV2x.s:1797   .bss.previous_mode.0:0000000000000000 previous_mode.0
-     /tmp/ccI0xV2x.s:1798   .bss.previous_mode.0:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1800   .bss.previous_yaw:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1804   .bss.previous_yaw:0000000000000000 previous_yaw
-     /tmp/ccI0xV2x.s:1807   .bss.state:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1811   .bss.state:0000000000000000 state
-     /tmp/ccI0xV2x.s:1817   .bss.was_enabled.1:0000000000000000 was_enabled.1
-     /tmp/ccI0xV2x.s:1818   .bss.was_enabled.1:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1820   .bss.yaw_feedback:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1824   .bss.yaw_feedback:0000000000000000 yaw_feedback
-     /tmp/ccI0xV2x.s:1827   .bss.yaw_motor:0000000000000000 $d
-ARM GAS  /tmp/ccI0xV2x.s 			page 66
+     /tmp/ccvVBzpG.s:18     .text.MotorFresh:0000000000000000 $t
+     /tmp/ccvVBzpG.s:25     .text.MotorFresh:0000000000000000 MotorFresh
+     /tmp/ccvVBzpG.s:79     .text.GimbalBindSpeedPi:0000000000000000 $t
+     /tmp/ccvVBzpG.s:85     .text.GimbalBindSpeedPi:0000000000000000 GimbalBindSpeedPi
+     /tmp/ccvVBzpG.s:210    .text.GimbalBindSpeedPi:00000000000000a4 $d
+     /tmp/ccvVBzpG.s:224    .text.GimbalSpeedReset:0000000000000000 GimbalSpeedReset
+     /tmp/ccvVBzpG.s:268    .text.GimbalSpeedUpdate:0000000000000000 GimbalSpeedUpdate
+     /tmp/ccvVBzpG.s:218    .text.GimbalSpeedReset:0000000000000000 $t
+     /tmp/ccvVBzpG.s:262    .text.GimbalSpeedUpdate:0000000000000000 $t
+     /tmp/ccvVBzpG.s:599    .text.GimbalSpeedUpdate:000000000000016c $d
+     /tmp/ccvVBzpG.s:607    .text.GimbalUpdateFeedback:0000000000000000 $t
+     /tmp/ccvVBzpG.s:614    .text.GimbalUpdateFeedback:0000000000000000 GimbalUpdateFeedback
+     /tmp/ccvVBzpG.s:828    .text.GimbalUpdateFeedback:00000000000000c8 $d
+     /tmp/ccvVBzpG.s:842    .text.GimbalGetState:0000000000000000 $t
+     /tmp/ccvVBzpG.s:849    .text.GimbalGetState:0000000000000000 GimbalGetState
+     /tmp/ccvVBzpG.s:1122   .text.GimbalGetState:0000000000000140 $d
+     /tmp/ccvVBzpG.s:1132   .rodata.GimbalInit.str1.4:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1139   .text.GimbalInit:0000000000000000 $t
+     /tmp/ccvVBzpG.s:1146   .text.GimbalInit:0000000000000000 GimbalInit
+     /tmp/ccvVBzpG.s:1340   .text.GimbalInit:0000000000000124 $d
+     /tmp/ccvVBzpG.s:1373   .text.GimbalClearMotorFaults:0000000000000000 $t
+     /tmp/ccvVBzpG.s:1380   .text.GimbalClearMotorFaults:0000000000000000 GimbalClearMotorFaults
+     /tmp/ccvVBzpG.s:1501   .text.GimbalClearMotorFaults:0000000000000048 $d
+     /tmp/ccvVBzpG.s:1507   .text.GimbalTask:0000000000000000 $t
+     /tmp/ccvVBzpG.s:1514   .text.GimbalTask:0000000000000000 GimbalTask
+     /tmp/ccvVBzpG.s:1722   .text.GimbalTask:0000000000000098 $d
+     /tmp/ccvVBzpG.s:1732   .bss.continuous_yaw:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1736   .bss.continuous_yaw:0000000000000000 continuous_yaw
+     /tmp/ccvVBzpG.s:1739   .bss.gimbal_pub:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1743   .bss.gimbal_pub:0000000000000000 gimbal_pub
+     /tmp/ccvVBzpG.s:1746   .bss.gimbal_sub:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1750   .bss.gimbal_sub:0000000000000000 gimbal_sub
+     /tmp/ccvVBzpG.s:1753   .bss.pitch_feedback:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1757   .bss.pitch_feedback:0000000000000000 pitch_feedback
+     /tmp/ccvVBzpG.s:1760   .bss.pitch_motor:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1764   .bss.pitch_motor:0000000000000000 pitch_motor
+     /tmp/ccvVBzpG.s:1767   .bss.pitch_speed:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1771   .bss.pitch_speed:0000000000000000 pitch_speed
+     /tmp/ccvVBzpG.s:1774   .bss.pitch_speed_axis:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1778   .bss.pitch_speed_axis:0000000000000000 pitch_speed_axis
+     /tmp/ccvVBzpG.s:1784   .bss.pose_seen:0000000000000000 pose_seen
+     /tmp/ccvVBzpG.s:1785   .bss.pose_seen:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1787   .bss.pose_tick:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1791   .bss.pose_tick:0000000000000000 pose_tick
+     /tmp/ccvVBzpG.s:1797   .bss.previous_mode.0:0000000000000000 previous_mode.0
+     /tmp/ccvVBzpG.s:1798   .bss.previous_mode.0:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1800   .bss.previous_yaw:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1804   .bss.previous_yaw:0000000000000000 previous_yaw
+     /tmp/ccvVBzpG.s:1807   .bss.state:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1811   .bss.state:0000000000000000 state
+     /tmp/ccvVBzpG.s:1817   .bss.was_enabled.1:0000000000000000 was_enabled.1
+     /tmp/ccvVBzpG.s:1818   .bss.was_enabled.1:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1820   .bss.yaw_feedback:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1824   .bss.yaw_feedback:0000000000000000 yaw_feedback
+     /tmp/ccvVBzpG.s:1827   .bss.yaw_motor:0000000000000000 $d
+ARM GAS  /tmp/ccvVBzpG.s 			page 66
 
 
-     /tmp/ccI0xV2x.s:1831   .bss.yaw_motor:0000000000000000 yaw_motor
-     /tmp/ccI0xV2x.s:1834   .bss.yaw_speed:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1838   .bss.yaw_speed:0000000000000000 yaw_speed
-     /tmp/ccI0xV2x.s:1841   .bss.yaw_speed_axis:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1845   .bss.yaw_speed_axis:0000000000000000 yaw_speed_axis
-     /tmp/ccI0xV2x.s:1848   .rodata.mount:0000000000000000 $d
-     /tmp/ccI0xV2x.s:1852   .rodata.mount:0000000000000000 mount
+     /tmp/ccvVBzpG.s:1831   .bss.yaw_motor:0000000000000000 yaw_motor
+     /tmp/ccvVBzpG.s:1834   .bss.yaw_speed:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1838   .bss.yaw_speed:0000000000000000 yaw_speed
+     /tmp/ccvVBzpG.s:1841   .bss.yaw_speed_axis:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1845   .bss.yaw_speed_axis:0000000000000000 yaw_speed_axis
+     /tmp/ccvVBzpG.s:1848   .rodata.mount:0000000000000000 $d
+     /tmp/ccvVBzpG.s:1852   .rodata.mount:0000000000000000 mount
 
 UNDEFINED SYMBOLS
 GimbalSpeedPiInit

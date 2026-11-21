@@ -1,4 +1,4 @@
-ARM GAS  /tmp/ccDBlDEH.s 			page 1
+ARM GAS  /tmp/cc8SazgA.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
   29              		.loc 1 27 1 view -0
   30              		.cfi_startproc
   31              		@ args = 0, pretend = 0, frame = 0
-ARM GAS  /tmp/ccDBlDEH.s 			page 2
+ARM GAS  /tmp/cc8SazgA.s 			page 2
 
 
   32              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -118,7 +118,7 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
   80 0008 1370     		strb	r3, [r2]
   20:application/cmd/auto_aim_boot.c ****     stable_since = stream_session = 0;
   81              		.loc 1 20 5 is_stmt 1 view .LVU12
-ARM GAS  /tmp/ccDBlDEH.s 			page 3
+ARM GAS  /tmp/cc8SazgA.s 			page 3
 
 
   20:application/cmd/auto_aim_boot.c ****     stable_since = stream_session = 0;
@@ -178,7 +178,7 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
  129              	.LVL1:
  130              	.LFB274:
   31:application/cmd/auto_aim_boot.c **** 
-ARM GAS  /tmp/ccDBlDEH.s 			page 4
+ARM GAS  /tmp/cc8SazgA.s 			page 4
 
 
   32:application/cmd/auto_aim_boot.c **** void AutoAimBootUpdate(Gimbal_Ctrl_Cmd_s *command)
@@ -238,7 +238,7 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
   43:application/cmd/auto_aim_boot.c ****      */
   44:application/cmd/auto_aim_boot.c ****     RobotCommSetVisionMode(selected && state.pose_valid && !state.driver_fault ? 1 : 0);
  174              		.loc 1 44 5 is_stmt 1 view .LVU35
-ARM GAS  /tmp/ccDBlDEH.s 			page 5
+ARM GAS  /tmp/cc8SazgA.s 			page 5
 
 
  175              		.loc 1 44 84 is_stmt 0 view .LVU36
@@ -298,7 +298,7 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
  222 0058 8DB1     		cbz	r5, .L19
   52:application/cmd/auto_aim_boot.c ****     /* 不自动清除驱动器锁存故障；检修后复位C板即可重新走自主启动。 */
   53:application/cmd/auto_aim_boot.c ****     if (state.driver_fault) { WaitFor(AUTO_AIM_DRIVER_FAULT); return; }
-ARM GAS  /tmp/ccDBlDEH.s 			page 6
+ARM GAS  /tmp/cc8SazgA.s 			page 6
 
 
  223              		.loc 1 53 5 is_stmt 1 view .LVU55
@@ -358,7 +358,7 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
   87:application/cmd/auto_aim_boot.c ****     } else {
   88:application/cmd/auto_aim_boot.c ****         /* mode0表示没有有效目标。在进入等待时锁定实测姿态，不能跟随零�
   89:application/cmd/auto_aim_boot.c ****          * 之后固定该目标做保持，而非每周期随动修改目标。
-ARM GAS  /tmp/ccDBlDEH.s 			page 7
+ARM GAS  /tmp/cc8SazgA.s 			page 7
 
 
   90:application/cmd/auto_aim_boot.c ****          */
@@ -418,7 +418,7 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
  279 0090 FFF7FEFF 		bl	WaitFor
  280              	.LVL16:
   58:application/cmd/auto_aim_boot.c ****     }
-ARM GAS  /tmp/ccDBlDEH.s 			page 8
+ARM GAS  /tmp/cc8SazgA.s 			page 8
 
 
  281              		.loc 1 58 49 view .LVU73
@@ -478,37 +478,37 @@ ARM GAS  /tmp/ccDBlDEH.s 			page 1
  352              		.file 8 "application/communication/robot_comm.h"
  353              		.file 9 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
  354              		.file 10 "<built-in>"
-ARM GAS  /tmp/ccDBlDEH.s 			page 9
+ARM GAS  /tmp/cc8SazgA.s 			page 9
 
 
-ARM GAS  /tmp/ccDBlDEH.s 			page 10
+ARM GAS  /tmp/cc8SazgA.s 			page 10
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 auto_aim_boot.c
-     /tmp/ccDBlDEH.s:18     .text.WaitFor:0000000000000000 $t
-     /tmp/ccDBlDEH.s:25     .text.WaitFor:0000000000000000 WaitFor
-     /tmp/ccDBlDEH.s:51     .text.WaitFor:0000000000000010 $d
-     /tmp/ccDBlDEH.s:58     .text.AutoAimBootInit:0000000000000000 $t
-     /tmp/ccDBlDEH.s:65     .text.AutoAimBootInit:0000000000000000 AutoAimBootInit
-     /tmp/ccDBlDEH.s:109    .text.AutoAimBootInit:0000000000000028 $d
-     /tmp/ccDBlDEH.s:121    .text.AutoAimBootUpdate:0000000000000000 $t
-     /tmp/ccDBlDEH.s:128    .text.AutoAimBootUpdate:0000000000000000 AutoAimBootUpdate
-     /tmp/ccDBlDEH.s:286    .text.AutoAimBootUpdate:0000000000000098 $d
-     /tmp/ccDBlDEH.s:342    .data.gimbal_auto_aim_state:0000000000000000 gimbal_auto_aim_state
-     /tmp/ccDBlDEH.s:336    .data.gimbal_auto_aim_enabled:0000000000000000 gimbal_auto_aim_enabled
-     /tmp/ccDBlDEH.s:293    .bss.hold_pitch:0000000000000000 $d
-     /tmp/ccDBlDEH.s:297    .bss.hold_pitch:0000000000000000 hold_pitch
-     /tmp/ccDBlDEH.s:300    .bss.hold_yaw:0000000000000000 $d
-     /tmp/ccDBlDEH.s:304    .bss.hold_yaw:0000000000000000 hold_yaw
-     /tmp/ccDBlDEH.s:310    .bss.holding:0000000000000000 holding
-     /tmp/ccDBlDEH.s:311    .bss.holding:0000000000000000 $d
-     /tmp/ccDBlDEH.s:313    .bss.stable_since:0000000000000000 $d
-     /tmp/ccDBlDEH.s:317    .bss.stable_since:0000000000000000 stable_since
-     /tmp/ccDBlDEH.s:320    .bss.stream_session:0000000000000000 $d
-     /tmp/ccDBlDEH.s:324    .bss.stream_session:0000000000000000 stream_session
-     /tmp/ccDBlDEH.s:330    .bss.stream_started:0000000000000000 stream_started
-     /tmp/ccDBlDEH.s:331    .bss.stream_started:0000000000000000 $d
+     /tmp/cc8SazgA.s:18     .text.WaitFor:0000000000000000 $t
+     /tmp/cc8SazgA.s:25     .text.WaitFor:0000000000000000 WaitFor
+     /tmp/cc8SazgA.s:51     .text.WaitFor:0000000000000010 $d
+     /tmp/cc8SazgA.s:58     .text.AutoAimBootInit:0000000000000000 $t
+     /tmp/cc8SazgA.s:65     .text.AutoAimBootInit:0000000000000000 AutoAimBootInit
+     /tmp/cc8SazgA.s:109    .text.AutoAimBootInit:0000000000000028 $d
+     /tmp/cc8SazgA.s:121    .text.AutoAimBootUpdate:0000000000000000 $t
+     /tmp/cc8SazgA.s:128    .text.AutoAimBootUpdate:0000000000000000 AutoAimBootUpdate
+     /tmp/cc8SazgA.s:286    .text.AutoAimBootUpdate:0000000000000098 $d
+     /tmp/cc8SazgA.s:342    .data.gimbal_auto_aim_state:0000000000000000 gimbal_auto_aim_state
+     /tmp/cc8SazgA.s:336    .data.gimbal_auto_aim_enabled:0000000000000000 gimbal_auto_aim_enabled
+     /tmp/cc8SazgA.s:293    .bss.hold_pitch:0000000000000000 $d
+     /tmp/cc8SazgA.s:297    .bss.hold_pitch:0000000000000000 hold_pitch
+     /tmp/cc8SazgA.s:300    .bss.hold_yaw:0000000000000000 $d
+     /tmp/cc8SazgA.s:304    .bss.hold_yaw:0000000000000000 hold_yaw
+     /tmp/cc8SazgA.s:310    .bss.holding:0000000000000000 holding
+     /tmp/cc8SazgA.s:311    .bss.holding:0000000000000000 $d
+     /tmp/cc8SazgA.s:313    .bss.stable_since:0000000000000000 $d
+     /tmp/cc8SazgA.s:317    .bss.stable_since:0000000000000000 stable_since
+     /tmp/cc8SazgA.s:320    .bss.stream_session:0000000000000000 $d
+     /tmp/cc8SazgA.s:324    .bss.stream_session:0000000000000000 stream_session
+     /tmp/cc8SazgA.s:330    .bss.stream_started:0000000000000000 stream_started
+     /tmp/cc8SazgA.s:331    .bss.stream_started:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 memset

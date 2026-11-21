@@ -1,4 +1,4 @@
-ARM GAS  /tmp/cc1MALAL.s 			page 1
+ARM GAS  /tmp/ccREenDP.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/cc1MALAL.s 			page 1
   41              		.cfi_offset 4, -12
   42              		.cfi_offset 5, -8
   43              		.cfi_offset 14, -4
-ARM GAS  /tmp/cc1MALAL.s 			page 2
+ARM GAS  /tmp/ccREenDP.s 			page 2
 
 
   44 0002 0446     		mov	r4, r0
@@ -118,7 +118,7 @@ ARM GAS  /tmp/cc1MALAL.s 			page 1
   91 003c 207E     		ldrb	r0, [r4, #24]	@ zero_extendqisi2
   92              		.loc 1 22 60 view .LVU19
   93 003e 637E     		ldrb	r3, [r4, #25]	@ zero_extendqisi2
-ARM GAS  /tmp/cc1MALAL.s 			page 3
+ARM GAS  /tmp/ccREenDP.s 			page 3
 
 
   94              		.loc 1 22 64 view .LVU20
@@ -178,7 +178,7 @@ ARM GAS  /tmp/cc1MALAL.s 			page 1
  140              		.cfi_offset 14, -4
  141 0002 0546     		mov	r5, r0
   33:modules/super_cap/super_cap.c ****     super_cap_instance = (SuperCapInstance *)malloc(sizeof(SuperCapInstance));
-ARM GAS  /tmp/cc1MALAL.s 			page 4
+ARM GAS  /tmp/ccREenDP.s 			page 4
 
 
  142              		.loc 1 33 5 is_stmt 1 view .LVU26
@@ -238,7 +238,7 @@ ARM GAS  /tmp/cc1MALAL.s 			page 1
  192              	SuperCapSend:
  193              	.LVL19:
  194              	.LFB241:
-ARM GAS  /tmp/cc1MALAL.s 			page 5
+ARM GAS  /tmp/ccREenDP.s 			page 5
 
 
   40:modules/super_cap/super_cap.c **** 
@@ -298,7 +298,7 @@ ARM GAS  /tmp/cc1MALAL.s 			page 1
  242              		@ link register save eliminated.
  243              		.loc 1 48 1 is_stmt 0 view .LVU49
  244 0000 88B0     		sub	sp, sp, #32
-ARM GAS  /tmp/cc1MALAL.s 			page 6
+ARM GAS  /tmp/ccREenDP.s 			page 6
 
 
  245              	.LCFI3:
@@ -340,23 +340,23 @@ ARM GAS  /tmp/cc1MALAL.s 			page 1
  282              		.file 6 "bsp/can/bsp_can.h"
  283              		.file 7 "modules/super_cap/super_cap.h"
  284              		.file 8 "/usr/include/newlib/stdlib.h"
-ARM GAS  /tmp/cc1MALAL.s 			page 7
+ARM GAS  /tmp/ccREenDP.s 			page 7
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 super_cap.c
-     /tmp/cc1MALAL.s:21     .text.SuperCapRxCallback:0000000000000000 $t
-     /tmp/cc1MALAL.s:28     .text.SuperCapRxCallback:0000000000000000 SuperCapRxCallback
-     /tmp/cc1MALAL.s:113    .text.SuperCapRxCallback:0000000000000058 $d
-     /tmp/cc1MALAL.s:119    .text.SuperCapInit:0000000000000000 $t
-     /tmp/cc1MALAL.s:126    .text.SuperCapInit:0000000000000000 SuperCapInit
-     /tmp/cc1MALAL.s:179    .text.SuperCapInit:000000000000002c $d
-     /tmp/cc1MALAL.s:185    .text.SuperCapSend:0000000000000000 $t
-     /tmp/cc1MALAL.s:192    .text.SuperCapSend:0000000000000000 SuperCapSend
-     /tmp/cc1MALAL.s:228    .text.SuperCapGet:0000000000000000 $t
-     /tmp/cc1MALAL.s:235    .text.SuperCapGet:0000000000000000 SuperCapGet
-     /tmp/cc1MALAL.s:270    .bss.super_cap_instance:0000000000000000 $d
-     /tmp/cc1MALAL.s:274    .bss.super_cap_instance:0000000000000000 super_cap_instance
+     /tmp/ccREenDP.s:21     .text.SuperCapRxCallback:0000000000000000 $t
+     /tmp/ccREenDP.s:28     .text.SuperCapRxCallback:0000000000000000 SuperCapRxCallback
+     /tmp/ccREenDP.s:113    .text.SuperCapRxCallback:0000000000000058 $d
+     /tmp/ccREenDP.s:119    .text.SuperCapInit:0000000000000000 $t
+     /tmp/ccREenDP.s:126    .text.SuperCapInit:0000000000000000 SuperCapInit
+     /tmp/ccREenDP.s:179    .text.SuperCapInit:000000000000002c $d
+     /tmp/ccREenDP.s:185    .text.SuperCapSend:0000000000000000 $t
+     /tmp/ccREenDP.s:192    .text.SuperCapSend:0000000000000000 SuperCapSend
+     /tmp/ccREenDP.s:228    .text.SuperCapGet:0000000000000000 $t
+     /tmp/ccREenDP.s:235    .text.SuperCapGet:0000000000000000 SuperCapGet
+     /tmp/ccREenDP.s:270    .bss.super_cap_instance:0000000000000000 $d
+     /tmp/ccREenDP.s:274    .bss.super_cap_instance:0000000000000000 super_cap_instance
 
 UNDEFINED SYMBOLS
 __aeabi_i2d

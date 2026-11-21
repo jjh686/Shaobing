@@ -11,16 +11,18 @@ import time
 import tty
 from pathlib import Path
 from check_port import check
-from usb_protocol import Stream, command
+from usb_protocol import Stream, FeedbackStats, command
 
 
-def run(port, duration=5, report_path=None):
+def run(port, duration=5, report_path=None, verbose=False):
     if not 1 <= duration <= 60:
         raise ValueError('测试时长须为 1～60 秒')
     port = check(port)
     fd = os.open(port, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
     exclusive = False
     stream = Stream()
+    stats = FeedbackStats()
+    last_send = None; max_send_gap_ms = 0.; last_print = 0.
     report = {'port': port, 'enabled': False, 'passed': False}
     try:
         fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -46,7 +48,10 @@ def run(port, duration=5, report_path=None):
                         raise RuntimeError('USB 写入超时')
                     offset += os.write(fd, frame[offset:])
                 sent[sequence] = now; sequence = (sequence+1) & 65535
-                sent = {seq:t for seq,t in sent.items() if now-t < .25}
+                if last_send is not None:
+                    max_send_gap_ms = max(max_send_gap_ms, (now-last_send)*1000)
+                last_send = now
+                sent = {seq:t for seq,t in sent.items() if now-t < 2.}
                 next_send = now + .02
             readable, _, _ = select.select([fd], [], [], .005)
             if not readable:
@@ -55,14 +60,25 @@ def run(port, duration=5, report_path=None):
             if not data:
                 raise RuntimeError('USB 已断开')
             for f in stream.push(data):
-                if f['session'] != session or not f['status'] & 64 or f['sequence'] not in sent:
+                received_at = time.monotonic(); stats.received(f, received_at)
+                reason = ('wrong_session' if f['session'] != session else
+                          'no_ack_flag' if not f['status'] & 64 else
+                          'unknown_sequence' if f['sequence'] not in sent else
+                          'stale_ack' if received_at-sent[f['sequence']] > .25 else None)
+                if reason:
+                    stats.reject(reason)
                     continue
                 if f['status'] & 2:
+                    stats.reject('active_mismatch')
                     raise RuntimeError('STOP 测试收到 ACTIVE 状态')
                 if last_uptime is not None and not 0 < ((f['uptime']-last_uptime)&0xffffffff) < 0x80000000:
+                    stats.reject('nonincreasing_uptime')
                     continue
                 last_uptime = f['uptime']; last_ack = time.monotonic(); count += 1
-                print(json.dumps(f, ensure_ascii=False), flush=True)
+                stats.accept(last_ack)
+                if verbose or received_at-last_print >= .2:
+                    print(json.dumps(f, ensure_ascii=False), flush=True)
+                    last_print = received_at
         report.update(sent_STOP=sequence, fresh_chassis_ACK=count)
         if count < 10 or last_ack is None or time.monotonic()-last_ack > .25:
             raise RuntimeError(f'未获得持续的新鲜底盘 STOP ACK（有效 {count} 帧）')
@@ -73,7 +89,8 @@ def run(port, duration=5, report_path=None):
         raise
     finally:
         report.update(USB_bytes=stream.bytes_received, frames=stream.frames,
-                      last_gimbal=stream.last_gimbal)
+                      last_gimbal=stream.last_gimbal, stream_diagnostics=stream.diagnostics,
+                      ack_diagnostics=stats.report(), max_send_gap_ms=max_send_gap_ms)
         joint = stream.last_gimbal
         if not report['passed']:
             if stream.frames['feedback']:
@@ -106,8 +123,9 @@ if __name__ == '__main__':
     parser.add_argument('port')
     parser.add_argument('--duration', type=float, default=5)
     parser.add_argument('--report', help='保存 JSON 诊断结果')
+    parser.add_argument('--verbose', action='store_true', help='打印每帧ACK；默认每200ms打印一次')
     args = parser.parse_args()
     try:
-        run(args.port, args.duration, args.report)
+        run(args.port, args.duration, args.report, args.verbose)
     except (OSError, ValueError, RuntimeError) as exc:
         raise SystemExit('FAIL: ' + str(exc))

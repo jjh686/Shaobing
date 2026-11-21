@@ -21,4 +21,6 @@ int HAL_CAN_AddTxMessage(CAN_HandleTypeDef *,CAN_TxHeaderTypeDef *,uint8_t *,uin
 uint32_t HAL_CAN_IsTxMessagePending(CAN_HandleTypeDef *,uint32_t);
 int HAL_CAN_AbortTxRequest(CAN_HandleTypeDef *,uint32_t);
 void CANOnTxMailboxAssigned(CAN_HandleTypeDef *,uint32_t);
+static inline void CANEnableDiagnostics(CAN_HandleTypeDef *p){(void)p;}
+static inline void CANUpdateDiagnostics(CAN_HandleTypeDef *p){(void)p;}
 #endif

@@ -76,13 +76,18 @@ bool nc_rx_push(nc_rx_t *r,uint16_t base,uint32_t id,bool extended,bool rtr,unsi
                 const uint8_t *bytes,uint32_t now,nc_group_t *out)
 {
     if(!r||!out||id<base||id>base+2u)return false;
-    if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
-    if(id==base){r->active=1;r->next=0;r->started_ms=now;r->group.base=base;}
-    if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return false;}
+    if(extended||rtr||dlc!=8||!bytes){r->stats.malformed++;r->active=0;return false;}
+    if(id==base){
+        if(r->active)r->stats.restarted_groups++;
+        r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+    }
+    if(!r->active||id!=base+r->next){r->stats.order_errors++;r->active=0;return false;}
+    if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return false;}
     memcpy(r->group.data[r->next++],bytes,8);
     if(r->next!=3)return false;
-    r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
+    r->active=0;if(!sealed(&r->group)){r->stats.crc_errors++;return false;}*out=r->group;return true;
 }
+
 bool nc_tx_start(nc_tx_t *t,const nc_group_t *g,uint32_t now)
 {
     if(!t||!g||t->active)return false;

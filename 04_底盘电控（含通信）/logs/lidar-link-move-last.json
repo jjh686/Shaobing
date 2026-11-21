@@ -1,0 +1,64 @@
+{
+  "mode": "move",
+  "topic": "/lidar_link_test/livox/lidar",
+  "passed": true,
+  "stop_confirmed": true,
+  "command_accepted": true,
+  "motion_observed": true,
+  "speed": 0.05,
+  "duration": 2.0,
+  "port": "/dev/ttyACM1",
+  "ready_ACK": 50,
+  "active_ACK": 101,
+  "peak_measured_vx": 0.05900000035762787,
+  "last_active_feedback": {
+    "uptime": 1467202,
+    "sequence": 129,
+    "status": 75,
+    "fault": 0,
+    "session": 3276661592,
+    "vx": 0.039000000804662704,
+    "vy": -0.014000000432133675,
+    "wz": -0.03500000014901161
+  },
+  "stop_ACK": 30,
+  "last_feedback": {
+    "uptime": 1467802,
+    "sequence": 154,
+    "status": 73,
+    "fault": 0,
+    "session": 3276661592,
+    "vx": 0.0,
+    "vy": 0.0,
+    "wz": 0.0
+  },
+  "stream_diagnostics": {
+    "resync_bytes": 0,
+    "crc_errors": 0,
+    "header_crc_errors": 0,
+    "invalid_feedback": 0,
+    "invalid_gimbal": 0
+  },
+  "ack_diagnostics": {
+    "received": 181,
+    "accepted": 181,
+    "wrong_session": 0,
+    "no_ack_flag": 0,
+    "unknown_sequence": 0,
+    "stale_ack": 0,
+    "nonincreasing_uptime": 0,
+    "active_mismatch": 0,
+    "not_permitted": 0,
+    "max_feedback_gap_ms": 20.199327998852823,
+    "max_accepted_gap_ms": 20.199327998852823,
+    "max_uptime_gap_ms": 20
+  },
+  "lidar": {
+    "accepted": 65,
+    "rejected": 0,
+    "points": 9984,
+    "sampled_valid_points": 117,
+    "last_source_stamp_ns": 1795236183512754090,
+    "failure": ""
+  }
+}

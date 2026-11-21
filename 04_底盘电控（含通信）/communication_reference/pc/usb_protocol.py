@@ -50,6 +50,8 @@ class Stream:
         self.bytes_received = 0
         self.frames = {'SP': 0, 'gimbal': 0, 'feedback': 0}
         self.last_gimbal = None
+        self.diagnostics = dict(resync_bytes=0, crc_errors=0, header_crc_errors=0,
+                                invalid_feedback=0, invalid_gimbal=0)
 
     def push(self, data):
         self.bytes_received += len(data)
@@ -66,13 +68,18 @@ class Stream:
                     break
                 size = {(28, 0x21): 34, (40, 0x22): 46}.get(tuple(self.data[1:3]), 0)
             if not size:
+                self.diagnostics['resync_bytes'] += 1
                 del self.data[0]
                 continue
             if len(self.data) < size:
                 break
             frame = bytes(self.data[:size])
-            if crc(frame[:-2]) != int.from_bytes(frame[-2:], 'little') or \
-               (frame[0] == 0x5a and crc(frame[:3],255,0x8c,255) != frame[3]):
+            bad_crc = crc(frame[:-2]) != int.from_bytes(frame[-2:], 'little')
+            bad_header = frame[0] == 0x5a and crc(frame[:3],255,0x8c,255) != frame[3]
+            if bad_crc or bad_header:
+                self.diagnostics['crc_errors'] += int(bad_crc)
+                self.diagnostics['header_crc_errors'] += int(bad_header)
+                self.diagnostics['resync_bytes'] += 1
                 del self.data[0]
                 continue
             del self.data[:size]
@@ -85,11 +92,48 @@ class Stream:
                     sequence=int.from_bytes(frame[10:12], 'little'),
                     session=int.from_bytes(frame[16:20], 'little'),
                     command_received_ms=int.from_bytes(frame[24:28], 'little'))
+            elif size == 46:
+                self.diagnostics['invalid_gimbal'] += 1
             if size == 34:
                 try:
                     decoded = feedback(frame)
                 except ValueError:
-                    pass
+                    self.diagnostics['invalid_feedback'] += 1
                 else:
                     self.frames['feedback'] += 1
                     yield decoded
+
+
+class FeedbackStats:
+    """Count filtering separately from stream corruption and transport gaps."""
+    def __init__(self):
+        self.counts = dict(received=0, accepted=0, wrong_session=0, no_ack_flag=0,
+                           unknown_sequence=0, stale_ack=0, nonincreasing_uptime=0,
+                           active_mismatch=0, not_permitted=0)
+        self.last_received = self.last_accepted = None
+        self.last_uptime = None
+        self.max_feedback_gap_ms = self.max_accepted_gap_ms = self.max_uptime_gap_ms = 0.
+
+    def received(self, frame, now):
+        self.counts['received'] += 1
+        if self.last_received is not None:
+            self.max_feedback_gap_ms = max(self.max_feedback_gap_ms, (now-self.last_received)*1000)
+        if self.last_uptime is not None:
+            delta = (frame['uptime']-self.last_uptime) & 0xffffffff
+            if 0 < delta < 0x80000000:
+                self.max_uptime_gap_ms = max(self.max_uptime_gap_ms, delta)
+        self.last_received, self.last_uptime = now, frame['uptime']
+
+    def reject(self, reason):
+        self.counts[reason] += 1
+
+    def accept(self, now):
+        self.counts['accepted'] += 1
+        if self.last_accepted is not None:
+            self.max_accepted_gap_ms = max(self.max_accepted_gap_ms, (now-self.last_accepted)*1000)
+        self.last_accepted = now
+
+    def report(self):
+        return dict(self.counts, max_feedback_gap_ms=self.max_feedback_gap_ms,
+                    max_accepted_gap_ms=self.max_accepted_gap_ms,
+                    max_uptime_gap_ms=self.max_uptime_gap_ms)

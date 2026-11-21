@@ -1,4 +1,4 @@
-ARM GAS  /tmp/ccewuWXv.s 			page 1
+ARM GAS  /tmp/ccSQGHeB.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
   29:modules/referee/referee_task.c **** static void DeterminRobotID()
   30:modules/referee/referee_task.c **** {
   28              		.loc 1 30 1 view -0
-ARM GAS  /tmp/ccewuWXv.s 			page 2
+ARM GAS  /tmp/ccSQGHeB.s 			page 2
 
 
   29              		.cfi_startproc
@@ -118,7 +118,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
   38:modules/referee/referee_task.c **** static void MyUIRefresh(referee_info_t *referee_recv_info, Referee_Interactive_info_t *_Interactive
   39:modules/referee/referee_task.c **** static void UIChangeCheck(Referee_Interactive_info_t *_Interactive_data); // 模式切换检测
   40:modules/referee/referee_task.c **** static void RobotModeTest(Referee_Interactive_info_t *_Interactive_data); // 测试用函数，实�
-ARM GAS  /tmp/ccewuWXv.s 			page 3
+ARM GAS  /tmp/ccSQGHeB.s 			page 3
 
 
   41:modules/referee/referee_task.c **** 
@@ -178,7 +178,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
   95:modules/referee/referee_task.c ****     UICharRefresh(&referee_recv_info->referee_id, UI_State_dyn[0]);
   96:modules/referee/referee_task.c ****     UICharDraw(&UI_State_dyn[1], "sd1", UI_Graph_ADD, 8, UI_Color_Yellow, 15, 2, 270, 700, "zerofor
   97:modules/referee/referee_task.c ****     UICharRefresh(&referee_recv_info->referee_id, UI_State_dyn[1]);
-ARM GAS  /tmp/ccewuWXv.s 			page 4
+ARM GAS  /tmp/ccSQGHeB.s 			page 4
 
 
   98:modules/referee/referee_task.c ****     UICharDraw(&UI_State_dyn[2], "sd2", UI_Graph_ADD, 8, UI_Color_Orange, 15, 2, 270, 650, "off");
@@ -238,7 +238,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  101 0014 234A     		ldr	r2, .L14+4
  102 0016 1388     		ldrh	r3, [r2]
  103 0018 0133     		adds	r3, r3, #1
-ARM GAS  /tmp/ccewuWXv.s 			page 5
+ARM GAS  /tmp/ccSQGHeB.s 			page 5
 
 
  104 001a 1380     		strh	r3, [r2]	@ movhi
@@ -298,7 +298,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  140:modules/referee/referee_task.c ****         if (_Interactive_data->Chassis_Power_Data.chassis_power_mx >= 18)
  147              		.loc 1 140 9 is_stmt 1 view .LVU38
  148              		.loc 1 140 12 is_stmt 0 view .LVU39
-ARM GAS  /tmp/ccewuWXv.s 			page 6
+ARM GAS  /tmp/ccSQGHeB.s 			page 6
 
 
  149 0056 B3EE027A 		vmov.f32	s14, #1.8e+1
@@ -358,7 +358,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  186              		.loc 1 157 9 is_stmt 1 view .LVU57
  187              		.loc 1 157 39 is_stmt 0 view .LVU58
  188 0082 0123     		movs	r3, #1
-ARM GAS  /tmp/ccewuWXv.s 			page 7
+ARM GAS  /tmp/ccSQGHeB.s 			page 7
 
 
  189 0084 C370     		strb	r3, [r0, #3]
@@ -418,7 +418,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  226 00a4 00000000 		.word	.LANCHOR2
  227              		.cfi_endproc
  228              	.LFE281:
-ARM GAS  /tmp/ccewuWXv.s 			page 8
+ARM GAS  /tmp/ccSQGHeB.s 			page 8
 
 
  230              		.section	.text.UIChangeCheck,"ax",%progbits
@@ -478,7 +478,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  220:modules/referee/referee_task.c ****         }
  221:modules/referee/referee_task.c ****         }
  222:modules/referee/referee_task.c ****         UICharRefresh(&referee_recv_info->referee_id, UI_State_dyn[1]);
-ARM GAS  /tmp/ccewuWXv.s 			page 9
+ARM GAS  /tmp/ccSQGHeB.s 			page 9
 
 
  223:modules/referee/referee_task.c ****         _Interactive_data->Referee_Interactive_Flag.gimbal_flag = 0;
@@ -538,7 +538,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  252 0006 04D0     		beq	.L17
  265:modules/referee/referee_task.c ****     {
  266:modules/referee/referee_task.c ****         _Interactive_data->Referee_Interactive_Flag.chassis_flag = 1;
-ARM GAS  /tmp/ccewuWXv.s 			page 10
+ARM GAS  /tmp/ccSQGHeB.s 			page 10
 
 
  253              		.loc 1 266 9 is_stmt 1 view .LVU81
@@ -598,7 +598,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  294 0034 0373     		strb	r3, [r0, #12]
  295              	.L19:
  280:modules/referee/referee_task.c ****     }
-ARM GAS  /tmp/ccewuWXv.s 			page 11
+ARM GAS  /tmp/ccSQGHeB.s 			page 11
 
 
  281:modules/referee/referee_task.c **** 
@@ -658,7 +658,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  336 0062 07EE903A 		vmov	s15, r3
  337 0066 07EE102A 		vmov	s14, r2
  338 006a F4EE477A 		vcmp.f32	s15, s14
-ARM GAS  /tmp/ccewuWXv.s 			page 12
+ARM GAS  /tmp/ccSQGHeB.s 			page 12
 
 
  339 006e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
@@ -718,7 +718,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  381              	.LC8:
  382 0040 666F6C6C 		.ascii	"follow   \000"
  382      6F772020 
-ARM GAS  /tmp/ccewuWXv.s 			page 13
+ARM GAS  /tmp/ccSQGHeB.s 			page 13
 
 
  382      2000
@@ -778,7 +778,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  431              		.cfi_offset 10, -8
  432              		.cfi_offset 14, -4
  433 0004 8AB0     		sub	sp, sp, #40
-ARM GAS  /tmp/ccewuWXv.s 			page 14
+ARM GAS  /tmp/ccSQGHeB.s 			page 14
 
 
  434              	.LCFI1:
@@ -838,7 +838,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  479 004a B748     		ldr	r0, .L53+8
  480 004c FFF7FEFF 		bl	UICharDraw
  481              	.LVL5:
-ARM GAS  /tmp/ccewuWXv.s 			page 15
+ARM GAS  /tmp/ccSQGHeB.s 			page 15
 
 
  186:modules/referee/referee_task.c ****         case CHASSIS_ROTATE:
@@ -898,7 +898,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  525 00a2 D7F83580 		ldr	r8, [r7, #53]	@ unaligned
  526 00a6 07F13905 		add	r5, r7, #57
  527 00aa EE46     		mov	lr, sp
-ARM GAS  /tmp/ccewuWXv.s 			page 16
+ARM GAS  /tmp/ccSQGHeB.s 			page 16
 
 
  528 00ac 5937     		adds	r7, r7, #89
@@ -958,7 +958,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  573 00fa 4FF48773 		mov	r3, #270
  574 00fe 0393     		str	r3, [sp, #12]
  575 0100 0222     		movs	r2, #2
-ARM GAS  /tmp/ccewuWXv.s 			page 17
+ARM GAS  /tmp/ccSQGHeB.s 			page 17
 
 
  576 0102 0292     		str	r2, [sp, #8]
@@ -1018,7 +1018,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  235:modules/referee/referee_task.c ****         UICharRefresh(&referee_recv_info->referee_id, UI_State_dyn[3]);
  624              		.loc 1 235 9 is_stmt 1 view .LVU163
  235:modules/referee/referee_task.c ****         UICharRefresh(&referee_recv_info->referee_id, UI_State_dyn[3]);
-ARM GAS  /tmp/ccewuWXv.s 			page 18
+ARM GAS  /tmp/ccSQGHeB.s 			page 18
 
 
  625              		.loc 1 235 114 is_stmt 0 view .LVU164
@@ -1078,7 +1078,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  237:modules/referee/referee_task.c ****     }
  676              		.loc 1 237 9 discriminator 4 view .LVU168
  237:modules/referee/referee_task.c ****     }
-ARM GAS  /tmp/ccewuWXv.s 			page 19
+ARM GAS  /tmp/ccSQGHeB.s 			page 19
 
 
  677              		.loc 1 237 67 is_stmt 0 discriminator 4 view .LVU169
@@ -1138,7 +1138,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  723 0230 8EF80030 		strb	r3, [lr]
  724 0234 97E80E00 		ldm	r7, {r1, r2, r3}
  725 0238 3046     		mov	r0, r6
-ARM GAS  /tmp/ccewuWXv.s 			page 20
+ARM GAS  /tmp/ccSQGHeB.s 			page 20
 
 
  726 023a FFF7FEFF 		bl	UICharRefresh
@@ -1198,7 +1198,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  772              	.L28:
  192:modules/referee/referee_task.c ****             break;
  773              		.loc 1 192 13 view .LVU186
-ARM GAS  /tmp/ccewuWXv.s 			page 21
+ARM GAS  /tmp/ccSQGHeB.s 			page 21
 
 
  774 027e 314B     		ldr	r3, .L53+36
@@ -1258,7 +1258,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  824 02e2 0F23     		movs	r3, #15
  825 02e4 0193     		str	r3, [sp, #4]
  826 02e6 0123     		movs	r3, #1
-ARM GAS  /tmp/ccewuWXv.s 			page 22
+ARM GAS  /tmp/ccSQGHeB.s 			page 22
 
 
  827 02e8 0093     		str	r3, [sp]
@@ -1318,7 +1318,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  877 035c 4FF42F73 		mov	r3, #700
  878 0360 0493     		str	r3, [sp, #16]
  879 0362 4FF48773 		mov	r3, #270
-ARM GAS  /tmp/ccewuWXv.s 			page 23
+ARM GAS  /tmp/ccSQGHeB.s 			page 23
 
 
  880 0366 0393     		str	r3, [sp, #12]
@@ -1378,7 +1378,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  926 03b8 0193     		str	r3, [sp, #4]
  927 03ba 0097     		str	r7, [sp]
  928 03bc 0823     		movs	r3, #8
-ARM GAS  /tmp/ccewuWXv.s 			page 24
+ARM GAS  /tmp/ccSQGHeB.s 			page 24
 
 
  929 03be 3A46     		mov	r2, r7
@@ -1438,7 +1438,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  977 0434 ADF80420 		strh	r2, [sp, #4]	@ unaligned
  978 0438 8DF80630 		strb	r3, [sp, #6]
  979 043c D5F80F20 		ldr	r2, [r5, #15]	@ unaligned
-ARM GAS  /tmp/ccewuWXv.s 			page 25
+ARM GAS  /tmp/ccSQGHeB.s 			page 25
 
 
  980 0440 D5F81330 		ldr	r3, [r5, #19]	@ unaligned
@@ -1498,7 +1498,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1030              		.loc 1 44 5 is_stmt 1 view .LVU214
   44:modules/referee/referee_task.c ****     Interactive_data = UI_data;                            // 获取UI绘制需要的机器人状�
  1031              		.loc 1 44 25 is_stmt 0 view .LVU215
-ARM GAS  /tmp/ccewuWXv.s 			page 26
+ARM GAS  /tmp/ccSQGHeB.s 			page 26
 
 
  1032 0004 FFF7FEFF 		bl	RefereeInit
@@ -1558,7 +1558,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1078 0002 054C     		ldr	r4, .L63
  1079 0004 2068     		ldr	r0, [r4]
  1080 0006 FFF7FEFF 		bl	RobotModeTest
-ARM GAS  /tmp/ccewuWXv.s 			page 27
+ARM GAS  /tmp/ccSQGHeB.s 			page 27
 
 
  1081              	.LVL27:
@@ -1618,7 +1618,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1131 0034 73686F6F 		.ascii	"shoot:\000"
  1131      743A00
  1132 003b 00       		.align	2
-ARM GAS  /tmp/ccewuWXv.s 			page 28
+ARM GAS  /tmp/ccSQGHeB.s 			page 28
 
 
  1133              	.LC28:
@@ -1678,7 +1678,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
   64:modules/referee/referee_task.c ****         vTaskDelete(NULL); // 如果没有初始化裁判系统则直接删除ui任务
  1183              		.loc 1 64 27 is_stmt 0 view .LVU230
  1184 0006 044B     		ldr	r3, .L77
-ARM GAS  /tmp/ccewuWXv.s 			page 29
+ARM GAS  /tmp/ccSQGHeB.s 			page 29
 
 
  1185 0008 1B68     		ldr	r3, [r3]
@@ -1738,7 +1738,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1227 0044 4FF40773 		mov	r3, #540
  1228 0048 0593     		str	r3, [sp, #20]
  1229 004a 40F2BA42 		movw	r2, #1210
-ARM GAS  /tmp/ccewuWXv.s 			page 30
+ARM GAS  /tmp/ccSQGHeB.s 			page 30
 
 
  1230 004e 0492     		str	r2, [sp, #16]
@@ -1798,7 +1798,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1281 00c6 04F12D09 		add	r9, r4, #45
  1282 00ca 40F20323 		movw	r3, #515
  1283 00ce 0593     		str	r3, [sp, #20]
-ARM GAS  /tmp/ccewuWXv.s 			page 31
+ARM GAS  /tmp/ccSQGHeB.s 			page 31
 
 
  1284 00d0 40F25642 		movw	r2, #1110
@@ -1858,7 +1858,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1336 015a 94F82C20 		ldrb	r2, [r4, #44]	@ zero_extendqisi2
  1337 015e 1980     		strh	r1, [r3]	@ unaligned
  1338 0160 9A70     		strb	r2, [r3, #2]
-ARM GAS  /tmp/ccewuWXv.s 			page 32
+ARM GAS  /tmp/ccSQGHeB.s 			page 32
 
 
  1339 0162 0DEB0B03 		add	r3, sp, fp
@@ -1918,7 +1918,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
   83:modules/referee/referee_task.c ****     UICharRefresh(&referee_recv_info->referee_id, UI_State_sta[1]);
  1391              		.loc 1 83 5 view .LVU250
  1392 01f2 614B     		ldr	r3, .L79+40
-ARM GAS  /tmp/ccewuWXv.s 			page 33
+ARM GAS  /tmp/ccSQGHeB.s 			page 33
 
 
  1393 01f4 0593     		str	r3, [sp, #20]
@@ -1978,7 +1978,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1443 0262 0223     		movs	r3, #2
  1444 0264 0293     		str	r3, [sp, #8]
  1445 0266 0F23     		movs	r3, #15
-ARM GAS  /tmp/ccewuWXv.s 			page 34
+ARM GAS  /tmp/ccSQGHeB.s 			page 34
 
 
  1446 0268 0193     		str	r3, [sp, #4]
@@ -2038,7 +2038,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1496 02d0 0193     		str	r3, [sp, #4]
  1497 02d2 0523     		movs	r3, #5
  1498 02d4 0093     		str	r3, [sp]
-ARM GAS  /tmp/ccewuWXv.s 			page 35
+ARM GAS  /tmp/ccSQGHeB.s 			page 35
 
 
  1499 02d6 0823     		movs	r3, #8
@@ -2098,7 +2098,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1549 0348 0093     		str	r3, [sp]
  1550 034a 0823     		movs	r3, #8
  1551 034c 0122     		movs	r2, #1
-ARM GAS  /tmp/ccewuWXv.s 			page 36
+ARM GAS  /tmp/ccSQGHeB.s 			page 36
 
 
  1552 034e 21E0     		b	.L80
@@ -2158,7 +2158,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1602 03d0 CDF80890 		str	r9, [sp, #8]
  1603 03d4 CDF80480 		str	r8, [sp, #4]
  1604 03d8 0023     		movs	r3, #0
-ARM GAS  /tmp/ccewuWXv.s 			page 37
+ARM GAS  /tmp/ccSQGHeB.s 			page 37
 
 
  1605 03da 0093     		str	r3, [sp]
@@ -2218,7 +2218,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1654 044c E368     		ldr	r3, [r4, #12]	@ unaligned
  1655 044e 0FC5     		stmia	r5!, {r0, r1, r2, r3}
  1656 0450 1034     		adds	r4, r4, #16
-ARM GAS  /tmp/ccewuWXv.s 			page 38
+ARM GAS  /tmp/ccSQGHeB.s 			page 38
 
 
  1657 0452 2F46     		mov	r7, r5
@@ -2278,7 +2278,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1707 04bc 2E46     		mov	r6, r5
  1708 04be BC42     		cmp	r4, r7
  1709 04c0 F5D1     		bne	.L73
-ARM GAS  /tmp/ccewuWXv.s 			page 39
+ARM GAS  /tmp/ccSQGHeB.s 			page 39
 
 
  1710 04c2 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
@@ -2338,7 +2338,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1760 052c 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
  1761 052e 2B70     		strb	r3, [r5]
  1762 0530 4946     		mov	r1, r9
-ARM GAS  /tmp/ccewuWXv.s 			page 40
+ARM GAS  /tmp/ccSQGHeB.s 			page 40
 
 
  1763 0532 4246     		mov	r2, r8
@@ -2398,7 +2398,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1812 0598 0393     		str	r3, [sp, #12]
  1813 059a 0297     		str	r7, [sp, #8]
  1814 059c 1223     		movs	r3, #18
-ARM GAS  /tmp/ccewuWXv.s 			page 41
+ARM GAS  /tmp/ccSQGHeB.s 			page 41
 
 
  1815 059e 0193     		str	r3, [sp, #4]
@@ -2458,7 +2458,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1865 060c 0723     		movs	r3, #7
  1866 060e 0122     		movs	r2, #1
  1867 0610 3749     		ldr	r1, .L82+56
-ARM GAS  /tmp/ccewuWXv.s 			page 42
+ARM GAS  /tmp/ccSQGHeB.s 			page 42
 
 
  1868 0612 2046     		mov	r0, r4
@@ -2518,7 +2518,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1917 0680 0122     		movs	r2, #1
  1918 0682 1D49     		ldr	r1, .L82+64
  1919 0684 3046     		mov	r0, r6
-ARM GAS  /tmp/ccewuWXv.s 			page 43
+ARM GAS  /tmp/ccSQGHeB.s 			page 43
 
 
  1920 0686 FFF7FEFF 		bl	UILineDraw
@@ -2578,7 +2578,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  1972 0716 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
  1973              		.cfi_endproc
  1974              	.LFE280:
-ARM GAS  /tmp/ccewuWXv.s 			page 44
+ARM GAS  /tmp/ccSQGHeB.s 			page 44
 
 
  1976              		.global	UI_Seq
@@ -2638,7 +2638,7 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  2030              		.section	.bss.referee_recv_info,"aw",%nobits
  2031              		.align	2
  2032              		.set	.LANCHOR0,. + 0
-ARM GAS  /tmp/ccewuWXv.s 			page 45
+ARM GAS  /tmp/ccSQGHeB.s 			page 45
 
 
  2035              	referee_recv_info:
@@ -2656,67 +2656,67 @@ ARM GAS  /tmp/ccewuWXv.s 			page 1
  2047              		.file 10 "modules/referee/referee_UI.h"
  2048              		.file 11 "Middlewares/Third_Party/FreeRTOS/Source/include/task.h"
  2049              		.file 12 "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
-ARM GAS  /tmp/ccewuWXv.s 			page 46
+ARM GAS  /tmp/ccSQGHeB.s 			page 46
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 referee_task.c
-     /tmp/ccewuWXv.s:18     .text.DeterminRobotID:0000000000000000 $t
-     /tmp/ccewuWXv.s:25     .text.DeterminRobotID:0000000000000000 DeterminRobotID
-     /tmp/ccewuWXv.s:64     .text.DeterminRobotID:0000000000000028 $d
-     /tmp/ccewuWXv.s:69     .text.RobotModeTest:0000000000000000 $t
-     /tmp/ccewuWXv.s:75     .text.RobotModeTest:0000000000000000 RobotModeTest
-     /tmp/ccewuWXv.s:116    .text.RobotModeTest:000000000000002c $d
-     /tmp/ccewuWXv.s:120    .text.RobotModeTest:0000000000000030 $t
-     /tmp/ccewuWXv.s:225    .text.RobotModeTest:00000000000000a0 $d
-     /tmp/ccewuWXv.s:231    .text.UIChangeCheck:0000000000000000 $t
-     /tmp/ccewuWXv.s:237    .text.UIChangeCheck:0000000000000000 UIChangeCheck
-     /tmp/ccewuWXv.s:356    .rodata.MyUIRefresh.str1.4:0000000000000000 $d
-     /tmp/ccewuWXv.s:408    .text.MyUIRefresh:0000000000000000 $t
-     /tmp/ccewuWXv.s:414    .text.MyUIRefresh:0000000000000000 MyUIRefresh
-     /tmp/ccewuWXv.s:458    .text.MyUIRefresh:0000000000000022 $d
-     /tmp/ccewuWXv.s:462    .text.MyUIRefresh:000000000000002a $t
-     /tmp/ccewuWXv.s:859    .text.MyUIRefresh:0000000000000320 $d
-     /tmp/ccewuWXv.s:875    .text.MyUIRefresh:0000000000000358 $t
-     /tmp/ccewuWXv.s:995    .text.MyUIRefresh:0000000000000458 $d
-     /tmp/ccewuWXv.s:1009   .text.UITaskInit:0000000000000000 $t
-     /tmp/ccewuWXv.s:1016   .text.UITaskInit:0000000000000000 UITaskInit
-     /tmp/ccewuWXv.s:1053   .text.UITaskInit:0000000000000018 $d
-     /tmp/ccewuWXv.s:1059   .text.UITask:0000000000000000 $t
-     /tmp/ccewuWXv.s:1066   .text.UITask:0000000000000000 UITask
-     /tmp/ccewuWXv.s:1093   .text.UITask:0000000000000018 $d
-     /tmp/ccewuWXv.s:1099   .rodata.MyUIInit.str1.4:0000000000000000 $d
-     /tmp/ccewuWXv.s:1154   .text.MyUIInit:0000000000000000 $t
-     /tmp/ccewuWXv.s:1161   .text.MyUIInit:0000000000000000 MyUIInit
-     /tmp/ccewuWXv.s:1197   .text.MyUIInit:0000000000000018 $d
-     /tmp/ccewuWXv.s:1200   .text.MyUIInit:000000000000001c $t
-     /tmp/ccewuWXv.s:1556   .text.MyUIInit:0000000000000350 $d
-     /tmp/ccewuWXv.s:1574   .text.MyUIInit:0000000000000394 $t
-     /tmp/ccewuWXv.s:1941   .text.MyUIInit:00000000000006b8 $d
-     /tmp/ccewuWXv.s:1960   .text.MyUIInit:0000000000000700 $t
-     /tmp/ccewuWXv.s:1994   .bss.UI_Seq:0000000000000000 UI_Seq
-     /tmp/ccewuWXv.s:1978   .bss.Interactive_data:0000000000000000 $d
-     /tmp/ccewuWXv.s:1982   .bss.Interactive_data:0000000000000000 Interactive_data
-     /tmp/ccewuWXv.s:1985   .bss.UI_Energy:0000000000000000 $d
-     /tmp/ccewuWXv.s:1989   .bss.UI_Energy:0000000000000000 UI_Energy
-     /tmp/ccewuWXv.s:1995   .bss.UI_Seq:0000000000000000 $d
-     /tmp/ccewuWXv.s:1997   .bss.UI_State_dyn:0000000000000000 $d
-     /tmp/ccewuWXv.s:2001   .bss.UI_State_dyn:0000000000000000 UI_State_dyn
-     /tmp/ccewuWXv.s:2004   .bss.UI_State_sta:0000000000000000 $d
-     /tmp/ccewuWXv.s:2008   .bss.UI_State_sta:0000000000000000 UI_State_sta
-     /tmp/ccewuWXv.s:2011   .bss.UI_shoot_line:0000000000000000 $d
-     /tmp/ccewuWXv.s:2015   .bss.UI_shoot_line:0000000000000000 UI_shoot_line
-     /tmp/ccewuWXv.s:2021   .bss.count:0000000000000000 count
-     /tmp/ccewuWXv.s:2022   .bss.count:0000000000000000 $d
-     /tmp/ccewuWXv.s:2024   .bss.count1:0000000000000000 $d
-     /tmp/ccewuWXv.s:2028   .bss.count1:0000000000000000 count1
-     /tmp/ccewuWXv.s:2031   .bss.referee_recv_info:0000000000000000 $d
-     /tmp/ccewuWXv.s:2035   .bss.referee_recv_info:0000000000000000 referee_recv_info
+     /tmp/ccSQGHeB.s:18     .text.DeterminRobotID:0000000000000000 $t
+     /tmp/ccSQGHeB.s:25     .text.DeterminRobotID:0000000000000000 DeterminRobotID
+     /tmp/ccSQGHeB.s:64     .text.DeterminRobotID:0000000000000028 $d
+     /tmp/ccSQGHeB.s:69     .text.RobotModeTest:0000000000000000 $t
+     /tmp/ccSQGHeB.s:75     .text.RobotModeTest:0000000000000000 RobotModeTest
+     /tmp/ccSQGHeB.s:116    .text.RobotModeTest:000000000000002c $d
+     /tmp/ccSQGHeB.s:120    .text.RobotModeTest:0000000000000030 $t
+     /tmp/ccSQGHeB.s:225    .text.RobotModeTest:00000000000000a0 $d
+     /tmp/ccSQGHeB.s:231    .text.UIChangeCheck:0000000000000000 $t
+     /tmp/ccSQGHeB.s:237    .text.UIChangeCheck:0000000000000000 UIChangeCheck
+     /tmp/ccSQGHeB.s:356    .rodata.MyUIRefresh.str1.4:0000000000000000 $d
+     /tmp/ccSQGHeB.s:408    .text.MyUIRefresh:0000000000000000 $t
+     /tmp/ccSQGHeB.s:414    .text.MyUIRefresh:0000000000000000 MyUIRefresh
+     /tmp/ccSQGHeB.s:458    .text.MyUIRefresh:0000000000000022 $d
+     /tmp/ccSQGHeB.s:462    .text.MyUIRefresh:000000000000002a $t
+     /tmp/ccSQGHeB.s:859    .text.MyUIRefresh:0000000000000320 $d
+     /tmp/ccSQGHeB.s:875    .text.MyUIRefresh:0000000000000358 $t
+     /tmp/ccSQGHeB.s:995    .text.MyUIRefresh:0000000000000458 $d
+     /tmp/ccSQGHeB.s:1009   .text.UITaskInit:0000000000000000 $t
+     /tmp/ccSQGHeB.s:1016   .text.UITaskInit:0000000000000000 UITaskInit
+     /tmp/ccSQGHeB.s:1053   .text.UITaskInit:0000000000000018 $d
+     /tmp/ccSQGHeB.s:1059   .text.UITask:0000000000000000 $t
+     /tmp/ccSQGHeB.s:1066   .text.UITask:0000000000000000 UITask
+     /tmp/ccSQGHeB.s:1093   .text.UITask:0000000000000018 $d
+     /tmp/ccSQGHeB.s:1099   .rodata.MyUIInit.str1.4:0000000000000000 $d
+     /tmp/ccSQGHeB.s:1154   .text.MyUIInit:0000000000000000 $t
+     /tmp/ccSQGHeB.s:1161   .text.MyUIInit:0000000000000000 MyUIInit
+     /tmp/ccSQGHeB.s:1197   .text.MyUIInit:0000000000000018 $d
+     /tmp/ccSQGHeB.s:1200   .text.MyUIInit:000000000000001c $t
+     /tmp/ccSQGHeB.s:1556   .text.MyUIInit:0000000000000350 $d
+     /tmp/ccSQGHeB.s:1574   .text.MyUIInit:0000000000000394 $t
+     /tmp/ccSQGHeB.s:1941   .text.MyUIInit:00000000000006b8 $d
+     /tmp/ccSQGHeB.s:1960   .text.MyUIInit:0000000000000700 $t
+     /tmp/ccSQGHeB.s:1994   .bss.UI_Seq:0000000000000000 UI_Seq
+     /tmp/ccSQGHeB.s:1978   .bss.Interactive_data:0000000000000000 $d
+     /tmp/ccSQGHeB.s:1982   .bss.Interactive_data:0000000000000000 Interactive_data
+     /tmp/ccSQGHeB.s:1985   .bss.UI_Energy:0000000000000000 $d
+     /tmp/ccSQGHeB.s:1989   .bss.UI_Energy:0000000000000000 UI_Energy
+     /tmp/ccSQGHeB.s:1995   .bss.UI_Seq:0000000000000000 $d
+     /tmp/ccSQGHeB.s:1997   .bss.UI_State_dyn:0000000000000000 $d
+     /tmp/ccSQGHeB.s:2001   .bss.UI_State_dyn:0000000000000000 UI_State_dyn
+     /tmp/ccSQGHeB.s:2004   .bss.UI_State_sta:0000000000000000 $d
+     /tmp/ccSQGHeB.s:2008   .bss.UI_State_sta:0000000000000000 UI_State_sta
+     /tmp/ccSQGHeB.s:2011   .bss.UI_shoot_line:0000000000000000 $d
+     /tmp/ccSQGHeB.s:2015   .bss.UI_shoot_line:0000000000000000 UI_shoot_line
+     /tmp/ccSQGHeB.s:2021   .bss.count:0000000000000000 count
+     /tmp/ccSQGHeB.s:2022   .bss.count:0000000000000000 $d
+     /tmp/ccSQGHeB.s:2024   .bss.count1:0000000000000000 $d
+     /tmp/ccSQGHeB.s:2028   .bss.count1:0000000000000000 count1
+     /tmp/ccSQGHeB.s:2031   .bss.referee_recv_info:0000000000000000 $d
+     /tmp/ccSQGHeB.s:2035   .bss.referee_recv_info:0000000000000000 referee_recv_info
 
 UNDEFINED SYMBOLS
 UICharDraw
 UICharRefresh
-ARM GAS  /tmp/ccewuWXv.s 			page 47
+ARM GAS  /tmp/ccSQGHeB.s 			page 47
 
 
 UIFloatDraw

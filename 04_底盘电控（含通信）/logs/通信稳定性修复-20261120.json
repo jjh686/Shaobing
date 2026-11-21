@@ -1,0 +1,124 @@
+{
+  "release": "通信稳定性修复-20261120-185644",
+  "targets": [
+    {
+      "board": "底盘 C 板",
+      "directory": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework/release/通信稳定性修复-20261120-185644",
+      "firmware": "DiPan_Board"
+    },
+    {
+      "board": "云台 C 板",
+      "directory": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/communication_reference/gimbal_firmware/release/通信稳定性修复-20261120-185644",
+      "firmware": "Gimbal_USB_CAN1"
+    }
+  ],
+  "software_validation": {
+    "hardware_accessed": false,
+    "flashed": false,
+    "passed": true,
+    "host_executables": 11,
+    "fifo_regression_cases": 2,
+    "usb_diagnostic_tests": 5,
+    "motor_pty_tests": 7,
+    "lidar_ros_pty_tests": 13,
+    "robot_comm_api_modes": 2,
+    "robot_comm_groups_per_mode": 7,
+    "checks": [
+      "IRQ snapshot/queue/USB/feedback crosses 1ms without false timeout",
+      "genuine 11ms queue expiry still rejected; clock wraps",
+      "all 24 SBUS split points, concatenated frames, resync, failsafe and UART errors",
+      "actual UART DMA rearm before parse; separate stable parser buffer",
+      "actual USB CDC BUSY retry, ACK priority, original 10ms deadline, disconnect reset",
+      "locked and motion-enabled firmware ports each run 10000 simulated round trips"
+    ],
+    "host_results": {
+      "hardware_accessed": false,
+      "variants": "Explicit locked=0/0 and enabled=1/1 host simulations; ARM configuration is recorded separately",
+      "tests": [
+        {
+          "name": "remote_can",
+          "exit_code": 0,
+          "output": "PASS remote CAN: channel encoding, CRC, order/drop/DLC/age, duplicate, sequence/tick wrap, source age, lost link, CH10 stop, fault generation, reconnect/rearm"
+        },
+        {
+          "name": "usb_tx",
+          "exit_code": 0,
+          "output": "PASS USB telemetry: ACK priority, bounded latest frames, true expiry, disconnect reset and clock wrap"
+        },
+        {
+          "name": "usb_bsp",
+          "exit_code": 0,
+          "output": "PASS actual USB BSP: CDC BUSY retry, ACK priority, original timestamp deadline and disconnect reset"
+        },
+        {
+          "name": "sbus",
+          "exit_code": 0,
+          "output": "PASS actual SBUS source: all 24 split points, concatenation, resync after missing bytes, raw channels, lost/failsafe, invalid CH8, UART error, partial timeout, clock wrap, real timeout"
+        },
+        {
+          "name": "uart_rx",
+          "exit_code": 0,
+          "output": "PASS actual UART BSP: DMA rearmed before parser, stable copied bytes, short events and classified errors"
+        },
+        {
+          "name": "protocol",
+          "exit_code": 0,
+          "output": "PASS protocol: typed CAN fields, CRC/order/version/DLC/EXT/RTR/drop/timeout, quantization, wrap, BUSY expiry, session STOP, USB SP mux"
+        },
+        {
+          "name": "can_hal",
+          "exit_code": 0,
+          "output": "PASS independent CAN1/CAN2 hardware mailboxes: in-flight group blocks replacement, expiry aborts only the owning bus, USB reset abort"
+        },
+        {
+          "name": "core_locked",
+          "exit_code": 0,
+          "output": "PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap"
+        },
+        {
+          "name": "chain_locked",
+          "exit_code": 0,
+          "output": "PASS IRQ timing: RC snapshot, chassis queue, USB ingress and feedback cross 1ms; tick wrap; genuine 11ms expiry still rejected\nPASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+        },
+        {
+          "name": "core_enabled_simulation",
+          "exit_code": 0,
+          "output": "PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap"
+        },
+        {
+          "name": "chain_enabled_simulation",
+          "exit_code": 0,
+          "output": "PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs\nPASS IRQ timing: RC snapshot, chassis queue, USB ingress and feedback cross 1ms; tick wrap; genuine 11ms expiry still rejected\nPASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+        }
+      ],
+      "passed": true,
+      "duration_seconds": 3.1040758630006167
+    },
+    "fifo_results": {
+      "passed": true,
+      "hardware_accessed": false,
+      "cases": [
+        {
+          "variant": "legacy_alternating",
+          "exit_code": -6,
+          "expected_result_observed": true,
+          "output": "legacy_alternating: tests/test_chain.c:80: main: Assertion `ack_count==1&&ack.sequence==1&&(ack.status&RM_STATUS_ACK_VALID)' failed."
+        },
+        {
+          "variant": "fixed_single_fifo",
+          "exit_code": 0,
+          "expected_result_observed": true,
+          "output": "PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs\nPASS IRQ timing: RC snapshot, chassis queue, USB ingress and feedback cross 1ms; tick wrap; genuine 11ms expiry still rejected\nPASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect"
+        }
+      ],
+      "negative_test_sources": "Generated only under build/tests/fifo-regression; not firmware inputs",
+      "conclusion": "Deferred RX FIFO interrupt delivery reproduces legacy group reordering; explicit same-FIFO policy preserves order in this simulation."
+    }
+  },
+  "current_gimbal": {
+    "source": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台",
+    "directory": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台/release/通信稳定性修复-05整合-20261120",
+    "firmware": "Gimbal_ChassisLink",
+    "note": "原 targets 中云台项保留历史构建来源，现用云台改用05重新构建；底盘项继续适用。"
+  }
+}

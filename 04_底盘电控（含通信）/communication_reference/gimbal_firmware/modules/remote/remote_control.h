@@ -17,6 +17,14 @@
 #include "main.h"
 #include "usart.h"
 
+typedef struct {
+    uint32_t valid_frames,frame_lost,failsafe,bad_tail,bad_flags,partial_timeouts;
+    uint32_t discarded_bytes,invalid_switches,uart_errors,timeouts,estop_frames;
+    uint32_t max_valid_gap_ms;
+    int16_t raw_channels[10];
+} FS_SbusDiagnostics;
+extern volatile FS_SbusDiagnostics fs_sbus_diag;
+
 // 用于遥控器数据读取,遥控器数据是一个大小为2的数组
 #define LAST 1
 #define TEMP 0

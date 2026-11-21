@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
 # Source from a launcher/build script. ROS Humble setup does not support set -u.
 RM_NAV_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-RM_NAV_RUNTIME="/home/wangjiaming/.local/share/rm_sentry_nav_20261110"
+RM_NAV_RUNTIME="${RM_NAV_RUNTIME:-$HOME/.cache/rm_sentry_nav}"
 export RM_NAV_ROOT RM_NAV_RUNTIME
 python3 - "$RM_NAV_ROOT" "$RM_NAV_RUNTIME" <<'PY'
 from pathlib import Path
 import sys
 source, runtime = map(Path, sys.argv[1:])
-old = Path('/home/wangjiaming/桌面/pb2025_sentry_nav-main')
 runtime.mkdir(parents=True, exist_ok=True)
-links = {runtime/'source': source, runtime/'deps/small_gicp': old.parent/'small_gicp'}
-for name in ('source', 'build', 'install'):
-    links[Path('/tmp/pb2025_nav_'+name)] = old if name == 'source' else old/('runtime_'+name)
+links = {runtime/'source': source}
 for link, target in links.items():
     link.parent.mkdir(parents=True, exist_ok=True)
     if link.exists() or link.is_symlink():
@@ -24,8 +21,16 @@ for name in ('build', 'install', 'log'):
 PY
 unset LD_LIBRARY_PATH AMENT_PREFIX_PATH CMAKE_PREFIX_PATH COLCON_PREFIX_PATH PYTHONPATH
 source /opt/ros/humble/setup.bash
-# Load only the proven MID-360S driver, not the old navigation packages.
-source /tmp/pb2025_nav_install/livox_ros_driver2/share/livox_ros_driver2/local_setup.bash
+RM_LIVOX_PREFIX="${RM_LIVOX_PREFIX:-$HOME/.cache/rm_lidar_link_test/install}"
+if [[ -f "$RM_LIVOX_PREFIX/local_setup.bash" ]]; then
+    source "$RM_LIVOX_PREFIX/local_setup.bash"
+fi
+case "$(uname -m)" in
+    x86_64) rm_nav_sdk_arch=amd64 ;;
+    aarch64) rm_nav_sdk_arch=arm64 ;;
+    *) rm_nav_sdk_arch=unsupported ;;
+esac
+export LD_LIBRARY_PATH="$RM_NAV_ROOT/外部依赖源码/livox_ros_driver2/Livox-SDK2/lib/$rm_nav_sdk_arch${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 if [[ -f "$RM_NAV_RUNTIME/install/local_setup.bash" ]]; then
     source "$RM_NAV_RUNTIME/install/local_setup.bash"
 fi

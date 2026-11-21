@@ -260,3 +260,36 @@ void HAL_CAN_TxMailbox1CompleteCallback(CAN_HandleTypeDef *hcan) {
 void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan) { 
     CANSendFIFOTransmit(hcan == &hcan1 ? &CAN1_Send_FIFO : &CAN2_Send_FIFO);
 }
+
+/* Error notifications are enabled only for the inter-board controller. */
+CANBusDiagnostics can_bus_diagnostics[2];
+void CANUpdateDiagnostics(CAN_HandleTypeDef *can)
+{
+    uint32_t irq=__get_PRIMASK();__disable_irq();
+    CANBusDiagnostics *d=&can_bus_diagnostics[can==&hcan1?0:1];
+    uint32_t esr=can->Instance->ESR;d->esr=esr;d->tsr=can->Instance->TSR;
+    d->tec=(esr>>16)&255u;d->rec=(esr>>24)&255u;
+    if(d->tec>d->max_tec)d->max_tec=d->tec;
+    if(d->rec>d->max_rec)d->max_rec=d->rec;
+    __set_PRIMASK(irq);
+}
+void CANEnableDiagnostics(CAN_HandleTypeDef *can)
+{
+    if(HAL_CAN_ActivateNotification(can,CAN_IT_ERROR|CAN_IT_LAST_ERROR_CODE|
+       CAN_IT_BUSOFF|CAN_IT_ERROR_WARNING|CAN_IT_ERROR_PASSIVE|
+       CAN_IT_RX_FIFO0_OVERRUN|CAN_IT_RX_FIFO1_OVERRUN)!=HAL_OK)
+        can_bus_diagnostics[can==&hcan1?0:1].notification_errors++;
+}
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *can)
+{
+    CANBusDiagnostics *d=&can_bus_diagnostics[can==&hcan1?0:1];
+    uint32_t error=HAL_CAN_GetError(can);d->error_events++;d->last_error=error;d->latched_errors|=error;
+    if(error&HAL_CAN_ERROR_BOF)d->bus_off_events++;
+    if(error&HAL_CAN_ERROR_RX_FOV0)d->fifo0_overruns++;
+    if(error&HAL_CAN_ERROR_RX_FOV1)d->fifo1_overruns++;
+    if(error&(HAL_CAN_ERROR_TX_TERR0|HAL_CAN_ERROR_TX_TERR1|HAL_CAN_ERROR_TX_TERR2|
+              HAL_CAN_ERROR_TX_ALST0|HAL_CAN_ERROR_TX_ALST1|HAL_CAN_ERROR_TX_ALST2))d->tx_errors++;
+    CANUpdateDiagnostics(can);
+    /* Keep events independent rather than recounting HAL's sticky old bits. */
+    HAL_CAN_ResetError(can);
+}

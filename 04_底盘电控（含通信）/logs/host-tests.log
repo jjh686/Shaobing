@@ -1,5 +1,13 @@
 BUILD remote_can
 PASS remote CAN: channel encoding, CRC, order/drop/DLC/age, duplicate, sequence/tick wrap, source age, lost link, CH10 stop, fault generation, reconnect/rearm
+BUILD usb_tx
+PASS USB telemetry: ACK priority, bounded latest frames, true expiry, disconnect reset and clock wrap
+BUILD usb_bsp
+PASS actual USB BSP: CDC BUSY retry, ACK priority, original timestamp deadline and disconnect reset
+BUILD sbus
+PASS actual SBUS source: all 24 split points, concatenation, resync after missing bytes, raw channels, lost/failsafe, invalid CH8, UART error, partial timeout, clock wrap, real timeout
+BUILD uart_rx
+PASS actual UART BSP: DMA rearmed before parser, stable copied bytes, short events and classified errors
 BUILD protocol
 PASS protocol: typed CAN fields, CRC/order/version/DLC/EXT/RTR/drop/timeout, quantization, wrap, BUSY expiry, session STOP, USB SP mux
 BUILD can_hal
@@ -7,9 +15,11 @@ PASS independent CAN1/CAN2 hardware mailboxes: in-flight group blocks replacemen
 BUILD core_locked
 PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap
 BUILD chain_locked
+PASS IRQ timing: RC snapshot, chassis queue, USB ingress and feedback cross 1ms; tick wrap; genuine 11ms expiry still rejected
 PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect
 BUILD core_enabled_simulation
 PASS module core: independent instances, STOP/session/sequence wrap, replay, CRC, backlog fault, RC loss, TTL and tick wrap
 BUILD chain_enabled_simulation
 PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs
+PASS IRQ timing: RC snapshot, chassis queue, USB ingress and feedback cross 1ms; tick wrap; genuine 11ms expiry still rejected
 PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect

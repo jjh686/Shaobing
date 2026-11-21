@@ -6,7 +6,8 @@
 #define NC_FEEDBACK_BASE 0x338u
 #define NC_VERSION 0x0100u
 #define NC_GROUP_MS 10u
-#define NC_TX_MS 8u /* Match 04; finish/abort before the 10 ms assembly window. */
+/* Finish or abort transmission before the peer's 10 ms assembly deadline. */
+#define NC_TX_MS 8u
 #define NC_MAX_TTL_MS 150u
 #define NC_FAULT_LOCK 0x0001u
 #define NC_FAULT_RC 0x0002u
@@ -14,7 +15,10 @@
 #define NC_FAULT_UNITS 0x0008u
 #define NC_FAULT_RX 0x0010u
 typedef struct { uint8_t data[3][8]; uint16_t base; } nc_group_t;
-typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_rx_t;
+typedef struct {
+    uint32_t malformed,order_errors,group_timeouts,crc_errors,restarted_groups;
+} nc_rx_stats_t;
+typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; nc_rx_stats_t stats; } nc_rx_t;
 typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_tx_t;
 uint16_t nc_crc(const uint8_t *,unsigned);
 bool nc_command_group(const rm_command_t *,nc_group_t *);

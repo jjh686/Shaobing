@@ -1,0 +1,1 @@
+#define RC_TIMEOUT_MS 100u

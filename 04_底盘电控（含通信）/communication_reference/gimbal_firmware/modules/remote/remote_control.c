@@ -32,6 +32,9 @@ static uint8_t rc_init_flag = 0; // 遥控器初始化标志位
 /* [USB_SP 修改 04 开始] 保留992中位与原通道，拒绝无效SBUS、真实心跳、故障代数快照和迟到离线回调复核。 */
 static volatile uint8_t fs_seen, fs_fault = 1;
 static volatile uint32_t fs_last_valid_tick, fs_fault_generation;
+volatile FS_SbusDiagnostics fs_sbus_diag;
+static uint8_t fs_partial[SBUS_FRAME_SIZE],fs_partial_len;
+static uint32_t fs_partial_ms,fs_uart_errors_seen;
 /* [USB_SP 修改 04 结束] */
 
 // 遥控器拥有的串口实例,因为遥控器是单例,所以这里只有一个,就不封装了
@@ -116,6 +119,11 @@ static void sbus_to_rc(const uint8_t *sbus_buf)
  */
 static void fs_to_rc(const uint8_t *sbus_buf)
 {
+    for(unsigned i=0;i<10;i++){
+        unsigned bit=i*11u,index=1u+bit/8u;
+        uint32_t word=sbus_buf[index]|((uint32_t)sbus_buf[index+1]<<8)|((uint32_t)sbus_buf[index+2]<<16);
+        fs_sbus_diag.raw_channels[i]=(word>>(bit%8u))&0x07ffu;
+    }
 /* [USB_SP 修改 05 开始] 保留992中位与原通道，拒绝无效SBUS、真实心跳、故障代数快照和迟到离线回调复核。 */
     fs_rc_ctrl[LAST] = fs_rc_ctrl[TEMP];
     fs_rc_ctrl[TEMP].rc.rocker_r_ = ((sbus_buf[1]     | sbus_buf[2] << 8) & 0x07FF)-FS_RC_MID;
@@ -191,29 +199,64 @@ static void RemoteControlRxCallback()
  * @brief 对fs_to_rc的简单封装,用于注册到bsp_usart的回调函数中
  *
  */
-static void FS_RemoteControlRxCallback()
+static void fs_uart_fault(void)
 {
-/* [USB_SP 修改 10 开始] 保留992中位与原通道，拒绝无效SBUS、真实心跳、故障代数快照和迟到离线回调复核。 */
-    const uint8_t *frame = rc_usart_instance->recv_buff;
-    if (rc_usart_instance->recv_len != SBUS_FRAME_SIZE || frame[0] != 0x0f ||
-        (frame[24] != 0 && (frame[24] & 0x0f) != 0x04) || (frame[23] & 0x0c)) {
-        ++fs_fault_generation;
-        fs_fault = 1; /* Includes SBUS frame-lost and failsafe bits. */
-        return;
+    uint32_t irq=__get_PRIMASK();__disable_irq();
+    uint32_t errors=rc_usart_instance->error_events;
+    if(errors!=fs_uart_errors_seen){
+        fs_sbus_diag.uart_errors+=errors-fs_uart_errors_seen;fs_uart_errors_seen=errors;
+        fs_partial_len=0;fs_fault=1;++fs_fault_generation;
     }
-    if (fs_seen && (uint32_t)(HAL_GetTick() - fs_last_valid_tick) > RC_TIMEOUT_MS)
-        ++fs_fault_generation;
+    __set_PRIMASK(irq);
+}
+
+static uint8_t fs_accept_frame(const uint8_t *frame,uint32_t now)
+{
+    if(frame[23]&0xf0){fs_sbus_diag.bad_flags++;++fs_fault_generation;fs_fault=1;return 0;}
+    if(frame[23]&0x0c){
+        if(frame[23]&0x04)fs_sbus_diag.frame_lost++;
+        if(frame[23]&0x08)fs_sbus_diag.failsafe++;
+        ++fs_fault_generation;fs_fault=1;return 1;
+    }
+    uint32_t gap=now-fs_last_valid_tick;
+    if(fs_seen&&gap>fs_sbus_diag.max_valid_gap_ms)fs_sbus_diag.max_valid_gap_ms=gap;
+    if(fs_seen&&gap>RC_TIMEOUT_MS){++fs_fault_generation;fs_sbus_diag.timeouts++;}
     fs_to_rc(frame);
-    if (fs_rc_ctrl[TEMP].channel[6] < 0 || fs_rc_ctrl[TEMP].channel[8] < 0 ||
-        fs_rc_ctrl[TEMP].channel[9] < 0) {
-        ++fs_fault_generation; fs_fault = 1; return;
+    for(unsigned i=6;i<10;i++)if(fs_rc_ctrl[TEMP].channel[i]<0){
+        fs_sbus_diag.invalid_switches++;++fs_fault_generation;fs_fault=1;return 0;
     }
-    if (fs_switch_is_down(fs_rc_ctrl[TEMP].rc.switch_right_2)) ++fs_fault_generation;
-    fs_last_valid_tick = HAL_GetTick(); /* Only a real validated frame updates this. */
-    fs_seen = 1;
-    fs_fault = 0;
+    if(fs_switch_is_down(fs_rc_ctrl[TEMP].rc.switch_right_2)){
+        ++fs_fault_generation;fs_sbus_diag.estop_frames++;
+    }
+    fs_last_valid_tick=now;fs_seen=1;fs_fault=0;fs_sbus_diag.valid_frames++;
     DaemonReload(rc_daemon_instance);
-/* [USB_SP 修改 10 结束] */
+    return 1;
+}
+
+/* DMA/IDLE boundaries are not SBUS frame boundaries. Keep partial frames and
+ * slide to the next header after corruption. Real lost/failsafe bits stay fatal. */
+static void FS_RemoteControlRxCallback(void)
+{
+    fs_uart_fault();
+    uint32_t now=HAL_GetTick();
+    if(fs_partial_len&&(uint32_t)(now-fs_partial_ms)>20u){
+        fs_partial_len=0;fs_sbus_diag.partial_timeouts++;fs_fault=1;++fs_fault_generation;
+    }
+    for(unsigned i=0;i<rc_usart_instance->recv_len;i++){
+        uint8_t byte=rc_usart_instance->recv_buff[i];
+        if(!fs_partial_len&&byte!=0x0f){fs_sbus_diag.discarded_bytes++;continue;}
+        fs_partial[fs_partial_len++]=byte;fs_partial_ms=now;
+        if(fs_partial_len!=SBUS_FRAME_SIZE)continue;
+        uint8_t tail_ok=fs_partial[24]==0||(fs_partial[24]&0x0f)==0x04;
+        if(tail_ok&&fs_accept_frame(fs_partial,now)){
+            fs_partial_len=0;
+        }else{
+            if(!tail_ok){fs_sbus_diag.bad_tail++;fs_fault=1;++fs_fault_generation;}
+            unsigned skip=1;while(skip<SBUS_FRAME_SIZE&&fs_partial[skip]!=0x0f)skip++;
+            fs_sbus_diag.discarded_bytes+=skip;fs_partial_len=SBUS_FRAME_SIZE-skip;
+            memmove(fs_partial,fs_partial+skip,fs_partial_len);
+        }
+    }
 }
 
 /**
@@ -239,7 +282,7 @@ static void FS_RCLostCallback(void *id)
         return;
     }
     uint8_t report = !fs_fault;
-    if (report) ++fs_fault_generation;
+    if (report) {++fs_fault_generation;fs_sbus_diag.timeouts++;}
     fs_fault = 1;
 /* [USB_SP 修改 11 结束] */
     memset(fs_rc_ctrl, 0, sizeof(fs_rc_ctrl)); // 清空遥控器数据
@@ -300,8 +343,11 @@ uint8_t RemoteControlIsOnline()
 
 uint8_t FS_RemoteControlIsOnline(){
 /* [USB_SP 修改 13 开始] 保留992中位与原通道，拒绝无效SBUS、真实心跳、故障代数快照和迟到离线回调复核。 */
-    return rc_init_flag && fs_seen && !fs_fault &&
+    uint32_t irq=__get_PRIMASK();__disable_irq();
+    if(rc_init_flag)fs_uart_fault();
+    uint8_t online=rc_init_flag && fs_seen && !fs_fault &&
            (uint32_t)(HAL_GetTick() - fs_last_valid_tick) <= RC_TIMEOUT_MS;
+    __set_PRIMASK(irq);return online;
 /* [USB_SP 修改 13 结束] */
 }
 /* [USB_SP 修改 14 开始] 保留992中位与原通道，拒绝无效SBUS、真实心跳、故障代数快照和迟到离线回调复核。 */
@@ -311,10 +357,10 @@ uint8_t FS_RemoteControlGetSnapshot(FS_RC_ctrl_t *snapshot)
     if (!snapshot) return 0;
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
+    uint8_t online = FS_RemoteControlIsOnline();
     *snapshot = fs_rc_ctrl[TEMP];
     snapshot->fault_generation = fs_fault_generation;
     snapshot->received_ms = fs_last_valid_tick;
-    uint8_t online = FS_RemoteControlIsOnline();
     __set_PRIMASK(primask);
     return online;
 }

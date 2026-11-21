@@ -1,4 +1,4 @@
-ARM GAS  /tmp/ccshQpck.s 			page 1
+ARM GAS  /tmp/cc09863Y.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/ccshQpck.s 			page 1
   16:modules/motor/motor_task.c ****     PowerControl();
   41              		.loc 1 16 5 view .LVU2
   42 0006 FFF7FEFF 		bl	PowerControl
-ARM GAS  /tmp/ccshQpck.s 			page 2
+ARM GAS  /tmp/cc09863Y.s 			page 2
 
 
   43              	.LVL1:
@@ -85,13 +85,13 @@ ARM GAS  /tmp/ccshQpck.s 			page 1
   54              		.file 2 "modules/motor/DJImotor/dji_motor.h"
   55              		.file 3 "modules/motor/power_control.h"
   56              		.file 4 "modules/motor/DMmotor/dmmotor.h"
-ARM GAS  /tmp/ccshQpck.s 			page 3
+ARM GAS  /tmp/cc09863Y.s 			page 3
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 motor_task.c
-     /tmp/ccshQpck.s:18     .text.MotorControlTask:0000000000000000 $t
-     /tmp/ccshQpck.s:26     .text.MotorControlTask:0000000000000000 MotorControlTask
+     /tmp/cc09863Y.s:18     .text.MotorControlTask:0000000000000000 $t
+     /tmp/cc09863Y.s:26     .text.MotorControlTask:0000000000000000 MotorControlTask
 
 UNDEFINED SYMBOLS
 DJIMotorControl

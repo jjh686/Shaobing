@@ -1,0 +1,16 @@
+{
+  "synthetic_only": true,
+  "physical_usb_opened": false,
+  "mapping_only": true,
+  "artifact": "/home/wangjiaming/.cache/rm_sentry_nav/synthetic-live-o0nl0vio",
+  "lifecycle": {},
+  "passed": true,
+  "counts": {
+    "live/odometry": 101,
+    "live/scan": 101,
+    "map": 11
+  },
+  "no_chassis_node": true,
+  "horizontal_scan_frame": true,
+  "map_saved": true
+}

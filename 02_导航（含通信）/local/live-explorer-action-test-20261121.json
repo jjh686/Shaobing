@@ -1,0 +1,13 @@
+{
+  "synthetic_only": true,
+  "physical_usb_opened": false,
+  "passed": true,
+  "goals": 1,
+  "cancellations": 1,
+  "goal_xy": [
+    1.75,
+    -0.04999999999999982
+  ],
+  "no_automatic_start": true,
+  "no_automatic_restart": true
+}

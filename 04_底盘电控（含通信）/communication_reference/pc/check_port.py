@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
-"""Identify the MCU application USB, excluding debug probes and PTYs."""
+"""Identify a supported gimbal application USB; STOP ACK verifies its protocol."""
 from pathlib import Path
 import os
 import stat
 import sys
+
+
+SYS_TTY = Path('/sys/class/tty')
+# 05_云台 retains its vision descriptor while also forwarding chassis traffic.
+# The descriptor identifies a candidate port, not the firmware/protocol version.
+GIMBAL_USB_IDENTITIES = frozenset({
+    ('0483', '00ca', 'Vision Comm port'),
+    ('0483', '00ca', 'RM Nav Convert SP'),
+})
 
 
 def check(path):
@@ -16,7 +25,7 @@ def check(path):
         raise ValueError('不是串口字符设备: ' + str(device))
     if not os.access(device, os.R_OK | os.W_OK):
         raise ValueError('设备不可读写: ' + str(device))
-    sysdev = Path('/sys/class/tty') / device.name / 'device'
+    sysdev = SYS_TTY / device.name / 'device'
     if not sysdev.exists():
         raise ValueError('需要真实 C 板 USB 串口: ' + str(device))
     for parent in sysdev.resolve().parents:
@@ -24,8 +33,9 @@ def check(path):
             vid = (parent/'idVendor').read_text().strip()
             pid = (parent/'idProduct').read_text().strip()
             product = (parent/'product').read_text().strip() if (parent/'product').exists() else ''
-            if (vid, pid, product) != ('0483', '00ca', 'RM Nav Convert SP'):
-                raise ValueError(f'设备固件不匹配: {vid}:{pid} {product}；需要本次云台转换固件')
+            if (vid, pid, product) not in GIMBAL_USB_IDENTITIES:
+                raise ValueError(f'USB 设备不匹配: {vid}:{pid} {product}；需要云台应用串口 '
+                                 '(0483:00ca，Vision Comm port 或 RM Nav Convert SP)，不要选择 CMSIS-DAP')
             return str(device)
     raise ValueError('未找到 USB 产品信息')
 

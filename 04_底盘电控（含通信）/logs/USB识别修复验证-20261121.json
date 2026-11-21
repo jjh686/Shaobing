@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-21",
+  "fix": "Accept the 05 gimbal USB identity 0483:00ca / Vision Comm port and retain legacy identity",
+  "supported_usb_identities": [
+    [
+      "0483",
+      "00ca",
+      "Vision Comm port"
+    ],
+    [
+      "0483",
+      "00ca",
+      "RM Nav Convert SP"
+    ]
+  ],
+  "device_identity_checked": "/dev/serial/by-id/usb-YueLuEmbedded_Vision_Comm_port_315E326D3034-if00",
+  "device_resolved_to": "/dev/ttyACM1",
+  "real_usb_descriptor_checked": true,
+  "real_serial_opened": false,
+  "real_stop_or_motion_test_run": false,
+  "firmware_changed_or_flashed": false,
+  "passed": true,
+  "software_tests": {
+    "usb_identity_and_stop_pty": 10,
+    "motor_pty": 7,
+    "lidar_ros_pty": 13
+  },
+  "source_sha256": {
+    "communication_reference/pc/check_port.py": "188cd659764982f219c663e1d0a68d95eb0f8626764d1b1a9ecdba27c3b8f467",
+    "tests/test_usb_diagnostic.py": "c10cf0dc60073eb6bf5a255a6324341310f82345f30639eca57587b9f0537e17"
+  },
+  "instructions": "docs/USB识别修复与完整测试指令-20261121.md"
+}

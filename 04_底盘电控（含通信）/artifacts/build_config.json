@@ -4,26 +4,26 @@
   "hardware_validated_by_this_task": false,
   "targets": {
     "chassis": {
-      "recorded_at_utc": "2026-11-20T08:28:28.972105+00:00",
+      "recorded_at_utc": "2026-11-20T10:54:52.975306+00:00",
       "board": "chassis C board",
       "role": "CAN2 navigation endpoint; CAN1 motors",
       "bin_flash_address": "0x08000000",
       "artifacts": {
         "DiPan_Board.elf": {
-          "sha256": "f76d655062006a55ff41a85944841fd040be10bbbc0a2604ba8e07f06776aa02",
-          "bytes": 1305636
+          "sha256": "d66abcf2ba4fffaae58139e41196766afc0e2bde55daf636a381918ebcaf353b",
+          "bytes": 1311348
         },
         "DiPan_Board.hex": {
-          "sha256": "889a73193bee4ce849e68b6e36ecf1310e3f3fe3ac7cf9600a3c5e7581963d19",
-          "bytes": 207983
+          "sha256": "ef7b83757814396c689cb90b3656d9864e7e658c38631bb67237c0d452c031a4",
+          "bytes": 210331
         },
         "DiPan_Board.bin": {
-          "sha256": "f536b0f98e44bc32a294d44f6a5f09a5f0242cce399a813f98f106dc57153a71",
-          "bytes": 73916
+          "sha256": "fb1ae66305d6b062ee0febe89e07e7ee1d12a1aa8173ee2b264a6fef265d9afa",
+          "bytes": 74752
         }
       },
       "compiler": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
-      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  73012\t    896\t  77072\t 150980\t  24dc4\t/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/artifacts/DiPan_Board.elf",
+      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  73848\t    896\t  77320\t 152064\t  25200\t/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/artifacts/DiPan_Board.elf",
       "compiled_configuration": {
         "CHASSIS_COMM_H": "",
         "CHASSIS_COMM_AXES_VERIFIED": "1",
@@ -312,8 +312,8 @@
         "chassis_driver/basic_framework/bsp/bsp_init.h": "0511609748a176a519b5aca93c3668868f2973fff6c9fd8e049ba7622d061583",
         "chassis_driver/basic_framework/bsp/bsp_tools.c": "1c1ff5755e4da345fbc0f6444f0e99cf41a47a235efe7b8f85b73fae32cb4239",
         "chassis_driver/basic_framework/bsp/bsp_tools.h": "8f8341c2f2f2783ba2129922780cb2c34d7cb1233d38cc3aeb9204faef9e9de8",
-        "chassis_driver/basic_framework/bsp/can/bsp_can.c": "1e4c7aa924a09985e45e98b2dc82c37f0f2d7c0c4ea241045298a39e5ccb661d",
-        "chassis_driver/basic_framework/bsp/can/bsp_can.h": "65174fd852ea4a9434cf04cec44c3e5a50d9050c791b9e076f8d4e922d44420a",
+        "chassis_driver/basic_framework/bsp/can/bsp_can.c": "80f07d694058931d6081059270b89890c6fa98d1171e901dc2d26a2682a38aff",
+        "chassis_driver/basic_framework/bsp/can/bsp_can.h": "a12d6949c8a0f6b2c02221462bcc821d3c0819a072c80f1494b851222f5ac90e",
         "chassis_driver/basic_framework/bsp/dwt/bsp_dwt.c": "5a59f3b7325ef4b4e6a992a368e89ef31742d6a9e7f2577f3ae183a62030f671",
         "chassis_driver/basic_framework/bsp/dwt/bsp_dwt.h": "13f8dfd303caca84077bf81f2bfab2e12d1fcf4b2f83ef5232085710179b941f",
         "chassis_driver/basic_framework/bsp/flash/bsp_flash.c": "2efb3e06c5bc010c8fa0c8d56dd8cfabc59ccf6eb879ab7375d82a156e67dc2e",
@@ -358,14 +358,14 @@
         "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm.c": "37ca8f24e890d3fb67c92130a746432814f064295fc8ae333b4e14944e312508",
         "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm.h": "088b05682369a6ff81b997f75c068ee3d712f2385bebf8d21c869f0e15bd70d0",
         "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_config.h": "212250ca5520c444ea43b0a70c3ab578d8cdb6a59f241654f004ea310380fc61",
-        "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.c": "936ab39821d22247024dabde73f853fb73954b1a6f830b822da5b38d90e9c80d",
+        "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.c": "164972a729cbf168e0ee285c78473f16e53e5a6cc8ec19ea01873076b542c1c4",
         "chassis_driver/basic_framework/modules/chassis_comm/chassis_comm_port.h": "7e8a7ed50a98d2cbb45a5e636a3d396ed6f62cd14350af1ca55c05cf2ed89968",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/mcu_link.c": "39db3b374919e9a8e5aeac1170916a83a634ac48496241065d0af65748b060a0",
-        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.c": "80c0be2fc69d7bf5e5d4c01bcbeff99d6fabb71f2b9a5cd636543e475af2ac66",
-        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h": "3d77d716892126453e7d6d7488863cd62107119d99f6922a4e8f0829bdc06710",
+        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.c": "5ca63da6eb7ad333c6bdb087bd6a292ebcbb8a4993308e56b15840c3a08ba6da",
+        "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can.h": "ee1c5b15aa70cb1126481b570a1e9b3bc134494af92b2e2e1aab96784f331bf6",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/nav_can_hal.h": "4349cc7d025723d8538a4f762a39ecc5919b25943099ca33775b6e3b92edc66c",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/protocol.c": "9b81a3cc49c942c183bccd82280ab188101c460b9f95a970733e9c08986b1b58",
-        "chassis_driver/basic_framework/modules/chassis_comm/protocol/remote_can.h": "10cf3a7cb46c01b4bea3a1aba1beb5bf9c99cbdb36daab03af8888549c85e132",
+        "chassis_driver/basic_framework/modules/chassis_comm/protocol/remote_can.h": "b6ca3ffa0be0d39706e9b0bdd48837e8f91886104bb3acf457ab7aa6ed1e6fd0",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/mcu_link.h": "a5ba9c7f380833848181cd4912215a6c003e848ad0d45535c625958447f61612",
         "chassis_driver/basic_framework/modules/chassis_comm/protocol/rm_chassis_comm/protocol.h": "8194d6ce720fce9f6c860c6c686b0224eba4585996d170b40c4702a28ea040fa",
         "chassis_driver/basic_framework/modules/daemon/daemon.c": "1e52d5f086899295f9a11df381314201e1fee69f2cdd22c26a3cb6baefd1d827",
@@ -436,26 +436,26 @@
       "source": "/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/chassis_driver/basic_framework"
     },
     "gimbal": {
-      "recorded_at_utc": "2026-11-20T08:28:32.316449+00:00",
+      "recorded_at_utc": "2026-11-20T10:54:53.401093+00:00",
       "board": "gimbal C board",
       "role": "USB navigation gateway; CAN1 to chassis CAN2",
       "bin_flash_address": "0x08000000",
       "artifacts": {
         "Gimbal_USB_CAN1.elf": {
-          "sha256": "5bcc473fee23133100ba555f29e46db2812e367b486b83f294b0adb8f9c938e0",
-          "bytes": 1416480
+          "sha256": "6974e8dc4da78510ad1ef25c79b50300823869fa9d1e1eadce6aaccda7b2baaa",
+          "bytes": 1432872
         },
         "Gimbal_USB_CAN1.hex": {
-          "sha256": "e532cfebbac02a660ed425a0c632854c0a1f8fb67973f3057013e5dd069e2cec",
-          "bytes": 270570
+          "sha256": "df2b9c018db6a3c32285a1b07863688a81d41237093d1ad54412fbdd2778434a",
+          "bytes": 276428
         },
         "Gimbal_USB_CAN1.bin": {
-          "sha256": "2f01a6e5c3d1a98653faaf8c9d8fa57e1ebac2db247551c1b3ee64bdb5fafc0f",
-          "bytes": 96184
+          "sha256": "92dc7d1c8ce1c7101d8f2f5f9d4fb0934ac62b543f8b52500450c8fa7bfe1319",
+          "bytes": 98268
         }
       },
       "compiler": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
-      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  94944\t   1216\t  78544\t 174704\t  2aa70\t/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/artifacts/Gimbal_USB_CAN1.elf",
+      "size_output": "text\t   data\t    bss\t    dec\t    hex\tfilename\n  97028\t   1216\t  79072\t 177316\t  2b4a4\t/home/wangjiaming/文档/GitHub/RM_11_13/04_底盘电控（含通信）/artifacts/Gimbal_USB_CAN1.elf",
       "source_sha256": {
         "communication_reference/gimbal_firmware/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h": "bd21220ea8b6858c2d727cca1d2a5f1077f8a81717acdac583a1e9165d858160",
         "communication_reference/gimbal_firmware/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h": "a19edea6b2f4df2ab3c567782c4d313a52319c4303bd56ad7dd1d0e077014657",
@@ -720,7 +720,7 @@
         "communication_reference/gimbal_firmware/application/cmd/control_guard.h": "12d02db4057ce15773a742038b717b9caa5154f91b17b157f9ed92483b724d41",
         "communication_reference/gimbal_firmware/application/cmd/robot_cmd.c": "90cc1ee81a5ba61600f31e43eb01e6ea54c52da67c947e53d5f590bccdd4ffcb",
         "communication_reference/gimbal_firmware/application/cmd/robot_cmd.h": "10233dfea7482dfa9d0bc8802866904a15a0f06b9c5f23570b79491b8c15ac57",
-        "communication_reference/gimbal_firmware/application/communication/nav_gateway_port.c": "06635164ecfbfeff344ab7e98198e9c484f943c91936a64da22318b59a60a2ac",
+        "communication_reference/gimbal_firmware/application/communication/nav_gateway_port.c": "82a5f43cbdf6cc7fa378ba40e8c8cd79aeb2fdcdb22eab906cc6d1583add515b",
         "communication_reference/gimbal_firmware/application/communication/nav_gateway_port.h": "b89246d50859d4e11c54ecb1f37a1209dfc6893c1e89ea077b31952493581f72",
         "communication_reference/gimbal_firmware/application/communication/nav_joint_config.h": "0009d21d51f04b3f6cf4900d2c5c1c7325e33f6c7fd83b160bcf4a56dae0c0e2",
         "communication_reference/gimbal_firmware/application/communication/robot_comm.c": "ea18aa7e0b336c53b4880fac10fe675a2371f508a352e30a24606afed1909ac7",
@@ -743,8 +743,8 @@
         "communication_reference/gimbal_firmware/bsp/bsp_init.h": "0511609748a176a519b5aca93c3668868f2973fff6c9fd8e049ba7622d061583",
         "communication_reference/gimbal_firmware/bsp/bsp_tools.c": "1c1ff5755e4da345fbc0f6444f0e99cf41a47a235efe7b8f85b73fae32cb4239",
         "communication_reference/gimbal_firmware/bsp/bsp_tools.h": "8f8341c2f2f2783ba2129922780cb2c34d7cb1233d38cc3aeb9204faef9e9de8",
-        "communication_reference/gimbal_firmware/bsp/can/bsp_can.c": "d3dadd1fa7a34d40227e1f0a4626f67056fb7ecdd11b095af09f8d08b7d4fa18",
-        "communication_reference/gimbal_firmware/bsp/can/bsp_can.h": "65174fd852ea4a9434cf04cec44c3e5a50d9050c791b9e076f8d4e922d44420a",
+        "communication_reference/gimbal_firmware/bsp/can/bsp_can.c": "6608378b305c357e5e80b28c99bccbfa3fdfbeb6cc344725c6a2c3ee5fd36a5a",
+        "communication_reference/gimbal_firmware/bsp/can/bsp_can.h": "a12d6949c8a0f6b2c02221462bcc821d3c0819a072c80f1494b851222f5ac90e",
         "communication_reference/gimbal_firmware/bsp/dwt/bsp_dwt.c": "5a59f3b7325ef4b4e6a992a368e89ef31742d6a9e7f2577f3ae183a62030f671",
         "communication_reference/gimbal_firmware/bsp/dwt/bsp_dwt.h": "13f8dfd303caca84077bf81f2bfab2e12d1fcf4b2f83ef5232085710179b941f",
         "communication_reference/gimbal_firmware/bsp/flash/bsp_flash.c": "2efb3e06c5bc010c8fa0c8d56dd8cfabc59ccf6eb879ab7375d82a156e67dc2e",
@@ -759,10 +759,11 @@
         "communication_reference/gimbal_firmware/bsp/pwm/bsp_pwm.h": "5b8d2fbd90c34a0e486356ec5848057ea4154fd641b39e0bf7957e4157c47124",
         "communication_reference/gimbal_firmware/bsp/spi/bsp_spi.c": "add6dfc24f2d174d7c4e4942a83ff56d097de89f6dcbef117739ce7a95651c57",
         "communication_reference/gimbal_firmware/bsp/spi/bsp_spi.h": "94fdb5aa6e95c15872f50a17d67b02d9d750e7057f7f7588112d1dbf0fe68b56",
-        "communication_reference/gimbal_firmware/bsp/usart/bsp_usart.c": "306b350ed49ab3ca68ae63b0a1a9286fe885f075504f836fff351be859bf6cd1",
-        "communication_reference/gimbal_firmware/bsp/usart/bsp_usart.h": "cfd68b17ee2347ab086faac6b296da2c4014b33b874cb7c49b4a36693efda9d8",
-        "communication_reference/gimbal_firmware/bsp/usb/bsp_usb.c": "182faa72ba40b67b701f0d304e84c25171a3c5bec0bad30db620aceacf172b6b",
-        "communication_reference/gimbal_firmware/bsp/usb/bsp_usb.h": "08887ec1245e3064b69a5d776a49491a675fe6816e4fe6b7cf197a6f00958ce8",
+        "communication_reference/gimbal_firmware/bsp/usart/bsp_usart.c": "b249c8014502a4e926f781f4663e6a2705613f9a74b816041fd968cd8c7f4356",
+        "communication_reference/gimbal_firmware/bsp/usart/bsp_usart.h": "46c29a4c16a98afea5aabbcd4b0b5d017f24a8620e21e88157464d20878120fc",
+        "communication_reference/gimbal_firmware/bsp/usb/bsp_usb.c": "9936f0902804fff6b924f568f6ecb340f2a62c598f4cab970df84bb8f807d56c",
+        "communication_reference/gimbal_firmware/bsp/usb/bsp_usb.h": "d1d53e9f33470e4379331eddbe162c3885e8506e276d1ca6b1a8022db7eaf893",
+        "communication_reference/gimbal_firmware/bsp/usb/usb_tx_queue.h": "3709559c67c9e99ee88fd70cbf282e1b4ae93af9cc4a50c56078cf725fcd30b3",
         "communication_reference/gimbal_firmware/modules/BMI088/bmi088.c": "c85dfea1b649740ddf017590bb58033969357b12401ab0c0eed0abde2952e707",
         "communication_reference/gimbal_firmware/modules/BMI088/bmi088.h": "79f8aa2af6c3bcd0c2664bad1f8f156edad53b760210118114e66e08ccd053eb",
         "communication_reference/gimbal_firmware/modules/BMI088/bmi088_regNdef.h": "9162aabed425cd5ce2d5d0b68317ad07606edfff1dfa52b4ed1728a153a7c4d7",
@@ -825,15 +826,15 @@
         "communication_reference/gimbal_firmware/modules/motor/step_motor/step_motor.h": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "communication_reference/gimbal_firmware/modules/nav_conversion/gimbal_protocol.c": "78e6ab22f17d22592dfee6897a6514c05ce6051e3ad389caefd01c2225e65737",
         "communication_reference/gimbal_firmware/modules/nav_conversion/mcu_link.c": "39db3b374919e9a8e5aeac1170916a83a634ac48496241065d0af65748b060a0",
-        "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can.c": "80c0be2fc69d7bf5e5d4c01bcbeff99d6fabb71f2b9a5cd636543e475af2ac66",
-        "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can.h": "85746aec1c2176803940b93a730b3bcc2bee2ca07b005277d5372bf3cbd7e495",
+        "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can.c": "5ca63da6eb7ad333c6bdb087bd6a292ebcbb8a4993308e56b15840c3a08ba6da",
+        "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can.h": "ee1c5b15aa70cb1126481b570a1e9b3bc134494af92b2e2e1aab96784f331bf6",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_can_hal.h": "67edb12a8ee5869d1836e81acc986b5a97fdd01170aeb37850f4062486662048",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_gateway.c": "77f51a25df66d76a6322bdc5799791088ddd1c3008bce23568709654854c7515",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_gateway.h": "58d161aa5fcf5a4f52456930f0835e43deba45af380c0ce6e1d6cdb9c90ab0be",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_usb_mux.c": "f28e280ff90b12db9b0259b4a14d0886a7847825cf05f5f604554072bac79e41",
         "communication_reference/gimbal_firmware/modules/nav_conversion/nav_usb_mux.h": "ddfb7ac4deee52516e40b1e7cdeb55ad91d56f4346d4bf6f8a834860db02ba01",
         "communication_reference/gimbal_firmware/modules/nav_conversion/protocol.c": "9b81a3cc49c942c183bccd82280ab188101c460b9f95a970733e9c08986b1b58",
-        "communication_reference/gimbal_firmware/modules/nav_conversion/remote_can.h": "10cf3a7cb46c01b4bea3a1aba1beb5bf9c99cbdb36daab03af8888549c85e132",
+        "communication_reference/gimbal_firmware/modules/nav_conversion/remote_can.h": "b6ca3ffa0be0d39706e9b0bdd48837e8f91886104bb3acf457ab7aa6ed1e6fd0",
         "communication_reference/gimbal_firmware/modules/nav_conversion/rm_chassis_comm/gimbal_protocol.h": "9fc61372a5efedc0d185f72a1aa6f07d90606de96e71e5b6a8868d1159c468bc",
         "communication_reference/gimbal_firmware/modules/nav_conversion/rm_chassis_comm/mcu_link.h": "a5ba9c7f380833848181cd4912215a6c003e848ad0d45535c625958447f61612",
         "communication_reference/gimbal_firmware/modules/nav_conversion/rm_chassis_comm/protocol.h": "8194d6ce720fce9f6c860c6c686b0224eba4585996d170b40c4702a28ea040fa",
@@ -855,8 +856,8 @@
         "communication_reference/gimbal_firmware/modules/referee/referee_vt_task.h": "8d6864c8197f7ddad88dec20baa21593558179762d23977844eeb5a0441a74ac",
         "communication_reference/gimbal_firmware/modules/referee/rm_referee.c": "4b7885f4839f0badfd477cbf37546b7a08b165b7d15da1a6a18a7fe42bb32f94",
         "communication_reference/gimbal_firmware/modules/referee/rm_referee.h": "10ae66130262d39de2b98e2483af1a9e4acaf1706d966c2c8b63bb94b4addcf4",
-        "communication_reference/gimbal_firmware/modules/remote/remote_control.c": "8139a798095a0b1bd44d971d3bd42b35d4cc62f6416d3da8902aab30a3acb0b5",
-        "communication_reference/gimbal_firmware/modules/remote/remote_control.h": "e2674534ae994b2941e4b15b127b1af27ed717e5ea67090ea5b9bb2273c9d12c",
+        "communication_reference/gimbal_firmware/modules/remote/remote_control.c": "958e860d451ce5de36ff17cfd9dc56811276ac7bcff757a849ec9ba1df8b032e",
+        "communication_reference/gimbal_firmware/modules/remote/remote_control.h": "47502e2acd6a1d4c466523c213e15ba1ba42000da93d75cf7743e8e242d02e4d",
         "communication_reference/gimbal_firmware/modules/standard_cmd/std_cmd.c": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "communication_reference/gimbal_firmware/modules/standard_cmd/std_cmd.h": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "communication_reference/gimbal_firmware/modules/super_cap/super_cap.c": "4b2da6fbc8aae5eea96f5091d6bc67d65c321c91813e44412aee5d153a9df7bd",

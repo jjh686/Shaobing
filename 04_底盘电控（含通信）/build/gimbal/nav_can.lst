@@ -1,4 +1,4 @@
-ARM GAS  /tmp/ccpm1lxy.s 			page 1
+ARM GAS  /tmp/ccekYNjY.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
   53              		.fpu fpv4-sp-d16
   55              	w32:
   56              	.LVL2:
-ARM GAS  /tmp/ccpm1lxy.s 			page 2
+ARM GAS  /tmp/ccekYNjY.s 			page 2
 
 
   57              	.LFB1:
@@ -118,7 +118,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  111 0000 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
  112              		.loc 1 6 75 view .LVU24
  113 0002 4078     		ldrb	r0, [r0, #1]	@ zero_extendqisi2
-ARM GAS  /tmp/ccpm1lxy.s 			page 3
+ARM GAS  /tmp/ccekYNjY.s 			page 3
 
 
  114              	.LVL6:
@@ -178,7 +178,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  171              	.LVL12:
  172              	.LFB4:
    8:modules/nav_conversion/nav_can.c **** static uint32_t r32(const uint8_t *p) { return (uint32_t)r16(p)|((uint32_t)r16(p+2)<<16); }
-ARM GAS  /tmp/ccpm1lxy.s 			page 4
+ARM GAS  /tmp/ccekYNjY.s 			page 4
 
 
  173              		.loc 1 8 39 is_stmt 1 view -0
@@ -238,7 +238,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
   25:modules/nav_conversion/nav_can.c **** static bool command_ok(const rm_command_t *c)
   26:modules/nav_conversion/nav_can.c **** {
  213              		.loc 1 26 1 is_stmt 1 view -0
-ARM GAS  /tmp/ccpm1lxy.s 			page 5
+ARM GAS  /tmp/ccekYNjY.s 			page 5
 
 
  214              		.cfi_startproc
@@ -298,7 +298,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  259 0022 F5D0     		beq	.L14
   29:modules/nav_conversion/nav_can.c **** }
  260              		.loc 1 29 10 discriminator 2 view .LVU54
-ARM GAS  /tmp/ccpm1lxy.s 			page 6
+ARM GAS  /tmp/ccekYNjY.s 			page 6
 
 
  261 0024 6389     		ldrh	r3, [r4, #10]
@@ -358,7 +358,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  306              	.LCFI7:
  307              		.cfi_def_cfa_offset 48
  308              		.cfi_offset 4, -8
-ARM GAS  /tmp/ccpm1lxy.s 			page 7
+ARM GAS  /tmp/ccekYNjY.s 			page 7
 
 
  309              		.cfi_offset 14, -4
@@ -418,7 +418,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  360              		.loc 1 34 18 is_stmt 0 view .LVU73
  361 0014 0024     		movs	r4, #0
  362              		.loc 1 34 5 view .LVU74
-ARM GAS  /tmp/ccpm1lxy.s 			page 8
+ARM GAS  /tmp/ccekYNjY.s 			page 8
 
 
  363 0016 14E0     		b	.L35
@@ -478,7 +478,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  406              		.loc 1 36 38 discriminator 1 view .LVU87
  407 0054 DFED057A 		vldr.32	s15, .L41
  408 0058 20EE270A 		vmul.f32	s0, s0, s15
-ARM GAS  /tmp/ccpm1lxy.s 			page 9
+ARM GAS  /tmp/ccekYNjY.s 			page 9
 
 
  409 005c FFF7FEFF 		bl	roundf
@@ -538,7 +538,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
   12:modules/nav_conversion/nav_can.c ****     return c;
  457              		.loc 1 12 10 is_stmt 1 discriminator 8 view .LVU96
  458 0006 0B46     		mov	r3, r1
-ARM GAS  /tmp/ccpm1lxy.s 			page 10
+ARM GAS  /tmp/ccekYNjY.s 			page 10
 
 
   12:modules/nav_conversion/nav_can.c ****     return c;
@@ -598,7 +598,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  497 001e 072A     		cmp	r2, #7
  498 0020 F1D8     		bhi	.L44
   12:modules/nav_conversion/nav_can.c ****     return c;
-ARM GAS  /tmp/ccpm1lxy.s 			page 11
+ARM GAS  /tmp/ccekYNjY.s 			page 11
 
 
  499              		.loc 1 12 51 is_stmt 1 discriminator 7 view .LVU113
@@ -658,7 +658,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  547              		.cfi_def_cfa_offset 40
  548 0004 0446     		mov	r4, r0
  549 0006 0D46     		mov	r5, r1
-ARM GAS  /tmp/ccpm1lxy.s 			page 12
+ARM GAS  /tmp/ccekYNjY.s 			page 12
 
 
  550 0008 1646     		mov	r6, r2
@@ -718,7 +718,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  594 004a 70BD     		pop	{r4, r5, r6, pc}
   19:modules/nav_conversion/nav_can.c **** static bool sealed(const nc_group_t *g)
  595              		.loc 1 19 1 view .LVU132
-ARM GAS  /tmp/ccpm1lxy.s 			page 13
+ARM GAS  /tmp/ccekYNjY.s 			page 13
 
 
  596              		.cfi_endproc
@@ -778,7 +778,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  643              		.loc 1 23 31 view .LVU141
  644 0024 201D     		adds	r0, r4, #4
  645 0026 FFF7FEFF 		bl	r16
-ARM GAS  /tmp/ccpm1lxy.s 			page 14
+ARM GAS  /tmp/ccekYNjY.s 			page 14
 
 
  646              	.LVL57:
@@ -838,7 +838,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  696              	.LVL63:
  697              	.LFB10:
   40:modules/nav_conversion/nav_can.c **** bool nc_command_group(const rm_command_t *c,nc_group_t *g)
-ARM GAS  /tmp/ccpm1lxy.s 			page 15
+ARM GAS  /tmp/ccekYNjY.s 			page 15
 
 
   41:modules/nav_conversion/nav_can.c **** {
@@ -898,7 +898,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  743              		.loc 1 43 28 view .LVU158
   43:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_COMMAND_BASE;
  744              		.loc 1 43 35 is_stmt 0 view .LVU159
-ARM GAS  /tmp/ccpm1lxy.s 			page 16
+ARM GAS  /tmp/ccekYNjY.s 			page 16
 
 
  745 0026 4FF44C73 		mov	r3, #816
@@ -958,7 +958,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  790              		.section	.text.nc_command_decode,"ax",%progbits
  791              		.align	1
  792              		.global	nc_command_decode
-ARM GAS  /tmp/ccpm1lxy.s 			page 17
+ARM GAS  /tmp/ccekYNjY.s 			page 17
 
 
  793              		.syntax unified
@@ -1018,7 +1018,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
   54:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
   55:modules/nav_conversion/nav_can.c **** }
  841              		.loc 1 55 1 view .LVU179
-ARM GAS  /tmp/ccpm1lxy.s 			page 18
+ARM GAS  /tmp/ccekYNjY.s 			page 18
 
 
  842 001e 6046     		mov	r0, ip
@@ -1078,7 +1078,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  887              		.loc 1 51 42 is_stmt 1 view .LVU188
   51:modules/nav_conversion/nav_can.c ****     rm_command_t value={0};value.route=2;value.session=r32(g->data[0]);value.sequence=r16(g->data[0
  888              		.loc 1 51 56 is_stmt 0 view .LVU189
-ARM GAS  /tmp/ccpm1lxy.s 			page 19
+ARM GAS  /tmp/ccekYNjY.s 			page 19
 
 
  889 005a 2046     		mov	r0, r4
@@ -1138,7 +1138,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  928 009a 8DED057A 		vstr.32	s14, [sp, #20]
   53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
  929              		.loc 1 53 38 is_stmt 1 view .LVU205
-ARM GAS  /tmp/ccpm1lxy.s 			page 20
+ARM GAS  /tmp/ccekYNjY.s 			page 20
 
 
   53:modules/nav_conversion/nav_can.c ****     value.uptime_ms=r32(g->data[2]);if(!command_ok(&value))return false;*c=value;return true;
@@ -1198,7 +1198,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  969 00e4 2C46     		mov	r4, r5
  970              	.LVL88:
   54:modules/nav_conversion/nav_can.c **** }
-ARM GAS  /tmp/ccpm1lxy.s 			page 21
+ARM GAS  /tmp/ccekYNjY.s 			page 21
 
 
  971              		.loc 1 54 75 discriminator 2 view .LVU221
@@ -1258,7 +1258,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
   57:modules/nav_conversion/nav_can.c **** {
  1020              		.loc 1 57 1 is_stmt 1 view -0
  1021              		.cfi_startproc
-ARM GAS  /tmp/ccpm1lxy.s 			page 22
+ARM GAS  /tmp/ccekYNjY.s 			page 22
 
 
  1022              		@ args = 0, pretend = 0, frame = 40
@@ -1318,7 +1318,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  1067              	.LVL96:
   59:modules/nav_conversion/nav_can.c ****     memset(g,0,sizeof(*g));g->base=NC_FEEDBACK_BASE;
  1068              		.loc 1 59 30 discriminator 6 view .LVU242
-ARM GAS  /tmp/ccpm1lxy.s 			page 23
+ARM GAS  /tmp/ccekYNjY.s 			page 23
 
 
  1069 001c FFF7FEFF 		bl	rm_encode_feedback
@@ -1378,7 +1378,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  1111 0066 A81D     		adds	r0, r5, #6
  1112 0068 FFF7FEFF 		bl	w16
  1113              	.LVL100:
-ARM GAS  /tmp/ccpm1lxy.s 			page 24
+ARM GAS  /tmp/ccekYNjY.s 			page 24
 
 
   62:modules/nav_conversion/nav_can.c ****     seal(g,f->uptime_ms,f->sequence);return true;
@@ -1438,7 +1438,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  1162              		.thumb_func
  1163              		.fpu fpv4-sp-d16
  1165              	nc_feedback_decode:
-ARM GAS  /tmp/ccpm1lxy.s 			page 25
+ARM GAS  /tmp/ccekYNjY.s 			page 25
 
 
  1166              	.LVL106:
@@ -1498,7 +1498,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  1210              	.LCFI34:
  1211              		.cfi_remember_state
  1212              		.cfi_def_cfa_offset 28
-ARM GAS  /tmp/ccpm1lxy.s 			page 26
+ARM GAS  /tmp/ccekYNjY.s 			page 26
 
 
  1213              		@ sp needed
@@ -1558,7 +1558,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  1256              		.loc 1 69 19 is_stmt 0 view .LVU283
  1257 0056 3046     		mov	r0, r6
  1258 0058 FFF7FEFF 		bl	r32
-ARM GAS  /tmp/ccpm1lxy.s 			page 27
+ARM GAS  /tmp/ccekYNjY.s 			page 27
 
 
  1259              	.LVL111:
@@ -1618,7 +1618,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  1298 00a0 87EE887A 		vdiv.f32	s14, s15, s16
   70:modules/nav_conversion/nav_can.c ****     value.fault_mask=r16(g->data[1]+6);value.uptime_ms=r32(g->data[2]);
  1299              		.loc 1 70 46 view .LVU299
-ARM GAS  /tmp/ccpm1lxy.s 			page 28
+ARM GAS  /tmp/ccekYNjY.s 			page 28
 
 
  1300 00a4 8DED0E7A 		vstr.32	s14, [sp, #56]
@@ -1678,7 +1678,7 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
   73:modules/nav_conversion/nav_can.c **** }
  1339              		.loc 1 73 7 view .LVU315
  1340 00e4 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
-ARM GAS  /tmp/ccpm1lxy.s 			page 29
+ARM GAS  /tmp/ccekYNjY.s 			page 29
 
 
  1341 00e6 ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
@@ -1729,579 +1729,666 @@ ARM GAS  /tmp/ccpm1lxy.s 			page 1
  1381              		.cfi_offset 4, -12
  1382              		.cfi_offset 5, -8
  1383              		.cfi_offset 14, -4
- 1384 0002 9DF81040 		ldrb	r4, [sp, #16]	@ zero_extendqisi2
+ 1384 0002 9DF81050 		ldrb	r5, [sp, #16]	@ zero_extendqisi2
   78:modules/nav_conversion/nav_can.c ****     if(!r||!out||id<base||id>base+2u)return false;
  1385              		.loc 1 78 5 is_stmt 1 view .LVU322
  1386              		.loc 1 78 7 is_stmt 0 view .LVU323
  1387 0006 0028     		cmp	r0, #0
- 1388 0008 51D0     		beq	.L107
- 1389 000a 0546     		mov	r5, r0
+ 1388 0008 6AD0     		beq	.L110
+ 1389 000a 0446     		mov	r4, r0
  1390              		.loc 1 78 10 discriminator 2 view .LVU324
  1391 000c 0898     		ldr	r0, [sp, #32]
-ARM GAS  /tmp/ccpm1lxy.s 			page 30
+ARM GAS  /tmp/ccekYNjY.s 			page 30
 
 
  1392              	.LVL124:
  1393              		.loc 1 78 10 discriminator 2 view .LVU325
  1394 000e 0028     		cmp	r0, #0
- 1395 0010 50D0     		beq	.L108
+ 1395 0010 69D0     		beq	.L111
  1396              		.loc 1 78 16 discriminator 4 view .LVU326
  1397 0012 9142     		cmp	r1, r2
- 1398 0014 51D8     		bhi	.L109
+ 1398 0014 6AD8     		bhi	.L112
  1399              		.loc 1 78 34 discriminator 6 view .LVU327
  1400 0016 881C     		adds	r0, r1, #2
  1401              		.loc 1 78 25 discriminator 6 view .LVU328
  1402 0018 9042     		cmp	r0, r2
- 1403 001a 51D3     		bcc	.L110
-  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
+ 1403 001a 6AD3     		bcc	.L113
+  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->stats.malformed++;r->active=0;return false;}
  1404              		.loc 1 79 5 is_stmt 1 view .LVU329
  1405              		.loc 1 79 7 is_stmt 0 view .LVU330
- 1406 001c B3B9     		cbnz	r3, .L102
+ 1406 001c A3B9     		cbnz	r3, .L102
  1407              		.loc 1 79 16 discriminator 2 view .LVU331
- 1408 001e ACB9     		cbnz	r4, .L102
+ 1408 001e 9DB9     		cbnz	r5, .L102
  1409              		.loc 1 79 21 discriminator 4 view .LVU332
  1410 0020 059B     		ldr	r3, [sp, #20]
  1411              	.LVL125:
  1412              		.loc 1 79 21 discriminator 4 view .LVU333
  1413 0022 082B     		cmp	r3, #8
- 1414 0024 12D1     		bne	.L102
+ 1414 0024 10D1     		bne	.L102
  1415              		.loc 1 79 29 discriminator 6 view .LVU334
  1416 0026 069B     		ldr	r3, [sp, #24]
- 1417 0028 83B1     		cbz	r3, .L102
-  80:modules/nav_conversion/nav_can.c ****     if(id==base){r->active=1;r->next=0;r->started_ms=now;r->group.base=base;}
+ 1417 0028 73B1     		cbz	r3, .L102
+  80:modules/nav_conversion/nav_can.c ****     if(id==base){
  1418              		.loc 1 80 5 is_stmt 1 view .LVU335
  1419              		.loc 1 80 7 is_stmt 0 view .LVU336
  1420 002a 9142     		cmp	r1, r2
- 1421 002c 14D0     		beq	.L113
+ 1421 002c 15D0     		beq	.L116
  1422              	.L104:
-  81:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1423              		.loc 1 81 5 is_stmt 1 view .LVU337
- 1424              		.loc 1 81 10 is_stmt 0 view .LVU338
- 1425 002e EB7E     		ldrb	r3, [r5, #27]	@ zero_extendqisi2
- 1426              		.loc 1 81 7 view .LVU339
- 1427 0030 43B1     		cbz	r3, .L105
- 1428              		.loc 1 81 36 discriminator 2 view .LVU340
- 1429 0032 EB69     		ldr	r3, [r5, #28]
- 1430              		.loc 1 81 34 discriminator 2 view .LVU341
- 1431 0034 0798     		ldr	r0, [sp, #28]
- 1432 0036 C31A     		subs	r3, r0, r3
- 1433              		.loc 1 81 18 discriminator 2 view .LVU342
- 1434 0038 0A2B     		cmp	r3, #10
- 1435 003a 03D8     		bhi	.L105
- 1436              		.loc 1 81 73 discriminator 4 view .LVU343
- 1437 003c AB7E     		ldrb	r3, [r5, #26]	@ zero_extendqisi2
- 1438              		.loc 1 81 71 discriminator 4 view .LVU344
- 1439 003e 1944     		add	r1, r1, r3
- 1440              	.LVL126:
- 1441              		.loc 1 81 61 discriminator 4 view .LVU345
- 1442 0040 9142     		cmp	r1, r2
- 1443 0042 11D0     		beq	.L106
- 1444              	.L105:
- 1445              		.loc 1 81 81 is_stmt 1 discriminator 5 view .LVU346
-ARM GAS  /tmp/ccpm1lxy.s 			page 31
+  81:modules/nav_conversion/nav_can.c ****         if(r->active)r->stats.restarted_groups++;
+  82:modules/nav_conversion/nav_can.c ****         r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+  83:modules/nav_conversion/nav_can.c ****     }
+  84:modules/nav_conversion/nav_can.c ****     if(!r->active||id!=base+r->next){r->stats.order_errors++;r->active=0;return false;}
+ 1423              		.loc 1 84 5 is_stmt 1 view .LVU337
+ 1424              		.loc 1 84 10 is_stmt 0 view .LVU338
+ 1425 002e E37E     		ldrb	r3, [r4, #27]	@ zero_extendqisi2
+ 1426              		.loc 1 84 7 view .LVU339
+ 1427 0030 1BB1     		cbz	r3, .L106
+ 1428              		.loc 1 84 30 discriminator 2 view .LVU340
+ 1429 0032 A07E     		ldrb	r0, [r4, #26]	@ zero_extendqisi2
+ 1430              		.loc 1 84 28 discriminator 2 view .LVU341
+ 1431 0034 0144     		add	r1, r1, r0
+ 1432              	.LVL126:
+ 1433              		.loc 1 84 18 discriminator 2 view .LVU342
+ 1434 0036 9142     		cmp	r1, r2
+ 1435 0038 1CD0     		beq	.L107
+ 1436              	.L106:
+ 1437              		.loc 1 84 38 is_stmt 1 discriminator 3 view .LVU343
+ 1438              		.loc 1 84 46 is_stmt 0 discriminator 3 view .LVU344
+ 1439 003a 636A     		ldr	r3, [r4, #36]
+ 1440              		.loc 1 84 59 discriminator 3 view .LVU345
+ 1441 003c 0133     		adds	r3, r3, #1
+ 1442 003e 6362     		str	r3, [r4, #36]
+ARM GAS  /tmp/ccekYNjY.s 			page 31
 
 
- 1446              		.loc 1 81 90 is_stmt 0 discriminator 5 view .LVU347
- 1447 0044 0023     		movs	r3, #0
- 1448 0046 EB76     		strb	r3, [r5, #27]
- 1449              		.loc 1 81 93 is_stmt 1 discriminator 5 view .LVU348
- 1450              		.loc 1 81 100 is_stmt 0 discriminator 5 view .LVU349
- 1451 0048 A446     		mov	ip, r4
- 1452 004a 03E0     		b	.L101
- 1453              	.LVL127:
- 1454              	.L102:
-  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
- 1455              		.loc 1 79 39 is_stmt 1 discriminator 7 view .LVU350
-  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
- 1456              		.loc 1 79 48 is_stmt 0 discriminator 7 view .LVU351
- 1457 004c 4FF0000C 		mov	ip, #0
- 1458 0050 85F81BC0 		strb	ip, [r5, #27]
-  79:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
- 1459              		.loc 1 79 51 is_stmt 1 discriminator 7 view .LVU352
- 1460              	.LVL128:
- 1461              	.L101:
-  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
-  83:modules/nav_conversion/nav_can.c ****     if(r->next!=3)return false;
-  84:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
-  85:modules/nav_conversion/nav_can.c **** }
- 1462              		.loc 1 85 1 is_stmt 0 view .LVU353
- 1463 0054 6046     		mov	r0, ip
- 1464 0056 38BD     		pop	{r3, r4, r5, pc}
- 1465              	.LVL129:
- 1466              	.L113:
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1467              		.loc 1 80 18 is_stmt 1 discriminator 1 view .LVU354
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1468              		.loc 1 80 27 is_stmt 0 discriminator 1 view .LVU355
- 1469 0058 0123     		movs	r3, #1
- 1470 005a EB76     		strb	r3, [r5, #27]
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1471              		.loc 1 80 30 is_stmt 1 discriminator 1 view .LVU356
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1472              		.loc 1 80 37 is_stmt 0 discriminator 1 view .LVU357
- 1473 005c 0023     		movs	r3, #0
- 1474 005e AB76     		strb	r3, [r5, #26]
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1475              		.loc 1 80 40 is_stmt 1 discriminator 1 view .LVU358
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1476              		.loc 1 80 53 is_stmt 0 discriminator 1 view .LVU359
- 1477 0060 079B     		ldr	r3, [sp, #28]
- 1478 0062 EB61     		str	r3, [r5, #28]
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1479              		.loc 1 80 58 is_stmt 1 discriminator 1 view .LVU360
-  80:modules/nav_conversion/nav_can.c ****     if(!r->active||(uint32_t)(now-r->started_ms)>NC_GROUP_MS||id!=base+r->next){r->active=0;return 
- 1480              		.loc 1 80 71 is_stmt 0 discriminator 1 view .LVU361
- 1481 0064 2983     		strh	r1, [r5, #24]	@ movhi
- 1482 0066 E2E7     		b	.L104
- 1483              	.LVL130:
- 1484              	.L106:
-  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
- 1485              		.loc 1 82 5 is_stmt 1 view .LVU362
-  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
-ARM GAS  /tmp/ccpm1lxy.s 			page 32
+ 1443              		.loc 1 84 62 is_stmt 1 discriminator 3 view .LVU346
+ 1444              		.loc 1 84 71 is_stmt 0 discriminator 3 view .LVU347
+ 1445 0040 0023     		movs	r3, #0
+ 1446 0042 E376     		strb	r3, [r4, #27]
+ 1447              		.loc 1 84 74 is_stmt 1 discriminator 3 view .LVU348
+ 1448              		.loc 1 84 81 is_stmt 0 discriminator 3 view .LVU349
+ 1449 0044 AC46     		mov	ip, r5
+ 1450 0046 06E0     		b	.L101
+ 1451              	.LVL127:
+ 1452              	.L102:
+  79:modules/nav_conversion/nav_can.c ****     if(id==base){
+ 1453              		.loc 1 79 39 is_stmt 1 discriminator 7 view .LVU350
+  79:modules/nav_conversion/nav_can.c ****     if(id==base){
+ 1454              		.loc 1 79 47 is_stmt 0 discriminator 7 view .LVU351
+ 1455 0048 236A     		ldr	r3, [r4, #32]
+  79:modules/nav_conversion/nav_can.c ****     if(id==base){
+ 1456              		.loc 1 79 57 discriminator 7 view .LVU352
+ 1457 004a 0133     		adds	r3, r3, #1
+ 1458 004c 2362     		str	r3, [r4, #32]
+  79:modules/nav_conversion/nav_can.c ****     if(id==base){
+ 1459              		.loc 1 79 60 is_stmt 1 discriminator 7 view .LVU353
+  79:modules/nav_conversion/nav_can.c ****     if(id==base){
+ 1460              		.loc 1 79 69 is_stmt 0 discriminator 7 view .LVU354
+ 1461 004e 4FF0000C 		mov	ip, #0
+ 1462 0052 84F81BC0 		strb	ip, [r4, #27]
+  79:modules/nav_conversion/nav_can.c ****     if(id==base){
+ 1463              		.loc 1 79 72 is_stmt 1 discriminator 7 view .LVU355
+ 1464              	.LVL128:
+ 1465              	.L101:
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+  86:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
+  87:modules/nav_conversion/nav_can.c ****     if(r->next!=3)return false;
+  88:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group)){r->stats.crc_errors++;return false;}*out=r->group;return tru
+  89:modules/nav_conversion/nav_can.c **** }
+ 1466              		.loc 1 89 1 is_stmt 0 view .LVU356
+ 1467 0056 6046     		mov	r0, ip
+ 1468 0058 38BD     		pop	{r3, r4, r5, pc}
+ 1469              	.LVL129:
+ 1470              	.L116:
+  81:modules/nav_conversion/nav_can.c ****         r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+ 1471              		.loc 1 81 9 is_stmt 1 view .LVU357
+  81:modules/nav_conversion/nav_can.c ****         r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+ 1472              		.loc 1 81 13 is_stmt 0 view .LVU358
+ 1473 005a E37E     		ldrb	r3, [r4, #27]	@ zero_extendqisi2
+  81:modules/nav_conversion/nav_can.c ****         r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+ 1474              		.loc 1 81 11 view .LVU359
+ 1475 005c 13B1     		cbz	r3, .L105
+  81:modules/nav_conversion/nav_can.c ****         r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+ 1476              		.loc 1 81 22 is_stmt 1 discriminator 1 view .LVU360
+  81:modules/nav_conversion/nav_can.c ****         r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+ 1477              		.loc 1 81 30 is_stmt 0 discriminator 1 view .LVU361
+ 1478 005e 236B     		ldr	r3, [r4, #48]
+  81:modules/nav_conversion/nav_can.c ****         r->active=1;r->next=0;r->started_ms=now;r->group.base=base;
+ 1479              		.loc 1 81 47 discriminator 1 view .LVU362
+ 1480 0060 0133     		adds	r3, r3, #1
+ 1481 0062 2363     		str	r3, [r4, #48]
+ 1482              	.L105:
+ARM GAS  /tmp/ccekYNjY.s 			page 32
 
 
- 1486              		.loc 1 82 33 is_stmt 0 view .LVU363
- 1487 0068 5A1C     		adds	r2, r3, #1
- 1488              	.LVL131:
-  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
- 1489              		.loc 1 82 33 view .LVU364
- 1490 006a AA76     		strb	r2, [r5, #26]
-  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
- 1491              		.loc 1 82 25 view .LVU365
- 1492 006c 05EBC302 		add	r2, r5, r3, lsl #3
-  82:modules/nav_conversion/nav_can.c ****     memcpy(r->group.data[r->next++],bytes,8);
- 1493              		.loc 1 82 5 view .LVU366
- 1494 0070 0699     		ldr	r1, [sp, #24]
- 1495 0072 0868     		ldr	r0, [r1]	@ unaligned
- 1496 0074 4968     		ldr	r1, [r1, #4]	@ unaligned
- 1497 0076 45F83300 		str	r0, [r5, r3, lsl #3]	@ unaligned
- 1498 007a 5160     		str	r1, [r2, #4]	@ unaligned
-  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
- 1499              		.loc 1 83 5 is_stmt 1 view .LVU367
-  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
- 1500              		.loc 1 83 9 is_stmt 0 view .LVU368
- 1501 007c AB7E     		ldrb	r3, [r5, #26]	@ zero_extendqisi2
-  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
- 1502              		.loc 1 83 7 view .LVU369
- 1503 007e 032B     		cmp	r3, #3
- 1504 0080 01D0     		beq	.L114
-  83:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group))return false;*out=r->group;return true;
- 1505              		.loc 1 83 26 view .LVU370
- 1506 0082 A446     		mov	ip, r4
- 1507 0084 E6E7     		b	.L101
- 1508              	.L114:
-  84:modules/nav_conversion/nav_can.c **** }
- 1509              		.loc 1 84 5 is_stmt 1 view .LVU371
-  84:modules/nav_conversion/nav_can.c **** }
- 1510              		.loc 1 84 14 is_stmt 0 view .LVU372
- 1511 0086 0023     		movs	r3, #0
- 1512 0088 EB76     		strb	r3, [r5, #27]
-  84:modules/nav_conversion/nav_can.c **** }
- 1513              		.loc 1 84 17 is_stmt 1 view .LVU373
-  84:modules/nav_conversion/nav_can.c **** }
- 1514              		.loc 1 84 21 is_stmt 0 view .LVU374
- 1515 008a 2846     		mov	r0, r5
- 1516 008c FFF7FEFF 		bl	sealed
- 1517              	.LVL132:
-  84:modules/nav_conversion/nav_can.c **** }
- 1518              		.loc 1 84 19 view .LVU375
- 1519 0090 8446     		mov	ip, r0
- 1520 0092 0028     		cmp	r0, #0
- 1521 0094 DED0     		beq	.L101
-  84:modules/nav_conversion/nav_can.c **** }
- 1522              		.loc 1 84 52 is_stmt 1 discriminator 2 view .LVU376
-  84:modules/nav_conversion/nav_can.c **** }
- 1523              		.loc 1 84 56 is_stmt 0 discriminator 2 view .LVU377
- 1524 0096 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
- 1525              	.LVL133:
-  84:modules/nav_conversion/nav_can.c **** }
- 1526              		.loc 1 84 56 discriminator 2 view .LVU378
- 1527 0098 089C     		ldr	r4, [sp, #32]
-ARM GAS  /tmp/ccpm1lxy.s 			page 33
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1483              		.loc 1 82 9 is_stmt 1 view .LVU363
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1484              		.loc 1 82 18 is_stmt 0 view .LVU364
+ 1485 0064 0123     		movs	r3, #1
+ 1486 0066 E376     		strb	r3, [r4, #27]
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1487              		.loc 1 82 21 is_stmt 1 view .LVU365
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1488              		.loc 1 82 28 is_stmt 0 view .LVU366
+ 1489 0068 0023     		movs	r3, #0
+ 1490 006a A376     		strb	r3, [r4, #26]
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1491              		.loc 1 82 31 is_stmt 1 view .LVU367
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1492              		.loc 1 82 44 is_stmt 0 view .LVU368
+ 1493 006c 079B     		ldr	r3, [sp, #28]
+ 1494 006e E361     		str	r3, [r4, #28]
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1495              		.loc 1 82 49 is_stmt 1 view .LVU369
+  82:modules/nav_conversion/nav_can.c ****     }
+ 1496              		.loc 1 82 62 is_stmt 0 view .LVU370
+ 1497 0070 2183     		strh	r1, [r4, #24]	@ movhi
+ 1498 0072 DCE7     		b	.L104
+ 1499              	.LVL130:
+ 1500              	.L107:
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1501              		.loc 1 85 5 is_stmt 1 view .LVU371
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1502              		.loc 1 85 24 is_stmt 0 view .LVU372
+ 1503 0074 E369     		ldr	r3, [r4, #28]
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1504              		.loc 1 85 22 view .LVU373
+ 1505 0076 079A     		ldr	r2, [sp, #28]
+ 1506              	.LVL131:
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1507              		.loc 1 85 22 view .LVU374
+ 1508 0078 D31A     		subs	r3, r2, r3
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1509              		.loc 1 85 7 view .LVU375
+ 1510 007a 0A2B     		cmp	r3, #10
+ 1511 007c 06D9     		bls	.L108
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1512              		.loc 1 85 51 is_stmt 1 discriminator 1 view .LVU376
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1513              		.loc 1 85 59 is_stmt 0 discriminator 1 view .LVU377
+ 1514 007e A36A     		ldr	r3, [r4, #40]
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1515              		.loc 1 85 74 discriminator 1 view .LVU378
+ 1516 0080 0133     		adds	r3, r3, #1
+ 1517 0082 A362     		str	r3, [r4, #40]
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1518              		.loc 1 85 77 is_stmt 1 discriminator 1 view .LVU379
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1519              		.loc 1 85 86 is_stmt 0 discriminator 1 view .LVU380
+ 1520 0084 0023     		movs	r3, #0
+ 1521 0086 E376     		strb	r3, [r4, #27]
+ARM GAS  /tmp/ccekYNjY.s 			page 33
 
 
- 1528 009a 2060     		str	r0, [r4]	@ unaligned
- 1529 009c 6160     		str	r1, [r4, #4]	@ unaligned
- 1530 009e A260     		str	r2, [r4, #8]	@ unaligned
- 1531 00a0 E360     		str	r3, [r4, #12]	@ unaligned
- 1532 00a2 03CD     		ldmia	r5!, {r0, r1}
- 1533              	.LVL134:
-  84:modules/nav_conversion/nav_can.c **** }
- 1534              		.loc 1 84 56 discriminator 2 view .LVU379
- 1535 00a4 2061     		str	r0, [r4, #16]	@ unaligned
- 1536 00a6 6161     		str	r1, [r4, #20]	@ unaligned
- 1537 00a8 2B88     		ldrh	r3, [r5]	@ unaligned
- 1538 00aa 2383     		strh	r3, [r4, #24]	@ unaligned
-  84:modules/nav_conversion/nav_can.c **** }
- 1539              		.loc 1 84 66 is_stmt 1 discriminator 2 view .LVU380
-  84:modules/nav_conversion/nav_can.c **** }
- 1540              		.loc 1 84 73 is_stmt 0 discriminator 2 view .LVU381
- 1541 00ac D2E7     		b	.L101
- 1542              	.LVL135:
- 1543              	.L107:
-  78:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
- 1544              		.loc 1 78 45 view .LVU382
- 1545 00ae 4FF0000C 		mov	ip, #0
- 1546 00b2 CFE7     		b	.L101
- 1547              	.LVL136:
- 1548              	.L108:
-  78:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->active=0;return false;}
- 1549              		.loc 1 78 45 view .LVU383
- 1550 00b4 4FF0000C 		mov	ip, #0
- 1551 00b8 CCE7     		b	.L101
- 1552              	.L109:
- 1553 00ba 4FF0000C 		mov	ip, #0
- 1554 00be C9E7     		b	.L101
- 1555              	.L110:
- 1556 00c0 4FF0000C 		mov	ip, #0
- 1557 00c4 C6E7     		b	.L101
- 1558              		.cfi_endproc
- 1559              	.LFE14:
- 1561              		.section	.text.nc_tx_start,"ax",%progbits
- 1562              		.align	1
- 1563              		.global	nc_tx_start
- 1564              		.syntax unified
- 1565              		.thumb
- 1566              		.thumb_func
- 1567              		.fpu fpv4-sp-d16
- 1569              	nc_tx_start:
- 1570              	.LVL137:
- 1571              	.LFB15:
-  86:modules/nav_conversion/nav_can.c **** bool nc_tx_start(nc_tx_t *t,const nc_group_t *g,uint32_t now)
-  87:modules/nav_conversion/nav_can.c **** {
- 1572              		.loc 1 87 1 is_stmt 1 view -0
- 1573              		.cfi_startproc
- 1574              		@ args = 0, pretend = 0, frame = 0
- 1575              		@ frame_needed = 0, uses_anonymous_args = 0
-  88:modules/nav_conversion/nav_can.c ****     if(!t||!g||t->active)return false;
- 1576              		.loc 1 88 5 view .LVU385
- 1577              		.loc 1 88 7 is_stmt 0 view .LVU386
- 1578 0000 E8B1     		cbz	r0, .L117
-ARM GAS  /tmp/ccpm1lxy.s 			page 34
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1522              		.loc 1 85 89 is_stmt 1 discriminator 1 view .LVU381
+  85:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-r->started_ms)>NC_GROUP_MS){r->stats.group_timeouts++;r->active=0;return fals
+ 1523              		.loc 1 85 96 is_stmt 0 discriminator 1 view .LVU382
+ 1524 0088 AC46     		mov	ip, r5
+ 1525 008a E4E7     		b	.L101
+ 1526              	.L108:
+  86:modules/nav_conversion/nav_can.c ****     if(r->next!=3)return false;
+ 1527              		.loc 1 86 5 is_stmt 1 view .LVU383
+  86:modules/nav_conversion/nav_can.c ****     if(r->next!=3)return false;
+ 1528              		.loc 1 86 33 is_stmt 0 view .LVU384
+ 1529 008c 431C     		adds	r3, r0, #1
+ 1530 008e A376     		strb	r3, [r4, #26]
+  86:modules/nav_conversion/nav_can.c ****     if(r->next!=3)return false;
+ 1531              		.loc 1 86 25 view .LVU385
+ 1532 0090 04EBC003 		add	r3, r4, r0, lsl #3
+  86:modules/nav_conversion/nav_can.c ****     if(r->next!=3)return false;
+ 1533              		.loc 1 86 5 view .LVU386
+ 1534 0094 069A     		ldr	r2, [sp, #24]
+ 1535 0096 1168     		ldr	r1, [r2]	@ unaligned
+ 1536 0098 5268     		ldr	r2, [r2, #4]	@ unaligned
+ 1537 009a 44F83010 		str	r1, [r4, r0, lsl #3]	@ unaligned
+ 1538 009e 5A60     		str	r2, [r3, #4]	@ unaligned
+  87:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group)){r->stats.crc_errors++;return false;}*out=r->group;return tru
+ 1539              		.loc 1 87 5 is_stmt 1 view .LVU387
+  87:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group)){r->stats.crc_errors++;return false;}*out=r->group;return tru
+ 1540              		.loc 1 87 9 is_stmt 0 view .LVU388
+ 1541 00a0 A37E     		ldrb	r3, [r4, #26]	@ zero_extendqisi2
+  87:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group)){r->stats.crc_errors++;return false;}*out=r->group;return tru
+ 1542              		.loc 1 87 7 view .LVU389
+ 1543 00a2 032B     		cmp	r3, #3
+ 1544 00a4 01D0     		beq	.L117
+  87:modules/nav_conversion/nav_can.c ****     r->active=0;if(!sealed(&r->group)){r->stats.crc_errors++;return false;}*out=r->group;return tru
+ 1545              		.loc 1 87 26 view .LVU390
+ 1546 00a6 AC46     		mov	ip, r5
+ 1547 00a8 D5E7     		b	.L101
+ 1548              	.L117:
+  88:modules/nav_conversion/nav_can.c **** }
+ 1549              		.loc 1 88 5 is_stmt 1 view .LVU391
+  88:modules/nav_conversion/nav_can.c **** }
+ 1550              		.loc 1 88 14 is_stmt 0 view .LVU392
+ 1551 00aa 0023     		movs	r3, #0
+ 1552 00ac E376     		strb	r3, [r4, #27]
+  88:modules/nav_conversion/nav_can.c **** }
+ 1553              		.loc 1 88 17 is_stmt 1 view .LVU393
+  88:modules/nav_conversion/nav_can.c **** }
+ 1554              		.loc 1 88 21 is_stmt 0 view .LVU394
+ 1555 00ae 2046     		mov	r0, r4
+ 1556 00b0 FFF7FEFF 		bl	sealed
+ 1557              	.LVL132:
+  88:modules/nav_conversion/nav_can.c **** }
+ 1558              		.loc 1 88 19 view .LVU395
+ 1559 00b4 8446     		mov	ip, r0
+ 1560 00b6 78B1     		cbz	r0, .L118
+  88:modules/nav_conversion/nav_can.c **** }
+ 1561              		.loc 1 88 76 is_stmt 1 discriminator 2 view .LVU396
+  88:modules/nav_conversion/nav_can.c **** }
+ARM GAS  /tmp/ccekYNjY.s 			page 34
 
 
-  87:modules/nav_conversion/nav_can.c ****     if(!t||!g||t->active)return false;
- 1579              		.loc 1 87 1 discriminator 2 view .LVU387
- 1580 0002 30B5     		push	{r4, r5, lr}
- 1581              	.LCFI38:
- 1582              		.cfi_def_cfa_offset 12
- 1583              		.cfi_offset 4, -12
- 1584              		.cfi_offset 5, -8
- 1585              		.cfi_offset 14, -4
- 1586 0004 0C46     		mov	r4, r1
- 1587 0006 1546     		mov	r5, r2
- 1588 0008 8646     		mov	lr, r0
- 1589              		.loc 1 88 10 discriminator 2 view .LVU388
- 1590 000a D1B1     		cbz	r1, .L118
- 1591              		.loc 1 88 17 discriminator 4 view .LVU389
- 1592 000c C37E     		ldrb	r3, [r0, #27]	@ zero_extendqisi2
- 1593              		.loc 1 88 14 discriminator 4 view .LVU390
- 1594 000e D3B9     		cbnz	r3, .L119
-  89:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
- 1595              		.loc 1 89 5 is_stmt 1 view .LVU391
- 1596              		.loc 1 89 13 is_stmt 0 view .LVU392
- 1597 0010 8446     		mov	ip, r0
- 1598 0012 0868     		ldr	r0, [r1]	@ unaligned
- 1599              	.LVL138:
- 1600              		.loc 1 89 13 view .LVU393
- 1601 0014 4968     		ldr	r1, [r1, #4]	@ unaligned
- 1602              	.LVL139:
- 1603              		.loc 1 89 13 view .LVU394
- 1604 0016 A268     		ldr	r2, [r4, #8]	@ unaligned
- 1605              	.LVL140:
- 1606              		.loc 1 89 13 view .LVU395
- 1607 0018 E368     		ldr	r3, [r4, #12]	@ unaligned
- 1608 001a ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
- 1609              	.LVL141:
- 1610              		.loc 1 89 13 view .LVU396
- 1611 001e 2069     		ldr	r0, [r4, #16]	@ unaligned
- 1612 0020 6169     		ldr	r1, [r4, #20]	@ unaligned
- 1613 0022 ACE80300 		stmia	ip!, {r0, r1}
- 1614 0026 238B     		ldrh	r3, [r4, #24]	@ unaligned
- 1615 0028 ACF80030 		strh	r3, [ip]	@ unaligned
- 1616              		.loc 1 89 17 is_stmt 1 view .LVU397
- 1617              		.loc 1 89 24 is_stmt 0 view .LVU398
- 1618 002c 0023     		movs	r3, #0
- 1619 002e 8EF81A30 		strb	r3, [lr, #26]
- 1620              		.loc 1 89 27 is_stmt 1 view .LVU399
- 1621              		.loc 1 89 36 is_stmt 0 view .LVU400
- 1622 0032 0120     		movs	r0, #1
- 1623 0034 8EF81B00 		strb	r0, [lr, #27]
- 1624              		.loc 1 89 39 is_stmt 1 view .LVU401
- 1625              		.loc 1 89 52 is_stmt 0 view .LVU402
- 1626 0038 CEF81C50 		str	r5, [lr, #28]
- 1627              		.loc 1 89 57 is_stmt 1 view .LVU403
- 1628              	.L116:
-  90:modules/nav_conversion/nav_can.c **** }
- 1629              		.loc 1 90 1 is_stmt 0 view .LVU404
- 1630 003c 30BD     		pop	{r4, r5, pc}
- 1631              	.LVL142:
- 1632              	.L117:
-ARM GAS  /tmp/ccpm1lxy.s 			page 35
+ 1562              		.loc 1 88 80 is_stmt 0 discriminator 2 view .LVU397
+ 1563 00b8 A646     		mov	lr, r4
+ 1564 00ba BEE80F00 		ldmia	lr!, {r0, r1, r2, r3}
+ 1565 00be 089C     		ldr	r4, [sp, #32]
+ 1566              	.LVL133:
+  88:modules/nav_conversion/nav_can.c **** }
+ 1567              		.loc 1 88 80 discriminator 2 view .LVU398
+ 1568 00c0 2060     		str	r0, [r4]	@ unaligned
+ 1569 00c2 6160     		str	r1, [r4, #4]	@ unaligned
+ 1570 00c4 A260     		str	r2, [r4, #8]	@ unaligned
+ 1571 00c6 E360     		str	r3, [r4, #12]	@ unaligned
+ 1572 00c8 BEE80300 		ldmia	lr!, {r0, r1}
+ 1573              	.LVL134:
+  88:modules/nav_conversion/nav_can.c **** }
+ 1574              		.loc 1 88 80 discriminator 2 view .LVU399
+ 1575 00cc 2061     		str	r0, [r4, #16]	@ unaligned
+ 1576 00ce 6161     		str	r1, [r4, #20]	@ unaligned
+ 1577 00d0 BEF80030 		ldrh	r3, [lr]	@ unaligned
+ 1578 00d4 2383     		strh	r3, [r4, #24]	@ unaligned
+  88:modules/nav_conversion/nav_can.c **** }
+ 1579              		.loc 1 88 90 is_stmt 1 discriminator 2 view .LVU400
+  88:modules/nav_conversion/nav_can.c **** }
+ 1580              		.loc 1 88 97 is_stmt 0 discriminator 2 view .LVU401
+ 1581 00d6 BEE7     		b	.L101
+ 1582              	.LVL135:
+ 1583              	.L118:
+  88:modules/nav_conversion/nav_can.c **** }
+ 1584              		.loc 1 88 40 is_stmt 1 discriminator 1 view .LVU402
+  88:modules/nav_conversion/nav_can.c **** }
+ 1585              		.loc 1 88 48 is_stmt 0 discriminator 1 view .LVU403
+ 1586 00d8 E36A     		ldr	r3, [r4, #44]
+  88:modules/nav_conversion/nav_can.c **** }
+ 1587              		.loc 1 88 59 discriminator 1 view .LVU404
+ 1588 00da 0133     		adds	r3, r3, #1
+ 1589 00dc E362     		str	r3, [r4, #44]
+  88:modules/nav_conversion/nav_can.c **** }
+ 1590              		.loc 1 88 62 is_stmt 1 discriminator 1 view .LVU405
+  88:modules/nav_conversion/nav_can.c **** }
+ 1591              		.loc 1 88 69 is_stmt 0 discriminator 1 view .LVU406
+ 1592 00de BAE7     		b	.L101
+ 1593              	.LVL136:
+ 1594              	.L110:
+  78:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->stats.malformed++;r->active=0;return false;}
+ 1595              		.loc 1 78 45 view .LVU407
+ 1596 00e0 4FF0000C 		mov	ip, #0
+ 1597 00e4 B7E7     		b	.L101
+ 1598              	.LVL137:
+ 1599              	.L111:
+  78:modules/nav_conversion/nav_can.c ****     if(extended||rtr||dlc!=8||!bytes){r->stats.malformed++;r->active=0;return false;}
+ 1600              		.loc 1 78 45 view .LVU408
+ 1601 00e6 4FF0000C 		mov	ip, #0
+ 1602 00ea B4E7     		b	.L101
+ 1603              	.L112:
+ 1604 00ec 4FF0000C 		mov	ip, #0
+ 1605 00f0 B1E7     		b	.L101
+ 1606              	.L113:
+ 1607 00f2 4FF0000C 		mov	ip, #0
+ARM GAS  /tmp/ccekYNjY.s 			page 35
 
 
- 1633              	.LCFI39:
- 1634              		.cfi_def_cfa_offset 0
- 1635              		.cfi_restore 4
- 1636              		.cfi_restore 5
- 1637              		.cfi_restore 14
-  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
- 1638              		.loc 1 88 33 view .LVU405
- 1639 003e 0020     		movs	r0, #0
- 1640              	.LVL143:
- 1641              		.loc 1 90 1 view .LVU406
- 1642 0040 7047     		bx	lr
- 1643              	.LVL144:
- 1644              	.L118:
- 1645              	.LCFI40:
- 1646              		.cfi_def_cfa_offset 12
- 1647              		.cfi_offset 4, -12
- 1648              		.cfi_offset 5, -8
- 1649              		.cfi_offset 14, -4
-  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
- 1650              		.loc 1 88 33 view .LVU407
- 1651 0042 0020     		movs	r0, #0
- 1652              	.LVL145:
-  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
- 1653              		.loc 1 88 33 view .LVU408
- 1654 0044 FAE7     		b	.L116
- 1655              	.LVL146:
- 1656              	.L119:
-  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
- 1657              		.loc 1 88 33 view .LVU409
- 1658 0046 0020     		movs	r0, #0
- 1659              	.LVL147:
-  88:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
- 1660              		.loc 1 88 33 view .LVU410
- 1661 0048 F8E7     		b	.L116
- 1662              		.cfi_endproc
- 1663              	.LFE15:
- 1665              		.section	.text.nc_tx_peek,"ax",%progbits
- 1666              		.align	1
- 1667              		.global	nc_tx_peek
- 1668              		.syntax unified
- 1669              		.thumb
- 1670              		.thumb_func
- 1671              		.fpu fpv4-sp-d16
- 1673              	nc_tx_peek:
- 1674              	.LVL148:
- 1675              	.LFB16:
-  91:modules/nav_conversion/nav_can.c **** bool nc_tx_peek(nc_tx_t *t,uint32_t now,uint16_t *id,uint8_t bytes[8])
+ 1608 00f6 AEE7     		b	.L101
+ 1609              		.cfi_endproc
+ 1610              	.LFE14:
+ 1612              		.section	.text.nc_tx_start,"ax",%progbits
+ 1613              		.align	1
+ 1614              		.global	nc_tx_start
+ 1615              		.syntax unified
+ 1616              		.thumb
+ 1617              		.thumb_func
+ 1618              		.fpu fpv4-sp-d16
+ 1620              	nc_tx_start:
+ 1621              	.LVL138:
+ 1622              	.LFB15:
+  90:modules/nav_conversion/nav_can.c **** 
+  91:modules/nav_conversion/nav_can.c **** bool nc_tx_start(nc_tx_t *t,const nc_group_t *g,uint32_t now)
   92:modules/nav_conversion/nav_can.c **** {
- 1676              		.loc 1 92 1 is_stmt 1 view -0
- 1677              		.cfi_startproc
- 1678              		@ args = 0, pretend = 0, frame = 0
- 1679              		@ frame_needed = 0, uses_anonymous_args = 0
- 1680              		@ link register save eliminated.
-  93:modules/nav_conversion/nav_can.c ****     if(!t||!id||!bytes)return false;
- 1681              		.loc 1 93 5 view .LVU412
- 1682              		.loc 1 93 7 is_stmt 0 view .LVU413
- 1683 0000 8446     		mov	ip, r0
-ARM GAS  /tmp/ccpm1lxy.s 			page 36
+ 1623              		.loc 1 92 1 is_stmt 1 view -0
+ 1624              		.cfi_startproc
+ 1625              		@ args = 0, pretend = 0, frame = 0
+ 1626              		@ frame_needed = 0, uses_anonymous_args = 0
+  93:modules/nav_conversion/nav_can.c ****     if(!t||!g||t->active)return false;
+ 1627              		.loc 1 93 5 view .LVU410
+ 1628              		.loc 1 93 7 is_stmt 0 view .LVU411
+ 1629 0000 E8B1     		cbz	r0, .L121
+  92:modules/nav_conversion/nav_can.c ****     if(!t||!g||t->active)return false;
+ 1630              		.loc 1 92 1 discriminator 2 view .LVU412
+ 1631 0002 30B5     		push	{r4, r5, lr}
+ 1632              	.LCFI38:
+ 1633              		.cfi_def_cfa_offset 12
+ 1634              		.cfi_offset 4, -12
+ 1635              		.cfi_offset 5, -8
+ 1636              		.cfi_offset 14, -4
+ 1637 0004 0C46     		mov	r4, r1
+ 1638 0006 1546     		mov	r5, r2
+ 1639 0008 8646     		mov	lr, r0
+ 1640              		.loc 1 93 10 discriminator 2 view .LVU413
+ 1641 000a D1B1     		cbz	r1, .L122
+ 1642              		.loc 1 93 17 discriminator 4 view .LVU414
+ 1643 000c C37E     		ldrb	r3, [r0, #27]	@ zero_extendqisi2
+ 1644              		.loc 1 93 14 discriminator 4 view .LVU415
+ 1645 000e D3B9     		cbnz	r3, .L123
+  94:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1646              		.loc 1 94 5 is_stmt 1 view .LVU416
+ 1647              		.loc 1 94 13 is_stmt 0 view .LVU417
+ 1648 0010 8446     		mov	ip, r0
+ 1649 0012 0868     		ldr	r0, [r1]	@ unaligned
+ 1650              	.LVL139:
+ 1651              		.loc 1 94 13 view .LVU418
+ 1652 0014 4968     		ldr	r1, [r1, #4]	@ unaligned
+ 1653              	.LVL140:
+ 1654              		.loc 1 94 13 view .LVU419
+ 1655 0016 A268     		ldr	r2, [r4, #8]	@ unaligned
+ 1656              	.LVL141:
+ 1657              		.loc 1 94 13 view .LVU420
+ 1658 0018 E368     		ldr	r3, [r4, #12]	@ unaligned
+ 1659 001a ACE80F00 		stmia	ip!, {r0, r1, r2, r3}
+ 1660              	.LVL142:
+ARM GAS  /tmp/ccekYNjY.s 			page 36
 
 
- 1684 0002 F0B1     		cbz	r0, .L127
- 1685              		.loc 1 93 10 discriminator 2 view .LVU414
- 1686 0004 FAB1     		cbz	r2, .L128
- 1687              		.loc 1 93 15 discriminator 4 view .LVU415
- 1688 0006 03B3     		cbz	r3, .L129
-  94:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
- 1689              		.loc 1 94 5 is_stmt 1 view .LVU416
- 1690              		.loc 1 94 24 is_stmt 0 view .LVU417
- 1691 0008 C069     		ldr	r0, [r0, #28]
- 1692              	.LVL149:
- 1693              		.loc 1 94 22 view .LVU418
- 1694 000a 091A     		subs	r1, r1, r0
- 1695              	.LVL150:
- 1696              		.loc 1 94 7 view .LVU419
- 1697 000c 0829     		cmp	r1, #8
- 1698 000e 02D9     		bls	.L126
- 1699              		.loc 1 94 47 is_stmt 1 discriminator 1 view .LVU420
- 1700              		.loc 1 94 56 is_stmt 0 discriminator 1 view .LVU421
- 1701 0010 0021     		movs	r1, #0
- 1702 0012 8CF81B10 		strb	r1, [ip, #27]
- 1703              	.L126:
-  95:modules/nav_conversion/nav_can.c ****     if(!t->active)return false;
- 1704              		.loc 1 95 5 is_stmt 1 view .LVU422
- 1705              		.loc 1 95 10 is_stmt 0 view .LVU423
- 1706 0016 9CF81B10 		ldrb	r1, [ip, #27]	@ zero_extendqisi2
- 1707              		.loc 1 95 7 view .LVU424
- 1708 001a 09B9     		cbnz	r1, .L131
- 1709              		.loc 1 95 26 view .LVU425
- 1710 001c 0020     		movs	r0, #0
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
-  97:modules/nav_conversion/nav_can.c **** }
- 1711              		.loc 1 97 1 view .LVU426
- 1712 001e 7047     		bx	lr
- 1713              	.L131:
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1714              		.loc 1 96 5 is_stmt 1 view .LVU427
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1715              		.loc 1 96 17 is_stmt 0 view .LVU428
- 1716 0020 BCF81810 		ldrh	r1, [ip, #24]
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1717              		.loc 1 96 24 view .LVU429
- 1718 0024 9CF81A00 		ldrb	r0, [ip, #26]	@ zero_extendqisi2
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1719              		.loc 1 96 22 view .LVU430
- 1720 0028 0144     		add	r1, r1, r0
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1721              		.loc 1 96 8 view .LVU431
- 1722 002a 1180     		strh	r1, [r2]	@ movhi
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1723              		.loc 1 96 31 is_stmt 1 view .LVU432
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1724              		.loc 1 96 59 is_stmt 0 view .LVU433
- 1725 002c 9CF81A20 		ldrb	r2, [ip, #26]	@ zero_extendqisi2
- 1726              	.LVL151:
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1727              		.loc 1 96 57 view .LVU434
- 1728 0030 0CEBC200 		add	r0, ip, r2, lsl #3
-ARM GAS  /tmp/ccpm1lxy.s 			page 37
+ 1661              		.loc 1 94 13 view .LVU421
+ 1662 001e 2069     		ldr	r0, [r4, #16]	@ unaligned
+ 1663 0020 6169     		ldr	r1, [r4, #20]	@ unaligned
+ 1664 0022 ACE80300 		stmia	ip!, {r0, r1}
+ 1665 0026 238B     		ldrh	r3, [r4, #24]	@ unaligned
+ 1666 0028 ACF80030 		strh	r3, [ip]	@ unaligned
+ 1667              		.loc 1 94 17 is_stmt 1 view .LVU422
+ 1668              		.loc 1 94 24 is_stmt 0 view .LVU423
+ 1669 002c 0023     		movs	r3, #0
+ 1670 002e 8EF81A30 		strb	r3, [lr, #26]
+ 1671              		.loc 1 94 27 is_stmt 1 view .LVU424
+ 1672              		.loc 1 94 36 is_stmt 0 view .LVU425
+ 1673 0032 0120     		movs	r0, #1
+ 1674 0034 8EF81B00 		strb	r0, [lr, #27]
+ 1675              		.loc 1 94 39 is_stmt 1 view .LVU426
+ 1676              		.loc 1 94 52 is_stmt 0 view .LVU427
+ 1677 0038 CEF81C50 		str	r5, [lr, #28]
+ 1678              		.loc 1 94 57 is_stmt 1 view .LVU428
+ 1679              	.L120:
+  95:modules/nav_conversion/nav_can.c **** }
+ 1680              		.loc 1 95 1 is_stmt 0 view .LVU429
+ 1681 003c 30BD     		pop	{r4, r5, pc}
+ 1682              	.LVL143:
+ 1683              	.L121:
+ 1684              	.LCFI39:
+ 1685              		.cfi_def_cfa_offset 0
+ 1686              		.cfi_restore 4
+ 1687              		.cfi_restore 5
+ 1688              		.cfi_restore 14
+  93:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1689              		.loc 1 93 33 view .LVU430
+ 1690 003e 0020     		movs	r0, #0
+ 1691              	.LVL144:
+ 1692              		.loc 1 95 1 view .LVU431
+ 1693 0040 7047     		bx	lr
+ 1694              	.LVL145:
+ 1695              	.L122:
+ 1696              	.LCFI40:
+ 1697              		.cfi_def_cfa_offset 12
+ 1698              		.cfi_offset 4, -12
+ 1699              		.cfi_offset 5, -8
+ 1700              		.cfi_offset 14, -4
+  93:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1701              		.loc 1 93 33 view .LVU432
+ 1702 0042 0020     		movs	r0, #0
+ 1703              	.LVL146:
+  93:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1704              		.loc 1 93 33 view .LVU433
+ 1705 0044 FAE7     		b	.L120
+ 1706              	.LVL147:
+ 1707              	.L123:
+  93:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1708              		.loc 1 93 33 view .LVU434
+ 1709 0046 0020     		movs	r0, #0
+ 1710              	.LVL148:
+  93:modules/nav_conversion/nav_can.c ****     t->group=*g;t->next=0;t->active=1;t->started_ms=now;return true;
+ 1711              		.loc 1 93 33 view .LVU435
+ARM GAS  /tmp/ccekYNjY.s 			page 37
 
 
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1729              		.loc 1 96 31 view .LVU435
- 1730 0034 5CF83210 		ldr	r1, [ip, r2, lsl #3]	@ unaligned
- 1731 0038 4268     		ldr	r2, [r0, #4]	@ unaligned
- 1732 003a 1960     		str	r1, [r3]	@ unaligned
- 1733 003c 5A60     		str	r2, [r3, #4]	@ unaligned
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1734              		.loc 1 96 70 is_stmt 1 view .LVU436
-  96:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
- 1735              		.loc 1 96 77 is_stmt 0 view .LVU437
- 1736 003e 0120     		movs	r0, #1
- 1737 0040 7047     		bx	lr
- 1738              	.LVL152:
- 1739              	.L127:
-  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
- 1740              		.loc 1 93 31 view .LVU438
- 1741 0042 0020     		movs	r0, #0
- 1742              	.LVL153:
-  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
- 1743              		.loc 1 93 31 view .LVU439
- 1744 0044 7047     		bx	lr
- 1745              	.LVL154:
- 1746              	.L128:
-  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
- 1747              		.loc 1 93 31 view .LVU440
- 1748 0046 0020     		movs	r0, #0
- 1749              	.LVL155:
-  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
- 1750              		.loc 1 93 31 view .LVU441
- 1751 0048 7047     		bx	lr
- 1752              	.LVL156:
- 1753              	.L129:
-  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
- 1754              		.loc 1 93 31 view .LVU442
- 1755 004a 0020     		movs	r0, #0
- 1756              	.LVL157:
-  93:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
- 1757              		.loc 1 93 31 view .LVU443
- 1758 004c 7047     		bx	lr
- 1759              		.cfi_endproc
- 1760              	.LFE16:
- 1762              		.section	.text.nc_tx_commit,"ax",%progbits
- 1763              		.align	1
- 1764              		.global	nc_tx_commit
- 1765              		.syntax unified
- 1766              		.thumb
- 1767              		.thumb_func
- 1768              		.fpu fpv4-sp-d16
- 1770              	nc_tx_commit:
- 1771              	.LVL158:
- 1772              	.LFB17:
-  98:modules/nav_conversion/nav_can.c **** void nc_tx_commit(nc_tx_t *t){if(t&&t->active&&++t->next==3)t->active=0;}
- 1773              		.loc 1 98 30 is_stmt 1 view -0
- 1774              		.cfi_startproc
- 1775              		@ args = 0, pretend = 0, frame = 0
- 1776              		@ frame_needed = 0, uses_anonymous_args = 0
- 1777              		@ link register save eliminated.
-ARM GAS  /tmp/ccpm1lxy.s 			page 38
+ 1712 0048 F8E7     		b	.L120
+ 1713              		.cfi_endproc
+ 1714              	.LFE15:
+ 1716              		.section	.text.nc_tx_peek,"ax",%progbits
+ 1717              		.align	1
+ 1718              		.global	nc_tx_peek
+ 1719              		.syntax unified
+ 1720              		.thumb
+ 1721              		.thumb_func
+ 1722              		.fpu fpv4-sp-d16
+ 1724              	nc_tx_peek:
+ 1725              	.LVL149:
+ 1726              	.LFB16:
+  96:modules/nav_conversion/nav_can.c **** bool nc_tx_peek(nc_tx_t *t,uint32_t now,uint16_t *id,uint8_t bytes[8])
+  97:modules/nav_conversion/nav_can.c **** {
+ 1727              		.loc 1 97 1 is_stmt 1 view -0
+ 1728              		.cfi_startproc
+ 1729              		@ args = 0, pretend = 0, frame = 0
+ 1730              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1731              		@ link register save eliminated.
+  98:modules/nav_conversion/nav_can.c ****     if(!t||!id||!bytes)return false;
+ 1732              		.loc 1 98 5 view .LVU437
+ 1733              		.loc 1 98 7 is_stmt 0 view .LVU438
+ 1734 0000 8446     		mov	ip, r0
+ 1735 0002 F0B1     		cbz	r0, .L131
+ 1736              		.loc 1 98 10 discriminator 2 view .LVU439
+ 1737 0004 FAB1     		cbz	r2, .L132
+ 1738              		.loc 1 98 15 discriminator 4 view .LVU440
+ 1739 0006 03B3     		cbz	r3, .L133
+  99:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1740              		.loc 1 99 5 is_stmt 1 view .LVU441
+ 1741              		.loc 1 99 24 is_stmt 0 view .LVU442
+ 1742 0008 C069     		ldr	r0, [r0, #28]
+ 1743              	.LVL150:
+ 1744              		.loc 1 99 22 view .LVU443
+ 1745 000a 091A     		subs	r1, r1, r0
+ 1746              	.LVL151:
+ 1747              		.loc 1 99 7 view .LVU444
+ 1748 000c 0829     		cmp	r1, #8
+ 1749 000e 02D9     		bls	.L130
+ 1750              		.loc 1 99 47 is_stmt 1 discriminator 1 view .LVU445
+ 1751              		.loc 1 99 56 is_stmt 0 discriminator 1 view .LVU446
+ 1752 0010 0021     		movs	r1, #0
+ 1753 0012 8CF81B10 		strb	r1, [ip, #27]
+ 1754              	.L130:
+ 100:modules/nav_conversion/nav_can.c ****     if(!t->active)return false;
+ 1755              		.loc 1 100 5 is_stmt 1 view .LVU447
+ 1756              		.loc 1 100 10 is_stmt 0 view .LVU448
+ 1757 0016 9CF81B10 		ldrb	r1, [ip, #27]	@ zero_extendqisi2
+ 1758              		.loc 1 100 7 view .LVU449
+ 1759 001a 09B9     		cbnz	r1, .L135
+ 1760              		.loc 1 100 26 view .LVU450
+ 1761 001c 0020     		movs	r0, #0
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 102:modules/nav_conversion/nav_can.c **** }
+ 1762              		.loc 1 102 1 view .LVU451
+ 1763 001e 7047     		bx	lr
+ARM GAS  /tmp/ccekYNjY.s 			page 38
 
 
- 1778              		.loc 1 98 31 view .LVU445
- 1779              		.loc 1 98 33 is_stmt 0 view .LVU446
- 1780 0000 38B1     		cbz	r0, .L132
- 1781              		.loc 1 98 38 discriminator 1 view .LVU447
- 1782 0002 C27E     		ldrb	r2, [r0, #27]	@ zero_extendqisi2
- 1783              		.loc 1 98 35 discriminator 1 view .LVU448
- 1784 0004 2AB1     		cbz	r2, .L132
- 1785              		.loc 1 98 51 discriminator 3 view .LVU449
- 1786 0006 827E     		ldrb	r2, [r0, #26]	@ zero_extendqisi2
- 1787              		.loc 1 98 48 discriminator 3 view .LVU450
- 1788 0008 0132     		adds	r2, r2, #1
- 1789 000a D2B2     		uxtb	r2, r2
- 1790              		.loc 1 98 46 discriminator 3 view .LVU451
- 1791 000c 8276     		strb	r2, [r0, #26]
- 1792 000e 032A     		cmp	r2, #3
- 1793 0010 00D0     		beq	.L134
- 1794              	.L132:
- 1795              		.loc 1 98 73 view .LVU452
- 1796 0012 7047     		bx	lr
- 1797              	.L134:
- 1798              		.loc 1 98 61 is_stmt 1 discriminator 5 view .LVU453
- 1799              		.loc 1 98 70 is_stmt 0 discriminator 5 view .LVU454
- 1800 0014 0022     		movs	r2, #0
- 1801 0016 C276     		strb	r2, [r0, #27]
- 1802              		.loc 1 98 73 discriminator 5 view .LVU455
- 1803 0018 FBE7     		b	.L132
- 1804              		.cfi_endproc
- 1805              	.LFE17:
- 1807              		.text
- 1808              	.Letext0:
- 1809              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
- 1810              		.file 3 "modules/nav_conversion/rm_chassis_comm/protocol.h"
- 1811              		.file 4 "modules/nav_conversion/nav_can.h"
- 1812              		.file 5 "/usr/include/newlib/math.h"
-ARM GAS  /tmp/ccpm1lxy.s 			page 39
+ 1764              	.L135:
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1765              		.loc 1 101 5 is_stmt 1 view .LVU452
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1766              		.loc 1 101 17 is_stmt 0 view .LVU453
+ 1767 0020 BCF81810 		ldrh	r1, [ip, #24]
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1768              		.loc 1 101 24 view .LVU454
+ 1769 0024 9CF81A00 		ldrb	r0, [ip, #26]	@ zero_extendqisi2
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1770              		.loc 1 101 22 view .LVU455
+ 1771 0028 0144     		add	r1, r1, r0
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1772              		.loc 1 101 8 view .LVU456
+ 1773 002a 1180     		strh	r1, [r2]	@ movhi
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1774              		.loc 1 101 31 is_stmt 1 view .LVU457
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1775              		.loc 1 101 59 is_stmt 0 view .LVU458
+ 1776 002c 9CF81A20 		ldrb	r2, [ip, #26]	@ zero_extendqisi2
+ 1777              	.LVL152:
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1778              		.loc 1 101 57 view .LVU459
+ 1779 0030 0CEBC200 		add	r0, ip, r2, lsl #3
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1780              		.loc 1 101 31 view .LVU460
+ 1781 0034 5CF83210 		ldr	r1, [ip, r2, lsl #3]	@ unaligned
+ 1782 0038 4268     		ldr	r2, [r0, #4]	@ unaligned
+ 1783 003a 1960     		str	r1, [r3]	@ unaligned
+ 1784 003c 5A60     		str	r2, [r3, #4]	@ unaligned
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1785              		.loc 1 101 70 is_stmt 1 view .LVU461
+ 101:modules/nav_conversion/nav_can.c ****     *id=t->group.base+t->next;memcpy(bytes,t->group.data[t->next],8);return true;
+ 1786              		.loc 1 101 77 is_stmt 0 view .LVU462
+ 1787 003e 0120     		movs	r0, #1
+ 1788 0040 7047     		bx	lr
+ 1789              	.LVL153:
+ 1790              	.L131:
+  98:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1791              		.loc 1 98 31 view .LVU463
+ 1792 0042 0020     		movs	r0, #0
+ 1793              	.LVL154:
+  98:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1794              		.loc 1 98 31 view .LVU464
+ 1795 0044 7047     		bx	lr
+ 1796              	.LVL155:
+ 1797              	.L132:
+  98:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1798              		.loc 1 98 31 view .LVU465
+ 1799 0046 0020     		movs	r0, #0
+ 1800              	.LVL156:
+  98:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1801              		.loc 1 98 31 view .LVU466
+ 1802 0048 7047     		bx	lr
+ 1803              	.LVL157:
+ 1804              	.L133:
+  98:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ARM GAS  /tmp/ccekYNjY.s 			page 39
+
+
+ 1805              		.loc 1 98 31 view .LVU467
+ 1806 004a 0020     		movs	r0, #0
+ 1807              	.LVL158:
+  98:modules/nav_conversion/nav_can.c ****     if((uint32_t)(now-t->started_ms)>NC_TX_MS)t->active=0;
+ 1808              		.loc 1 98 31 view .LVU468
+ 1809 004c 7047     		bx	lr
+ 1810              		.cfi_endproc
+ 1811              	.LFE16:
+ 1813              		.section	.text.nc_tx_commit,"ax",%progbits
+ 1814              		.align	1
+ 1815              		.global	nc_tx_commit
+ 1816              		.syntax unified
+ 1817              		.thumb
+ 1818              		.thumb_func
+ 1819              		.fpu fpv4-sp-d16
+ 1821              	nc_tx_commit:
+ 1822              	.LVL159:
+ 1823              	.LFB17:
+ 103:modules/nav_conversion/nav_can.c **** void nc_tx_commit(nc_tx_t *t){if(t&&t->active&&++t->next==3)t->active=0;}
+ 1824              		.loc 1 103 30 is_stmt 1 view -0
+ 1825              		.cfi_startproc
+ 1826              		@ args = 0, pretend = 0, frame = 0
+ 1827              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1828              		@ link register save eliminated.
+ 1829              		.loc 1 103 31 view .LVU470
+ 1830              		.loc 1 103 33 is_stmt 0 view .LVU471
+ 1831 0000 38B1     		cbz	r0, .L136
+ 1832              		.loc 1 103 38 discriminator 1 view .LVU472
+ 1833 0002 C27E     		ldrb	r2, [r0, #27]	@ zero_extendqisi2
+ 1834              		.loc 1 103 35 discriminator 1 view .LVU473
+ 1835 0004 2AB1     		cbz	r2, .L136
+ 1836              		.loc 1 103 51 discriminator 3 view .LVU474
+ 1837 0006 827E     		ldrb	r2, [r0, #26]	@ zero_extendqisi2
+ 1838              		.loc 1 103 48 discriminator 3 view .LVU475
+ 1839 0008 0132     		adds	r2, r2, #1
+ 1840 000a D2B2     		uxtb	r2, r2
+ 1841              		.loc 1 103 46 discriminator 3 view .LVU476
+ 1842 000c 8276     		strb	r2, [r0, #26]
+ 1843 000e 032A     		cmp	r2, #3
+ 1844 0010 00D0     		beq	.L138
+ 1845              	.L136:
+ 1846              		.loc 1 103 73 view .LVU477
+ 1847 0012 7047     		bx	lr
+ 1848              	.L138:
+ 1849              		.loc 1 103 61 is_stmt 1 discriminator 5 view .LVU478
+ 1850              		.loc 1 103 70 is_stmt 0 discriminator 5 view .LVU479
+ 1851 0014 0022     		movs	r2, #0
+ 1852 0016 C276     		strb	r2, [r0, #27]
+ 1853              		.loc 1 103 73 discriminator 5 view .LVU480
+ 1854 0018 FBE7     		b	.L136
+ 1855              		.cfi_endproc
+ 1856              	.LFE17:
+ 1858              		.text
+ 1859              	.Letext0:
+ 1860              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
+ 1861              		.file 3 "modules/nav_conversion/rm_chassis_comm/protocol.h"
+ 1862              		.file 4 "modules/nav_conversion/nav_can.h"
+ARM GAS  /tmp/ccekYNjY.s 			page 40
+
+
+ 1863              		.file 5 "/usr/include/newlib/math.h"
+ARM GAS  /tmp/ccekYNjY.s 			page 41
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 nav_can.c
-     /tmp/ccpm1lxy.s:18     .text.w16:0000000000000000 $t
-     /tmp/ccpm1lxy.s:25     .text.w16:0000000000000000 w16
-     /tmp/ccpm1lxy.s:49     .text.w32:0000000000000000 $t
-     /tmp/ccpm1lxy.s:55     .text.w32:0000000000000000 w32
-     /tmp/ccpm1lxy.s:95     .text.r16:0000000000000000 $t
-     /tmp/ccpm1lxy.s:101    .text.r16:0000000000000000 r16
-     /tmp/ccpm1lxy.s:122    .text.s16:0000000000000000 $t
-     /tmp/ccpm1lxy.s:128    .text.s16:0000000000000000 s16
-     /tmp/ccpm1lxy.s:164    .text.r32:0000000000000000 $t
-     /tmp/ccpm1lxy.s:170    .text.r32:0000000000000000 r32
-     /tmp/ccpm1lxy.s:204    .text.command_ok:0000000000000000 $t
-     /tmp/ccpm1lxy.s:210    .text.command_ok:0000000000000000 command_ok
-     /tmp/ccpm1lxy.s:319    .text.command_ok:0000000000000074 $d
-     /tmp/ccpm1lxy.s:325    .text.velocity:0000000000000000 $t
-     /tmp/ccpm1lxy.s:331    .text.velocity:0000000000000000 velocity
-     /tmp/ccpm1lxy.s:428    .text.velocity:000000000000006c $d
-     /tmp/ccpm1lxy.s:433    .text.nc_crc:0000000000000000 $t
-     /tmp/ccpm1lxy.s:440    .text.nc_crc:0000000000000000 nc_crc
-     /tmp/ccpm1lxy.s:519    .text.nc_crc:0000000000000030 $d
-     /tmp/ccpm1lxy.s:524    .text.seal:0000000000000000 $t
-     /tmp/ccpm1lxy.s:530    .text.seal:0000000000000000 seal
-     /tmp/ccpm1lxy.s:600    .text.sealed:0000000000000000 $t
-     /tmp/ccpm1lxy.s:606    .text.sealed:0000000000000000 sealed
-     /tmp/ccpm1lxy.s:688    .text.nc_command_group:0000000000000000 $t
-     /tmp/ccpm1lxy.s:695    .text.nc_command_group:0000000000000000 nc_command_group
-     /tmp/ccpm1lxy.s:791    .text.nc_command_decode:0000000000000000 $t
-     /tmp/ccpm1lxy.s:798    .text.nc_command_decode:0000000000000000 nc_command_decode
-     /tmp/ccpm1lxy.s:1005   .text.nc_command_decode:0000000000000100 $d
-     /tmp/ccpm1lxy.s:1010   .text.nc_feedback_group:0000000000000000 $t
-     /tmp/ccpm1lxy.s:1017   .text.nc_feedback_group:0000000000000000 nc_feedback_group
-     /tmp/ccpm1lxy.s:1153   .text.nc_feedback_group:00000000000000a0 $d
-     /tmp/ccpm1lxy.s:1158   .text.nc_feedback_decode:0000000000000000 $t
-     /tmp/ccpm1lxy.s:1165   .text.nc_feedback_decode:0000000000000000 nc_feedback_decode
-     /tmp/ccpm1lxy.s:1357   .text.nc_feedback_decode:00000000000000f8 $d
-     /tmp/ccpm1lxy.s:1362   .text.nc_rx_push:0000000000000000 $t
-     /tmp/ccpm1lxy.s:1369   .text.nc_rx_push:0000000000000000 nc_rx_push
-     /tmp/ccpm1lxy.s:1562   .text.nc_tx_start:0000000000000000 $t
-     /tmp/ccpm1lxy.s:1569   .text.nc_tx_start:0000000000000000 nc_tx_start
-     /tmp/ccpm1lxy.s:1666   .text.nc_tx_peek:0000000000000000 $t
-     /tmp/ccpm1lxy.s:1673   .text.nc_tx_peek:0000000000000000 nc_tx_peek
-     /tmp/ccpm1lxy.s:1763   .text.nc_tx_commit:0000000000000000 $t
-     /tmp/ccpm1lxy.s:1770   .text.nc_tx_commit:0000000000000000 nc_tx_commit
+     /tmp/ccekYNjY.s:18     .text.w16:0000000000000000 $t
+     /tmp/ccekYNjY.s:25     .text.w16:0000000000000000 w16
+     /tmp/ccekYNjY.s:49     .text.w32:0000000000000000 $t
+     /tmp/ccekYNjY.s:55     .text.w32:0000000000000000 w32
+     /tmp/ccekYNjY.s:95     .text.r16:0000000000000000 $t
+     /tmp/ccekYNjY.s:101    .text.r16:0000000000000000 r16
+     /tmp/ccekYNjY.s:122    .text.s16:0000000000000000 $t
+     /tmp/ccekYNjY.s:128    .text.s16:0000000000000000 s16
+     /tmp/ccekYNjY.s:164    .text.r32:0000000000000000 $t
+     /tmp/ccekYNjY.s:170    .text.r32:0000000000000000 r32
+     /tmp/ccekYNjY.s:204    .text.command_ok:0000000000000000 $t
+     /tmp/ccekYNjY.s:210    .text.command_ok:0000000000000000 command_ok
+     /tmp/ccekYNjY.s:319    .text.command_ok:0000000000000074 $d
+     /tmp/ccekYNjY.s:325    .text.velocity:0000000000000000 $t
+     /tmp/ccekYNjY.s:331    .text.velocity:0000000000000000 velocity
+     /tmp/ccekYNjY.s:428    .text.velocity:000000000000006c $d
+     /tmp/ccekYNjY.s:433    .text.nc_crc:0000000000000000 $t
+     /tmp/ccekYNjY.s:440    .text.nc_crc:0000000000000000 nc_crc
+     /tmp/ccekYNjY.s:519    .text.nc_crc:0000000000000030 $d
+     /tmp/ccekYNjY.s:524    .text.seal:0000000000000000 $t
+     /tmp/ccekYNjY.s:530    .text.seal:0000000000000000 seal
+     /tmp/ccekYNjY.s:600    .text.sealed:0000000000000000 $t
+     /tmp/ccekYNjY.s:606    .text.sealed:0000000000000000 sealed
+     /tmp/ccekYNjY.s:688    .text.nc_command_group:0000000000000000 $t
+     /tmp/ccekYNjY.s:695    .text.nc_command_group:0000000000000000 nc_command_group
+     /tmp/ccekYNjY.s:791    .text.nc_command_decode:0000000000000000 $t
+     /tmp/ccekYNjY.s:798    .text.nc_command_decode:0000000000000000 nc_command_decode
+     /tmp/ccekYNjY.s:1005   .text.nc_command_decode:0000000000000100 $d
+     /tmp/ccekYNjY.s:1010   .text.nc_feedback_group:0000000000000000 $t
+     /tmp/ccekYNjY.s:1017   .text.nc_feedback_group:0000000000000000 nc_feedback_group
+     /tmp/ccekYNjY.s:1153   .text.nc_feedback_group:00000000000000a0 $d
+     /tmp/ccekYNjY.s:1158   .text.nc_feedback_decode:0000000000000000 $t
+     /tmp/ccekYNjY.s:1165   .text.nc_feedback_decode:0000000000000000 nc_feedback_decode
+     /tmp/ccekYNjY.s:1357   .text.nc_feedback_decode:00000000000000f8 $d
+     /tmp/ccekYNjY.s:1362   .text.nc_rx_push:0000000000000000 $t
+     /tmp/ccekYNjY.s:1369   .text.nc_rx_push:0000000000000000 nc_rx_push
+     /tmp/ccekYNjY.s:1613   .text.nc_tx_start:0000000000000000 $t
+     /tmp/ccekYNjY.s:1620   .text.nc_tx_start:0000000000000000 nc_tx_start
+     /tmp/ccekYNjY.s:1717   .text.nc_tx_peek:0000000000000000 $t
+     /tmp/ccekYNjY.s:1724   .text.nc_tx_peek:0000000000000000 nc_tx_peek
+     /tmp/ccekYNjY.s:1814   .text.nc_tx_commit:0000000000000000 $t
+     /tmp/ccekYNjY.s:1821   .text.nc_tx_commit:0000000000000000 nc_tx_commit
 
 UNDEFINED SYMBOLS
 rm_encode_command

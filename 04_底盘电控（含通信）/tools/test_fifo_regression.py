@@ -10,16 +10,19 @@ import subprocess
 root = Path(__file__).resolve().parents[1]
 module = Path('chassis_driver/basic_framework/modules/chassis_comm')
 common = Path('communication_reference/common')
-gimbal = Path('communication_reference/gimbal_firmware/application/communication')
+gimbal = root.parent / '05_云台'
+gimbal_headers = gimbal / 'application/communication'
 directory = root / 'build/tests/fifo-regression'
 directory.mkdir(parents=True, exist_ok=True)
 (root / 'logs').mkdir(exist_ok=True)
 
 # Generated negative-test source is deliberately wrong. Never build ARM images from it.
-ports = [module / 'chassis_comm_port.c', gimbal / 'nav_gateway_port.c']
+ports = [module / 'chassis_comm_port.c', gimbal / 'modules/chassis_link/chassis_link.c']
 negative_ports = []
 for source in ports:
     fixed = (root / source).read_text()
+    fixed = fixed.replace('#include "../nav_conversion/nav_can_hal.h"',
+                          '#include "' + str(gimbal / 'modules/nav_conversion/nav_can_hal.h') + '"')
     legacy, count = re.subn(r'(\.rx_fifo_policy\s*=\s*)CAN_RX_FIFO_POLICY_FIFO0',
                             r'\1CAN_RX_FIFO_POLICY_AUTO', fixed)
     if count != 1:
@@ -31,7 +34,8 @@ for source in ports:
 flags = ['cc', '-std=c11', '-Wall', '-Wextra', '-Werror', '-g', '-DCHASSIS_COMM_HOST_TEST',
          '-fsanitize=undefined', '-fno-sanitize-recover=all',
          '-I' + str(module), '-I' + str(module / 'protocol'), '-Itests/stubs',
-         '-I' + str(common), '-I' + str(gimbal)]
+         '-I' + str(common), '-I' + str(gimbal_headers), '-I' + str(gimbal / 'modules/chassis_link'),
+         '-I' + str(gimbal / 'modules/nav_conversion')]
 sources = ['tests/test_chain.c', str(module / 'chassis_comm.c')]
 sources += [str(module / 'protocol' / f) for f in ('protocol.c', 'mcu_link.c', 'nav_can.c')]
 sources += [str(common / f) for f in ('gimbal_protocol.c', 'nav_usb_mux.c', 'nav_gateway.c')]

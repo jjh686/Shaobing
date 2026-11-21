@@ -1,6 +1,8 @@
 # User measurements and axis confirmation, 2026-11-10.
 # Radar is fixed to the chassis: +X forward, +Y left, +Z up; no protrusions.
-configured: true
+# Historical measurements conflict with the current tilted gimbal-mounted radar.
+# Use live_mounting.yaml after measuring the current fixed pose.
+configured: false
 parent_frame: base_footprint
 child_frame: front_mid360
 # Origin: chassis center projected to the ground; x forward, y left, z up.

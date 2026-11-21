@@ -1,4 +1,4 @@
-ARM GAS  /tmp/ccxfDz9J.s 			page 1
+ARM GAS  /tmp/cchD3mkf.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
   21:modules/motor/HTmotor/HT04.c ****  */
   22:modules/motor/HTmotor/HT04.c **** static void HTMotorSetMode(HTMotor_Mode_t cmd, HTMotorInstance *motor)
   23:modules/motor/HTmotor/HT04.c **** {
-ARM GAS  /tmp/ccxfDz9J.s 			page 2
+ARM GAS  /tmp/cchD3mkf.s 			page 2
 
 
   24:modules/motor/HTmotor/HT04.c ****     memset(motor->motor_can_instace->tx_buff, 0xff, 7);  // 发送电机指令的时候前面7bytes
@@ -118,7 +118,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
   77              	uint_to_float:
   78              	.LVL4:
   79              	.LFB282:
-ARM GAS  /tmp/ccxfDz9J.s 			page 3
+ARM GAS  /tmp/cchD3mkf.s 			page 3
 
 
   36:modules/motor/HTmotor/HT04.c **** static float uint_to_float(int x_int, float x_min, float x_max, int bits)
@@ -178,7 +178,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  129              		@ frame_needed = 0, uses_anonymous_args = 0
   23:modules/motor/HTmotor/HT04.c ****     memset(motor->motor_can_instace->tx_buff, 0xff, 7);  // 发送电机指令的时候前面7bytes
  130              		.loc 1 23 1 is_stmt 0 view .LVU29
-ARM GAS  /tmp/ccxfDz9J.s 			page 4
+ARM GAS  /tmp/cchD3mkf.s 			page 4
 
 
  131 0000 10B5     		push	{r4, lr}
@@ -238,7 +238,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  171              		.loc 1 28 1 view .LVU43
  172 0032 00BF     		.align	2
  173              	.L5:
-ARM GAS  /tmp/ccxfDz9J.s 			page 5
+ARM GAS  /tmp/cchD3mkf.s 			page 5
 
 
  174 0034 00000000 		.word	.LANCHOR0
@@ -298,7 +298,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  199              	.LVL14:
   73:modules/motor/HTmotor/HT04.c ****     LOGWARNING("[ht_motor] motor %d lost\n", motor->motor_can_instace->tx_id);
  200              		.loc 1 73 78 view .LVU47
-ARM GAS  /tmp/ccxfDz9J.s 			page 6
+ARM GAS  /tmp/cchD3mkf.s 			page 6
 
 
   74:modules/motor/HTmotor/HT04.c ****     if (++motor->lost_cnt % 10 != 0)
@@ -358,7 +358,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  251              		@ frame_needed = 0, uses_anonymous_args = 0
   49:modules/motor/HTmotor/HT04.c ****     uint16_t tmp; // 用于暂存解析值,稍后转换成float数据,避免多次创建临时变�
  252              		.loc 1 49 1 is_stmt 0 view .LVU59
-ARM GAS  /tmp/ccxfDz9J.s 			page 7
+ARM GAS  /tmp/cchD3mkf.s 			page 7
 
 
  253 0000 70B5     		push	{r4, r5, r6, lr}
@@ -418,7 +418,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  291 0022 AB7D     		ldrb	r3, [r5, #22]	@ zero_extendqisi2
  292              	.LVL25:
   60:modules/motor/HTmotor/HT04.c **** 
-ARM GAS  /tmp/ccxfDz9J.s 			page 8
+ARM GAS  /tmp/cchD3mkf.s 			page 8
 
 
  293              		.loc 1 60 5 is_stmt 1 view .LVU76
@@ -478,7 +478,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  334              		.loc 1 65 5 is_stmt 1 view .LVU89
   65:modules/motor/HTmotor/HT04.c ****     measure->real_current = CURRENT_SMOOTH_COEF * uint_to_float(tmp, T_MIN, T_MAX, 12) +
  335              		.loc 1 65 30 is_stmt 0 view .LVU90
-ARM GAS  /tmp/ccxfDz9J.s 			page 9
+ARM GAS  /tmp/cchD3mkf.s 			page 9
 
 
  336 006a 2B7E     		ldrb	r3, [r5, #24]	@ zero_extendqisi2
@@ -538,7 +538,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  377 00b4 0010343C 		.word	1010044928
  378 00b8 6666663F 		.word	1063675494
  379 00bc D0CCCC3D 		.word	1036831952
-ARM GAS  /tmp/ccxfDz9J.s 			page 10
+ARM GAS  /tmp/cchD3mkf.s 			page 10
 
 
  380              		.cfi_endproc
@@ -598,7 +598,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  119:modules/motor/HTmotor/HT04.c ****     motor->motor_can_instace = CANRegister(&config->can_init_config);
  120:modules/motor/HTmotor/HT04.c **** 
  121:modules/motor/HTmotor/HT04.c ****     Daemon_Init_Config_s conf = {
-ARM GAS  /tmp/ccxfDz9J.s 			page 11
+ARM GAS  /tmp/cchD3mkf.s 			page 11
 
 
  122:modules/motor/HTmotor/HT04.c ****         .callback = HTMotorLostCallback,
@@ -658,7 +658,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  417              	.LVL39:
  418              	.L36:
  153:modules/motor/HTmotor/HT04.c ****     uint16_t tmp;
-ARM GAS  /tmp/ccxfDz9J.s 			page 12
+ARM GAS  /tmp/cchD3mkf.s 			page 12
 
 
  154:modules/motor/HTmotor/HT04.c **** 
@@ -718,7 +718,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  455              	.LVL44:
  164:modules/motor/HTmotor/HT04.c ****                 pid_measure = *motor->other_angle_feedback_ptr;
  456              		.loc 1 164 29 view .LVU128
-ARM GAS  /tmp/ccxfDz9J.s 			page 13
+ARM GAS  /tmp/cchD3mkf.s 			page 13
 
 
  457 003a EFE7     		b	.L21
@@ -778,7 +778,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  486              	.L28:
  194:modules/motor/HTmotor/HT04.c ****         tmp = float_to_uint(set, T_MIN, T_MAX, 12);
  487              		.loc 1 194 9 is_stmt 1 discriminator 8 view .LVU138
-ARM GAS  /tmp/ccxfDz9J.s 			page 14
+ARM GAS  /tmp/cchD3mkf.s 			page 14
 
 
  488              		.loc 1 194 15 is_stmt 0 discriminator 8 view .LVU139
@@ -838,7 +838,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  531              		.loc 1 155 5 view .LVU155
  157:modules/motor/HTmotor/HT04.c ****         if (setting->motor_reverse_flag == MOTOR_DIRECTION_REVERSE)
  532              		.loc 1 157 9 view .LVU156
-ARM GAS  /tmp/ccxfDz9J.s 			page 15
+ARM GAS  /tmp/cchD3mkf.s 			page 15
 
 
  157:modules/motor/HTmotor/HT04.c ****         if (setting->motor_reverse_flag == MOTOR_DIRECTION_REVERSE)
@@ -898,7 +898,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  570 00cc 13F0020F 		tst	r3, #2
  571 00d0 05D0     		beq	.L23
  174:modules/motor/HTmotor/HT04.c **** 
-ARM GAS  /tmp/ccxfDz9J.s 			page 16
+ARM GAS  /tmp/cchD3mkf.s 			page 16
 
 
  572              		.loc 1 174 17 is_stmt 1 view .LVU174
@@ -958,7 +958,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  610              		.loc 1 185 30 is_stmt 0 view .LVU190
  611 0108 D4F8AC31 		ldr	r3, [r4, #428]
  185:modules/motor/HTmotor/HT04.c ****         if (setting->close_loop_type & CURRENT_LOOP)
-ARM GAS  /tmp/ccxfDz9J.s 			page 17
+ARM GAS  /tmp/cchD3mkf.s 			page 17
 
 
  612              		.loc 1 185 24 view .LVU191
@@ -1018,7 +1018,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  659              	.LVL66:
  660              	.LFB285:
   80:modules/motor/HTmotor/HT04.c ****     uint16_t p, v, kp, kd, t;
-ARM GAS  /tmp/ccxfDz9J.s 			page 18
+ARM GAS  /tmp/cchD3mkf.s 			page 18
 
 
  661              		.loc 1 80 1 is_stmt 1 view -0
@@ -1078,7 +1078,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  706              		.loc 1 84 10 is_stmt 0 view .LVU210
  707 0036 0C20     		movs	r0, #12
  708 0038 9FED2B1A 		vldr.32	s2, .L44+20
-ARM GAS  /tmp/ccxfDz9J.s 			page 19
+ARM GAS  /tmp/cchD3mkf.s 			page 19
 
 
  709 003c F0EE480A 		vmov.f32	s1, s16
@@ -1138,7 +1138,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  750              		.loc 1 92 5 is_stmt 1 view .LVU223
   92:modules/motor/HTmotor/HT04.c ****     buf[4] = kp & 0xFF;
  751              		.loc 1 92 31 is_stmt 0 view .LVU224
-ARM GAS  /tmp/ccxfDz9J.s 			page 20
+ARM GAS  /tmp/cchD3mkf.s 			page 20
 
 
  752 0084 300A     		lsrs	r0, r6, #8
@@ -1198,7 +1198,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  791 00b4 B0EE480A 		vmov.f32	s0, s16
  792 00b8 FFF7FEFF 		bl	DWT_Delay
  793              	.LVL84:
-ARM GAS  /tmp/ccxfDz9J.s 			page 21
+ARM GAS  /tmp/cchD3mkf.s 			page 21
 
 
  100:modules/motor/HTmotor/HT04.c ****     DWT_Delay(0.005);
@@ -1258,7 +1258,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  843              		.loc 1 139 20 is_stmt 0 view .LVU246
  844 0000 80ED6C0A 		vstr.32	s0, [r0, #432]
  140:modules/motor/HTmotor/HT04.c **** 
-ARM GAS  /tmp/ccxfDz9J.s 			page 22
+ARM GAS  /tmp/cchD3mkf.s 			page 22
 
 
  845              		.loc 1 140 1 view .LVU247
@@ -1318,7 +1318,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  891              	.LBB3:
  213:modules/motor/HTmotor/HT04.c ****     {
  214:modules/motor/HTmotor/HT04.c ****         char ht_id_buff[2] = {0};
-ARM GAS  /tmp/ccxfDz9J.s 			page 23
+ARM GAS  /tmp/cchD3mkf.s 			page 23
 
 
  892              		.loc 1 214 9 is_stmt 1 discriminator 3 view .LVU255
@@ -1378,7 +1378,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  936 0060 DBD8     		bhi	.L50
  937              	.LVL94:
  938              	.L47:
-ARM GAS  /tmp/ccxfDz9J.s 			page 24
+ARM GAS  /tmp/cchD3mkf.s 			page 24
 
 
  212:modules/motor/HTmotor/HT04.c ****     {
@@ -1438,7 +1438,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  988              		.fpu fpv4-sp-d16
  990              	HTMotorEnable:
  991              	.LVL96:
-ARM GAS  /tmp/ccxfDz9J.s 			page 25
+ARM GAS  /tmp/cchD3mkf.s 			page 25
 
 
  992              	.LFB291:
@@ -1498,7 +1498,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  1039              		.loc 1 107 49 is_stmt 0 view .LVU281
  1040 000a 4FF4E470 		mov	r0, #456
  1041              	.LVL98:
-ARM GAS  /tmp/ccxfDz9J.s 			page 26
+ARM GAS  /tmp/cchD3mkf.s 			page 26
 
 
  107:modules/motor/HTmotor/HT04.c ****     memset(motor, 0, sizeof(HTMotorInstance));
@@ -1558,7 +1558,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  1083              		.loc 1 115 37 view .LVU294
  1084 005c C4F8A431 		str	r3, [r4, #420]
  117:modules/motor/HTmotor/HT04.c ****     config->can_init_config.id = motor;
-ARM GAS  /tmp/ccxfDz9J.s 			page 27
+ARM GAS  /tmp/cchD3mkf.s 			page 27
 
 
  1085              		.loc 1 117 5 is_stmt 1 view .LVU295
@@ -1618,7 +1618,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  130:modules/motor/HTmotor/HT04.c ****     HTMotorCalibEncoder(motor); // 将当前编码器位置作为零位
  1126              		.loc 1 130 5 view .LVU309
  1127 00a2 9FED0E8A 		vldr.32	s16, .L59+8
-ARM GAS  /tmp/ccxfDz9J.s 			page 28
+ARM GAS  /tmp/cchD3mkf.s 			page 28
 
 
  1128 00a6 B0EE480A 		vmov.f32	s0, s16
@@ -1678,7 +1678,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  1175              		.align	1
  1176              		.global	HTMotorOuterLoop
  1177              		.syntax unified
-ARM GAS  /tmp/ccxfDz9J.s 			page 29
+ARM GAS  /tmp/cchD3mkf.s 			page 29
 
 
  1178              		.thumb
@@ -1738,7 +1738,7 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  1229 0000 00       		.space	1
  1230              		.section	.bss.zero_buff,"aw",%nobits
  1231              		.align	2
-ARM GAS  /tmp/ccxfDz9J.s 			page 30
+ARM GAS  /tmp/cchD3mkf.s 			page 30
 
 
  1232              		.set	.LANCHOR0,. + 0
@@ -1766,54 +1766,54 @@ ARM GAS  /tmp/ccxfDz9J.s 			page 1
  1255              		.file 18 "bsp/dwt/bsp_dwt.h"
  1256              		.file 19 "modules/algorithm/user_lib.h"
  1257              		.file 20 "<built-in>"
-ARM GAS  /tmp/ccxfDz9J.s 			page 31
+ARM GAS  /tmp/cchD3mkf.s 			page 31
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 HT04.c
-     /tmp/ccxfDz9J.s:15     .rodata.str1.4:0000000000000000 $d
-     /tmp/ccxfDz9J.s:22     .text.float_to_uint:0000000000000000 $t
-     /tmp/ccxfDz9J.s:29     .text.float_to_uint:0000000000000000 float_to_uint
-     /tmp/ccxfDz9J.s:71     .text.uint_to_float:0000000000000000 $t
-     /tmp/ccxfDz9J.s:77     .text.uint_to_float:0000000000000000 uint_to_float
-     /tmp/ccxfDz9J.s:117    .text.HTMotorSetMode:0000000000000000 $t
-     /tmp/ccxfDz9J.s:123    .text.HTMotorSetMode:0000000000000000 HTMotorSetMode
-     /tmp/ccxfDz9J.s:174    .text.HTMotorSetMode:0000000000000034 $d
-     /tmp/ccxfDz9J.s:179    .text.HTMotorLostCallback:0000000000000000 $t
-     /tmp/ccxfDz9J.s:185    .text.HTMotorLostCallback:0000000000000000 HTMotorLostCallback
-     /tmp/ccxfDz9J.s:234    .text.HTMotorLostCallback:000000000000002c $d
-     /tmp/ccxfDz9J.s:239    .text.HTMotorDecode:0000000000000000 $t
-     /tmp/ccxfDz9J.s:245    .text.HTMotorDecode:0000000000000000 HTMotorDecode
-     /tmp/ccxfDz9J.s:373    .text.HTMotorDecode:00000000000000a4 $d
-     /tmp/ccxfDz9J.s:384    .text.HTMotorTask:0000000000000000 $t
-     /tmp/ccxfDz9J.s:391    .text.HTMotorTask:0000000000000000 HTMotorTask
-     /tmp/ccxfDz9J.s:645    .text.HTMotorTask:0000000000000140 $d
-     /tmp/ccxfDz9J.s:651    .text.HTMotorCalibEncoder:0000000000000000 $t
-     /tmp/ccxfDz9J.s:658    .text.HTMotorCalibEncoder:0000000000000000 HTMotorCalibEncoder
-     /tmp/ccxfDz9J.s:815    .text.HTMotorCalibEncoder:00000000000000d4 $d
-     /tmp/ccxfDz9J.s:827    .text.HTMotorSetRef:0000000000000000 $t
-     /tmp/ccxfDz9J.s:834    .text.HTMotorSetRef:0000000000000000 HTMotorSetRef
-     /tmp/ccxfDz9J.s:851    .text.HTMotorControlInit:0000000000000000 $t
-     /tmp/ccxfDz9J.s:858    .text.HTMotorControlInit:0000000000000000 HTMotorControlInit
-     /tmp/ccxfDz9J.s:950    .text.HTMotorControlInit:0000000000000068 $d
-     /tmp/ccxfDz9J.s:958    .text.HTMotorStop:0000000000000000 $t
-     /tmp/ccxfDz9J.s:965    .text.HTMotorStop:0000000000000000 HTMotorStop
-     /tmp/ccxfDz9J.s:983    .text.HTMotorEnable:0000000000000000 $t
-     /tmp/ccxfDz9J.s:990    .text.HTMotorEnable:0000000000000000 HTMotorEnable
-     /tmp/ccxfDz9J.s:1008   .text.HTMotorInit:0000000000000000 $t
-     /tmp/ccxfDz9J.s:1015   .text.HTMotorInit:0000000000000000 HTMotorInit
-     /tmp/ccxfDz9J.s:1166   .text.HTMotorInit:00000000000000d4 $d
-     /tmp/ccxfDz9J.s:1175   .text.HTMotorOuterLoop:0000000000000000 $t
-     /tmp/ccxfDz9J.s:1182   .text.HTMotorOuterLoop:0000000000000000 HTMotorOuterLoop
-     /tmp/ccxfDz9J.s:1199   .rodata:0000000000000000 $d
-     /tmp/ccxfDz9J.s:1211   .bss.ht_motor_instance:0000000000000000 $d
-     /tmp/ccxfDz9J.s:1215   .bss.ht_motor_instance:0000000000000000 ht_motor_instance
-     /tmp/ccxfDz9J.s:1218   .bss.ht_task_handle:0000000000000000 $d
-     /tmp/ccxfDz9J.s:1222   .bss.ht_task_handle:0000000000000000 ht_task_handle
-     /tmp/ccxfDz9J.s:1228   .bss.idx:0000000000000000 idx
-     /tmp/ccxfDz9J.s:1229   .bss.idx:0000000000000000 $d
-     /tmp/ccxfDz9J.s:1231   .bss.zero_buff:0000000000000000 $d
-     /tmp/ccxfDz9J.s:1235   .bss.zero_buff:0000000000000000 zero_buff
+     /tmp/cchD3mkf.s:15     .rodata.str1.4:0000000000000000 $d
+     /tmp/cchD3mkf.s:22     .text.float_to_uint:0000000000000000 $t
+     /tmp/cchD3mkf.s:29     .text.float_to_uint:0000000000000000 float_to_uint
+     /tmp/cchD3mkf.s:71     .text.uint_to_float:0000000000000000 $t
+     /tmp/cchD3mkf.s:77     .text.uint_to_float:0000000000000000 uint_to_float
+     /tmp/cchD3mkf.s:117    .text.HTMotorSetMode:0000000000000000 $t
+     /tmp/cchD3mkf.s:123    .text.HTMotorSetMode:0000000000000000 HTMotorSetMode
+     /tmp/cchD3mkf.s:174    .text.HTMotorSetMode:0000000000000034 $d
+     /tmp/cchD3mkf.s:179    .text.HTMotorLostCallback:0000000000000000 $t
+     /tmp/cchD3mkf.s:185    .text.HTMotorLostCallback:0000000000000000 HTMotorLostCallback
+     /tmp/cchD3mkf.s:234    .text.HTMotorLostCallback:000000000000002c $d
+     /tmp/cchD3mkf.s:239    .text.HTMotorDecode:0000000000000000 $t
+     /tmp/cchD3mkf.s:245    .text.HTMotorDecode:0000000000000000 HTMotorDecode
+     /tmp/cchD3mkf.s:373    .text.HTMotorDecode:00000000000000a4 $d
+     /tmp/cchD3mkf.s:384    .text.HTMotorTask:0000000000000000 $t
+     /tmp/cchD3mkf.s:391    .text.HTMotorTask:0000000000000000 HTMotorTask
+     /tmp/cchD3mkf.s:645    .text.HTMotorTask:0000000000000140 $d
+     /tmp/cchD3mkf.s:651    .text.HTMotorCalibEncoder:0000000000000000 $t
+     /tmp/cchD3mkf.s:658    .text.HTMotorCalibEncoder:0000000000000000 HTMotorCalibEncoder
+     /tmp/cchD3mkf.s:815    .text.HTMotorCalibEncoder:00000000000000d4 $d
+     /tmp/cchD3mkf.s:827    .text.HTMotorSetRef:0000000000000000 $t
+     /tmp/cchD3mkf.s:834    .text.HTMotorSetRef:0000000000000000 HTMotorSetRef
+     /tmp/cchD3mkf.s:851    .text.HTMotorControlInit:0000000000000000 $t
+     /tmp/cchD3mkf.s:858    .text.HTMotorControlInit:0000000000000000 HTMotorControlInit
+     /tmp/cchD3mkf.s:950    .text.HTMotorControlInit:0000000000000068 $d
+     /tmp/cchD3mkf.s:958    .text.HTMotorStop:0000000000000000 $t
+     /tmp/cchD3mkf.s:965    .text.HTMotorStop:0000000000000000 HTMotorStop
+     /tmp/cchD3mkf.s:983    .text.HTMotorEnable:0000000000000000 $t
+     /tmp/cchD3mkf.s:990    .text.HTMotorEnable:0000000000000000 HTMotorEnable
+     /tmp/cchD3mkf.s:1008   .text.HTMotorInit:0000000000000000 $t
+     /tmp/cchD3mkf.s:1015   .text.HTMotorInit:0000000000000000 HTMotorInit
+     /tmp/cchD3mkf.s:1166   .text.HTMotorInit:00000000000000d4 $d
+     /tmp/cchD3mkf.s:1175   .text.HTMotorOuterLoop:0000000000000000 $t
+     /tmp/cchD3mkf.s:1182   .text.HTMotorOuterLoop:0000000000000000 HTMotorOuterLoop
+     /tmp/cchD3mkf.s:1199   .rodata:0000000000000000 $d
+     /tmp/cchD3mkf.s:1211   .bss.ht_motor_instance:0000000000000000 $d
+     /tmp/cchD3mkf.s:1215   .bss.ht_motor_instance:0000000000000000 ht_motor_instance
+     /tmp/cchD3mkf.s:1218   .bss.ht_task_handle:0000000000000000 $d
+     /tmp/cchD3mkf.s:1222   .bss.ht_task_handle:0000000000000000 ht_task_handle
+     /tmp/cchD3mkf.s:1228   .bss.idx:0000000000000000 idx
+     /tmp/cchD3mkf.s:1229   .bss.idx:0000000000000000 $d
+     /tmp/cchD3mkf.s:1231   .bss.zero_buff:0000000000000000 $d
+     /tmp/cchD3mkf.s:1235   .bss.zero_buff:0000000000000000 zero_buff
 
 UNDEFINED SYMBOLS
 CANTransmit
@@ -1826,7 +1826,7 @@ DWT_Delay
 __itoa
 strcat
 osThreadCreate
-ARM GAS  /tmp/ccxfDz9J.s 			page 32
+ARM GAS  /tmp/cchD3mkf.s 			page 32
 
 
 malloc

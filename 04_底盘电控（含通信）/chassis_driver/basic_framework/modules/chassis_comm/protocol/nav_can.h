@@ -15,7 +15,10 @@
 #define NC_FAULT_UNITS 0x0008u
 #define NC_FAULT_RX 0x0010u
 typedef struct { uint8_t data[3][8]; uint16_t base; } nc_group_t;
-typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_rx_t;
+typedef struct {
+    uint32_t malformed,order_errors,group_timeouts,crc_errors,restarted_groups;
+} nc_rx_stats_t;
+typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; nc_rx_stats_t stats; } nc_rx_t;
 typedef struct { nc_group_t group; uint8_t next,active; uint32_t started_ms; } nc_tx_t;
 uint16_t nc_crc(const uint8_t *,unsigned);
 bool nc_command_group(const rm_command_t *,nc_group_t *);

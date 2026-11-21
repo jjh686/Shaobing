@@ -29,5 +29,9 @@ uint8_t *USBInit(USB_Init_Config_s usb_conf); // bsp初始化时调用会重新�
 
 /* [USB_SP 修改 01 开始] USB回调/发送状态/配置状态接口适配。 */
 uint8_t USBTransmit(uint8_t *buffer, uint16_t len); // USBD_OK / BUSY / FAIL
+uint8_t USBTransmitStamped(uint8_t *buffer,uint16_t len,uint32_t received_ms);
+/* OK means copied into a bounded telemetry queue. The task pumps CDC at 1 kHz. */
+void USBTransmitPump(void);
+void USBTransmitReset(void);
 uint8_t USBIsConfigured(void);
 /* [USB_SP 修改 01 结束] */

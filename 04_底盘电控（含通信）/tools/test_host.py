@@ -7,8 +7,9 @@ import time
 
 root = Path(__file__).resolve().parents[1]
 module = Path('chassis_driver/basic_framework/modules/chassis_comm')
+gimbal = root.parent/'05_云台'
 remote_headers = [root/'communication_reference/common/remote_can.h',
-                  root/'communication_reference/gimbal_firmware/modules/nav_conversion/remote_can.h',
+                  gimbal/'modules/nav_conversion/remote_can.h',
                   root/module/'protocol/remote_can.h']
 assert len({p.read_bytes() for p in remote_headers}) == 1, 'Remote CAN protocol copies differ'
 ref = Path('communication_reference')
@@ -19,10 +20,18 @@ build.mkdir(parents=True, exist_ok=True)
 flags = ['cc', '-std=c11', '-Wall', '-Wextra', '-Werror', '-g', '-DCHASSIS_COMM_HOST_TEST',
          '-fsanitize=undefined', '-fno-sanitize-recover=all',
          '-I'+str(module), '-I'+str(protocol), '-Itests/stubs',
-         '-I'+str(ref/'common'), '-I'+str(ref/'gimbal_firmware/application/communication')]
+         '-I'+str(ref/'common'), '-I'+str(gimbal/'application/communication'), '-I'+str(gimbal/'modules/chassis_link')]
 codecs = [str(protocol/f) for f in ('protocol.c', 'mcu_link.c', 'nav_can.c')]
 gateway = [str(ref/'common'/f) for f in ('gimbal_protocol.c', 'nav_usb_mux.c', 'nav_gateway.c')]
 tests = [('remote_can', [], ['tests/test_remote_can.c', *codecs]),
+         ('usb_tx', ['-I'+str(gimbal/'bsp/usb')], ['tests/test_usb_tx.c']),
+         ('usb_bsp', ['-Itests/usb_stubs', '-I'+str(gimbal/'bsp/usb')],
+                     ['tests/test_usb_bsp.c', str(gimbal/'bsp/usb/bsp_usb.c')]),
+         ('sbus', ['-Itests/remote_stubs', '-I'+str(gimbal/'modules/remote'),
+                   '-I'+str(gimbal/'bsp/usart'), '-Wno-unused-parameter'],
+                  ['tests/test_sbus.c', str(gimbal/'modules/remote/remote_control.c')]),
+         ('uart_rx', ['-Itests/remote_stubs', '-I'+str(gimbal/'bsp/usart')],
+                     ['tests/test_uart_rx.c', str(gimbal/'bsp/usart/bsp_usart.c')]),
          ('protocol', [], ['tests/test_protocol.c', *codecs, *gateway]),
          ('can_hal', [], ['tests/test_can_hal.c', *codecs, *gateway])]
 for variant, defines in [('locked',
@@ -32,15 +41,15 @@ for variant, defines in [('locked',
                                            str(module/'chassis_comm.c'), *codecs]))
     tests.append(('chain_'+variant, defines, ['tests/test_chain.c',
         str(module/'chassis_comm.c'), str(module/'chassis_comm_port.c'),
-        str(ref/'gimbal_firmware/application/communication/nav_gateway_port.c'), *codecs, *gateway]))
-report = {'hardware_accessed': False,
+        str(gimbal/'modules/chassis_link/chassis_link.c'), *codecs, *gateway]))
+report = {'gimbal_source': str(gimbal), 'hardware_accessed': False,
           'variants': 'Explicit locked=0/0 and enabled=1/1 host simulations; ARM configuration is recorded separately',
           'tests': [], 'passed': False}
 start = time.monotonic()
 try:
     with (root/'logs/host-tests.log').open('w') as log:
         for name, defines, sources in tests:
-            compile_cmd = flags + defines + sources + ['-lm', '-o', str(build/name)]
+            compile_cmd = flags[:1] + defines + flags[1:] + sources + ['-lm', '-o', str(build/name)]
             compiled = subprocess.run(compile_cmd, cwd=root, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             log.write('BUILD '+name+'\n'+compiled.stdout)
             if compiled.returncode:

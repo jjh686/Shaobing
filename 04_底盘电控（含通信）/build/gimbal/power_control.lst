@@ -1,4 +1,4 @@
-ARM GAS  /tmp/cckXE9sp.s 			page 1
+ARM GAS  /tmp/ccxJan2v.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
   28:modules/motor/power_control.c ****  * can1: [0]:0x1FF,[1]:0x200,[2]:0x2FF
   29:modules/motor/power_control.c ****  * can2: [3]:0x1FF,[4]:0x200,[5]:0x2FF
   30:modules/motor/power_control.c ****  */
-ARM GAS  /tmp/cckXE9sp.s 			page 2
+ARM GAS  /tmp/ccxJan2v.s 			page 2
 
 
   31:modules/motor/power_control.c **** static CANInstance sender_assignment[6] = {
@@ -118,7 +118,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
   65:modules/motor/power_control.c **** 
   66:modules/motor/power_control.c ****     switch (motor->motor_type)
   49              		.loc 1 66 5 view .LVU7
-ARM GAS  /tmp/cckXE9sp.s 			page 3
+ARM GAS  /tmp/ccxJan2v.s 			page 3
 
 
   50              		.loc 1 66 18 is_stmt 0 view .LVU8
@@ -178,7 +178,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
   83:modules/motor/power_control.c ****         sender_enable_flag[motor_grouping] = 1; // 设置发送标志位,防止发送空帧
   87              		.loc 1 83 9 is_stmt 1 view .LVU21
   88              		.loc 1 83 44 is_stmt 0 view .LVU22
-ARM GAS  /tmp/cckXE9sp.s 			page 4
+ARM GAS  /tmp/ccxJan2v.s 			page 4
 
 
   89 0038 344A     		ldr	r2, .L26+4
@@ -238,7 +238,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  132 0062 0324     		movs	r4, #3
  133 0064 E5E7     		b	.L5
  134              	.L23:
-ARM GAS  /tmp/cckXE9sp.s 			page 5
+ARM GAS  /tmp/ccxJan2v.s 			page 5
 
 
  135 0066 0024     		movs	r4, #0
@@ -298,7 +298,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
   98:modules/motor/power_control.c ****         break;
   99:modules/motor/power_control.c **** 
  100:modules/motor/power_control.c ****     case GM6020:
-ARM GAS  /tmp/cckXE9sp.s 			page 6
+ARM GAS  /tmp/ccxJan2v.s 			page 6
 
 
  101:modules/motor/power_control.c ****         if (motor_id < 4)
@@ -358,7 +358,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  217 00b6 80F8A441 		strb	r4, [r0, #420]
  116:modules/motor/power_control.c **** 
  117:modules/motor/power_control.c ****         for (size_t i = 0; i < idx; ++i)
-ARM GAS  /tmp/cckXE9sp.s 			page 7
+ARM GAS  /tmp/ccxJan2v.s 			page 7
 
 
  218              		.loc 1 117 9 is_stmt 1 view .LVU73
@@ -418,7 +418,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  266 00e0 9A42     		cmp	r2, r3
  267 00e2 0FD9     		bls	.L1
  118:modules/motor/power_control.c ****         {
-ARM GAS  /tmp/cckXE9sp.s 			page 8
+ARM GAS  /tmp/ccxJan2v.s 			page 8
 
 
  119:modules/motor/power_control.c ****             if (dji_motor_instance[i]->motor_can_instance->can_handle == config->can_handle && dji_
@@ -478,7 +478,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  305              		.cfi_restore 5
  306              		.cfi_restore 4
  307              		.cfi_def_cfa_offset 0
-ARM GAS  /tmp/cckXE9sp.s 			page 9
+ARM GAS  /tmp/ccxJan2v.s 			page 9
 
 
  308              	.LVL29:
@@ -538,7 +538,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  167:modules/motor/power_control.c ****     measure->total_angle = measure->total_round * 360 + measure->angle_single_round;
  168:modules/motor/power_control.c **** }
  169:modules/motor/power_control.c **** 
-ARM GAS  /tmp/cckXE9sp.s 			page 10
+ARM GAS  /tmp/ccxJan2v.s 			page 10
 
 
  170:modules/motor/power_control.c **** static void DJIMotorLostCallback(void *motor_ptr)
@@ -598,7 +598,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  374              		.loc 1 149 5 view .LVU116
  375 0008 D4F8A801 		ldr	r0, [r4, #424]
  376              	.LVL34:
-ARM GAS  /tmp/cckXE9sp.s 			page 11
+ARM GAS  /tmp/ccxJan2v.s 			page 11
 
 
  149:modules/motor/power_control.c ****     motor->dt = DWT_GetDeltaT(&motor->feed_cnt);
@@ -658,7 +658,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  156:modules/motor/power_control.c ****                          RPM_2_ANGLE_PER_SEC * SPEED_SMOOTH_COEF * (float)((int16_t)(rxbuff[2] << 8
  413              		.loc 1 156 53 view .LVU135
  414 0042 9FED297A 		vldr.32	s14, .L33+4
-ARM GAS  /tmp/cckXE9sp.s 			page 12
+ARM GAS  /tmp/ccxJan2v.s 			page 12
 
 
  415 0046 27EE877A 		vmul.f32	s14, s15, s14
@@ -718,7 +718,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  158:modules/motor/power_control.c ****                             CURRENT_SMOOTH_COEF * (float)((int16_t)(rxbuff[4] << 8 | rxbuff[5]));
  454              		.loc 1 158 82 view .LVU151
  455 009a 77EE277A 		vadd.f32	s15, s14, s15
-ARM GAS  /tmp/cckXE9sp.s 			page 13
+ARM GAS  /tmp/ccxJan2v.s 			page 13
 
 
  158:modules/motor/power_control.c ****                             CURRENT_SMOOTH_COEF * (float)((int16_t)(rxbuff[4] << 8 | rxbuff[5]));
@@ -778,7 +778,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  165:modules/motor/power_control.c ****         measure->total_round++;
  494              		.loc 1 165 13 is_stmt 0 view .LVU168
  495 00d6 12F5805F 		cmn	r2, #4096
-ARM GAS  /tmp/cckXE9sp.s 			page 14
+ARM GAS  /tmp/ccxJan2v.s 			page 14
 
 
  496 00da EEDA     		bge	.L31
@@ -838,7 +838,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  546              		.global	PowerControlInit
  547              		.syntax unified
  548              		.thumb
-ARM GAS  /tmp/cckXE9sp.s 			page 15
+ARM GAS  /tmp/ccxJan2v.s 			page 15
 
 
  549              		.thumb_func
@@ -898,7 +898,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  593 0026 93E80300 		ldm	r3, {r0, r1}
  594 002a A061     		str	r0, [r4, #24]
  595 002c A183     		strh	r1, [r4, #28]	@ movhi
-ARM GAS  /tmp/cckXE9sp.s 			page 16
+ARM GAS  /tmp/ccxJan2v.s 			page 16
 
 
  596 002e 090C     		lsrs	r1, r1, #16
@@ -958,7 +958,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  637 006e FFF7FEFF 		bl	MotorSenderGrouping
  638              	.LVL47:
  200:modules/motor/power_control.c **** 
-ARM GAS  /tmp/cckXE9sp.s 			page 17
+ARM GAS  /tmp/ccxJan2v.s 			page 17
 
 
  201:modules/motor/power_control.c ****     // 注册电机到CAN总线
@@ -1018,7 +1018,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  678 00ac 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
  679 00ae 591C     		adds	r1, r3, #1
  680 00b0 1170     		strb	r1, [r2]
-ARM GAS  /tmp/cckXE9sp.s 			page 18
+ARM GAS  /tmp/ccxJan2v.s 			page 18
 
 
  681              		.loc 1 215 31 view .LVU218
@@ -1078,7 +1078,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  731              		.cfi_offset 14, -4
  732 0002 2DED048B 		vpush.64	{d8, d9}
  733              	.LCFI7:
-ARM GAS  /tmp/cckXE9sp.s 			page 19
+ARM GAS  /tmp/ccxJan2v.s 			page 19
 
 
  734              		.cfi_def_cfa_offset 40
@@ -1138,7 +1138,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  242:modules/motor/power_control.c ****         // pid_ref会顺次通过被启用的闭环充当数据的载体
  243:modules/motor/power_control.c ****         // 计算位置环,只有启用位置环且外层闭环为位置时会计算速度环输出
  244:modules/motor/power_control.c **** 
-ARM GAS  /tmp/cckXE9sp.s 			page 20
+ARM GAS  /tmp/ccxJan2v.s 			page 20
 
 
  245:modules/motor/power_control.c ****         // 计算速度环,(外层闭环为速度或位置)且(启用速度环)时会计算速度�
@@ -1198,7 +1198,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  807 0056 67EE807A 		vmul.f32	s15, s15, s0
  808              		.loc 1 259 43 view .LVU255
  809 005a 67EE807A 		vmul.f32	s15, s15, s0
-ARM GAS  /tmp/cckXE9sp.s 			page 21
+ARM GAS  /tmp/ccxJan2v.s 			page 21
 
 
  810              		.loc 1 259 15 view .LVU256
@@ -1258,7 +1258,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  858              		.loc 1 265 12 view .LVU275
  859 00b8 012B     		cmp	r3, #1
  860 00ba 27D0     		beq	.L76
-ARM GAS  /tmp/cckXE9sp.s 			page 22
+ARM GAS  /tmp/ccxJan2v.s 			page 22
 
 
  861              	.L49:
@@ -1318,7 +1318,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  246:modules/motor/power_control.c ****         {
  897              		.loc 1 246 9 is_stmt 1 view .LVU292
  246:modules/motor/power_control.c ****         {
-ARM GAS  /tmp/cckXE9sp.s 			page 23
+ARM GAS  /tmp/ccxJan2v.s 			page 23
 
 
  898              		.loc 1 246 27 is_stmt 0 view .LVU293
@@ -1378,7 +1378,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  266:modules/motor/power_control.c **** 
  936              		.loc 1 266 21 is_stmt 0 view .LVU310
  937 010c F1EE600A 		vneg.f32	s1, s1
-ARM GAS  /tmp/cckXE9sp.s 			page 24
+ARM GAS  /tmp/ccxJan2v.s 			page 24
 
 
  938              	.LVL66:
@@ -1438,7 +1438,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  279:modules/motor/power_control.c ****     if (initial_total_power > chassis_max_power)
  981              		.loc 1 279 5 is_stmt 1 view .LVU324
  982              		.loc 1 279 29 is_stmt 0 view .LVU325
-ARM GAS  /tmp/cckXE9sp.s 			page 25
+ARM GAS  /tmp/ccxJan2v.s 			page 25
 
 
  983 0142 6D4B     		ldr	r3, .L82
@@ -1498,7 +1498,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1011 0162 F1EE687A 		vneg.f32	s15, s17
  1012 0166 17EE900A 		vmov	r0, s15
  1013 016a FFF7FEFF 		bl	__aeabi_f2d
-ARM GAS  /tmp/cckXE9sp.s 			page 26
+ARM GAS  /tmp/ccxJan2v.s 			page 26
 
 
  1014              	.LVL75:
@@ -1558,7 +1558,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  307:modules/motor/power_control.c ****                 {
  308:modules/motor/power_control.c ****                     power_control_out[i] = -15000;
  1067              		.loc 1 308 21 is_stmt 1 view .LVU347
-ARM GAS  /tmp/cckXE9sp.s 			page 27
+ARM GAS  /tmp/ccxJan2v.s 			page 27
 
 
  1068              		.loc 1 308 42 is_stmt 0 view .LVU348
@@ -1618,7 +1618,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1108              	.LVL88:
  287:modules/motor/power_control.c ****             if (initial_give_power[i] < 0) // 功率小于零，表明依靠发电减速，因此�
  1109              		.loc 1 287 35 view .LVU364
-ARM GAS  /tmp/cckXE9sp.s 			page 28
+ARM GAS  /tmp/ccxJan2v.s 			page 28
 
 
  1110 0208 03EB8403 		add	r3, r3, r4, lsl #2
@@ -1678,7 +1678,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1149              		.loc 1 295 34 is_stmt 0 view .LVU379
  1150 0258 294B     		ldr	r3, .L82+8
  1151 025a 03EB8403 		add	r3, r3, r4, lsl #2
-ARM GAS  /tmp/cckXE9sp.s 			page 29
+ARM GAS  /tmp/ccxJan2v.s 			page 29
 
 
  1152 025e D3ED007A 		vldr.32	s15, [r3]
@@ -1738,7 +1738,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1196 02c0 0B46     		mov	r3, r1
  297:modules/motor/power_control.c ****                 if (power_control_out[i] > 15000)
  1197              		.loc 1 297 71 view .LVU390
-ARM GAS  /tmp/cckXE9sp.s 			page 30
+ARM GAS  /tmp/ccxJan2v.s 			page 30
 
 
  1198 02c2 3046     		mov	r0, r6
@@ -1798,7 +1798,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1246              	.LBE9:
  1247              	.LBE8:
  1248              	.LBB13:
-ARM GAS  /tmp/cckXE9sp.s 			page 31
+ARM GAS  /tmp/ccxJan2v.s 			page 31
 
 
  309:modules/motor/power_control.c ****                 }
@@ -1858,7 +1858,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1291              		.loc 1 320 51 view .LVU415
  1292 0374 01EB8102 		add	r2, r1, r1, lsl #2
  1293 0378 01EBC20E 		add	lr, r1, r2, lsl #3
-ARM GAS  /tmp/cckXE9sp.s 			page 32
+ARM GAS  /tmp/ccxJan2v.s 			page 32
 
 
  1294 037c 1B4A     		ldr	r2, .L84+12
@@ -1918,7 +1918,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  326:modules/motor/power_control.c ****     }
  327:modules/motor/power_control.c **** 
  328:modules/motor/power_control.c ****     // 遍历flag,检查是否要发送这一帧报文
-ARM GAS  /tmp/cckXE9sp.s 			page 33
+ARM GAS  /tmp/ccxJan2v.s 			page 33
 
 
  329:modules/motor/power_control.c ****     for (size_t i = 0; i < 6; ++i)
@@ -1978,7 +1978,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1387 03e4 00000000 		.word	.LANCHOR1
  1388 03e8 00000000 		.word	.LANCHOR6
  1389 03ec 00000000 		.word	.LANCHOR14
-ARM GAS  /tmp/cckXE9sp.s 			page 34
+ARM GAS  /tmp/ccxJan2v.s 			page 34
 
 
  1390 03f0 00000000 		.word	.LANCHOR0
@@ -2038,7 +2038,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1451      00000000 
  1452              		.section	.bss.initial_total_power,"aw",%nobits
  1453              		.align	2
-ARM GAS  /tmp/cckXE9sp.s 			page 35
+ARM GAS  /tmp/ccxJan2v.s 			page 35
 
 
  1454              		.set	.LANCHOR4,. + 0
@@ -2098,7 +2098,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1497 007b 00000000 		.4byte	hcan2
  1498 007f FF010000 		.4byte	511
  1499 0083 00000000 		.space	4
-ARM GAS  /tmp/cckXE9sp.s 			page 36
+ARM GAS  /tmp/ccxJan2v.s 			page 36
 
 
  1500 0087 0000     		.ascii	"\000\000"
@@ -2158,7 +2158,7 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1545              		.text
  1546              	.Letext0:
  1547              		.file 2 "/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h"
-ARM GAS  /tmp/cckXE9sp.s 			page 37
+ARM GAS  /tmp/ccxJan2v.s 			page 37
 
 
  1548              		.file 3 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
@@ -2175,67 +2175,67 @@ ARM GAS  /tmp/cckXE9sp.s 			page 1
  1559              		.file 14 "/usr/include/newlib/stdlib.h"
  1560              		.file 15 "bsp/dwt/bsp_dwt.h"
  1561              		.file 16 "<built-in>"
-ARM GAS  /tmp/cckXE9sp.s 			page 38
+ARM GAS  /tmp/ccxJan2v.s 			page 38
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 power_control.c
-     /tmp/cckXE9sp.s:18     .text.MotorSenderGrouping:0000000000000000 $t
-     /tmp/cckXE9sp.s:25     .text.MotorSenderGrouping:0000000000000000 MotorSenderGrouping
-     /tmp/cckXE9sp.s:314    .text.MotorSenderGrouping:0000000000000108 $d
-     /tmp/cckXE9sp.s:322    .text.DJIMotorLostCallback:0000000000000000 $t
-     /tmp/cckXE9sp.s:328    .text.DJIMotorLostCallback:0000000000000000 DJIMotorLostCallback
-     /tmp/cckXE9sp.s:345    .text.DecodeDJIMotor:0000000000000000 $t
-     /tmp/cckXE9sp.s:351    .text.DecodeDJIMotor:0000000000000000 DecodeDJIMotor
-     /tmp/cckXE9sp.s:507    .text.DecodeDJIMotor:00000000000000e4 $d
-     /tmp/cckXE9sp.s:516    .text.SetPowerLimit:0000000000000000 $t
-     /tmp/cckXE9sp.s:523    .text.SetPowerLimit:0000000000000000 SetPowerLimit
-     /tmp/cckXE9sp.s:540    .text.SetPowerLimit:0000000000000008 $d
-     /tmp/cckXE9sp.s:545    .text.PowerControlInit:0000000000000000 $t
-     /tmp/cckXE9sp.s:552    .text.PowerControlInit:0000000000000000 PowerControlInit
-     /tmp/cckXE9sp.s:697    .text.PowerControlInit:00000000000000c0 $d
-     /tmp/cckXE9sp.s:710    .text.PowerControl:0000000000000000 $t
-     /tmp/cckXE9sp.s:717    .text.PowerControl:0000000000000000 PowerControl
-     /tmp/cckXE9sp.s:1224   .text.PowerControl:00000000000002f8 $d
-     /tmp/cckXE9sp.s:1251   .text.PowerControl:0000000000000340 $t
-     /tmp/cckXE9sp.s:1386   .text.PowerControl:00000000000003e0 $d
-     /tmp/cckXE9sp.s:1540   .rodata.constant:0000000000000000 constant
-     /tmp/cckXE9sp.s:1530   .rodata.K2:0000000000000000 K2
-     /tmp/cckXE9sp.s:1520   .rodata.K1:0000000000000000 K1
-     /tmp/cckXE9sp.s:1398   .bss.A:0000000000000000 $d
-     /tmp/cckXE9sp.s:1402   .bss.A:0000000000000000 A
-     /tmp/cckXE9sp.s:1405   .bss.B:0000000000000000 $d
-     /tmp/cckXE9sp.s:1409   .bss.B:0000000000000000 B
-     /tmp/cckXE9sp.s:1412   .bss.C:0000000000000000 $d
-     /tmp/cckXE9sp.s:1416   .bss.C:0000000000000000 C
-     /tmp/cckXE9sp.s:1419   .bss.chassis_max_power:0000000000000000 $d
-     /tmp/cckXE9sp.s:1423   .bss.chassis_max_power:0000000000000000 chassis_max_power
-     /tmp/cckXE9sp.s:1426   .bss.dji_motor_instance:0000000000000000 $d
-     /tmp/cckXE9sp.s:1430   .bss.dji_motor_instance:0000000000000000 dji_motor_instance
-     /tmp/cckXE9sp.s:1436   .bss.idx:0000000000000000 idx
-     /tmp/cckXE9sp.s:1437   .bss.idx:0000000000000000 $d
-     /tmp/cckXE9sp.s:1439   .bss.initial_give_power:0000000000000000 $d
-     /tmp/cckXE9sp.s:1443   .bss.initial_give_power:0000000000000000 initial_give_power
-     /tmp/cckXE9sp.s:1446   .bss.initial_torque:0000000000000000 $d
-     /tmp/cckXE9sp.s:1450   .bss.initial_torque:0000000000000000 initial_torque
-     /tmp/cckXE9sp.s:1453   .bss.initial_total_power:0000000000000000 $d
-     /tmp/cckXE9sp.s:1457   .bss.initial_total_power:0000000000000000 initial_total_power
-     /tmp/cckXE9sp.s:1460   .bss.power_control_out:0000000000000000 $d
-     /tmp/cckXE9sp.s:1464   .bss.power_control_out:0000000000000000 power_control_out
-     /tmp/cckXE9sp.s:1467   .bss.sender_enable_flag:0000000000000000 $d
-     /tmp/cckXE9sp.s:1471   .bss.sender_enable_flag:0000000000000000 sender_enable_flag
-     /tmp/cckXE9sp.s:1474   .data.sender_assignment:0000000000000000 $d
-     /tmp/cckXE9sp.s:1478   .data.sender_assignment:0000000000000000 sender_assignment
-     /tmp/cckXE9sp.s:1516   .rodata.K1:0000000000000000 $d
-     /tmp/cckXE9sp.s:1526   .rodata.K2:0000000000000000 $d
-     /tmp/cckXE9sp.s:1536   .rodata.constant:0000000000000000 $d
+     /tmp/ccxJan2v.s:18     .text.MotorSenderGrouping:0000000000000000 $t
+     /tmp/ccxJan2v.s:25     .text.MotorSenderGrouping:0000000000000000 MotorSenderGrouping
+     /tmp/ccxJan2v.s:314    .text.MotorSenderGrouping:0000000000000108 $d
+     /tmp/ccxJan2v.s:322    .text.DJIMotorLostCallback:0000000000000000 $t
+     /tmp/ccxJan2v.s:328    .text.DJIMotorLostCallback:0000000000000000 DJIMotorLostCallback
+     /tmp/ccxJan2v.s:345    .text.DecodeDJIMotor:0000000000000000 $t
+     /tmp/ccxJan2v.s:351    .text.DecodeDJIMotor:0000000000000000 DecodeDJIMotor
+     /tmp/ccxJan2v.s:507    .text.DecodeDJIMotor:00000000000000e4 $d
+     /tmp/ccxJan2v.s:516    .text.SetPowerLimit:0000000000000000 $t
+     /tmp/ccxJan2v.s:523    .text.SetPowerLimit:0000000000000000 SetPowerLimit
+     /tmp/ccxJan2v.s:540    .text.SetPowerLimit:0000000000000008 $d
+     /tmp/ccxJan2v.s:545    .text.PowerControlInit:0000000000000000 $t
+     /tmp/ccxJan2v.s:552    .text.PowerControlInit:0000000000000000 PowerControlInit
+     /tmp/ccxJan2v.s:697    .text.PowerControlInit:00000000000000c0 $d
+     /tmp/ccxJan2v.s:710    .text.PowerControl:0000000000000000 $t
+     /tmp/ccxJan2v.s:717    .text.PowerControl:0000000000000000 PowerControl
+     /tmp/ccxJan2v.s:1224   .text.PowerControl:00000000000002f8 $d
+     /tmp/ccxJan2v.s:1251   .text.PowerControl:0000000000000340 $t
+     /tmp/ccxJan2v.s:1386   .text.PowerControl:00000000000003e0 $d
+     /tmp/ccxJan2v.s:1540   .rodata.constant:0000000000000000 constant
+     /tmp/ccxJan2v.s:1530   .rodata.K2:0000000000000000 K2
+     /tmp/ccxJan2v.s:1520   .rodata.K1:0000000000000000 K1
+     /tmp/ccxJan2v.s:1398   .bss.A:0000000000000000 $d
+     /tmp/ccxJan2v.s:1402   .bss.A:0000000000000000 A
+     /tmp/ccxJan2v.s:1405   .bss.B:0000000000000000 $d
+     /tmp/ccxJan2v.s:1409   .bss.B:0000000000000000 B
+     /tmp/ccxJan2v.s:1412   .bss.C:0000000000000000 $d
+     /tmp/ccxJan2v.s:1416   .bss.C:0000000000000000 C
+     /tmp/ccxJan2v.s:1419   .bss.chassis_max_power:0000000000000000 $d
+     /tmp/ccxJan2v.s:1423   .bss.chassis_max_power:0000000000000000 chassis_max_power
+     /tmp/ccxJan2v.s:1426   .bss.dji_motor_instance:0000000000000000 $d
+     /tmp/ccxJan2v.s:1430   .bss.dji_motor_instance:0000000000000000 dji_motor_instance
+     /tmp/ccxJan2v.s:1436   .bss.idx:0000000000000000 idx
+     /tmp/ccxJan2v.s:1437   .bss.idx:0000000000000000 $d
+     /tmp/ccxJan2v.s:1439   .bss.initial_give_power:0000000000000000 $d
+     /tmp/ccxJan2v.s:1443   .bss.initial_give_power:0000000000000000 initial_give_power
+     /tmp/ccxJan2v.s:1446   .bss.initial_torque:0000000000000000 $d
+     /tmp/ccxJan2v.s:1450   .bss.initial_torque:0000000000000000 initial_torque
+     /tmp/ccxJan2v.s:1453   .bss.initial_total_power:0000000000000000 $d
+     /tmp/ccxJan2v.s:1457   .bss.initial_total_power:0000000000000000 initial_total_power
+     /tmp/ccxJan2v.s:1460   .bss.power_control_out:0000000000000000 $d
+     /tmp/ccxJan2v.s:1464   .bss.power_control_out:0000000000000000 power_control_out
+     /tmp/ccxJan2v.s:1467   .bss.sender_enable_flag:0000000000000000 $d
+     /tmp/ccxJan2v.s:1471   .bss.sender_enable_flag:0000000000000000 sender_enable_flag
+     /tmp/ccxJan2v.s:1474   .data.sender_assignment:0000000000000000 $d
+     /tmp/ccxJan2v.s:1478   .data.sender_assignment:0000000000000000 sender_assignment
+     /tmp/ccxJan2v.s:1516   .rodata.K1:0000000000000000 $d
+     /tmp/ccxJan2v.s:1526   .rodata.K2:0000000000000000 $d
+     /tmp/ccxJan2v.s:1536   .rodata.constant:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 hcan1
 DaemonReload
 DWT_GetDeltaT
 malloc
-ARM GAS  /tmp/cckXE9sp.s 			page 39
+ARM GAS  /tmp/ccxJan2v.s 			page 39
 
 
 memset

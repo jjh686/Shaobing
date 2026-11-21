@@ -1,0 +1,27 @@
+{
+  "synthetic_only": true,
+  "physical_usb_opened": false,
+  "mapping_only": false,
+  "artifact": "/home/wangjiaming/.cache/rm_sentry_nav/synthetic-live-9v0xrmde",
+  "lifecycle": {
+    "controller_server": 3,
+    "planner_server": 3,
+    "bt_navigator": 3
+  },
+  "planner": {
+    "status": 4,
+    "path_poses": 138,
+    "obstacle_detour": true
+  },
+  "peak_controller_speed_m_s": 0.040000349630317206,
+  "passed": true,
+  "counts": {
+    "tx_preview": 428,
+    "live/odometry": 149,
+    "live/scan": 149,
+    "map": 16,
+    "live/cmd_vel_raw": 23
+  },
+  "motion_enabled_frames": 0,
+  "map_saved": true
+}

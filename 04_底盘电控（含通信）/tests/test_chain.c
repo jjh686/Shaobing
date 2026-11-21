@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 CAN_HandleTypeDef hcan1,hcan2;int huart3;
+static int inject_snapshot_tick,inject_chassis_tick,inject_usb_tick,inject_feedback_tick;
+static uint8_t injected_usb[34];
 static uint32_t tick;static int side,rc_online=1,configured=1,usb_busy,can_busy;
 static CANInstance inst[2][6];static unsigned registered[2],ack_count;
 static unsigned rx_fifo[2][6];
@@ -28,13 +30,18 @@ static void deliver(unsigned board)
   wire_count[board][fifo]=0;
  }
 }
+static unsigned sbus_initializations;
 static FS_RC_ctrl_t remote;static rm_feedback_t ack;
 static Chassis_Ctrl_Cmd_s output;static Chassis_Upload_Data_s measured={.real_vx=.1234f,.real_vy=-.2346f,.real_wz=45};
-uint32_t HAL_GetTick(void){return tick;}
-FS_RC_ctrl_t *FS_RemoteControlInit(int *p){assert(p==&huart3);return &remote;}
+uint32_t HAL_GetTick(void){uint32_t sampled=tick;
+ if(inject_chassis_tick&&side==1){inject_chassis_tick=0;++tick;deliver(1);}return sampled;}
+FS_RC_ctrl_t *FS_RemoteControlInit(int *p){assert(p==&huart3);sbus_initializations++;return &remote;}
 uint8_t FS_RemoteControlIsOnline(void){return rc_online;}
-uint8_t FS_RemoteControlGetSnapshot(FS_RC_ctrl_t *p){*p=remote;p->received_ms=tick;return rc_online;}
-uint8_t USBIsConfigured(void){return configured;}
+uint8_t FS_RemoteControlGetSnapshot(FS_RC_ctrl_t *p){
+ if(inject_snapshot_tick){inject_snapshot_tick=0;++tick;}*p=remote;p->received_ms=tick;return rc_online;}
+uint8_t USBIsConfigured(void){
+ if(inject_usb_tick){inject_usb_tick=0;++tick;NavGatewayReceive(injected_usb,34,tick);}
+ if(inject_feedback_tick){inject_feedback_tick=0;++tick;deliver(0);}return configured;}
 uint8_t USBTransmit(uint8_t *p,uint16_t n)
 {if(usb_busy)return USBD_BUSY;if(n==34){assert(rm_decode_feedback(p,n,&ack));ack_count++;}else assert(n==46);return USBD_OK;}
 CANInstance *CANRegister(CAN_Init_Config_s *c)
@@ -68,7 +75,7 @@ static void stopped(void){assert(output.chassis_mode==CHASSIS_ZERO_FORCE&&output
 int main(void)
 {
  assert(CHASSIS_COMM_VX_SIGN==1.0f && CHASSIS_COMM_VY_SIGN==-1.0f && CHASSIS_COMM_WZ_SIGN==-1.0f);
- remote.channel[6]=remote.channel[7]=0;side=0;NavGatewayInit();side=1;ChassisCommPortInit();
+ remote.channel[6]=remote.channel[7]=0;side=0;NavGatewayInit();assert(sbus_initializations==1);side=1;ChassisCommPortInit();
  tick=0;step(1); /* Healthy non-nav sample is required before arming. */
  remote.channel[6]=remote.channel[7]=1;
  tick=20;send(1,0);step(1);assert(ack_count==1&&ack.sequence==1&&(ack.status&RM_STATUS_ACK_VALID));
@@ -132,6 +139,24 @@ int main(void)
  }
  puts("PASS six axes: forward/back, left/right, ccw/cw commands and measured feedback signs");
 #endif
+ /* IRQ producers may publish a timestamp newer than the task entry tick. */
+ uint16_t timing_seq=20000;
+ tick+=20;send(timing_seq++,0);step(1);
+ tick+=20;inject_snapshot_tick=1;send(timing_seq++,0);step(1);
+ assert(nav_rc_age_ms==0&&nav_rc_online==1&&!(ack.fault_mask&NC_FAULT_RC));
+ tick+=20;send(timing_seq++,0);side=0;NavGatewayTask();side=1;inject_chassis_tick=1;
+ ChassisCommPortCommand(&output,1);ChassisCommPortFeedback(&measured,1);deliver(0);side=0;NavGatewayTask();
+ assert(!(ack.fault_mask&(NC_FAULT_RX|NC_FAULT_RC)));
+ tick+=20;rm_command_t irq_command={.route=2,.session=0x10203040,.sequence=timing_seq++};
+ assert(rm_encode_command(&irq_command,injected_usb));inject_usb_tick=1;step(1);
+ assert(ack.sequence==irq_command.sequence);
+ tick+=20;send(timing_seq++,0);side=0;NavGatewayTask();deliver(1);side=1;
+ ChassisCommPortCommand(&output,1);ChassisCommPortFeedback(&measured,1);
+ side=0;inject_feedback_tick=1;NavGatewayTask();assert(ack.sequence==timing_seq-1);
+ remote.channel[6]=0;tick=0xffffffe0u;send(timing_seq++,0);step(1);
+ tick=0xffffffffu;inject_snapshot_tick=1;send(timing_seq++,0);step(1);
+ assert(tick==0&&nav_rc_age_ms==0&&nav_rc_online==1);
+ puts("PASS IRQ timing: RC snapshot, chassis queue, USB ingress and feedback cross 1ms; tick wrap; genuine 11ms expiry still rejected");
  /* Interrupt forwarding while PC navigation commands continue arriving. */
  tick+=101;side=1;ChassisCommPortCommand(&output,1);stopped();
  puts("PASS actual ports: 10000 USB/CAN round trips with forwarded RC, failsafe, CH10 stop, rearm, RC transport timeout, motion lock, motor loss, TTL, queue overflow, USB BUSY/disconnect");

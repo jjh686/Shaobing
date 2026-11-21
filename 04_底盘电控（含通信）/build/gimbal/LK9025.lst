@@ -1,4 +1,4 @@
-ARM GAS  /tmp/cc6FZEl2.s 			page 1
+ARM GAS  /tmp/cczPBBAp.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
   28:modules/motor/LKmotor/LK9025.c ****     measure->ecd = (uint16_t)((rx_buff[7] << 8) | rx_buff[6]);
   29:modules/motor/LKmotor/LK9025.c **** 
   30:modules/motor/LKmotor/LK9025.c ****     measure->angle_single_round = ECD_ANGLE_COEF_LK * measure->ecd;
-ARM GAS  /tmp/cc6FZEl2.s 			page 2
+ARM GAS  /tmp/cczPBBAp.s 			page 2
 
 
   31:modules/motor/LKmotor/LK9025.c **** 
@@ -118,7 +118,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
   62              		.cfi_offset 14, -4
   63 0002 0546     		mov	r5, r0
   20:modules/motor/LKmotor/LK9025.c ****     LKMotor_Measure_t *measure = &motor->measure;
-ARM GAS  /tmp/cc6FZEl2.s 			page 3
+ARM GAS  /tmp/cczPBBAp.s 			page 3
 
 
   64              		.loc 1 20 5 is_stmt 1 view .LVU6
@@ -178,7 +178,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  100 002e F8EEE77A 		vcvt.f32.s32	s15, s15
  101 0032 DFED2C6A 		vldr.32	s13, .L6
  102 0036 67EEA66A 		vmul.f32	s13, s15, s13
-ARM GAS  /tmp/cc6FZEl2.s 			page 4
+ARM GAS  /tmp/cczPBBAp.s 			page 4
 
 
   30:modules/motor/LKmotor/LK9025.c **** 
@@ -238,7 +238,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  140              		.loc 1 36 59 view .LVU41
  141 0084 43EA0023 		orr	r3, r3, r0, lsl #8
  142 0088 1BB2     		sxth	r3, r3
-ARM GAS  /tmp/cc6FZEl2.s 			page 5
+ARM GAS  /tmp/cczPBBAp.s 			page 5
 
 
  143 008a 07EE903A 		vmov	s15, r3	@ int
@@ -298,7 +298,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  181 00cc 77EEA67A 		vadd.f32	s15, s15, s13
   44:modules/motor/LKmotor/LK9025.c **** }
  182              		.loc 1 44 26 view .LVU58
-ARM GAS  /tmp/cc6FZEl2.s 			page 6
+ARM GAS  /tmp/cczPBBAp.s 			page 6
 
 
  183 00d0 C4ED047A 		vstr.32	s15, [r4, #16]
@@ -358,7 +358,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
   65:modules/motor/LKmotor/LK9025.c **** 
   66:modules/motor/LKmotor/LK9025.c ****     config->can_init_config.id = motor;
   67:modules/motor/LKmotor/LK9025.c ****     config->can_init_config.can_module_callback = LKMotorDecode;
-ARM GAS  /tmp/cc6FZEl2.s 			page 7
+ARM GAS  /tmp/cczPBBAp.s 			page 7
 
 
   68:modules/motor/LKmotor/LK9025.c ****     config->can_init_config.rx_id = 0x140 + config->can_init_config.tx_id;
@@ -418,7 +418,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  240              		.loc 1 101 17 is_stmt 0 view .LVU73
  241 0002 0025     		movs	r5, #0
  242              		.loc 1 101 5 view .LVU74
-ARM GAS  /tmp/cc6FZEl2.s 			page 8
+ARM GAS  /tmp/cczPBBAp.s 			page 8
 
 
  243 0004 3DE0     		b	.L9
@@ -478,7 +478,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  118:modules/motor/LKmotor/LK9025.c ****                 pid_ref += *motor->speed_feedforward_ptr;
  281              		.loc 1 118 17 is_stmt 1 view .LVU90
  282              		.loc 1 118 34 is_stmt 0 view .LVU91
-ARM GAS  /tmp/cc6FZEl2.s 			page 9
+ARM GAS  /tmp/cczPBBAp.s 			page 9
 
 
  283 0036 236B     		ldr	r3, [r4, #48]
@@ -538,7 +538,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  133:modules/motor/LKmotor/LK9025.c ****         {
  134:modules/motor/LKmotor/LK9025.c ****             pid_ref = PIDCalculate(&motor->current_PID, measure->real_current, pid_ref);
  135:modules/motor/LKmotor/LK9025.c ****         }
-ARM GAS  /tmp/cc6FZEl2.s 			page 10
+ARM GAS  /tmp/cczPBBAp.s 			page 10
 
 
  136:modules/motor/LKmotor/LK9025.c **** 
@@ -598,7 +598,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  360              	.LVL20:
  104:modules/motor/LKmotor/LK9025.c ****         setting = &motor->motor_settings;
  361              		.loc 1 104 9 is_stmt 1 view .LVU124
-ARM GAS  /tmp/cc6FZEl2.s 			page 11
+ARM GAS  /tmp/cczPBBAp.s 			page 11
 
 
  105:modules/motor/LKmotor/LK9025.c ****         pid_ref = motor->pid_ref;
@@ -658,7 +658,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  398              		.loc 1 123 24 is_stmt 0 view .LVU142
  399 00c2 94F82430 		ldrb	r3, [r4, #36]	@ zero_extendqisi2
  123:modules/motor/LKmotor/LK9025.c ****                 pid_measure = *motor->other_speed_feedback_ptr;
-ARM GAS  /tmp/cc6FZEl2.s 			page 12
+ARM GAS  /tmp/cczPBBAp.s 			page 12
 
 
  400              		.loc 1 123 16 view .LVU143
@@ -718,7 +718,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  438 00f8 B8EEC00A 		vcvt.f32.s32	s0, s0
  439 00fc 04F13800 		add	r0, r4, #56
  440 0100 FFF7FEFF 		bl	PIDCalculate
-ARM GAS  /tmp/cc6FZEl2.s 			page 13
+ARM GAS  /tmp/cczPBBAp.s 			page 13
 
 
  441              	.LVL26:
@@ -778,7 +778,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  484 0130 00000000 		.word	.LANCHOR2
  485 0134 00000000 		.word	.LANCHOR0
  486              		.cfi_endproc
-ARM GAS  /tmp/cc6FZEl2.s 			page 14
+ARM GAS  /tmp/cczPBBAp.s 			page 14
 
 
  487              	.LFE278:
@@ -838,7 +838,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  535 0006 7047     		bx	lr
  536              		.cfi_endproc
  537              	.LFE280:
-ARM GAS  /tmp/cc6FZEl2.s 			page 15
+ARM GAS  /tmp/cczPBBAp.s 			page 15
 
 
  539              		.section	.text.LKMotorInit,"ax",%progbits
@@ -898,7 +898,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  585 0024 A184     		strh	r1, [r4, #36]	@ movhi
  586 0026 090C     		lsrs	r1, r1, #16
  587 0028 84F82610 		strb	r1, [r4, #38]
-ARM GAS  /tmp/cc6FZEl2.s 			page 16
+ARM GAS  /tmp/cczPBBAp.s 			page 16
 
 
   60:modules/motor/LKmotor/LK9025.c ****     PIDInit(&motor->speed_PID, &config->controller_param_init_config.speed_PID);
@@ -958,7 +958,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  625              		.loc 1 68 35 view .LVU206
  626 006a C5F8A420 		str	r2, [r5, #164]
   69:modules/motor/LKmotor/LK9025.c ****     motor->motor_can_ins = CANRegister(&config->can_init_config);
-ARM GAS  /tmp/cc6FZEl2.s 			page 17
+ARM GAS  /tmp/cczPBBAp.s 			page 17
 
 
  627              		.loc 1 69 5 is_stmt 1 view .LVU207
@@ -1018,7 +1018,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
   80:modules/motor/LKmotor/LK9025.c **** 
  667              		.loc 1 80 5 view .LVU222
   80:modules/motor/LKmotor/LK9025.c **** 
-ARM GAS  /tmp/cc6FZEl2.s 			page 18
+ARM GAS  /tmp/cczPBBAp.s 			page 18
 
 
  668              		.loc 1 80 25 is_stmt 0 view .LVU223
@@ -1078,7 +1078,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  713              	.LFE277:
  715              		.section	.text.LKMotorSetRef,"ax",%progbits
  716              		.align	1
-ARM GAS  /tmp/cc6FZEl2.s 			page 19
+ARM GAS  /tmp/cczPBBAp.s 			page 19
 
 
  717              		.global	LKMotorSetRef
@@ -1138,7 +1138,7 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  765 0006 FFF7FEFF 		bl	DaemonIsOnline
  766              	.LVL50:
  170:modules/motor/LKmotor/LK9025.c **** }
-ARM GAS  /tmp/cc6FZEl2.s 			page 20
+ARM GAS  /tmp/cczPBBAp.s 			page 20
 
 
  767              		.loc 1 170 1 view .LVU242
@@ -1177,36 +1177,36 @@ ARM GAS  /tmp/cc6FZEl2.s 			page 1
  804              		.file 12 "/usr/include/newlib/stdlib.h"
  805              		.file 13 "bsp/dwt/bsp_dwt.h"
  806              		.file 14 "<built-in>"
-ARM GAS  /tmp/cc6FZEl2.s 			page 21
+ARM GAS  /tmp/cczPBBAp.s 			page 21
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 LK9025.c
-     /tmp/cc6FZEl2.s:18     .text.LKMotorLostCallback:0000000000000000 $t
-     /tmp/cc6FZEl2.s:25     .text.LKMotorLostCallback:0000000000000000 LKMotorLostCallback
-     /tmp/cc6FZEl2.s:42     .text.LKMotorDecode:0000000000000000 $t
-     /tmp/cc6FZEl2.s:48     .text.LKMotorDecode:0000000000000000 LKMotorDecode
-     /tmp/cc6FZEl2.s:202    .text.LKMotorDecode:00000000000000e4 $d
-     /tmp/cc6FZEl2.s:211    .text.LKMotorControl:0000000000000000 $t
-     /tmp/cc6FZEl2.s:218    .text.LKMotorControl:0000000000000000 LKMotorControl
-     /tmp/cc6FZEl2.s:483    .text.LKMotorControl:000000000000012c $d
-     /tmp/cc6FZEl2.s:490    .text.LKMotorStop:0000000000000000 $t
-     /tmp/cc6FZEl2.s:497    .text.LKMotorStop:0000000000000000 LKMotorStop
-     /tmp/cc6FZEl2.s:515    .text.LKMotorEnable:0000000000000000 $t
-     /tmp/cc6FZEl2.s:522    .text.LKMotorEnable:0000000000000000 LKMotorEnable
-     /tmp/cc6FZEl2.s:540    .text.LKMotorInit:0000000000000000 $t
-     /tmp/cc6FZEl2.s:547    .text.LKMotorInit:0000000000000000 LKMotorInit
-     /tmp/cc6FZEl2.s:707    .text.LKMotorInit:00000000000000dc $d
-     /tmp/cc6FZEl2.s:716    .text.LKMotorSetRef:0000000000000000 $t
-     /tmp/cc6FZEl2.s:723    .text.LKMotorSetRef:0000000000000000 LKMotorSetRef
-     /tmp/cc6FZEl2.s:740    .text.LKMotorIsOnline:0000000000000000 $t
-     /tmp/cc6FZEl2.s:747    .text.LKMotorIsOnline:0000000000000000 LKMotorIsOnline
-     /tmp/cc6FZEl2.s:776    .bss.idx:0000000000000000 idx
-     /tmp/cc6FZEl2.s:777    .bss.idx:0000000000000000 $d
-     /tmp/cc6FZEl2.s:779    .bss.lkmotor_instance:0000000000000000 $d
-     /tmp/cc6FZEl2.s:783    .bss.lkmotor_instance:0000000000000000 lkmotor_instance
-     /tmp/cc6FZEl2.s:786    .bss.sender_instance:0000000000000000 $d
-     /tmp/cc6FZEl2.s:790    .bss.sender_instance:0000000000000000 sender_instance
+     /tmp/cczPBBAp.s:18     .text.LKMotorLostCallback:0000000000000000 $t
+     /tmp/cczPBBAp.s:25     .text.LKMotorLostCallback:0000000000000000 LKMotorLostCallback
+     /tmp/cczPBBAp.s:42     .text.LKMotorDecode:0000000000000000 $t
+     /tmp/cczPBBAp.s:48     .text.LKMotorDecode:0000000000000000 LKMotorDecode
+     /tmp/cczPBBAp.s:202    .text.LKMotorDecode:00000000000000e4 $d
+     /tmp/cczPBBAp.s:211    .text.LKMotorControl:0000000000000000 $t
+     /tmp/cczPBBAp.s:218    .text.LKMotorControl:0000000000000000 LKMotorControl
+     /tmp/cczPBBAp.s:483    .text.LKMotorControl:000000000000012c $d
+     /tmp/cczPBBAp.s:490    .text.LKMotorStop:0000000000000000 $t
+     /tmp/cczPBBAp.s:497    .text.LKMotorStop:0000000000000000 LKMotorStop
+     /tmp/cczPBBAp.s:515    .text.LKMotorEnable:0000000000000000 $t
+     /tmp/cczPBBAp.s:522    .text.LKMotorEnable:0000000000000000 LKMotorEnable
+     /tmp/cczPBBAp.s:540    .text.LKMotorInit:0000000000000000 $t
+     /tmp/cczPBBAp.s:547    .text.LKMotorInit:0000000000000000 LKMotorInit
+     /tmp/cczPBBAp.s:707    .text.LKMotorInit:00000000000000dc $d
+     /tmp/cczPBBAp.s:716    .text.LKMotorSetRef:0000000000000000 $t
+     /tmp/cczPBBAp.s:723    .text.LKMotorSetRef:0000000000000000 LKMotorSetRef
+     /tmp/cczPBBAp.s:740    .text.LKMotorIsOnline:0000000000000000 $t
+     /tmp/cczPBBAp.s:747    .text.LKMotorIsOnline:0000000000000000 LKMotorIsOnline
+     /tmp/cczPBBAp.s:776    .bss.idx:0000000000000000 idx
+     /tmp/cczPBBAp.s:777    .bss.idx:0000000000000000 $d
+     /tmp/cczPBBAp.s:779    .bss.lkmotor_instance:0000000000000000 $d
+     /tmp/cczPBBAp.s:783    .bss.lkmotor_instance:0000000000000000 lkmotor_instance
+     /tmp/cczPBBAp.s:786    .bss.sender_instance:0000000000000000 $d
+     /tmp/cczPBBAp.s:790    .bss.sender_instance:0000000000000000 sender_instance
 
 UNDEFINED SYMBOLS
 DaemonReload

@@ -7,11 +7,11 @@ import tempfile
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--reference', type=Path, default=root.parent / '04_DiPan_Board')
+parser.add_argument('--reference', type=Path, default=root.parent / '04_底盘电控（含通信）')
 args = parser.parse_args()
 reference = args.reference.resolve()
 nav = root / 'modules/nav_conversion'
-original = reference / 'communication_reference/gimbal_firmware/modules/nav_conversion'
+original = reference / 'communication_reference/common'
 # Exact implementation equality includes CRC, units, IDs, quantization, session
 # rules and the shared USB protocol. read_text normalizes historical CRLF files.
 for name in ('nav_can.h', 'nav_can.c', 'remote_can.h', 'protocol.c', 'mcu_link.c',
@@ -62,13 +62,10 @@ with tempfile.TemporaryDirectory(prefix='gimbal-can-compat-') as temporary:
     # zero-length RX callback, which calls NavGatewayReset. Model that event as
     # well as USBIsConfigured, so ENABLE cannot cross a USB session boundary.
     source = (reference / 'tests/test_chain.c').read_text()
-    old = 'configured=0;tick=511;step(1);configured=1;tick=531;'
-    new = ('configured=0;NavGatewayReset();tick=511;step(1);'
-           'configured=1;NavGatewayReset();tick=531;')
-    assert source.count(old) == 1, 'Review 04 chain fixture: USB session event changed'
-    source = source.replace(old, new)
-    # 05 deliberately drains feedback even with USB absent; retain this behavior.
-    source = source.replace('configured=0;NavGatewayReset();tick=511;step(1);',
+    old = 'configured=0;NavGatewayReset();tick=511;step(1);'
+    assert source.count(old) == 1, 'Review USB session event fixture'
+    # 05 continues draining feedback with USB absent.
+    source = source.replace(old,
         'configured=0;NavGatewayReset();tick=511;'
         'unsigned feedback_before=nav_feedback_received;step(1);'
         'assert(nav_feedback_received>feedback_before);')

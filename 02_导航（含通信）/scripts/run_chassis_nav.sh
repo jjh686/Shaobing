@@ -20,7 +20,7 @@ case "$chassis_mode" in
   usb|navigation)
     [[ $# -gt 0 ]] || { echo '请填写云台 C 板的 /dev/serial/by-id/... 路径' >&2; exit 2; }
     PORT=$1; shift
-    python3 /home/wangjiaming/桌面/c_board_nav_gateway_20261111/pc/check_port.py "$PORT" >/dev/null
+    python3 "$RM_NAV_ROOT/../04_底盘电控（含通信）/communication_reference/pc/check_port.py" "$PORT" >/dev/null
     chassis_connect=true
     if [[ "$chassis_mode" == usb ]]; then
       chassis_navigation=false

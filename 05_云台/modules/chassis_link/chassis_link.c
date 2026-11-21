@@ -8,7 +8,7 @@
 #include "nav_gateway.h"
 #include "rm_chassis_comm/gimbal_protocol.h"
 #include "bsp_can.h"
-#include "nav_can_hal.h"
+#include "../nav_conversion/nav_can_hal.h"
 #include "bsp_usb.h"
 #include "remote_control.h"
 #include "remote_can.h"
@@ -40,6 +40,13 @@ static uint32_t remote_sent_ms;
 static uint16_t remote_sequence;
 static uint8_t remote_started;
 volatile uint32_t nav_rc_groups, nav_rc_online, nav_rc_estop, nav_rc_age_ms;
+volatile uint32_t nav_command_expired, nav_command_busy, nav_command_invalid;
+volatile uint32_t nav_feedback_expired, nav_feedback_replaced, nav_usb_busy;
+volatile uint32_t nav_command_queue_full, nav_feedback_queue_full;
+volatile uint32_t nav_task_max_gap_ms, nav_command_max_age_ms, nav_feedback_max_age_ms;
+volatile nc_rx_stats_t nav_feedback_rx_stats;
+static uint32_t task_last_ms;
+static uint8_t task_seen;
 /* Retry a stalled abort without forgetting hardware ownership. CAN1 bus-off
  * recovery is enabled; a reused motor mailbox is released by the BSP hook. */
 volatile uint32_t nav_tx_stall_recoveries;
@@ -99,6 +106,8 @@ static void forward_remote(uint32_t now)
     RemoteCanSample sample = {0};
     nc_group_t group;
     bool online = FS_RemoteControlGetSnapshot(&rc) != 0;
+    /* An IRQ may publish the snapshot after the task sampled its entry tick. */
+    now = HAL_GetTick();
     sample.sequence = ++remote_sequence;
     sample.generation = (uint16_t)rc.fault_generation;
     uint32_t age = now - rc.received_ms;
@@ -141,6 +150,7 @@ static void forward_remote(uint32_t now)
 
 static void update_tx_debug(void)
 {
+    nav_feedback_rx_stats = receiver.stats;
     nav_command_tx_mailbox_loaded_frames = sender.tx_mailbox_loaded_frames;
     nav_command_tx_addtx_errors = sender.tx_addtx_errors;
     nav_command_tx_timeout_groups = sender.tx_timeout_groups;
@@ -164,6 +174,7 @@ static void can_receive(CANInstance *can)
     uint8_t next = (rh + 1) % CHASSIS_LINK_FEEDBACK_QUEUE_SIZE;
     if (next == rt)
     {
+        nav_feedback_queue_full++;
         nav_gateway_drops++;
         reset_requested = 1;
         return;
@@ -176,12 +187,14 @@ static void can_receive(CANInstance *can)
     rh = next;
 }
 /* 对外接入：初始化及USB投递。 */
-void ChassisLinkResetUsbSession(void) { reset_requested = 1; }
+void ChassisLinkResetUsbSession(void) { USBTransmitReset(); reset_requested = 1; }
 void ChassisLinkReceiveUsb(const uint8_t *bytes, unsigned n, uint32_t received)
 {
     uint8_t next = (qh + 1) % CHASSIS_LINK_COMMAND_QUEUE_SIZE;
     if (n != RM_FRAME_SIZE || next == qt)
     {
+        if (next == qt) nav_command_queue_full++;
+        else nav_command_invalid++;
         nav_gateway_drops++;
         reset_requested = 1;
         return;
@@ -194,6 +207,9 @@ void ChassisLinkReceiveUsb(const uint8_t *bytes, unsigned n, uint32_t received)
 }
 void ChassisLinkInit(void)
 {
+    /* Autonomous aiming skips RC in RobotCMDInit, but chassis permission still
+     * requires the real SBUS source. The remote service is initialized once. */
+    FS_RemoteControlInit(&huart3);
     ng_init(&gateway);
     remote_started = 0;
     remote_sequence = 0;
@@ -206,16 +222,24 @@ void ChassisLinkInit(void)
                                .can_module_callback = can_receive};
         CANRegister(&c);
     }
+    CANEnableDiagnostics(&CHASSIS_LINK_CAN_HANDLE);
 }
 static void pump(uint32_t now) { nch_pump(&sender, now); }
 /* 周期处理：保持原顺序及反馈/遥控/自瞄之间的调度关系。 */
 void ChassisLinkUpdate(void)
 {
     uint32_t now = HAL_GetTick();
+    if (task_seen && (uint32_t)(now - task_last_ms) > nav_task_max_gap_ms)
+        nav_task_max_gap_ms = now - task_last_ms;
+    task_seen = 1;
+    task_last_ms = now;
     nav_can_task_ticks = now;
+    CANUpdateDiagnostics(&CHASSIS_LINK_CAN_HANDLE);
+    USBTransmitPump();
     recover_stalled_tx(now);
     /* RC transport runs independently of USB connection / navigation sessions. */
     forward_remote(now);
+    now = HAL_GetTick();
     update_tx_debug();
 #ifndef CHASSIS_COMM_HOST_TEST
     nav_can_esr = CHASSIS_LINK_CAN_HANDLE.Instance->ESR;
@@ -242,10 +266,14 @@ void ChassisLinkUpdate(void)
         can_packet_t p = incoming[rt];
         __DMB();
         rt = (rt + 1) % CHASSIS_LINK_FEEDBACK_QUEUE_SIZE;
+        now = HAL_GetTick();
+        uint32_t age = now - p.tick;
+        if (age > nav_feedback_max_age_ms) nav_feedback_max_age_ms = age;
         nc_group_t group;
         rm_feedback_t f;
         if ((uint32_t)(now - p.tick) > NC_GROUP_MS)
         {
+            nav_feedback_expired++;
             receiver.active = 0;
             continue;
         }
@@ -255,6 +283,7 @@ void ChassisLinkUpdate(void)
             nav_rx_groups_formed++;
             if (nc_feedback_decode(&group, &f) && rm_encode_feedback(&f, pending))
             {
+                if (pending_valid) nav_feedback_replaced++;
                 pending_ms = p.tick;
                 pending_valid = 1;
                 nav_feedback_received++;
@@ -278,28 +307,55 @@ void ChassisLinkUpdate(void)
     while (qt != qh)
     {
         command_packet_t p = commands[qt];
+        now = HAL_GetTick();
+        uint32_t age = now - p.tick;
+        if (age > nav_command_max_age_ms) nav_command_max_age_ms = age;
+        if (age > NC_GROUP_MS)
+        {
+            nav_command_expired++;
+            nav_gateway_drops++;
+        }
+        else if (nch_busy(&sender))
+        {
+            nav_command_busy++;
+            break; /* Keep the fresh packet until the preceding group completes. */
+        }
+        else
+        {
+            nc_group_t group;
+            if (!ng_command(&gateway, p.bytes, p.tick, now, &group) ||
+                !nch_start(&sender, &group, now))
+            {
+                nav_command_invalid++;
+                nav_gateway_drops++;
+            }
+            else
+            {
+                nav_can_groups++;
+                pump(now);
+            }
+        }
         __DMB();
         qt = (qt + 1) % CHASSIS_LINK_COMMAND_QUEUE_SIZE;
-        nc_group_t group;
-        if (nch_busy(&sender) || !ng_command(&gateway, p.bytes, p.tick, now, &group) ||
-            !nch_start(&sender, &group, now))
-        {
-            nav_gateway_drops++;
-            continue;
-        }
-        nav_can_groups++;
-        pump(now);
     }
     /* Prioritize chassis ACK over optional joint telemetry. CDC owns accepted
      * buffers and arbitrates with the original high-priority SP status sender. */
     if (pending_valid)
     {
-        if ((uint32_t)(now - pending_ms) > NC_GROUP_MS ||
-            USBTransmit(pending, sizeof(pending)) == USBD_OK)
+        now = HAL_GetTick();
+        if ((uint32_t)(now - pending_ms) > NC_GROUP_MS)
+        {
+            nav_feedback_expired++;
             pending_valid = 0;
+        }
+        else if (USBTransmitStamped(pending, sizeof(pending), pending_ms) == USBD_OK)
+            pending_valid = 0;
+        else nav_usb_busy++;
+        USBTransmitPump();
         update_tx_debug();
         return;
     }
+    now = HAL_GetTick();
     if (gateway.gate.ack_valid && (uint32_t)(now - joint_ms) >= CHASSIS_LINK_JOINT_PERIOD_MS)
     {
         joint_ms = now;

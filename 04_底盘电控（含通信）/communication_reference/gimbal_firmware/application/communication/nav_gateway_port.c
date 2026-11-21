@@ -21,12 +21,20 @@ static uint32_t remote_sent_ms;
 static uint16_t remote_sequence;
 static uint8_t remote_started;
 volatile uint32_t nav_rc_groups, nav_rc_online, nav_rc_estop, nav_rc_age_ms;
+volatile uint32_t nav_command_expired,nav_command_busy,nav_command_invalid;
+volatile uint32_t nav_feedback_expired,nav_feedback_replaced,nav_usb_busy;
+volatile uint32_t nav_command_queue_full,nav_feedback_queue_full;
+volatile uint32_t nav_task_max_gap_ms,nav_command_max_age_ms,nav_feedback_max_age_ms;
+static uint32_t task_last_ms;static uint8_t task_seen;
+volatile nc_rx_stats_t nav_feedback_rx_stats;
 static void forward_remote(uint32_t now)
 {
     nch_pump(&remote_sender,now);
     if(nch_busy(&remote_sender)||(remote_started&&(uint32_t)(now-remote_sent_ms)<20u))return;
     FS_RC_ctrl_t rc={0};RemoteCanSample sample={0};nc_group_t group;
     bool online=FS_RemoteControlGetSnapshot(&rc)!=0;
+    /* The snapshot may have been published by an IRQ after the task's tick. */
+    now=HAL_GetTick();
     sample.sequence=++remote_sequence;sample.generation=(uint16_t)rc.fault_generation;
     uint32_t age=now-rc.received_ms;sample.age_ms=age>65535u?65535u:(uint16_t)age;
     sample.axes[0]=rc.rc.rocker_r_;sample.axes[1]=rc.rc.rocker_r1;
@@ -67,20 +75,24 @@ static void update_tx_debug(void)
     nav_remote_tx_addtx_errors=remote_sender.tx_addtx_errors;
     nav_remote_tx_timeout_groups=remote_sender.tx_timeout_groups;
     nav_remote_tx_aborted_groups=remote_sender.tx_aborted_groups;
+    nav_feedback_rx_stats=receiver.stats;
 }
 static void can_receive(CANInstance *can)
 {
     nav_can_rx_frames++;
     uint8_t next=(rh+1)%16;
-    if(next==rt){nav_gateway_drops++;reset_requested=1;return;}
+    if(next==rt){nav_feedback_queue_full++;nav_gateway_drops++;reset_requested=1;return;}
     memcpy(incoming[rh].bytes,can->rx_buff,8);incoming[rh].id=(uint16_t)can->rx_id;
     incoming[rh].dlc=can->rx_len;incoming[rh].tick=HAL_GetTick();__DMB();rh=next;
 }
-void NavGatewayReset(void){reset_requested=1;}
+void NavGatewayReset(void){USBTransmitReset();reset_requested=1;}
 void NavGatewayReceive(const uint8_t *bytes,unsigned n,uint32_t received)
 {
     uint8_t next=(qh+1)%8;
-    if(n!=RM_FRAME_SIZE||next==qt){nav_gateway_drops++;reset_requested=1;return;}
+    if(n!=RM_FRAME_SIZE||next==qt){
+        if(next==qt)nav_command_queue_full++;else nav_command_invalid++;
+        nav_gateway_drops++;reset_requested=1;return;
+    }
     memcpy(commands[qh].bytes,bytes,n);commands[qh].tick=received;__DMB();qh=next;nav_usb_received++;
 }
 void NavGatewayInit(void)
@@ -93,6 +105,7 @@ void NavGatewayInit(void)
             .rx_id=NC_FEEDBACK_BASE+i,.can_module_callback=can_receive};
         CANRegister(&c);
     }
+    CANEnableDiagnostics(&hcan1);
 }
 static void pump(uint32_t now)
 {
@@ -101,7 +114,11 @@ static void pump(uint32_t now)
 void NavGatewayTask(void)
 {
     uint32_t now=HAL_GetTick();
+    if(task_seen&&(uint32_t)(now-task_last_ms)>nav_task_max_gap_ms)nav_task_max_gap_ms=now-task_last_ms;
+    task_last_ms=now;task_seen=1;
     nav_can_task_ticks=now;
+    CANUpdateDiagnostics(&hcan1);
+    USBTransmitPump();
     /* RC transport runs independently of USB connection / navigation sessions. */
     forward_remote(now);
     update_tx_debug();
@@ -112,22 +129,33 @@ void NavGatewayTask(void)
     if(reset_requested||!USBIsConfigured()){
         uint32_t irq=__get_PRIMASK();__disable_irq();qh=qt=rh=rt=0;reset_requested=0;__set_PRIMASK(irq);
         ng_init(&gateway);memset(&receiver,0,sizeof(receiver));nch_reset(&sender);pending_valid=0;
+        USBTransmitReset();
         if(!USBIsConfigured()){update_tx_debug();return;}
     }
-    pump(now);
+    now=HAL_GetTick();pump(now);
     while(qt!=qh){
-        command_packet_t p=commands[qt];__DMB();qt=(qt+1)%8;nc_group_t group;
-        if(nch_busy(&sender)||!ng_command(&gateway,p.bytes,p.tick,now,&group)||!nch_start(&sender,&group,now)){
-            nav_gateway_drops++;continue;
+        command_packet_t p=commands[qt];__DMB();nc_group_t group;
+        now=HAL_GetTick();pump(now);
+        uint32_t age=now-p.tick;
+        if(age>nav_command_max_age_ms)nav_command_max_age_ms=age;
+        if(age>NC_GROUP_MS){qt=(qt+1)%8;nav_command_expired++;nav_gateway_drops++;continue;}
+        /* Retain a fresh queued packet while the preceding group completes. */
+        if(nch_busy(&sender)){nav_command_busy++;break;}
+        qt=(qt+1)%8;
+        if(!ng_command(&gateway,p.bytes,p.tick,now,&group)||!nch_start(&sender,&group,now)){
+            nav_command_invalid++;nav_gateway_drops++;continue;
         }
         nav_can_groups++;pump(now);
     }
     while(rt!=rh){
         can_packet_t p=incoming[rt];__DMB();rt=(rt+1)%16;
         nc_group_t group;rm_feedback_t f;
-        if((uint32_t)(now-p.tick)>NC_GROUP_MS){receiver.active=0;continue;}
+        now=HAL_GetTick();uint32_t age=now-p.tick;
+        if(age>nav_feedback_max_age_ms)nav_feedback_max_age_ms=age;
+        if(age>NC_GROUP_MS){receiver.active=0;nav_feedback_expired++;nav_gateway_drops++;continue;}
         if(nc_rx_push(&receiver,NC_FEEDBACK_BASE,p.id,false,false,p.dlc,p.bytes,p.tick,&group)){
             if(nc_feedback_decode(&group,&f)&&rm_encode_feedback(&f,pending)){
+                if(pending_valid)nav_feedback_replaced++;
                 pending_ms=p.tick;pending_valid=1;nav_feedback_received++;
             }else nav_can_decode_errors++;
         }
@@ -135,10 +163,15 @@ void NavGatewayTask(void)
     /* Prioritize chassis ACK over optional joint telemetry. CDC owns accepted
      * buffers and arbitrates with the original high-priority SP status sender. */
     if(pending_valid){
-        if((uint32_t)(now-pending_ms)>NC_GROUP_MS||USBTransmit(pending,sizeof(pending))==USBD_OK)pending_valid=0;
+        now=HAL_GetTick();
+        if((uint32_t)(now-pending_ms)>NC_GROUP_MS){nav_feedback_expired++;pending_valid=0;}
+        else if(USBTransmitStamped(pending,sizeof(pending),pending_ms)==USBD_OK)pending_valid=0;
+        else nav_usb_busy++;
+        USBTransmitPump();
         update_tx_debug();
         return;
     }
+    now=HAL_GetTick();
     if(gateway.gate.ack_valid&&(uint32_t)(now-joint_ms)>=20){
         joint_ms=now;
         rm_gimbal_t g={0};g.route=2;g.uptime_ms=now;g.sample_ms=now;

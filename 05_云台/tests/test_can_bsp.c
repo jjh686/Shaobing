@@ -7,6 +7,8 @@
 
 CAN_HandleTypeDef hcan1,hcan2;
 static uint32_t basepri,primask,pending,aborted;
+static unsigned sce_enabled;
+static CAN_TypeDef regs;
 static unsigned assigned,tx_count,rx_count,rx_pending,rx_fail;
 static CAN_RxHeaderTypeDef received;
 static CAN_TxHeaderTypeDef transmitted;
@@ -20,6 +22,12 @@ void __set_PRIMASK(uint32_t value){primask=value;}
 int HAL_CAN_Start(CAN_HandleTypeDef *can){(void)can;return HAL_OK;}
 int HAL_CAN_ActivateNotification(CAN_HandleTypeDef *can,uint32_t flags)
 {(void)can;(void)flags;return HAL_OK;}
+void HAL_NVIC_SetPriority(int irq,unsigned priority,unsigned sub)
+{assert(irq==CAN1_SCE_IRQn && priority==5 && sub==0);}
+void HAL_NVIC_EnableIRQ(int irq){assert(irq==CAN1_SCE_IRQn);sce_enabled++;}
+void HAL_CAN_IRQHandler(CAN_HandleTypeDef *can){HAL_CAN_ErrorCallback(can);}
+uint32_t HAL_CAN_GetError(CAN_HandleTypeDef *can){return can->ErrorCode;}
+int HAL_CAN_ResetError(CAN_HandleTypeDef *can){can->ErrorCode=0;return HAL_OK;}
 int HAL_CAN_ConfigFilter(CAN_HandleTypeDef *can,CAN_FilterTypeDef *filter)
 {
     if(can==&hcan1 && filter->FilterIdLow==(0x338u<<5))
@@ -58,6 +66,7 @@ static void inject(unsigned ide,unsigned rtr,unsigned dlc,unsigned fail)
 }
 int main(void)
 {
+    hcan1.Instance=&regs;
     CAN_Init_Config_s config={.can_handle=&hcan1,.tx_id=0x1ff,.rx_id=0x338,
         .rx_fifo_policy=CAN_RX_FIFO_POLICY_FIFO0,.can_module_callback=receive};
     CANInstance *motor=CANRegister(&config);
@@ -78,5 +87,17 @@ int main(void)
     inject(4,0,8,0);inject(0,2,8,0);inject(0,0,9,0);inject(0,0,8,1);
     assert(rx_count==1);
     inject(0,0,8,0);assert(rx_count==2);
+    CANEnableDiagnostics(&hcan1);assert(sce_enabled==1);
+    regs.ESR=(17u<<16)|(9u<<24);regs.TSR=123;
+    hcan1.ErrorCode=HAL_CAN_ERROR_BOF|HAL_CAN_ERROR_RX_FOV0|HAL_CAN_ERROR_TX_TERR0;
+    CAN1_SCE_IRQHandler();
+    CANBusDiagnostics *d=&can_bus_diagnostics[0];
+    assert(d->tec==17 && d->rec==9 && d->max_tec==17 && d->tsr==123);
+    assert(d->error_events==1 && d->bus_off_events==1 && d->fifo0_overruns==1 && d->tx_errors==1);
+    assert(!hcan1.ErrorCode && !primask);
+    regs.ESR=0;CANUpdateDiagnostics(&hcan1);assert(d->tec==0 && d->max_tec==17);
+    hcan1.ErrorCode=HAL_CAN_ERROR_RX_FOV1;CAN1_SCE_IRQHandler();
+    assert(d->error_events==2 && d->bus_off_events==1 && d->fifo1_overruns==1);
+    puts("PASS real CAN diagnostics: SCE service, TEC/REC peaks, independent event bits and HAL error reset");
     puts("PASS real CAN BSP: yaw queue/IRQ delivery, mailbox ownership hook, FIFO0, EXT/RTR/DLC/HAL rejection");
 }

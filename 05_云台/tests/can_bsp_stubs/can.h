@@ -13,7 +13,32 @@
 #define CAN_IT_RX_FIFO0_MSG_PENDING 1u
 #define CAN_IT_RX_FIFO1_MSG_PENDING 2u
 #define CAN_IT_TX_MAILBOX_EMPTY 4u
-typedef int CAN_HandleTypeDef;
+typedef struct {uint32_t ESR,TSR;} CAN_TypeDef;
+typedef struct {CAN_TypeDef *Instance;uint32_t ErrorCode;} CAN_HandleTypeDef;
+#define CAN1_SCE_IRQn 22
+#define CAN_IT_ERROR 8u
+#define CAN_IT_LAST_ERROR_CODE 16u
+#define CAN_IT_BUSOFF 32u
+#define CAN_IT_ERROR_WARNING 64u
+#define CAN_IT_ERROR_PASSIVE 128u
+#define CAN_IT_RX_FIFO0_OVERRUN 256u
+#define CAN_IT_RX_FIFO1_OVERRUN 512u
+#define HAL_CAN_ERROR_BOF 1u
+#define HAL_CAN_ERROR_RX_FOV0 2u
+#define HAL_CAN_ERROR_RX_FOV1 4u
+#define HAL_CAN_ERROR_TX_TERR0 8u
+#define HAL_CAN_ERROR_TX_TERR1 16u
+#define HAL_CAN_ERROR_TX_TERR2 32u
+#define HAL_CAN_ERROR_TX_ALST0 64u
+#define HAL_CAN_ERROR_TX_ALST1 128u
+#define HAL_CAN_ERROR_TX_ALST2 256u
+void HAL_NVIC_SetPriority(int,unsigned,unsigned);
+void HAL_NVIC_EnableIRQ(int);
+void HAL_CAN_IRQHandler(CAN_HandleTypeDef *);
+uint32_t HAL_CAN_GetError(CAN_HandleTypeDef *);
+int HAL_CAN_ResetError(CAN_HandleTypeDef *);
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *);
+void CAN1_SCE_IRQHandler(void);
 typedef struct { uint32_t StdId,IDE,RTR,DLC; } CAN_TxHeaderTypeDef;
 typedef struct { uint32_t StdId,IDE,RTR,DLC; } CAN_RxHeaderTypeDef;
 typedef struct {

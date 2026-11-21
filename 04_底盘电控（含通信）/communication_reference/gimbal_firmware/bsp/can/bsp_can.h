@@ -11,6 +11,14 @@
 #define CAN_Send_FIFO_SIZE 16      // 发送消息队列的长度
 // 如果只有1个CAN,还需要把bsp_can.c中所有的hcan2变量改为hcan1(别担心,主要是总线和FIFO的负载均衡,不影响功能)
 
+typedef struct {
+    volatile uint32_t error_events,last_error,latched_errors,esr,tsr,tec,rec,max_tec,max_rec;
+    volatile uint32_t bus_off_events,fifo0_overruns,fifo1_overruns,tx_errors,notification_errors;
+} CANBusDiagnostics;
+extern CANBusDiagnostics can_bus_diagnostics[2]; /* index 0=CAN1, 1=CAN2 */
+void CANEnableDiagnostics(CAN_HandleTypeDef *can);
+void CANUpdateDiagnostics(CAN_HandleTypeDef *can);
+
 /* can instance typedef, every module registered to CAN should have this variable */
 #pragma pack(1)
 typedef struct _

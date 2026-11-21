@@ -2,19 +2,41 @@
   "port": "/dev/ttyACM1",
   "enabled": false,
   "passed": true,
-  "session": 4025130966,
-  "sent_STOP": 449,
-  "fresh_chassis_ACK": 500,
-  "USB_bytes": 108839,
+  "session": 450340116,
+  "sent_STOP": 439,
+  "fresh_chassis_ACK": 407,
+  "USB_bytes": 36884,
   "frames": {
-    "SP": 2001,
-    "gimbal": 126,
-    "feedback": 500
+    "SP": 0,
+    "gimbal": 501,
+    "feedback": 407
   },
   "last_gimbal": {
-    "uptime": 465039,
-    "sequence": 447,
-    "session": 4025130966,
-    "command_received_ms": 465020
-  }
+    "uptime": 1272998,
+    "sequence": 438,
+    "session": 450340116,
+    "command_received_ms": 1272989
+  },
+  "stream_diagnostics": {
+    "resync_bytes": 0,
+    "crc_errors": 0,
+    "header_crc_errors": 0,
+    "invalid_feedback": 0,
+    "invalid_gimbal": 0
+  },
+  "ack_diagnostics": {
+    "received": 407,
+    "accepted": 407,
+    "wrong_session": 0,
+    "no_ack_flag": 0,
+    "unknown_sequence": 0,
+    "stale_ack": 0,
+    "nonincreasing_uptime": 0,
+    "active_mismatch": 0,
+    "not_permitted": 0,
+    "max_feedback_gap_ms": 180.05555700074183,
+    "max_accepted_gap_ms": 180.05634600012854,
+    "max_uptime_gap_ms": 180
+  },
+  "max_send_gap_ms": 25.176110000757035
 }

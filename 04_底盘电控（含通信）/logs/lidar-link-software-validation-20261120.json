@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-20",
+  "driver_build": {
+    "passed": true,
+    "package": "livox_ros_driver2",
+    "runtime": "/home/wangjiaming/.cache/rm_lidar_link_test"
+  },
+  "runtime_dynamic_libraries": "resolved after loading current install and bundled SDK path",
+  "ros_pointcloud_and_usb_pty_tests": {
+    "passed": 13,
+    "failed": 0
+  },
+  "existing_motor_pty_tests": {
+    "passed": 7,
+    "failed": 0
+  },
+  "no_pointcloud_preflight": "correctly failed without opening MCU USB",
+  "network_snapshot": "lo               UNKNOWN        127.0.0.1/8 ::1/128 \nenp89s0          DOWN           \nwlo1             UP             192.168.1.229/24 fe80::c6ea:6830:f018:583f/64 \ndocker0          DOWN           172.17.0.1/16 \nusb0             UNKNOWN        10.112.193.22/24 240e:467:170:c53a:9644:7de8:742c:380a/64 240e:467:170:c53a:995e:ec69:1854:5042/64 fe80::7cc3:6184:1013:ad7c/64 \n",
+  "usb_by_id_snapshot": [
+    "/dev/serial/by-id/usb-muselab-tech.com_CMSIS-DAP-MuseLab_0001A0000002-if00"
+  ],
+  "physical_lidar_motion_test_completed": false,
+  "note": "Synthetic ROS PointCloud2 and PTYs only; no physical motor command was sent."
+}

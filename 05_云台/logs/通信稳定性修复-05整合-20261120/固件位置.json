@@ -1,0 +1,11 @@
+{
+  "release": "通信稳定性修复-05整合-20261120",
+  "flashed": false,
+  "targets": [
+    {
+      "board": "云台 C 板",
+      "directory": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台/release/通信稳定性修复-05整合-20261120",
+      "elf": "/home/wangjiaming/文档/GitHub/RM_11_13/05_云台/release/通信稳定性修复-05整合-20261120/Gimbal_ChassisLink.elf"
+    }
+  ]
+}

@@ -16,6 +16,11 @@ typedef struct {
     uint16_t sequence, generation, age_ms;
 } RemoteCanSample;
 typedef struct {
+    uint32_t bad_dlc,queue_expired,order_errors,group_timeouts,decode_errors,sequence_errors;
+    uint32_t source_faults,transport_timeouts;
+} RemoteCanDiagnostics;
+typedef struct {
+    RemoteCanDiagnostics diagnostics;
     nc_group_t group;
     RemoteCanSample sample;
     uint32_t group_ms, received_ms;
@@ -54,7 +59,7 @@ static inline void rc_can_fault(RemoteCanReceiver *r){r->valid=r->armed=r->off_s
 static inline bool rc_can_fresh(RemoteCanReceiver *r,uint32_t now){
     if(!r->valid)return false;
     if((uint32_t)(now-r->received_ms)+r->sample.age_ms>RC_CAN_TIMEOUT_MS){
-        rc_can_fault(r);return false;
+        r->diagnostics.transport_timeouts++;rc_can_fault(r);return false;
     }
     return true;
 }
@@ -65,14 +70,17 @@ static inline bool rc_can_push(RemoteCanReceiver *r,uint16_t id,unsigned dlc,con
     if(id<RC_CAN_BASE||id>RC_CAN_BASE+2)return false;
     bool timed_out=!r->seen||(uint32_t)(now-r->received_ms)>RC_CAN_TIMEOUT_MS;
     (void)rc_can_fresh(r,now);
-    if(dlc!=8||!p||(uint32_t)(now-received)>NC_GROUP_MS){rc_can_fault(r);r->rejected++;return false;}
+    if(dlc!=8||!p){r->diagnostics.bad_dlc++;rc_can_fault(r);r->rejected++;return false;}
+    if((uint32_t)(now-received)>NC_GROUP_MS){r->diagnostics.queue_expired++;rc_can_fault(r);r->rejected++;return false;}
     if(id==RC_CAN_BASE){r->assembling=1;r->next=0;r->group_ms=received;r->group.base=RC_CAN_BASE;}
-    if(!r->assembling||id!=RC_CAN_BASE+r->next||(uint32_t)(received-r->group_ms)>NC_GROUP_MS){rc_can_fault(r);r->rejected++;return false;}
+    if(!r->assembling||id!=RC_CAN_BASE+r->next){r->diagnostics.order_errors++;rc_can_fault(r);r->rejected++;return false;}
+    if((uint32_t)(received-r->group_ms)>NC_GROUP_MS){r->diagnostics.group_timeouts++;rc_can_fault(r);r->rejected++;return false;}
     memcpy(r->group.data[r->next++],p,8);if(r->next!=3)return false;r->assembling=0;
     RemoteCanSample s;
-    if(!rc_can_decode(&r->group,&s)){rc_can_fault(r);r->rejected++;return false;}
+    if(!rc_can_decode(&r->group,&s)){r->diagnostics.decode_errors++;rc_can_fault(r);r->rejected++;return false;}
     uint16_t delta=(uint16_t)(s.sequence-r->sequence);
-    if(r->seen&&!timed_out&&(delta==0||delta>=32768u)){rc_can_fault(r);r->rejected++;return false;}
+    if(r->seen&&!timed_out&&(delta==0||delta>=32768u)){r->diagnostics.sequence_errors++;rc_can_fault(r);r->rejected++;return false;}
+    if(r->seen&&s.generation!=r->generation)r->diagnostics.source_faults++;
     if(timed_out||(r->seen&&s.generation!=r->generation))rc_can_fault(r);
     r->seen=1;r->sequence=s.sequence;r->generation=s.generation;r->sample=s;
     /* Include time spent assembling/queuing the group in source age. */

@@ -1,0 +1,15 @@
+# Camera facing forward; keep yaw AND pitch fixed for the entire session.
+# Do not mark confirmed until the missing measurements are filled in.
+configured: false
+fixed_gimbal: true
+footprint_confirmed: true  # User: measured from the same rotation center to the whole vehicle's outer edges.
+parent_frame: base_footprint
+child_frame: front_mid360
+translation_m: [0.044, 0.04425, 0.39336]  # User confirmed front-left of the chassis rotation center.
+rotation_rpy_rad: [null, null, null]  # T_base_lidar; Rz(yaw) Ry(pitch) Rx(roll)
+# User's measured bounding rectangle to the whole vehicle's outer edges.
+footprint_xy_m:
+  - [0.29666, 0.46458]
+  - [-0.23234, 0.46458]
+  - [-0.23234, -0.18172]
+  - [0.29666, -0.18172]
