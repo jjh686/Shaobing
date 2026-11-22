@@ -19,6 +19,7 @@ public:
   HikRobot(double exposure_ms, double gain, const std::string & vid_pid);
   ~HikRobot() override;
   void read(cv::Mat & img, std::chrono::steady_clock::time_point & timestamp) override;
+  CameraStats stats() const override;
 
 private:
   struct CameraData
@@ -29,6 +30,7 @@ private:
 
   double exposure_us_;
   double gain_;
+  std::atomic<uint64_t> captured_frames_{0}, sdk_frame_gaps_{0};
 
   std::thread daemon_thread_;
   std::atomic<bool> daemon_quit_;

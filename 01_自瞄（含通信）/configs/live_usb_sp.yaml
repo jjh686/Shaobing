@@ -4,10 +4,10 @@ enemy_color: "red"
 
 #####-----神经网络参数-----#####
 yolo_name: yolov5
-classify_model: /home/wangjiaming/下载/sp_vision_25-main/assets/tiny_resnet.onnx
-yolo11_model_path: /home/wangjiaming/下载/sp_vision_25-main/assets/yolo11.xml
-yolov8_model_path: /home/wangjiaming/下载/sp_vision_25-main/assets/yolov8.xml
-yolov5_model_path: /home/wangjiaming/下载/sp_vision_25-main/assets/yolov5.xml
+classify_model: /home/wangjiaming/文档/GitHub/RM_11_13/01_自瞄（含通信）/assets/tiny_resnet.onnx
+yolo11_model_path: /home/wangjiaming/文档/GitHub/RM_11_13/01_自瞄（含通信）/assets/yolo11.xml
+yolov8_model_path: /home/wangjiaming/文档/GitHub/RM_11_13/01_自瞄（含通信）/assets/yolov8.xml
+yolov5_model_path: /home/wangjiaming/文档/GitHub/RM_11_13/01_自瞄（含通信）/assets/yolov5.xml
 device: CPU
 min_confidence: 0.8
 use_traditional: true
@@ -54,15 +54,16 @@ judge_distance: 2 #距离判断阈值
 auto_fire: false # 是否由自瞄控制射击
 
 camera_name: "hikrobot"
-# [USB_SP 帧率微调] 曝光由17ms降至15ms；增益再补偿约1.1dB，尽量保持原画面亮度。
-exposure_ms: 15.0
+# [USB_SP 曝光试用 2026-11-22] 曝光由15ms降至10ms。
+exposure_ms: 10.0
 gain: 18.0
 vid_pid: "2bdf:0001"
 
-# 当前联调矩阵为单位阵，与交付的板端候选配置一致。
-# [USB_SP 修改] 与交付固件 GIMBAL_TO_IMU_ROTATION 同为identity候选；安装未实机确认。
-# 不代表已完成标定。电控改矩阵时，这里必须同步修改。
-R_gimbal2imubody: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+# 与05_云台的GIMBAL_TO_IMU_ROTATION一致：云台+Y映射到IMU+X，M=Rz(-90deg)。
+# USB回传原始四元数，Solver使用M^T R(q) M；不能改回单位阵。
+# 2026-11-22只接收602帧核对：本矩阵与板端pitch一致，单位阵平均偏差12.76度。
+# 这只核对两端坐标一致性；剩余安装误差仍需标定。电控改矩阵时须同步此处。
+R_gimbal2imubody: [0, 1, 0, -1, 0, 0, 0, 0, 1]
 
 # 重投影误差: 0.2697px
 camera_matrix: [1818.3669452465165, 0, 751.06226574703498, 0, 1822.494494078506, 530.43671556112133, 0, 0, 1]
@@ -80,7 +81,7 @@ can_interface: "can0"
 
 #####-----gimbal参数-----#####
 # [USB_SP 修改] 固定当前C板序列号，避免ttyACM编号改变/选错设备。
-com_port: "/dev/serial/by-id/usb-YueLuEmbedded_Vision_Comm_port_315E326D3034-if00"
+com_port: "/dev/serial/by-id/usb-YueLuEmbedded_Vision_Comm_port_315D324A3034-if00"
 usb_rx_timeout_ms: 100
 usb_target_timeout_ms: 100
 # 当前固件弹速30为占位；Planner支持10..25，超范围明确使用22m/s联调假设。
@@ -118,7 +119,7 @@ detect:
   fanblades_head_contours_max_area: 8000
   fanblades_body_contours_min_area: 1000
   fanblades_body_contours_max_area: 4000
-  standard_fanblade_path: /home/wangjiaming/下载/sp_vision_25-main/assets/standard_fanblade.jpg
+  standard_fanblade_path: /home/wangjiaming/文档/GitHub/RM_11_13/01_自瞄（含通信）/assets/standard_fanblade.jpg
 
 #####-----buff_aimer参数-----#####
 aim_time: 0.150         # s

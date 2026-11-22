@@ -177,8 +177,12 @@
  * 从0.9°/s提到7.4°/s，但快跟随中出现粘滑式爆发：挣脱瞬间多出约0.9Nm(静1.5-动0.6)
  * 全部用于加速，0.1秒即冲到50~70°/s，过冲9~12°后参考反号再冲一次。
  * 故回退到0.85(满速0.65Nm，合计1.55Nm)：仍高于起动门槛，但爆发幅度减小。
- * 若又变慢就回1.0；若仍抖则问题在阻尼(速度环Kp)而非前馈。0=关闭。 */
-#define GIMBAL_PITCH_SPEED_FF_NM 0.85f
+ * 若又变慢就回1.0；若仍抖则问题在阻尼(速度环Kp)而非前馈。0=关闭。
+ * 【2026-11-22 润滑后重测】用总力矩上下对称分离(不是扣前馈后的PI半差)：
+ * 真实动摩擦=总力矩半差约0.5Nm，与润滑前0.43相当——润滑改善的是静摩擦/粘滑，
+ * 动摩擦未明显下降。0.85在实测速度(~20°/s)给约0.38~0.49Nm，略偏大，
+ * 0.65试后用户反馈偏慢，回退到0.75(0.65与0.85之间折中)，重力前馈暂不动。 */
+#define GIMBAL_PITCH_SPEED_FF_NM 0.75f
 #define GIMBAL_ANGLE_SPEED_LIMIT (500.0f * GIMBAL_RAD_PER_DEG)
 #define GIMBAL_OUTPUT_LIMIT 20000.0f
 /* DM-J4310 pitch, MIT torque-only transport. Match the motor's saved ranges.
