@@ -25,11 +25,13 @@
 #include "tools/logger.hpp"
 #include "tools/math_tools.hpp"
 #include "tools/plotter.hpp"
+#include "tools/vision_status.hpp"
 
 const std::string keys =
   "{help h usage ? |                   | 输出命令行参数说明 }"
   "{config-path c  | configs/demo.yaml | yaml配置文件的路径}"
   "{camera         | false             | 使用配置中的实时相机输入}"
+  "{decision-status| false             | 向本机决策发布实时跟踪状态（需要相机及USB回传）}"
   "{enemy-color    |                   | 覆盖跟踪颜色red或blue，留空使用配置；窗口按R/B切换}"
   "{headless       | false             | 不打开图形窗口，用于回归验证}"
   // [USB_SP 修改 开始] --usb显式开启收发；--usb-check只收不发且不启动相机。
@@ -111,6 +113,8 @@ int main(int argc, char * argv[]) try
   // [USB_SP 新增 开始]
   const auto usb_mode = cli.get<bool>("usb");
   const auto usb_check = cli.get<int>("usb-check");
+  const bool decision_status_enabled =
+    cli.get<bool>("decision-status") && camera_mode && usb_mode && !usb_check;
   if (usb_mode) show_control = true;
   if (usb_check < 0 || usb_check > 60 || (usb_mode && !camera_mode && !usb_check))
     throw std::invalid_argument("USB requires --camera=true, or --usb-check=1..60");
@@ -132,6 +136,7 @@ int main(int argc, char * argv[]) try
   }
 
   tools::Plotter plotter;
+  tools::VisionStatus decision_status(decision_status_enabled);
   tools::Exiter exiter;
 
   auto video_path = fmt::format("{}.avi", input_path);
@@ -368,6 +373,10 @@ int main(int argc, char * argv[]) try
     // [USB_SP 修改 开始] 无有效姿态时仅显示检测，不生成世界系目标。
     auto targets = pose_ok ? tracker.track(armors, timestamp) : std::list<auto_aim::Target>{};
     // [USB_SP 修改 结束]
+    if (decision_status_enabled) {
+      const auto state = pose_ok ? tracker.state() : "unavailable";
+      decision_status.publish(timestamp, state == "tracking" && targets.empty() ? "unavailable" : state);
+    }
     if (!targets.empty()) ++frames_with_targets;
 
     auto aimer_start = std::chrono::steady_clock::now();

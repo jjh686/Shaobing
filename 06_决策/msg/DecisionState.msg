@@ -5,10 +5,32 @@
 std_msgs/Header header
 bool manual_override
 
+# Local camera tracker observation. UNKNOWN covers missing, stale or unavailable tracking.
+uint8 VISION_UNKNOWN=0
+uint8 VISION_LOST=1
+uint8 VISION_DETECTING=2
+uint8 VISION_TRACKING=3
+uint8 VISION_TEMP_LOST=4
+uint8 VISION_SWITCHING=5
+uint8 vision_status
+builtin_interfaces/Time vision_stamp
+
 bool game_valid
 builtin_interfaces/Time game_stamp
 uint8 game_type  # Official serial 0x0001: 4 = RMUL 3V3; 5 = infantry event.
 uint8 game_progress  # Official serial 0x0001: 4 = running (not simulator stage=2).
+uint16 stage_remaining_s  # Valid with game_valid; time belongs to the reported phase.
+
+bool control_degree_valid
+builtin_interfaces/Time control_degree_stamp  # Official 0x0003
+uint16 ally_control_degree
+uint16 enemy_control_degree
+
+# Activation and ownership are independent. These bits do not provide occupation progress.
+bool central_activation_valid
+builtin_interfaces/Time central_activation_stamp  # Official 0x0101
+bool central_ally_active
+bool central_enemy_active
 
 bool robot_valid
 builtin_interfaces/Time robot_stamp

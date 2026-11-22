@@ -55,12 +55,12 @@ class Receiver:
 
 def decode(command, data):
     if command == 0x0001:
-        return data[0] & 15, data[0] >> 4
+        return data[0] & 15, data[0] >> 4, u16(data, 1)
     if command == 0x0003:
-        return u16(data, 0), u16(data, 4), u16(data, 10)
+        return tuple(u16(data, offset) for offset in (0, 4, 10, 20, 22))
     if command == 0x0101:
         field = struct.unpack_from('<I', data, 4)[0]
-        return (field >> 26) & 3
+        return (field >> 26) & 3, (field >> 24) & 3
     if command == 0x0201:
         return data[0], u16(data, 2), u16(data, 4), bool(data[16] & 2)
     if command == 0x0209:

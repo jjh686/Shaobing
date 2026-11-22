@@ -26,6 +26,7 @@ struct Context {
   Policy policy;
   State state;
   Intent intent{Mode::Disabled,"not_evaluated",""};
+  uint8_t vision_status = WireState::VISION_UNKNOWN;
 };
 
 class ReadState : public BT::SyncActionNode {
@@ -65,8 +66,10 @@ class PublishIntent : public BT::SyncActionNode {
 public:
   using Publisher = rclcpp::Publisher<msg::DecisionIntent>;
   PublishIntent(const std::string & name, const BT::NodeConfig & cfg,
-                Publisher::SharedPtr pub, rclcpp::Clock::SharedPtr clock)
-    : BT::SyncActionNode(name,cfg),pub_(std::move(pub)),clock_(std::move(clock)) {}
+                Publisher::SharedPtr pub, rclcpp::Clock::SharedPtr clock,
+                std::shared_ptr<Context> ctx)
+    : BT::SyncActionNode(name,cfg),pub_(std::move(pub)),clock_(std::move(clock)),
+      ctx_(std::move(ctx)) {}
   static BT::PortsList providedPorts() { return {BT::InputPort<Intent>("intent")}; }
   BT::NodeStatus tick() override {
     const auto result = getInput<Intent>("intent");
@@ -79,12 +82,14 @@ public:
     out.free_revive_requested = in.free_revive_requested;
     out.team_situation = in.team_situation;
     out.coverage_requested = in.coverage_requested;
+    out.vision_status = ctx_->vision_status;
     pub_->publish(out);
     return BT::NodeStatus::SUCCESS;
   }
 private:
   Publisher::SharedPtr pub_;
   rclcpp::Clock::SharedPtr clock_;
+  std::shared_ptr<Context> ctx_;
 };
 
 class DecisionNode : public rclcpp::Node {
@@ -117,7 +122,7 @@ public:
       return std::make_unique<SelectIntent>(n,c,ctx_);
     });
     factory_.registerBuilder<PublishIntent>("PublishIntent",[this](const auto & n,const auto & c) {
-      return std::make_unique<PublishIntent>(n,c,pub_,get_clock());
+      return std::make_unique<PublishIntent>(n,c,pub_,get_clock(),ctx_);
     });
     const auto file = fixedParameter<std::string>("tree_file","");
     if (file.empty()) throw std::invalid_argument("tree_file required; use intents.launch.py");
@@ -135,17 +140,18 @@ private:
     if (value.sec < 0 || value.nanosec >= 1000000000U) return -1;
     return int64_t(value.sec)*1000000000LL+value.nanosec;
   }
-  static std::array<int64_t,10> stamps(const WireState & s) {
+  static std::array<int64_t,11> stamps(const WireState & s) {
     return {ns(s.game_stamp),ns(s.robot_stamp),ns(s.ammunition_stamp),
             ns(s.localization_stamp),ns(s.objectives_stamp),ns(s.sentry_stamp),
             ns(s.heavy.health_stamp),ns(s.heavy.position_stamp),
-            ns(s.infantry.health_stamp),ns(s.infantry.position_stamp)};
+            ns(s.infantry.health_stamp),ns(s.infantry.position_stamp),ns(s.vision_stamp)};
   }
-  static std::array<bool,10> valid(const WireState & s) {
+  static std::array<bool,11> valid(const WireState & s) {
     return {s.game_valid,s.robot_valid,s.ammunition_valid,
             s.localization_valid,s.objectives_valid,s.sentry_valid,
             s.heavy.health_valid,s.heavy.position_valid,
-            s.infantry.health_valid,s.infantry.position_valid};
+            s.infantry.health_valid,s.infantry.position_valid,
+            s.vision_status >= WireState::VISION_LOST && s.vision_status <= WireState::VISION_SWITCHING};
   }
   void clockBoundary(int64_t ros_now) {
     if (previous_clock_ && ros_now < *previous_clock_) {
@@ -173,15 +179,20 @@ private:
   void tick() {
     const auto ros_now = now().nanoseconds(); clockBoundary(ros_now);
     State state; state.enabled = enabled_;
+    ctx_->vision_status = WireState::VISION_UNKNOWN;
     const auto wall = Steady::now();
     if (sample_ && received_ && (ros_now-sample_stamp_)*1e-9 < timeout_ &&
         ros_now >= sample_stamp_ && std::chrono::duration<double>(wall-*received_).count() < timeout_) {
       const auto & in = *sample_;
       const auto times = stamps(in); const auto flags = valid(in);
-      std::array<bool,10> fresh{};
-      for (size_t i=0;i<fresh.size();++i) {
+      std::array<bool,11> fresh{};
+      for (size_t i=0;i+1<fresh.size();++i) {
         fresh[i] = times[i] <= sample_stamp_ &&
           sources_[i].fresh(times[i],flags[i],ros_now,wall,timeout_);
+      }
+      if (times.back() <= sample_stamp_ &&
+          sources_.back().fresh(times.back(),flags.back(),ros_now,wall,0.5)) {
+        ctx_->vision_status=in.vision_status;
       }
       state.game_fresh=fresh[0]; state.robot_fresh=fresh[1]; state.ammo_fresh=fresh[2];
       state.localization_fresh=fresh[3]; state.objectives_fresh=fresh[4]; state.sentry_fresh=fresh[5];
@@ -233,6 +244,7 @@ private:
       ctx_->intent={Mode::Disabled,"tree_failed",""};
       msg::DecisionIntent out;
       out.header.stamp=now(); out.mode=mode_name(ctx_->intent.mode); out.reason=ctx_->intent.reason;
+      out.vision_status=ctx_->vision_status;
       pub_->publish(out);
     }
     const std::string label=std::string(mode_name(ctx_->intent.mode))+"|"+ctx_->intent.target+
@@ -251,7 +263,7 @@ private:
   rclcpp::Publisher<msg::DecisionIntent>::SharedPtr pub_;
   rclcpp::Subscription<WireState>::SharedPtr sub_;
   rclcpp::TimerBase::SharedPtr timer_;
-  std::array<SourceProgress,10> sources_{};
+  std::array<SourceProgress,11> sources_{};
   std::optional<WireState> sample_;
   std::optional<Steady::time_point> received_;
   std::optional<int64_t> previous_clock_;

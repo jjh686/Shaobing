@@ -18,5 +18,5 @@ if [[ ! -x "$binary" ]]; then
 fi
 echo "USB SP视觉联动：等待C板43字节SP回传；收到后开启相机识别与29字节发送。"
 echo "窗口显示实际RX/TX计数和板端模式；退出按q。此入口不发送开火请求。"
-exec "$binary" --camera=true --usb=true --show-control=true --config-path="$config" "$@"
+exec "$binary" --camera=true --usb=true --show-control=true --decision-status=true --config-path="$config" "$@"
 # [USB_SP 新增 结束]

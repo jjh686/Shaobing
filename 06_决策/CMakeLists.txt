@@ -26,17 +26,22 @@ endif()
 
 if(BUILD_TESTING)
   enable_testing()
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
   add_executable(policy_test test/policy_test.cpp)
   target_include_directories(policy_test PRIVATE include)
   add_test(NAME rm2027_policy COMMAND policy_test)
   add_executable(freshness_test test/freshness_test.cpp)
   target_include_directories(freshness_test PRIVATE include)
   add_test(NAME rm2027_freshness COMMAND freshness_test)
+  add_test(NAME rm2027_referee_fields
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/referee_rx_test.py")
+  add_test(NAME rm2027_vision_feedback
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/vision_feedback_test.py")
 endif()
 install(TARGETS rm2027_tree DESTINATION lib/${PROJECT_NAME})
 install(PROGRAMS scripts/referee_state_adapter.py scripts/intent_nav_bridge.py
   DESTINATION lib/${PROJECT_NAME})
-install(FILES scripts/referee_rx.py DESTINATION lib/${PROJECT_NAME})
+install(FILES scripts/referee_rx.py scripts/vision_feedback.py DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY launch config trees DESTINATION share/${PROJECT_NAME}
   PATTERN "*.pyc" EXCLUDE)
 install(DIRECTORY include/ DESTINATION include)

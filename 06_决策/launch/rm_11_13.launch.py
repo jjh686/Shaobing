@@ -34,6 +34,7 @@ def nodes(context):
              output='screen', parameters=[policy, clock, {
                  'referee_uart': port,
                  'robot_id': ParameterValue(arg('robot_id'), value_type=int),
+                 'vision_status': ParameterValue(arg('vision_status'), value_type=bool),
              }]),
         Node(package='rm2027_decision', executable='rm2027_tree', namespace=ns,
              output='screen', parameters=[policy, clock, {
@@ -59,6 +60,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='false', choices=['true', 'false']),
         DeclareLaunchArgument('referee_uart', default_value=''),
         DeclareLaunchArgument('robot_id', default_value='0', choices=['0', '7', '107']),
+        DeclareLaunchArgument('vision_status', default_value='true', choices=['true', 'false']),
         DeclareLaunchArgument('tasks_file', default_value=os.path.join(share, 'config', 'approved_tasks.yaml')),
         DeclareLaunchArgument('navigation_backend', default_value='fixed_map', choices=['fixed_map', 'live']),
         DeclareLaunchArgument('navigation_action', default_value=''),

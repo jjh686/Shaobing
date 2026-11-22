@@ -9,14 +9,24 @@ import time
 
 import rclpy
 from rclpy.node import Node
+from rclpy.time import Time
 from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import UInt8MultiArray
 
 from referee_rx import OwnLife, Receiver, decode
 from rm2027_decision.msg import DecisionState, NavigationEvidence, TacticalObjective
+from vision_feedback import FRESHNESS_NS, VISION_PORT, VisionReceiver
 
 
 UART_PATH = re.compile(r'/dev/(?:serial/by-id/[^/]+|tty(?:USB|ACM|S|AMA)[0-9]+|pts/[0-9]+)')
+VISION_STATES = {
+    'lost': DecisionState.VISION_LOST,
+    'detecting': DecisionState.VISION_DETECTING,
+    'tracking': DecisionState.VISION_TRACKING,
+    'temp_lost': DecisionState.VISION_TEMP_LOST,
+    'switching': DecisionState.VISION_SWITCHING,
+    'unavailable': DecisionState.VISION_UNKNOWN,
+}
 
 
 def read_only_uart(path):
@@ -45,6 +55,7 @@ class Adapter(Node):
         self.map_frame = self.declare_parameter('map_frame', 'map').value
         self.uart = self.declare_parameter('referee_uart', '').value
         self.robot_id = self.declare_parameter('robot_id', 0).value
+        vision_enabled = self.declare_parameter('vision_status', True).value
         if self.robot_id not in (0, 7, 107) or not self.map_frame:
             raise ValueError('Invalid robot ID or map frame')
         if self.uart and self.robot_id == 0:
@@ -65,6 +76,13 @@ class Adapter(Node):
         self.create_subscription(NavigationEvidence, 'navigation_evidence',
                                  self.on_evidence, qos_profile_sensor_data)
         self.pub = self.create_publisher(DecisionState, 'state', 1)
+        self.vision = None
+        self.vision_receiver = None
+        if vision_enabled and not self.get_parameter('use_sim_time').value:
+            try:
+                self.vision_receiver = VisionReceiver(VISION_PORT)
+            except OSError as exc:
+                self.get_logger().warning(f'Local vision status unavailable on UDP {VISION_PORT}: {exc}')
         self.timer = self.create_timer(0.05, self.tick)
 
     def reset_referee(self):
@@ -77,6 +95,7 @@ class Adapter(Node):
         if self.last_ros_time is not None and stamp.nanoseconds < self.last_ros_time:
             self.reset_referee()
             self.evidence = None
+            self.vision = None
         self.last_ros_time = stamp.nanoseconds
         return stamp
 
@@ -118,18 +137,20 @@ class Adapter(Node):
                     self.life = OwnLife()
                     continue
                 if game:
-                    self.life.game(*game[0])
+                    self.life.game(*game[0][:2])
                     self.life.robot(hp, now)
                 else:
                     self.life = OwnLife()
             elif command == 0x0001:
-                if not game or game[0] != data:
+                phase = data[:2]
+                previous_phase = game[0][:2] if game else None
+                if previous_phase != phase:
                     for expired in (0x0003, 0x0101, 0x0209):
                         self.sources.pop(expired, None)
-                if not game or (game[0] != data and (game[0], data) != ((4, 3), (4, 4))):
+                if previous_phase != phase and (previous_phase, phase) != ((4, 3), (4, 4)):
                     self.sources.pop(0x0201, None)
                     self.life = OwnLife()
-                self.life.game(*data)
+                self.life.game(*phase)
             elif command == 0x0209 and game:
                 self.life.supply_tag(data, now)
             self.sources[command] = data, stamp.to_msg(), now
@@ -197,7 +218,7 @@ class Adapter(Node):
                 if objective.id != 'central_zone' or not event:
                     continue
                 objective = deepcopy(objective)
-                objective.owner = (1, 2, 3, 0)[event[0]]
+                objective.owner = (1, 2, 3, 0)[event[0][0]]
                 if self.stamp_ns(event[1]) < self.stamp_ns(out.objectives_stamp):
                     out.objectives_stamp = event[1]
             out.objectives.append(objective)
@@ -242,6 +263,50 @@ class Adapter(Node):
         self.uart_retry_at = now + self.uart_retry_delay
         self.uart_retry_delay = min(5.0, 2 * self.uart_retry_delay)
 
+    def fill_game(self, out, now):
+        game = self.recent(0x0001, now, 2.0)
+        if game is None:
+            return
+        (out.game_type, out.game_progress, out.stage_remaining_s), out.game_stamp, _ = game
+        out.game_valid = True
+        if (out.game_type, out.game_progress) != (4, 4):
+            return
+        scores = self.recent(0x0003, now, 1.2)
+        if scores:
+            out.ally_control_degree, out.enemy_control_degree = scores[0][3:]
+            out.control_degree_stamp = scores[1]
+            out.control_degree_valid = True
+        event = self.recent(0x0101, now, 2.0)
+        if event:
+            active = event[0][1]
+            out.central_ally_active = bool(active & 1)
+            out.central_enemy_active = bool(active & 2)
+            out.central_activation_stamp = event[1]
+            out.central_activation_valid = True
+
+    def fill_vision(self, out, now):
+        if self.vision_receiver is None:
+            return
+        try:
+            sample = self.vision_receiver.poll()
+        except OSError as exc:
+            self.get_logger().warning(f'Local vision status read failed: {exc}')
+            self.vision_receiver.close()
+            self.vision_receiver = self.vision = None
+            return
+        wall = time.monotonic_ns()
+        if sample is not None:
+            captured, state = sample
+            stamp = now - (wall - captured)
+            self.vision = (VISION_STATES[state], stamp, captured)
+        if self.vision is not None:
+            status, stamp, captured = self.vision
+            if 0 < stamp <= now and 0 <= wall - captured < FRESHNESS_NS:
+                out.vision_status = status
+                out.vision_stamp = Time(nanoseconds=stamp).to_msg()
+            else:
+                self.vision = None
+
     def tick(self):
         if self.uart:
             self.poll_uart()
@@ -249,10 +314,8 @@ class Adapter(Node):
         now = stamp.nanoseconds
         out = DecisionState()
         out.header.stamp, out.header.frame_id = stamp.to_msg(), self.map_frame
-        game = self.recent(0x0001, now, 2.0)
-        if game:
-            (out.game_type, out.game_progress), out.game_stamp, _ = game
-            out.game_valid = True
+        self.fill_vision(out, now)
+        self.fill_game(out, now)
         robot = self.recent(0x0201, now, 0.75)
         if robot:
             (_, out.hp, out.max_hp, chassis_power), out.robot_stamp, _ = robot
@@ -266,6 +329,8 @@ class Adapter(Node):
 
     def destroy_node(self):
         self.close_uart()
+        if self.vision_receiver is not None:
+            self.vision_receiver.close()
         super().destroy_node()
 
 
