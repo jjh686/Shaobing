@@ -116,6 +116,7 @@ public:
 
   Intent evaluate(const State & state)
   {
+    // 按优先级检查条件，命中后返回本轮意图。
     const Health heavy = health(state.heavy, heavy_progress_);
     const Health infantry = health(state.infantry, infantry_progress_);
     auto emit = [&](Mode mode, const std::string & reason, const std::string & target = "",
@@ -128,6 +129,7 @@ public:
         out.coverage_requested = coverage;
         return out;
       };
+    // 首先确认决策使能、比赛状态、本车生命状态和定位。
     if (state.manual_override || !state.enabled) {
       resupplying_ = false;
       held_id_.clear();
@@ -165,6 +167,7 @@ public:
       return emit(Mode::LocalizationLost, "localization_missing_or_stale");
     }
 
+    // 用不同的进入和退出阈值保持补给任务稳定。
     const double hp_ratio = state.hp / state.max_hp;
     if (hp_ratio < config_.low_hp_ratio) {
       resupplying_ = true;
@@ -188,8 +191,7 @@ public:
       return emit(Mode::WaitPlan, "objectives_missing_or_stale", "", false,
         recovery, request_coverage);
     }
-    // Recovery is never queued behind teammates. Its explicit risk budget still applies;
-    // waiting for a new route does not imply that the current location is safe.
+    // 自身恢复优先，补给路线仍需满足风险阈值。
     if (recovery) {
       const Objective * best = choose(state, ObjectiveKind::Recovery, config_.max_recovery_risk);
       if (!best) return emit(Mode::WaitPlan, "no_recovery_route_within_risk_budget", "", false,
@@ -197,6 +199,7 @@ public:
       return emit(Mode::Resupply, state.weakened ? "post_revive_weakness" :
         "low_hp_recovery_latched", best->id, false, true, request_coverage);
     }
+    // 检查上一轮守点任务是否仍需维护或已交接。
     const Objective * previous_guard = nullptr;
     if (!held_id_.empty()) {
       for (const auto & goal : state.objectives) {
@@ -216,6 +219,7 @@ public:
     const bool fire_allowed = state.ammo_fresh && state.shooter_enabled && state.ammo > 0 &&
       std::isfinite(state.heat) && std::isfinite(state.heat_limit) &&
       state.heat >= 0 && state.heat_limit > 0 && state.heat < state.heat_limit;
+    // 离开仍需维护的岗位时返回，已经在位时继续守点。
     if (previous_guard && !previous_guard->self_present) {
       if (!allowed(*previous_guard, config_.max_task_risk)) return emit(Mode::WaitPlan, "previous_guard_route_unverified");
       return emit(Mode::Cover, "maintain_previous_guard_assignment", previous_guard->id, fire_allowed);
@@ -231,6 +235,7 @@ public:
     if (current_unreleased) {
       return emit(Mode::WaitPlan, "current_guard_route_or_risk_unverified");
     }
+    // 岗位空缺需要明确证据，并确认没有队友已经在位。
     for (const auto & goal : state.objectives) {
       if (allowed(goal, config_.max_task_risk) && goal.kind == ObjectiveKind::Zone && goal.owner == 2 &&
         goal.maintain_required && !released(state, goal) && goal.vacancy_confirmed &&
@@ -243,6 +248,7 @@ public:
       const Objective * best = choose(state, ObjectiveKind::Defence, config_.max_task_risk, true);
       if (best) return emit(Mode::Cover, "ally_withdrawal_support", best->id, fire_allowed);
     }
+    // 队友状态不明或两人均未恢复时，只考虑低风险中立区。
     const bool cautious = heavy == Health::Unknown || infantry == Health::Unknown ||
       (heavy != Health::Healthy && infantry != Health::Healthy);
     for (const auto & goal : state.objectives) {

@@ -155,6 +155,7 @@ private:
   }
   void clockBoundary(int64_t ros_now) {
     if (previous_clock_ && ros_now < *previous_clock_) {
+      // 时钟回退时清除输入及补给、守点等历史状态。
       sample_.reset(); received_.reset(); sources_ = {}; sample_stamp_ = -1;
       ctx_->policy = Policy(config_);
     }
@@ -163,7 +164,7 @@ private:
   void receive(const WireState & data) {
     const auto ros_now = now().nanoseconds(); clockBoundary(ros_now);
     const auto stamp = ns(data.header.stamp);
-    // Explicitly bounded payloads; preserve only one latest snapshot.
+    // 只接收时间递增、地图帧一致的最新状态。
     if (stamp <= sample_stamp_ || stamp <= 0 || stamp > ros_now ||
         (ros_now-stamp)*1e-9 >= timeout_ || data.objectives.size() > 16 ||
         data.header.frame_id != map_frame_) return;
@@ -186,6 +187,7 @@ private:
       const auto & in = *sample_;
       const auto times = stamps(in); const auto flags = valid(in);
       std::array<bool,11> fresh{};
+      // 汇总消息中的每组来源按自身时间戳检查时效。
       for (size_t i=0;i+1<fresh.size();++i) {
         fresh[i] = times[i] <= sample_stamp_ &&
           sources_[i].fresh(times[i],flags[i],ros_now,wall,timeout_);
@@ -231,6 +233,7 @@ private:
         state.objectives.push_back(std::move(candidate));
       }
     }
+    // 把本轮状态交给行为树，意图在树中计算和发布。
     ctx_->state=std::move(state);
     ctx_->intent={Mode::Disabled,"tree_not_evaluated",""};
     bool tree_ok = false;

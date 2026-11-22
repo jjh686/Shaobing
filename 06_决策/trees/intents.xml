@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <root BTCPP_format="4" main_tree_to_execute="RM2027Intents">
   <BehaviorTree ID="RM2027Intents">
+    <!-- 依次读取状态、计算意图并发布。 -->
     <Sequence>
       <ReadState state="{state}"/>
       <SelectIntent state="{state}" intent="{intent}"/>

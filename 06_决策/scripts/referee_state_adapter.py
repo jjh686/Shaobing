@@ -156,6 +156,7 @@ class Adapter(Node):
             self.sources[command] = data, stamp.to_msg(), now
 
     def recent(self, command, now, seconds):
+        # 同时检查 ROS 时间和本机单调时间中的数据年龄。
         sample = self.sources.get(command)
         if sample is None:
             return None
@@ -179,7 +180,7 @@ class Adapter(Node):
                     and math.isfinite(source.x) and math.isfinite(source.y)):
                 ally.x, ally.y = source.x, source.y
                 ally.position_stamp, ally.position_valid = source.position_stamp, True
-            # Official HP does not identify absence, penalty, max HP or weakness.
+            # 队友的最大血量和生命状态由本车观测确认。
             life_matches = (ally.hp == 0) == (source.hp == 0) and (ally.hp > 0 or not source.weakened)
             if (health and source.health_valid and source.life_state_valid and source.max_hp > 0
                     and self.evidence_is_recent(source.health_stamp, observations, now, 1)
@@ -201,6 +202,7 @@ class Adapter(Node):
         return None
 
     def fill_evidence(self, out, now):
+        # 定位和任务证据保留各自的来源时间。
         evidence = self.active_evidence()
         if evidence is None:
             return
@@ -214,7 +216,7 @@ class Adapter(Node):
         out.objectives_stamp = evidence.objectives_stamp
         for objective in evidence.objectives:
             if objective.kind == TacticalObjective.ZONE:
-                # Only the central ground zone has an official ownership mapping here.
+                # 用裁判事件更新中央区的控制归属。
                 if objective.id != 'central_zone' or not event:
                     continue
                 objective = deepcopy(objective)
@@ -253,6 +255,7 @@ class Adapter(Node):
         except OSError as exc:
             self.get_logger().warning(f'Referee UART disconnected: {exc}')
             self.close_uart()
+            # 重连后重新收集裁判帧和本车生命状态。
             self.reset_referee()
             self.schedule_uart_retry(now)
             return
@@ -296,6 +299,7 @@ class Adapter(Node):
             return
         wall = time.monotonic_ns()
         if sample is not None:
+            # 用帧龄换算 ROS 时间，保留采集时刻。
             captured, state = sample
             stamp = now - (wall - captured)
             self.vision = (VISION_STATES[state], stamp, captured)
@@ -308,6 +312,7 @@ class Adapter(Node):
                 self.vision = None
 
     def tick(self):
+        # 把视觉、裁判和导航证据汇总为一条决策状态。
         if self.uart:
             self.poll_uart()
         stamp = self.now()

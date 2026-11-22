@@ -23,12 +23,13 @@ class Receiver:
         self.buffer = bytearray()
 
     def feed(self, chunk):
-        # Bound each callback and retain at most one partial frame.
+        # 限制单次输入大小，保留未收完的帧供下次拼接。
         if len(chunk) > 4096:
             self.buffer.clear()
             return
         self.buffer.extend(chunk)
         while self.buffer:
+            # 先找帧头，再按长度和 CRC 验证整帧。
             start = self.buffer.find(b'\xa5')
             if start < 0:
                 self.buffer.clear()
@@ -55,15 +56,20 @@ class Receiver:
 
 def decode(command, data):
     if command == 0x0001:
+        # 首字节的低四位为赛项，高四位为阶段。
         return data[0] & 15, data[0] >> 4, u16(data, 1)
     if command == 0x0003:
+        # 依次读取己方重装、步兵、哨兵血量及双方控制度。
         return tuple(u16(data, offset) for offset in (0, 4, 10, 20, 22))
     if command == 0x0101:
+        # 中央区的控制归属和双方激活状态各占两位。
         field = struct.unpack_from('<I', data, 4)[0]
         return (field >> 26) & 3, (field >> 24) & 3
     if command == 0x0201:
+        # 本车编号、当前与最大血量、底盘供电状态。
         return data[0], u16(data, 2), u16(data, 4), bool(data[16] & 2)
     if command == 0x0209:
+        # 位 0 表示检测到己方补给区 RFID。
         return bool(data[0] & 1)
     raise ValueError('Unsupported referee command')
 
@@ -94,6 +100,7 @@ class OwnLife:
             return
         if self.phase != 4:
             return
+        # 连续观测到零血恢复为正血，记为复活后虚弱。
         contiguous = self.hp_stamp is not None and 0 <= now - self.hp_stamp < 1.0
         if hp == 0:
             self.known, self.weakened = True, False
@@ -106,5 +113,5 @@ class OwnLife:
     def supply_tag(self, detected, now):
         if (detected and self.phase == 4 and self.hp and self.hp_stamp is not None
                 and 0 <= now - self.hp_stamp < 0.75):
-            # Own supply RFID clears weakness under the RMUL respawn rule.
+            # 本车近期血量为正且检测到己方补给区，解除虚弱。
             self.known, self.weakened = True, False

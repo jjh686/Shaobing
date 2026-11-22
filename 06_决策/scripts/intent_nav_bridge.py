@@ -220,6 +220,7 @@ class IntentNavBridge(Node):
         )
 
     def select(self, now_ns, wall):
+        # 同时核对意图、赛况、本车状态及导航证据的时效。
         if not self.recent(self.intent, now_ns, wall, self.intent_timeout):
             return None, 'stale_intent'
         intent = self.intent.message
@@ -238,6 +239,7 @@ class IntentNavBridge(Node):
         if not all(self.source_recent(state, part, now_ns, wall)
                    for part in ('game', 'robot', 'localization', 'objectives')):
             return None, 'stale_source'
+        # 任务编号必须对应唯一的批准点位和匹配的路线证据。
         point = self.points.get(intent.target)
         matching = [obj for obj in state.objectives if obj.id == intent.target]
         if point is None or len(matching) != 1 or point.kind not in MODE_KINDS[intent.mode]:
@@ -247,8 +249,7 @@ class IntentNavBridge(Node):
         if intent.mode == 'Capture':
             if goal.owner not in (DecisionState.OWNER_NEUTRAL, DecisionState.OWNER_ENEMY):
                 return None, 'capture_requires_neutral_or_enemy_zone'
-            # The policy applies the stricter cap if either ally is unknown or both
-            # are unavailable. The original selector determines this status.
+            # 按策略给出的队友状态复查占点风险上限。
             category = intent.team_situation.split('|', 1)[0]
             if category in ('unknown', 'allies_recovering', 'all_low'):
                 budget = min(budget, self.cautious_capture_risk)
@@ -284,6 +285,7 @@ class IntentNavBridge(Node):
 
     def update_request(self, request):
         if request != self.request:
+            # 模式或目标变化后开始新一轮任务和重试计数。
             self.request = request
             self.request_generation += 1
             self.attempts = 0
@@ -302,6 +304,7 @@ class IntentNavBridge(Node):
             target, reason = None, 'shutdown' if self.shutting_down else 'live_gate_or_owner'
         self.update_request((self.intent.message.mode, target) if target is not None else None)
         if self.active_target is not None:
+            # 等待当前目标的终态，再派发下一个目标。
             stop = self.active_generation != self.request_generation or wall >= self.goal_deadline
             if stop or self._stopping:
                 self.stop_active()
@@ -316,7 +319,7 @@ class IntentNavBridge(Node):
             self.report(f'waiting:{reason}')
             return
         if self.outcome == 'succeeded':
-            # Only an observed departure from a previously confirmed point is a new need.
+            # 守点、补给等任务在确认离开后可以重新派发。
             point_present = any(obj.id == target and obj.self_present for obj in self.state.message.objectives)
             if not self.confirmed_present or point_present or self.intent.message.mode == 'Patrol':
                 self.confirmed_present |= point_present
@@ -332,6 +335,7 @@ class IntentNavBridge(Node):
         self.send(target)
 
     def send(self, target):
+        # 用批准点的坐标和朝向构造 Nav2 目标。
         point = self.points[target]
         goal = NavigateToPose.Goal()
         goal.pose.header.frame_id = self.frame
@@ -429,6 +433,7 @@ class IntentNavBridge(Node):
 
     def finish(self, outcome):
         self.report(f'{outcome}:{self.active_target}')
+        # 只更新当前任务的结果，失败后按退避间隔重试。
         if self.active_generation == self.request_generation:
             self.outcome = outcome
             if outcome != 'succeeded':
