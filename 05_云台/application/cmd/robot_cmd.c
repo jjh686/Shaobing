@@ -1,203 +1,243 @@
-/* [USB_SP 修改 01 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
-/* [USB_SP 修改说明]
- * 本文件适配新工程的 FS/SBUS 遥控与 USB SP；原始对应文件另存于交付包“原始改动文件”。
- * 遥控仍使用 USART3，左水平/左竖直分别控制 yaw/pitch，通道 CH7/CH9/CH10 不变。
- * 原文件的顶部说明写“左1中档视觉”，实际 RemoteControlSet 使用 up；以实际分支为默认。
- * GIMBAL_VISION_ENABLE=0：所有左1档位均为遥控，USB仍可双向收发，不接管电机。
- * GIMBAL_VISION_ENABLE=1：左1指定档位允许视觉；新鲜 mode1/2 使用视觉，mode0回遥控。
- * 遥控与视觉每周期只选一个目标来源；换来源时先对齐当前姿态，避免旧目标突跳。
- * 本适配使用统一 rad/rad/s 的IMU双环；原混合单位/Pitch轴已改变，不保证原手感或PID有效。
- * 安装门控为0时两种来源均不使能电机；仅云台联调，底盘/发射不运行。
- * [USB_SP 上电自瞄] 上述遥控逻辑仅在GIMBAL_AUTO_AIM_ON_BOOT=0时使用；
- * 默认=1时进入auto_aim_boot模块，无需遥控器，保留本文件原共存分支供切回。
+/* [ET08A 8通道适配] 对齐 basic_framework 遥控器通道方案, 保留 05_云台 rad 单位与 SP 视觉接口:
+ *   CH1(rocker_r_)  -> 底盘 vy (右水平, 底盘板处理)
+ *   CH2(rocker_r1)  -> 底盘 vx (右竖直, 底盘板处理)
+ *   CH3(rocker_l1)  -> 云台 pitch (左竖直)
+ *   CH4(rocker_l_)  -> 云台 yaw (左水平)
+ *   CH5(knob_l)     -> 旋钮 LD 调速 (底盘速度倍率 & 拨盘射频)
+ *   CH6(knob_r)     -> 两段开关 SA (上停火 / 下开火)
+ *   CH7(channel[6]) -> 三段开关 SB: 下(2)=遥控 / 中(1)=视觉 / 上(0)=键鼠(无效)
+ *   CH8(channel[7]) -> 三段开关 SC: 上(0)=急停(离上档直接动) / 中(1)=NO_FOLLOW / 下(2)=小陀螺
  */
 #include "robot_cmd.h"
-/* [USB_SP 修改 01 结束] */
 #include "robot_def.h"
-/* [USB_SP 修改 02 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
 #include "gimbal.h"
-#include "control_guard.h"
-/* [USB_SP 上电自瞄 新增 开始] 自主流程集中在独立模块。 */
 #include "auto_aim_boot.h"
-/* [USB_SP 上电自瞄 新增 结束] */
-/* [USB_SP 修改 02 结束] */
 #include "remote_control.h"
-/* [USB_SP 修改 03 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
-#include "robot_comm.h" /* [USB_SP 通信整理] 通过总入口使用通信服务。 */
-/* [USB_SP 修改 03 结束] */
+#include "robot_comm.h"
 #include "message_center.h"
-/* [USB_SP 修改 04 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
 #include <math.h>
-/* [USB_SP 修改 04 结束] */
 
-/* [USB_SP 修改 05 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
 static Publisher_t *gimbal_pub, *shoot_pub;
 #ifdef ONE_BOARD
 static Publisher_t *chassis_pub;
 #endif
 static Gimbal_Ctrl_Cmd_s command;
-/* [USB_SP 上电自瞄 新增 开始] 原遥控分支的私有状态保留。 */
-#if !GIMBAL_AUTO_AIM_ON_BOOT
-static ControlGuard guard;
-/* 0=零力，1=摇杆，2=视觉；此状态仅用于来源切换时清掉上一来源的目标。 */
-static uint8_t previous_source;
-#endif
-/* [USB_SP 上电自瞄 新增 结束] */
-/* [USB_SP 修改 05 结束] */
 
-/* [USB_SP 修改 06 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
+#if !GIMBAL_AUTO_AIM_ON_BOOT
+/* 0=零力, 1=摇杆遥控, 2=视觉自瞄, 3=视觉无目标保持 */
+static uint8_t previous_source;
+/* SA(CH6) 下档开火阈值: raw_sbus > 1424 (等价于 basic_framework 的 (raw-1024) > 400) */
+#define ET08A_SA_FIRE_RAW_THRESHOLD  1424
+/* 离线容忍: 40 × 5ms = 200ms, 过滤偶发单帧 SBUS 丢包 */
+#define ET08A_RC_OFFLINE_TOL_FRAMES  40u
+#endif
+
 void RobotCMDInit(void)
 {
-    /* [USB_SP 通信整理] SBUS仍在USART3；USB初始化改走统一通信入口。 */
-    /* [USB_SP 上电自瞄 新增 开始] 自主模式不注册遥控接收/离线回调。 */
 #if !GIMBAL_AUTO_AIM_ON_BOOT
     FS_RemoteControlInit(&huart3);
 #else
     AutoAimBootInit();
 #endif
-    /* [USB_SP 上电自瞄 新增 结束] */
     RobotCommInit();
     gimbal_pub = PubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
     shoot_pub = PubRegister("shoot_cmd", sizeof(Shoot_Ctrl_Cmd_s));
-/* [USB_SP 修改 06 结束] */
 #ifdef ONE_BOARD
-/* [USB_SP 修改 07 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
     chassis_pub = PubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
-/* [USB_SP 修改 07 结束] */
 #endif
 }
 
-/* [USB_SP 上电自瞄 新增 开始] 下列目标函数只用于原遥控共存模式。 */
 #if !GIMBAL_AUTO_AIM_ON_BOOT
-/* [USB_SP 修改 08 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
-/* [新增] 零力或输入来源切换时同步目标，不积累停止期间的摇杆位移。 */
 static void HoldCurrent(const GimbalState *s)
-/* [USB_SP 修改 08 结束] */
 {
-/* [USB_SP 修改 09 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
     command.yaw = s->yaw_continuous;
     command.pitch = s->pose.pitch;
-/* [USB_SP 修改 09 结束] */
 }
 
-/* [USB_SP 修改 10 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
-/* [保留意图/单位转换] 原每5ms累加0.001度*摇杆，转换成rad后再进入同一角度环。
- * 本函数只在当前来源为遥控时执行；USB来的角度绝不叠加到摇杆目标。
- */
-static void ApplyRemoteTarget(const FS_RC_ctrl_t *rc, const GimbalState *s, float dt_scale)
-/* [USB_SP 修改 10 结束] */
+static void ApplyRemoteTarget(const FS_RC_ctrl_t *rc, const GimbalState *s, float dt_scale, uint8_t sc)
 {
-/* [USB_SP 修改 11 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
-    command.yaw += GIMBAL_REMOTE_DEG_PER_COUNT * GIMBAL_RAD_PER_DEG * rc->rc.rocker_l_ * dt_scale;
-    command.pitch += GIMBAL_REMOTE_DEG_PER_COUNT * GIMBAL_RAD_PER_DEG * rc->rc.rocker_l1 * dt_scale;
+    command.yaw += GIMBAL_REMOTE_YAW_DEG_PER_COUNT * GIMBAL_RAD_PER_DEG * (float)rc->rc.rocker_l_ * dt_scale;
+    command.pitch += GIMBAL_REMOTE_PITCH_DEG_PER_COUNT * GIMBAL_RAD_PER_DEG * (float)rc->rc.rocker_l1 * dt_scale;
     float yaw_encoder, pitch_encoder;
-    /* [新增限位] 只用编码器限制机械包络，角度/速度闭环仍取IMU，不切换到编码器环。 */
     if (GimbalEncoderTarget(command.yaw, s->pose.yaw, s->yaw_mechanical_deg,
             GIMBAL_YAW_POSE_TO_ENCODER_SIGN, GIMBAL_YAW_MIN_DEG, GIMBAL_YAW_MAX_DEG,
             GIMBAL_VISION_MAX_ERROR_DEG, &yaw_encoder) &&
         GimbalEncoderTarget(command.pitch, s->pose.pitch, s->pitch_mechanical_deg,
             GIMBAL_PITCH_POSE_TO_ENCODER_SIGN, GIMBAL_PITCH_MIN_DEG, GIMBAL_PITCH_MAX_DEG,
-            GIMBAL_VISION_MAX_ERROR_DEG, &pitch_encoder)) {
+            GIMBAL_VISION_MAX_ERROR_DEG, &pitch_encoder))
+    {
         command.yaw = s->yaw_continuous + (yaw_encoder - s->yaw_mechanical_deg) *
             GIMBAL_YAW_POSE_TO_ENCODER_SIGN * GIMBAL_RAD_PER_DEG;
         command.pitch = s->pose.pitch + (pitch_encoder - s->pitch_mechanical_deg) *
             GIMBAL_PITCH_POSE_TO_ENCODER_SIGN * GIMBAL_RAD_PER_DEG;
-        /* [保留原档位] 右1下=GYRO，右1中=FREE；本工程两者原本都使用IMU双环。 */
-        command.gimbal_mode = fs_switch_is_down(rc->rc.switch_right_1) ?
-            GIMBAL_GYRO_MODE : GIMBAL_FREE_MODE;
-/* [USB_SP 修改 11 结束] */
+        command.gimbal_mode = (sc == FS_RC_SW_DOWN) ? GIMBAL_GYRO_MODE : GIMBAL_FREE_MODE;
     }
 }
-
 #endif
-/* [USB_SP 上电自瞄 新增 结束] */
-/* [USB_SP 修改 12 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
+
 void RobotCMDTask(void)
 {
-    /* [USB_SP 上电自瞄 新增 开始] 原遥控共存分支不改算法，仅增加编译选择。 */
+    Shoot_Ctrl_Cmd_s shoot = {
+        .shoot_mode = SHOOT_OFF,
+        .friction_mode = FRICTION_OFF,
+        .load_mode = LOAD_STOP,
+        .lid_mode = LID_CLOSE,
+        .bullet_speed = SMALL_AMU_18,
+        .shoot_rate = 0.0f,
+    };
+
 #if GIMBAL_AUTO_AIM_ON_BOOT
     AutoAimBootUpdate(&command);
 #else
-    /* [新增] USB进入会话与故障代数，避免两次5ms轮询间断线重连后自动续动。 */
-    static uint8_t was_visual, received_since_entry;
-    static uint32_t entry_tick, entry_sequence, entry_session, last_tick, last_rc_fault;
-    FS_RC_ctrl_t rc = {0};
-    int online = FS_RemoteControlGetSnapshot(&rc);
-    online = online && rc.channel[6] >= 0 && rc.channel[6] <= 2 &&
-        rc.channel[8] >= 0 && rc.channel[8] <= 2 && rc.channel[9] >= 0 && rc.channel[9] <= 2;
-/* [USB_SP 修改 12 结束] */
+    static FS_RC_ctrl_t rc_last;
+    static uint16_t off_cnt = ET08A_RC_OFFLINE_TOL_FRAMES; /* 上电初值给满, 未收到首帧前保持急停 */
+    static uint8_t sc_up_cnt = 2;                          /* SC 上档 2 帧(10ms) 消抖 */
+    static uint32_t last_tick;
 
-/* [USB_SP 修改 13 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
-    /* [保留通道] CH7=左1，CH9=右1，CH10=右2。右1上仍为零力，右2下仍急停。 */
-    int recovery_up = online && fs_switch_is_up(rc.rc.switch_right_1);
-    int estop = online && fs_switch_is_down(rc.rc.switch_right_2);
-    int selected_visual = GIMBAL_VISION_ENABLE && online &&
-        rc.rc.switch_left_1 == GIMBAL_VISION_SWITCH_POSITION;
+    FS_RC_ctrl_t rc_now = {0};
+    int online_raw = FS_RemoteControlGetSnapshot(&rc_now);
+    online_raw = online_raw &&
+                 rc_now.channel[6] >= 0 && rc_now.channel[6] <= 2 &&
+                 rc_now.channel[7] >= 0 && rc_now.channel[7] <= 2;
+
+    if (online_raw)
+    {
+        rc_last = rc_now;
+        off_cnt = 0;
+    }
+    else if (off_cnt < ET08A_RC_OFFLINE_TOL_FRAMES)
+    {
+        off_cnt++;
+    }
+
+    int online = (off_cnt < ET08A_RC_OFFLINE_TOL_FRAMES);
+    const FS_RC_ctrl_t *rc = &rc_last;
+    uint8_t sb = online ? (uint8_t)rc->channel[6] : (uint8_t)FS_RC_SW_UP; /* CH7: 下=遥控 中=视觉 上=键鼠 */
+    uint8_t sc = online ? (uint8_t)rc->channel[7] : (uint8_t)FS_RC_SW_UP; /* CH8: 上=急停 中=普通 下=陀螺 */
+
+    /* SC 上档消抖: 连续 2 帧(10ms) 上档才判急停, 防止单帧误码引发抖动 */
+    if (!online || sc == FS_RC_SW_UP)
+    {
+        if (sc_up_cnt < 2) sc_up_cnt++;
+    }
+    else
+    {
+        sc_up_cnt = 0;
+    }
+    int sc_up = (sc_up_cnt >= 2);
+
     GimbalState state;
     GimbalGetState(&state);
     Vision_Recv_s rx = {0};
     int have = RobotCommGetVisionCommand(&rx);
     uint32_t now = HAL_GetTick();
-    float dt_scale = last_tick ? fminf((uint32_t)(now-last_tick)/5.0f, 2.0f) : 1.0f;
+    float dt_scale = last_tick ? fminf((float)(uint32_t)(now - last_tick) / 5.0f, 2.0f) : 1.0f;
     last_tick = now;
 
-    /* [新增] 只有主动选择且已解锁的视觉档，才把USB超时作为运动故障。
-     * 纯手动不依赖USB，电脑未连接/程序未运行不会导致手动超时停机。
-     */
-    int requested = selected_visual && !recovery_up && guard.armed && GIMBAL_INSTALLATION_CONFIRMED;
-    if (requested && !was_visual) {
-        entry_tick = now; entry_sequence = rx.sequence; entry_session = rx.session;
-        received_since_entry = 0;
-    }
-    if (requested && have && rx.sequence != entry_sequence) received_since_entry = 1;
-    int fresh = have && RobotCommUsbIsConfigured() && (uint32_t)(now-rx.received_tick) <= VISION_RX_TIMEOUT_MS;
-    int visual_fault = requested && (rx.session != entry_session ||
-        (received_since_entry ? !fresh : (uint32_t)(now-entry_tick) > VISION_STARTUP_GRACE_MS));
-    int rc_fault_event = rc.fault_generation != last_rc_fault;
-    last_rc_fault = rc.fault_generation;
-    was_visual = requested;
-
-    /* [新增保护] 超时/急停/失联后先撤销使能；恢复须健康状态下右1“非上→上→离开上”。 */
-    if (state.driver_fault && guard.armed) { guard.armed = 0; guard.saw_non_up = 0; }
-    int armed = ControlGuardUpdate(&guard, online, estop ? 1 : 0, recovery_up,
-        !state.pose_valid || !state.motors_ready || visual_fault || rc_fault_event, 1, 0);
-    if (armed && state.driver_fault && recovery_up && !GimbalClearMotorFaults()) {
-        guard.armed = 0; guard.saw_non_up = 0; armed = 0;
+    /* SC 离上档直接动: 电机健康后自动尝试清除瞬态锁存故障 */
+    if (online && !sc_up && state.driver_fault && state.pose_valid && state.motors_ready)
+    {
+        (void)GimbalClearMotorFaults();
+        GimbalGetState(&state);
     }
 
-    /* [新增回传] mode1只表示请求视觉计算，不等于电机已使能；门控0也能进行协议联调。 */
-    RobotCommSetVisionMode(selected_visual && !estop && !recovery_up && state.pose_valid ? 1 : 0);
+    int ready = online && !sc_up && GIMBAL_INSTALLATION_CONFIRMED &&
+                state.pose_valid && state.motors_ready && !state.driver_fault;
+    int selected_visual = ready && GIMBAL_VISION_ENABLE && (sb == GIMBAL_VISION_SWITCH_POSITION);
+    RobotCommSetVisionMode(selected_visual ? 1 : 0);
+
     uint8_t source = 0;
     command.gimbal_mode = GIMBAL_ZERO_FORCE;
-    if (armed && !recovery_up && GIMBAL_INSTALLATION_CONFIRMED) {
-        int use_visual = selected_visual && received_since_entry && fresh && rx.mode != 0;
-        source = use_visual ? 2 : 1;
-        if (previous_source != source) HoldCurrent(&state);
-        if (use_visual) {
-            /* [新增自瞄来源] SP给绝对目标rad；只使用yaw/pitch，不发射，不再叠加摇杆。 */
-            command.yaw = rx.yaw; command.pitch = rx.pitch;
-            command.gimbal_mode = GIMBAL_VISION_MODE;
-        } else {
-            /* [保留遥控/补完原丢目标接管意图] 手动档、等待首帧、mode0均由左摇杆控制。
-             * 已建立视觉会话后若数据过期则先锁存零力，不能悄悄把断线当成“没目标”。 */
-            ApplyRemoteTarget(&rc, &state, dt_scale);
+
+    if (!online || sc_up)
+    {
+        /* 急停或遥控离线: 云台零力 + 发射紧急停止 */
+        HoldCurrent(&state);
+        shoot.shoot_mode = SHOOT_OFF;
+        shoot.friction_mode = FRICTION_OFF;
+        shoot.load_mode = LOAD_STOP;
+        shoot.shoot_rate = 0.0f;
+    }
+    else if (sb == FS_RC_SW_DOWN)
+    {
+        /* CH7(SB) 下档: 遥控模式 */
+        if (ready)
+        {
+            source = 1;
+            if (previous_source != 1)
+                HoldCurrent(&state);
+            ApplyRemoteTarget(rc, &state, dt_scale, sc);
+        }
+
+        /* CH5(LD) 调速倍率 0.0~1.0, CH6(SA) 上停火 / 下开火 */
+        float ld = (float)(rc->rc.knob_l + 240) - 1024.0f;
+        if (ld < -660.0f) ld = -660.0f;
+        if (ld >  660.0f) ld =  660.0f;
+        float speed_scale = (ld + 660.0f) / 1320.0f;
+        int sa_fire = ((rc->rc.knob_r + 240) > ET08A_SA_FIRE_RAW_THRESHOLD);
+
+        shoot.shoot_mode = SHOOT_ON;
+        if (sa_fire)
+        {
+            shoot.friction_mode = FRICTION_ON;
+            shoot.load_mode = LOAD_BURSTFIRE;
+            shoot.bullet_speed = SMALL_AMU_18;
+            shoot.shoot_rate = 15.0f * speed_scale;
+        }
+        else
+        {
+            shoot.friction_mode = FRICTION_OFF;
+            shoot.load_mode = LOAD_STOP;
+            shoot.shoot_rate = 0.0f;
         }
     }
-    if (!source) HoldCurrent(&state);
+    else if (sb == FS_RC_SW_MID)
+    {
+        /* CH7(SB) 中档: 视觉/导航模式 */
+        if (ready)
+        {
+            int fresh = have && RobotCommUsbIsConfigured() &&
+                        (uint32_t)(now - rx.received_tick) <= VISION_RX_TIMEOUT_MS;
+            if (GIMBAL_VISION_ENABLE && fresh && rx.mode != 0)
+            {
+                source = 2;
+                command.yaw = rx.yaw;
+                command.pitch = rx.pitch;
+                command.gimbal_mode = GIMBAL_VISION_MODE;
+            }
+            else
+            {
+                /* 视觉无目标或离线: 锁在当前姿态保持, 不掉落 */
+                source = 3;
+                if (previous_source != 3)
+                    HoldCurrent(&state);
+                command.gimbal_mode = GIMBAL_GYRO_MODE;
+            }
+        }
+        shoot.shoot_mode = SHOOT_ON;
+        shoot.friction_mode = FRICTION_OFF;
+        shoot.load_mode = LOAD_STOP;
+        shoot.shoot_rate = 0.0f;
+    }
+    else
+    {
+        /* CH7(SB) 上档: 键鼠模式(ET08A 无键鼠输入, 保持安全停止) */
+        HoldCurrent(&state);
+        shoot.shoot_mode = SHOOT_OFF;
+        shoot.friction_mode = FRICTION_OFF;
+        shoot.load_mode = LOAD_STOP;
+        shoot.shoot_rate = 0.0f;
+    }
+
+    if (!source)
+        HoldCurrent(&state);
     previous_source = source;
 #endif
-    /* [USB_SP 上电自瞄 新增 结束] */
 
-    /* [联调隔离] 原项目发射任务本来未启用；继续保持关闭。此交付也不运行底盘/UI。 */
-    Shoot_Ctrl_Cmd_s shoot = {.shoot_mode=SHOOT_OFF, .friction_mode=FRICTION_OFF,
-        .load_mode=LOAD_STOP, .lid_mode=LID_CLOSE};
     PubPushMessage(shoot_pub, &shoot);
-/* [USB_SP 修改 13 结束] */
 #ifdef ONE_BOARD
-/* [USB_SP 修改 14 开始] 遥控与可选自瞄独占目标来源，默认只遥控，保留SBUS通道和右侧停止档，补完USB故障处理。 */
-    Chassis_Ctrl_Cmd_s chassis = {.chassis_mode=CHASSIS_ZERO_FORCE};
+    Chassis_Ctrl_Cmd_s chassis = {.chassis_mode = CHASSIS_ZERO_FORCE};
     PubPushMessage(chassis_pub, &chassis);
 #endif
     PubPushMessage(gimbal_pub, &command);
-/* [USB_SP 修改 14 结束] */
 }

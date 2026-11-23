@@ -28,7 +28,7 @@
  * 电脑可稍后手动启动视觉；连续收到有效命令300ms后才允许电机工作。
  */
 #ifndef GIMBAL_AUTO_AIM_ON_BOOT
-#define GIMBAL_AUTO_AIM_ON_BOOT 1
+#define GIMBAL_AUTO_AIM_ON_BOOT 0
 #endif
 #ifndef GIMBAL_AUTO_AIM_SETTLE_MS
 #define GIMBAL_AUTO_AIM_SETTLE_MS 300u
@@ -40,7 +40,7 @@
 /* [USB_SP 上电自瞄 新增 结束] */
 /* 原文件头说MID但实际分支是UP；默认按实际UP。0=上、1=中、2=下，可集中修改。 */
 #ifndef GIMBAL_VISION_SWITCH_POSITION
-#define GIMBAL_VISION_SWITCH_POSITION 0
+#define GIMBAL_VISION_SWITCH_POSITION 1
 #endif
 #if (GIMBAL_VISION_ENABLE != 0 && GIMBAL_VISION_ENABLE != 1) || \
     GIMBAL_VISION_SWITCH_POSITION < 0 || GIMBAL_VISION_SWITCH_POSITION > 2
@@ -48,6 +48,8 @@
 #endif
 /* 保留原遥控每5ms的0.001度/摇杆计数，在CMD统一转换为rad。 */
 #define GIMBAL_REMOTE_DEG_PER_COUNT 0.001f
+#define GIMBAL_REMOTE_YAW_DEG_PER_COUNT (-0.0007f)
+#define GIMBAL_REMOTE_PITCH_DEG_PER_COUNT (-0.0003f)
 /* Final actuator output signs, NOT target-only motor_reverse_flag. */
 #define GIMBAL_YAW_OUTPUT_SIGN 1
 #define GIMBAL_PITCH_OUTPUT_SIGN 1
@@ -211,10 +213,10 @@
  * AUTO_AIM_ON_BOOT=0 keeps the remote/manual coexistence path on the original
  * PID implementation. Set this switch to 0 for a same-gain algorithm rollback. */
 #ifndef GIMBAL_TRACKING_SPEED_PI_ENABLE
-#define GIMBAL_TRACKING_SPEED_PI_ENABLE (GIMBAL_AUTO_AIM_ON_BOOT && GIMBAL_VISION_ENABLE)
+#define GIMBAL_TRACKING_SPEED_PI_ENABLE 1
 #endif
-#if (GIMBAL_TRACKING_SPEED_PI_ENABLE != 0 && GIMBAL_TRACKING_SPEED_PI_ENABLE != 1) || \
-    (GIMBAL_TRACKING_SPEED_PI_ENABLE && !GIMBAL_AUTO_AIM_ON_BOOT)
+#if (GIMBAL_TRACKING_SPEED_PI_ENABLE != 0 && GIMBAL_TRACKING_SPEED_PI_ENABLE != 1)
+/* tracking_v1 speed PI enabled for both manual and vision modes */
 #error tracking_v1 speed PI requires the autonomous commissioning path.
 #endif
 /* Use the command watchdog's existing time budget; never integrate a long

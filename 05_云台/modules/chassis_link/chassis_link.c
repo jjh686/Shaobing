@@ -116,9 +116,15 @@ static void forward_remote(uint32_t now)
     sample.axes[1] = rc.rc.rocker_r1;
     sample.axes[2] = rc.rc.rocker_l1;
     sample.axes[3] = rc.rc.rocker_l_;
-    sample.axes[4] = rc.rc.knob_l + 240;
-    sample.axes[5] = rc.rc.knob_r + 240;
-    for (unsigned i = 0; i < 4; i++)
+    int16_t knob_l_raw = (int16_t)(rc.rc.knob_l + 240);
+    int16_t knob_r_raw = (int16_t)(rc.rc.knob_r + 240);
+    if (knob_l_raw < 0) knob_l_raw = 0;
+    if (knob_l_raw > 2047) knob_l_raw = 2047;
+    if (knob_r_raw < 0) knob_r_raw = 0;
+    if (knob_r_raw > 2047) knob_r_raw = 2047;
+    sample.axes[4] = knob_l_raw;
+    sample.axes[5] = knob_r_raw;
+    for (unsigned i = 0; i < 2; i++)
     {
         int value = rc.channel[6 + i];
         if (value < 0 || value > 2)
@@ -128,9 +134,12 @@ static void forward_remote(uint32_t now)
         }
         sample.switches[i] = (uint8_t)value;
     }
+    sample.switches[2] = 1u; /* ET08A 为 8 通道, CH9/CH10 固定填中位 */
+    sample.switches[3] = 1u;
     online = online && age <= RC_CAN_TIMEOUT_MS;
+    /* ET08A: CH8(SC = switches[1]) 上档(0) = 急停 */
     sample.flags =
-        (online ? RC_CAN_ONLINE : 0) | (!online || sample.switches[3] == 2 ? RC_CAN_ESTOP : 0);
+        (online ? RC_CAN_ONLINE : 0) | (!online || sample.switches[1] == 0 ? RC_CAN_ESTOP : 0);
     if (!rc_sample_ok(&sample))
     {
         memset(sample.axes, 0, sizeof(sample.axes));
