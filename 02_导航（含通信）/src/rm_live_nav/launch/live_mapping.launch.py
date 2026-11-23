@@ -18,6 +18,9 @@ def setup(context):
     value = lambda key: LaunchConfiguration(key).perform(context)
     nav = value('navigation').lower() == 'true'
     goal_owner = value('goal_owner')
+    keepout_map = value('keepout_map')
+    if keepout_map and (not nav or not Path(keepout_map).is_file()):
+        raise RuntimeError('keepout_map requires navigation and a readable Nav2 mask YAML')
     root, runtime = Path(value('source_root')), Path(value('runtime'))
     footprint = None
     if nav:
@@ -82,15 +85,47 @@ def setup(context):
         share = Path(get_package_share_directory('rm_live_nav'))
         with open(share/'config/nav2.yaml') as stream:
             nav_params = yaml.safe_load(stream)
+        lifecycle = []
+        if keepout_map:
+            mask_topic = '/live/keepout_mask'
+            info_topic = '/live/keepout_info'
+            nodes += [
+                Node(package='nav2_map_server', executable='map_server', name='live_keepout_map',
+                     parameters=[{'yaml_filename': str(Path(keepout_map).resolve()),
+                                  'frame_id': 'map', 'topic_name': mask_topic}], output='screen'),
+                Node(package='nav2_map_server', executable='costmap_filter_info_server',
+                     name='live_keepout_info', parameters=[{
+                         'type': 0, 'filter_info_topic': info_topic, 'mask_topic': mask_topic,
+                         'base': 0.0, 'multiplier': 1.0}], output='screen'),
+            ]
+            lifecycle += ['live_keepout_map', 'live_keepout_info']
         for name in ('local_costmap', 'global_costmap'):
-            nav_params[name][name]['ros__parameters']['footprint'] = json.dumps(footprint.tolist())
+            costmap = nav_params[name][name]['ros__parameters']
+            costmap['footprint'] = json.dumps(footprint.tolist())
+            if keepout_map:
+                costmap.setdefault('filters', []).append('keepout_filter')
+                costmap['keepout_filter'] = {
+                    'plugin': 'nav2_costmap_2d::KeepoutFilter', 'filter_info_topic': info_topic,
+                }
         nav_params['bt_navigator']['ros__parameters'].update(
             default_nav_to_pose_bt_xml=str(share/'config/navigate.xml'),
             default_nav_through_poses_bt_xml=str(share/'config/navigate.xml'))
         # File parameters keep the nested costmap node selectors intact.
         with tempfile.NamedTemporaryFile('w', prefix='live-nav2-', suffix='.yaml', dir=runtime, delete=False) as output:
             yaml.safe_dump(nav_params, output)
-        lifecycle = []
+        if keepout_map and goal_owner == 'decision':
+            # Goal previews use a different Action server from Nav2's running behavior tree.
+            probe_params = {name: nav_params[name] for name in ('planner_server', 'global_costmap')}
+            with tempfile.NamedTemporaryFile('w', prefix='live-decision-planner-', suffix='.yaml',
+                                             dir=runtime, delete=False) as probe_file:
+                yaml.safe_dump({'decision_route': probe_params}, probe_file)
+            nodes += [
+                Node(package='nav2_planner', executable='planner_server', name='planner_server',
+                     namespace='decision_route', output='screen', parameters=[probe_file.name]),
+                Node(package='nav2_lifecycle_manager', executable='lifecycle_manager',
+                     name='lifecycle_manager', namespace='decision_route',
+                     parameters=[{'autostart': True, 'node_names': ['planner_server']}]),
+            ]
         for package, executable in [('nav2_controller', 'controller_server'),
                                     ('nav2_planner', 'planner_server'), ('nav2_bt_navigator', 'bt_navigator')]:
             lifecycle.append(executable)
@@ -127,7 +162,7 @@ def setup(context):
 def generate_launch_description():
     defaults = {'navigation': 'false', 'connect': 'false', 'start_lidar': 'true',
                 'serial_port': '/dev/unused', 'host_ip': '192.168.1.50', 'lidar_ip': '192.168.1.106',
-                'rviz': 'false'}
+                'rviz': 'false', 'keepout_map': ''}
     return LaunchDescription([DeclareLaunchArgument(key, default_value=value) for key, value in defaults.items()]+[
         DeclareLaunchArgument(key) for key in ('source_root', 'runtime', 'mounting_config', 'output_dir')]+[
         DeclareLaunchArgument('goal_owner', default_value='exploration', choices=['exploration', 'decision']),

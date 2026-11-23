@@ -106,6 +106,90 @@
 ros2 topic echo /decision2027/intent --field vision_status
 ```
 
+## 整车启动与导航反馈
+
+`sentry_bringup.launch.py` 统一启动状态接收、BehaviorTree.CPP 行为树、导航桥和路线证据节点。行为树从 `DecisionState` 选任务 ID，桥接器校验点位后把目标交给 Nav2。独立启动的视觉模块通过本机 UDP 提供观测状态。策略优先级在 `policy.hpp`，XML 组织状态读取、选点和发布。
+
+总启动的组织方式参考 [北极熊上位机](https://github.com/SMBU-PolarBear-Robotics-Team/pb2025_sentry_ws#24-running)。车模和录包也沿用它的模块化做法，参数与话题对应本队工程。
+
+### 仿真或已有导航进程
+
+在同一 ROS 域启动仿真和导航，再加载本包的安装环境。此入口只预览目标。
+
+```bash
+decision_share=$(ros2 pkg prefix --share rm2027_decision)
+ros2 launch rm2027_decision sentry_bringup.launch.py use_sim_time:=true \
+  nav_namespace:=red_standard_robot1 base_frame:=gimbal_yaw_fake \
+  tasks_file:="$decision_share/offline/red_tasks.yaml"
+```
+
+离线点位与本包离线 3V3 地图配套。将经核对的禁区栅格通过 `route_map_topic` 提供给证据节点，再设 `protected_map_confirmed:=true`。证据节点默认请求导航命名空间下的 `decision_route/compute_path_to_pose`。可用 `planner_action` 指定独立规划服务，避免与正在执行目标的 Nav2 互相抢占。通过 `tf_topic` 和 `tf_static_topic` 对齐仿真话题。若没有模型发布器，可用 `robot_urdf` 加载本队 URDF。
+
+```bash
+ros2 topic echo /decision2027/navigation_evidence --qos-reliability best_effort
+ros2 topic echo /decision2027/intent
+ros2 topic echo /decision2027/navigation_status
+```
+
+### 实车实时导航入口
+
+先构建 `02_导航` 的 `rm_live_nav`。在仓库根目录加载导航和决策安装环境，再指定本队安装参数。
+
+```bash
+source '02_导航（含通信）/scripts/local_env.sh'
+source ~/rm2027_decision_ws/install/local_setup.bash
+ros2 launch rm2027_decision sentry_bringup.launch.py mode:=live \
+  source_root:="$RM_NAV_RUNTIME/source" runtime:="$RM_NAV_RUNTIME" \
+  mounting_config:="$RM_NAV_RUNTIME/source/local/live_mounting.yaml" \
+  output_dir:="$RM_NAV_ROOT/local/maps/$(date +%Y%m%d_%H%M%S)"
+```
+
+此入口选择 `goal_owner:=decision`，由 `06_决策` 统一选点。雷达启动前需要核对网络地址。默认只预览，底盘 USB 和裁判串口均关闭。执行前需配置本车 `robot_id`、独立的 `referee_uart`、`serial_port`、实测点位和 `keepout_map`，再显式设置 `connect_chassis`、`protected_map_confirmed`、`execute_navigation`。底盘和运动门控仍沿用原使能流程。
+
+`keepout_map` 使用 Nav2 栅格地图 YAML，标注不可通行区域、边界和实车尺寸所需余量。实时 SLAM 以本次启动位姿建立原点，每次启动须核对地图原点和车头方向。各批准任务点需填写 `risk`，风险未评估的点不会形成可执行证据。Nav2 重规划与证据节点使用同一份禁区图，证据节点还会检查路径周围是否留出车体所需空间。
+
+### 车模与 TF 预览
+
+`robot_description/sentry_preview.urdf.xacro` 从同目录 `offline_geometry.yaml` 读取尺寸、关节和传感器位置。同一份描述可生成 ROS 的 URDF 和 Gazebo Fortress 的 SDF。离线模型用于检查几何、TF 和模型加载。驱动、雷达数据和实际里程计由各自的模拟或实车节点提供。示例关节和安装角不可用作实车外参。[北极熊机器人描述与格式转换](https://github.com/SMBU-PolarBear-Robotics-Team/pb2025_robot_description#24-running)
+
+```bash
+ros2 launch rm2027_decision sentry_bringup.launch.py robot_model:=offline \
+  nav_namespace:=/ vision_status:=false
+ros2 run tf2_ros tf2_echo base_footprint front_camera_optical
+```
+
+在 RViz 中可把固定坐标系设为 `base_footprint` 后查看 RobotModel。需要把示例模型交给 Gazebo Fortress 时，在已加载安装环境的 Ubuntu 终端生成两种格式。
+
+```bash
+decision_share=$(ros2 pkg prefix --share rm2027_decision)
+model_dir=$(mktemp -d)
+xacro "$decision_share/robot_description/sentry_preview.urdf.xacro" > "$model_dir/sentry.urdf"
+ign sdf -p "$model_dir/sentry.urdf" > "$model_dir/sentry.sdf"
+```
+
+### 联调录包与回放
+
+在启动命令中加 `record_bag`，退出启动进程时保存。默认记录 TF、地图、里程计、决策输入与意图、导航结果。实时模式也记录扫描和底盘诊断，录原始点云和 IMU 时加 `record_lidar:=true`。每个存储分段约 256 MiB，录制会持续到退出。[北极熊录包与回放](https://github.com/SMBU-PolarBear-Robotics-Team/pb2025_sentry_ws#33-rosbags)
+
+```bash
+bag_dir="$PWD/sentry_$(date +%Y%m%d_%H%M%S)"
+ros2 launch rm2027_decision sentry_bringup.launch.py robot_model:=offline \
+  nav_namespace:=/ vision_status:=false record_bag:="$bag_dir"
+```
+
+回放时用同一个空闲 ROS 域，在两个终端分别运行下面两条命令。第一条只启动决策预览，第二条只回放决策输入。回放所得 `intent` 可以与原录包中的结果对比。
+
+```bash
+ROS_DOMAIN_ID=91 ROS_LOCALHOST_ONLY=1 ros2 launch rm2027_decision intents.launch.py \
+  enabled:=true use_sim_time:=true
+ROS_DOMAIN_ID=91 ROS_LOCALHOST_ONLY=1 ros2 bag play "$bag_dir" --clock \
+  --topics /decision2027/state
+```
+
+### 行为树怎么读
+
+`intents.xml` 依次运行 `ReadNormalizedState`、`Evaluate2027TaskPriority` 和 `PublishTaskIntent`。树的端口定义可用 Groot 查看。`policy.hpp` 负责规则与状态记忆。它先检查输入和比赛状态，再判断定位与路线，最后按健康状态和当前任务选择等待、补给、守点或巡逻等模式。`/decision2027/intent` 给出 `mode`、`target`、`reason`，用这三项对照同一条录包里的 `state` 即可追查为什么选点或等待。参考 [北极熊 2025 联盟赛行为树](https://github.com/SMBU-PolarBear-Robotics-Team/pb2025_sentry_behavior/blob/main/behavior_trees/rmul_2025.xml)。
+
 ## Ubuntu 构建与查看
 
 在 Ubuntu 上打开 `RM_11_13` 仓库根目录。构建依赖包括 ROS 2 Humble、ament、rosidl 和 BehaviorTree.CPP 4 软件包 `behaviortree_cpp`。Nav2 的 Python 接口使用 `nav2_msgs`。
@@ -139,6 +223,12 @@ ros2 interface show rm2027_decision/msg/DecisionState
 没有有效裁判状态时应为 `WaitState`。缺少定位证据时为 `LocalizationLost`，有定位但无合格任务时为 `WaitPlan`。仿真预览使用 `use_sim_time:=true` 并共享 `/clock`。修改启动参数后需重启节点。
 
 ## 验证与待办
+
+加载构建后的 ROS 安装环境后，可在仓库根目录运行离线闭环回归。它用随仓库提供的 3V3 栅格和真实 Navfn 规划器验证可达性，用模拟 Action 服务接收导航目标并验证定位过期撤销。
+
+```bash
+ROS_DOMAIN_ID=93 ROS_LOCALHOST_ONLY=1 python3 '06_决策/test/navigation_closed_loop.py'
+```
 
 已编写断言：本车门控和 HP 滞回、八种团队低血组合、队友滞回/最大血量、死亡/虚弱/未知、位置防堆叠、持守与交接、岗位漏项/争夺中不离岗、地形/路线硬过滤、风险预算/非法数值、无图等待与全低血不排队。`freshness_test.cpp` 检查重复来源时间、暂停、未来/乱序时间及超时边界。
 

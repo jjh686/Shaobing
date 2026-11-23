@@ -250,11 +250,15 @@ private:
       out.vision_status=ctx_->vision_status;
       pub_->publish(out);
     }
-    const std::string label=std::string(mode_name(ctx_->intent.mode))+"|"+ctx_->intent.target+
-      "|"+ctx_->intent.team_situation+"|"+ctx_->intent.reason;
-    if (label != last_mode_) {
-      RCLCPP_INFO(get_logger(),"%s: %s",label.c_str(),ctx_->intent.reason.c_str());
-      last_mode_=label;
+    const auto & intent = ctx_->intent;
+    const auto * mode = mode_name(intent.mode);
+    const std::string label = std::string(mode) + "|" + intent.target + "|" +
+      intent.team_situation + "|" + intent.reason;
+    if (label != last_decision_) {
+      RCLCPP_INFO(get_logger(), "Decision mode=%s task=%s reason=%s team=%s", mode,
+        intent.target.empty() ? "-" : intent.target.c_str(), intent.reason.c_str(),
+        intent.team_situation.empty() ? "-" : intent.team_situation.c_str());
+      last_decision_ = label;
     }
   }
   bool enabled_=false;
@@ -271,7 +275,7 @@ private:
   std::optional<Steady::time_point> received_;
   std::optional<int64_t> previous_clock_;
   int64_t sample_stamp_=-1;
-  std::string last_mode_,map_frame_;
+  std::string last_decision_,map_frame_;
 };
 }  // namespace rm2027_decision
 

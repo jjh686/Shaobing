@@ -120,7 +120,9 @@ class IntentNavBridge(Node):
         if self.backend == 'live' and action != '/navigate_to_pose':
             raise ValueError('Live navigation requires /navigate_to_pose')
         self.client = ActionClient(self, NavigateToPose, action) if self.execute else None
-        self.status_pub = self.create_publisher(String, 'navigation_status', 10)
+        # Late diagnostics subscribers need the current state even during a long wait.
+        status_qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.status_pub = self.create_publisher(String, 'navigation_status', status_qos)
         self.create_subscription(DecisionIntent, 'intent', self.receive_intent, 1)
         state_qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.BEST_EFFORT)
         self.create_subscription(DecisionState, 'state', self.receive_state, state_qos)

@@ -1,11 +1,25 @@
 <?xml version="1.0"?>
 <root BTCPP_format="4" main_tree_to_execute="RM2027Intents">
   <BehaviorTree ID="RM2027Intents">
-    <!-- 依次读取状态、计算意图并发布。 -->
-    <Sequence>
-      <ReadState state="{state}"/>
-      <SelectIntent state="{state}" intent="{intent}"/>
-      <PublishIntent intent="{intent}"/>
+    <Sequence name="OnboardTaskLoop">
+      <ReadState name="ReadNormalizedState" state="{normalized_state}"/>
+      <!-- Policy::evaluate 在 policy.hpp 中按优先级判定，并维护补给和守点的历史状态。
+           WaitState / WaitGame / LocalizationLost 等待有效输入、开赛或定位。
+           WaitPlan 等待可执行方案。Resupply / Hold / Cover / Capture / Patrol 表达明确任务。 -->
+      <SelectIntent name="Evaluate2027TaskPriority" state="{normalized_state}" intent="{task_intent}"/>
+      <PublishIntent name="PublishTaskIntent" intent="{task_intent}"/>
     </Sequence>
   </BehaviorTree>
+  <TreeNodesModel>
+    <Action ID="ReadState">
+      <output_port name="state" type="rm2027_decision::State">已校验时效的裁判、定位、任务证据和队友状态</output_port>
+    </Action>
+    <Action ID="SelectIntent">
+      <input_port name="state" type="rm2027_decision::State">本轮归一化状态</input_port>
+      <output_port name="intent" type="rm2027_decision::Intent">模式、原因与可选任务 ID</output_port>
+    </Action>
+    <Action ID="PublishIntent">
+      <input_port name="intent" type="rm2027_decision::Intent">交给导航桥接器的等待或任务意图</input_port>
+    </Action>
+  </TreeNodesModel>
 </root>

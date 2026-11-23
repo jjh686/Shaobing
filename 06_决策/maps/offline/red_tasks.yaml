@@ -1,5 +1,5 @@
 # Synthetic reference points in red_map.yaml, for preview and offline tests only.
 map_frame: map
 objectives:
-  - {id: red_supply, kind: recovery, x: -4.75, y: 3.0, yaw: 0.0}
-  - {id: central_zone, kind: zone, x: 0.0, y: 0.0, yaw: 0.0}
+  - {id: red_supply, kind: recovery, x: -4.75, y: 3.0, yaw: 0.0, risk: 0.1}
+  - {id: central_zone, kind: zone, x: 0.0, y: 0.0, yaw: 0.0, risk: 0.2}
