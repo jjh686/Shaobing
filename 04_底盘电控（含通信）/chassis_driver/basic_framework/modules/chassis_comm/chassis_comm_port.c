@@ -69,7 +69,7 @@ static ChassisCommSafety read_safety(int motors_online)
     const bool online=rc_can_fresh(&remote,now);
     const bool navigation=rc_can_nav(&remote,now);
     chassis_rc_online=online;chassis_rc_navigation=navigation;
-    chassis_rc_estop=!online||(remote.sample.flags&RC_CAN_ESTOP)!=0;
+    chassis_rc_estop=!online||(remote.sample.flags&RC_CAN_ESTOP)!=0||remote.sample.switches[1]==0;
     chassis_rc_accepted=remote.accepted;chassis_rc_rejected=remote.rejected;
     chassis_rc_diagnostics=remote.diagnostics;
     chassis_rc_generation=remote.generation;chassis_rc_source_age_ms=remote.sample.age_ms;
@@ -166,23 +166,87 @@ void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
     }
     chassis_comm_accepted_commands = endpoint.accepted_commands;
     chassis_comm_decode_errors = endpoint.decode_errors;
+
+    static uint8_t prev_sc_valid = 0, prev_sc = 0;
+    static int8_t spin_dir = 1;
+    const uint32_t cmd_now = HAL_GetTick();
+    const bool rc_online = rc_can_fresh(&remote, cmd_now);
+    const uint8_t sb = remote.sample.switches[0]; /* CH7: 2=遥控 1=视觉导航 0=键鼠(无效) */
+    const uint8_t sc = remote.sample.switches[1]; /* CH8: 0=急停 1=NO_FOLLOW 2=小陀螺 */
+
+    /* SC(CH8) 每次从 中(1) 拨到 下(2): 翻转一次小陀螺旋转方向 */
+    if (rc_online) {
+        if (prev_sc_valid && prev_sc == 1u && sc == 2u) {
+            spin_dir = (spin_dir > 0) ? -1 : 1;
+        }
+        prev_sc = sc;
+        prev_sc_valid = 1u;
+    } else {
+        prev_sc_valid = 0u;
+    }
+
+    /* 保持导航链路 TTL 定时推进 */
     rm_output_t output;
-    ChassisCommGetCommand(&endpoint, HAL_GetTick(), &output);
+    ChassisCommGetCommand(&endpoint, cmd_now, &output);
     memset(command, 0, sizeof(*command));
     command->chassis_mode = CHASSIS_ZERO_FORCE;
-    if (!output.enabled) {
+
+    /* 电机离线 / 遥控离线 / SC 上档(0)急停 -> 零力 */
+    if (!motors_online || !rc_online || sc == 0u) {
         return;
     }
-    /* Original driver's linear reference is rotor degrees/second (aps). */
-    const float aps_to_mps = 6.28318530718f * (RADIUS_WHEEL / 1000.0f) /
-        (360.0f * REDUCTION_RATIO_WHEEL);
-    command->vx = output.vx * CHASSIS_COMM_VX_SIGN / aps_to_mps;
-    command->vy = output.vy * CHASSIS_COMM_VY_SIGN / aps_to_mps;
-    command->wz = output.wz * CHASSIS_COMM_WZ_SIGN /
-        (1000.0f * 0.01745329252f * aps_to_mps);
-    command->offset_angle = 0;
-    command->chassis_speed_buff = 100;
-    command->chassis_mode = CHASSIS_NO_FOLLOW;
+
+    /* CH5(LD = axes[4], 原始 SBUS 0..2047) -> 调速倍率 0.0~1.0 */
+    float ld = (float)remote.sample.axes[4] - 1024.0f;
+    if (ld < -660.0f) ld = -660.0f;
+    if (ld >  660.0f) ld =  660.0f;
+    const float speed_scale = (ld + 660.0f) / 1320.0f;
+    const int speed_buff = (int)(speed_scale * 100.0f);
+
+    if (sb == 2u) {
+        /* CH7(SB) 下档: 遥控器手动控制 (按 basic_framework 实际代码: CH2->vx, CH1->vy) */
+        int16_t ch_vx = remote.sample.axes[1]; /* CH2 rocker_r1 */
+        int16_t ch_vy = remote.sample.axes[0]; /* CH1 rocker_r_ */
+        if (ch_vx > -40 && ch_vx < 40) ch_vx = 0;
+        if (ch_vy > -40 && ch_vy < 40) ch_vy = 0;
+        command->vx = 15.0f * speed_scale * (float)ch_vx;
+        command->vy = 15.0f * speed_scale * (float)ch_vy;
+        command->offset_angle = 0.0f;
+        command->chassis_speed_buff = speed_buff;
+        if (sc == 2u) {
+            command->chassis_mode = CHASSIS_ROTATE;
+            command->wz = (float)spin_dir;
+        } else {
+            command->chassis_mode = CHASSIS_NO_FOLLOW;
+            command->wz = 0.0f;
+        }
+        return;
+    }
+
+    if (sb == 1u) {
+        /* CH7(SB) 中档: 视觉/导航模式 */
+        const float aps_to_mps = 6.28318530718f * (RADIUS_WHEEL / 1000.0f) /
+            (360.0f * REDUCTION_RATIO_WHEEL);
+        if (output.enabled) {
+            command->vx = output.vx * CHASSIS_COMM_VX_SIGN / aps_to_mps;
+            command->vy = output.vy * CHASSIS_COMM_VY_SIGN / aps_to_mps;
+            command->wz = output.wz * CHASSIS_COMM_WZ_SIGN /
+                (1000.0f * 0.01745329252f * aps_to_mps);
+        }
+        command->offset_angle = 0.0f;
+        if (sc == 2u) {
+            /* 边导航边小陀螺 (即使导航未下发也维持原地自旋, 与 basic_framework SentryAutoSet 一致) */
+            command->chassis_mode = CHASSIS_ROTATE;
+            command->wz = (float)spin_dir;
+            command->chassis_speed_buff = 80;
+        } else if (output.enabled) {
+            /* 纯全向导航 */
+            command->chassis_mode = CHASSIS_NO_FOLLOW;
+            command->chassis_speed_buff = 100;
+        }
+        return;
+    }
+    /* CH7(SB) 上档(0): 键鼠模式占位(ET08A 无键鼠, 保持 CHASSIS_ZERO_FORCE) */
 }
 
 void ChassisCommPortFeedback(const Chassis_Upload_Data_s *measured, int motors_online)

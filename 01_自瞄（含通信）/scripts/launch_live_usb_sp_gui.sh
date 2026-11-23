@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# [USB_SP 新增 开始] 桌面错误对话框保留串口诊断，运行日志写入codex目录。
+# 桌面错误对话框保留串口诊断，运行日志写入当前工程的build/runtime。
 set -uo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-runtime_dir="/home/wangjiaming/下载/codex/视觉_USB_SP_2026-10-28/runtime"
+runtime_dir="$script_dir/../build/runtime"
 mkdir -p "$runtime_dir/logs" || exit 1
 log_file="$(mktemp "$runtime_dir/logs/desktop_XXXXXX.log")" || exit 1
 bash "$script_dir/run_live_usb_sp.sh" "$@" >"$log_file" 2>&1

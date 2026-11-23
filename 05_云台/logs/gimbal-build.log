@@ -1,14 +1,14 @@
-make: 进入目录“/home/wangjiaming/文档/GitHub/RM_11_13/05_云台”
+make: Entering directory '/home/wangjiaming/文档/GitHub/RM_11_13/05_云台'
 application/robot.c:9:9: note: '#pragma message: check if you have configured the parameters in robot_def.h, IF NOT, please refer to the comments AND DO IT, otherwise the robot will have FATAL ERRORS!!!'
     9 | #pragma message "check if you have configured the parameters in robot_def.h, IF NOT, please refer to the comments AND DO IT, otherwise the robot will have FATAL ERRORS!!!"
       |         ^~~~~~~
 Memory region         Used Size  Region Size  %age Used
              RAM:       91704 B       128 KB     69.96%
           CCMRAM:          0 GB        64 KB      0.00%
-           FLASH:      105904 B         1 MB     10.10%
+           FLASH:      105896 B         1 MB     10.10%
 arm-none-eabi-size build/basic_framework.elf
    text	   data	    bss	    dec	    hex	filename
- 104664	   1216	  90496	 196376	  2ff18	build/basic_framework.elf
+ 104656	   1216	  90496	 196368	  2ff10	build/basic_framework.elf
 arm-none-eabi-objcopy -O ihex build/basic_framework.elf build/basic_framework.hex
 arm-none-eabi-objcopy -O binary -S build/basic_framework.elf build/basic_framework.bin	
-make: 离开目录“/home/wangjiaming/文档/GitHub/RM_11_13/05_云台”
+make: Leaving directory '/home/wangjiaming/文档/GitHub/RM_11_13/05_云台'

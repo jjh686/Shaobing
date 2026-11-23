@@ -25,6 +25,7 @@
 #include "tools/logger.hpp"
 #include "tools/math_tools.hpp"
 #include "tools/plotter.hpp"
+#include "tools/runtime_stats.hpp"
 #include "tools/vision_status.hpp"
 
 const std::string keys =
@@ -247,6 +248,14 @@ int main(int argc, char * argv[]) try
   }
   std::unique_ptr<io::Camera> camera;
   if (camera_mode) camera = std::make_unique<io::Camera>(config_path);
+  auto performance_counters = [&] {
+    const auto cam = camera ? camera->stats() : io::CameraStats{};
+    const auto link = usb ? usb->stats() : io::SpStats{};
+    return tools::RuntimeStats::Counters{
+      cam.frames, cam.sdk_frame_gaps, link.rx_frames, link.tx_frames,
+      link.crc_errors, link.invalid_frames};
+  };
+  tools::RuntimeStats performance(performance_counters(), camera_mode);
 
   cv::Mat control_panel;
   std::filesystem::create_directories(snapshot_dir);
@@ -307,6 +316,7 @@ int main(int argc, char * argv[]) try
 
   for (int frame_count = camera_mode ? 0 : start_index; !exiter.exit(); frame_count++) {
     if (end_index > 0 && frame_count > end_index) break;
+    const auto loop_start = std::chrono::steady_clock::now();
 
     double t = 0, w = 1, x = 0, y = 0, z = 0;
     std::chrono::steady_clock::time_point timestamp;
@@ -327,6 +337,7 @@ int main(int argc, char * argv[]) try
       }
       timestamp = t0 + std::chrono::microseconds(static_cast<int64_t>(t * 1e6));
     }
+    const auto image_received = std::chrono::steady_clock::now();
     auto raw_input = img.clone();
     // [USB_SP 新增 开始] 用接收时间对图像插值；SP没有板端时间戳，不宣称硬件同步。
     std::optional<io::SpFeedback> board_feedback;
@@ -354,6 +365,7 @@ int main(int argc, char * argv[]) try
 
     auto yolo_start = std::chrono::steady_clock::now();
     auto armors = yolo.detect(img, frame_count);
+    const auto detect_finished = std::chrono::steady_clock::now();
     const auto detected_count = armors.size();
     total_detected_armors += detected_count;
     nlohmann::json detected_armors = nlohmann::json::array();
@@ -517,6 +529,7 @@ int main(int argc, char * argv[]) try
     tools::draw_text(
       img, fmt::format("tracking color: {} [R=red B=blue]", tracking_color),
       {10, 150}, {0, 255, 255});
+    tools::draw_text(img, performance.overlay(), {10, 180}, {0, 255, 255});
 
     nlohmann::json data;
 
@@ -638,6 +651,7 @@ int main(int argc, char * argv[]) try
       last_metadata = metadata;
     }
 
+    const auto gui_start = std::chrono::steady_clock::now();
     if (!headless) {
       cv::Mat drawing;
       cv::resize(img, drawing, {}, 0.5, 0.5);  // 显示时缩小图片尺寸
@@ -663,7 +677,18 @@ int main(int argc, char * argv[]) try
       }
       if (key == 'q' || key == 'Q') break;
     }
+    const auto loop_end = std::chrono::steady_clock::now();
+    auto ms = [](auto a, auto b) {
+      return std::chrono::duration<double, std::milli>(b - a).count();
+    };
+    if (performance.add({{
+          ms(loop_start, image_received), ms(yolo_start, detect_finished),
+          ms(tracker_start, aimer_start), ms(aimer_start, finish), ms(gui_start, loop_end),
+          ms(loop_start, loop_end), camera_mode ? ms(timestamp, loop_end) : 0.0},
+          detected_count > 0, !targets.empty(), usb && pose_ok}, loop_end))
+      performance.publish(performance_counters(), tracking_color, loop_end);
   }
+  performance.publish(performance_counters(), tracking_color, std::chrono::steady_clock::now());
 
   if (processed_frames == 0) {
     tools::logger()->error("No frames were processed; check the input and frame range.");

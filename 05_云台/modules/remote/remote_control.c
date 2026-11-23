@@ -10,9 +10,9 @@
 /* [USB_SP 修改 01 结束] */
 
 #define REMOTE_CONTROL_FRAME_SIZE 18u // 遥控器接收的buffer大小
-/* [USB_SP 修改 02 开始] 保留992中位与原通道，拒绝无效SBUS、真实心跳、故障代数快照和迟到离线回调复核。 */
-#define FS_RC_MID 992
-#define FS_RC_DEADBAND 15
+/* [USB_SP 修改 02 开始] 适配 ET08A 8 通道: 中位 1024, 死区 40(与 basic_framework 一致)。 */
+#define FS_RC_MID 1024
+#define FS_RC_DEADBAND 40
 #define FS_RC_RANGE 660
 /* [USB_SP 修改 02 结束] */
 #define SBUS_FRAME_SIZE 25u//fs遥控器的buffer
@@ -148,12 +148,12 @@ static void fs_to_rc(const uint8_t *sbus_buf)
     //旋钮
     fs_rc_ctrl[TEMP].rc.knob_l = ((sbus_buf[6] >> 4 | sbus_buf[7] << 4) & 0x07FF)-240u;
     fs_rc_ctrl[TEMP].rc.knob_r = ((sbus_buf[7] >> 7 | sbus_buf[8] << 1 | sbus_buf[9] << 9) & 0x07FF)-240u;
-    //拨杆0上，1中，2下
+    //拨杆0上，1中，2下 (ET08A 8通道仅使用 CH7=SB/channel[6] 与 CH8=SC/channel[7])
     fs_rc_ctrl[TEMP].channel[6] = ((sbus_buf[9] >> 2 | sbus_buf[10] << 6) & 0x07FF);
     fs_rc_ctrl[TEMP].channel[7] = ((sbus_buf[10] >> 5 | sbus_buf[11] << 3) & 0x07FF);
-    fs_rc_ctrl[TEMP].channel[8] = ((sbus_buf[12] | sbus_buf[13] << 8 ) & 0x07FF);
-    fs_rc_ctrl[TEMP].channel[9] = ((sbus_buf[13] >> 3 | sbus_buf[14] << 5) & 0x07FF);
-    for (int i = 6; i <= 9; i++) 
+    fs_rc_ctrl[TEMP].channel[8] = FS_RC_SW_MID;
+    fs_rc_ctrl[TEMP].channel[9] = FS_RC_SW_MID;
+    for (int i = 6; i <= 7; i++)
     {
         uint16_t val = fs_rc_ctrl[TEMP].channel[i];
         if (val > SWITCH_HIGH - SWITCH_TOLERANCE && val < SWITCH_HIGH + SWITCH_TOLERANCE)
@@ -170,7 +170,7 @@ static void fs_to_rc(const uint8_t *sbus_buf)
         }
         else
         {
-/* [USB_SP 修改 08 开始] 保留992中位与原通道，拒绝无效SBUS、真实心跳、故障代数快照和迟到离线回调复核。 */
+/* [USB_SP 修改 08 开始] 保留有效区间校验，避免非法值被当成中挡。 */
             fs_rc_ctrl[TEMP].channel[i] = -1; // Invalid switch is not a valid MID command
 /* [USB_SP 修改 08 结束] */
         }
@@ -213,19 +213,23 @@ static void fs_uart_fault(void)
 static uint8_t fs_accept_frame(const uint8_t *frame,uint32_t now)
 {
     if(frame[23]&0xf0){fs_sbus_diag.bad_flags++;++fs_fault_generation;fs_fault=1;return 0;}
-    if(frame[23]&0x0c){
-        if(frame[23]&0x04)fs_sbus_diag.frame_lost++;
-        if(frame[23]&0x08)fs_sbus_diag.failsafe++;
+    if(frame[23]&0x08){
+        fs_sbus_diag.failsafe++;
         ++fs_fault_generation;fs_fault=1;return 1;
+    }
+    if(frame[23]&0x04){
+        /* 单帧射频丢包不立即置 fault(防抖), 仅不喂狗, 连续超时由 RC_TIMEOUT_MS 判离线 */
+        fs_sbus_diag.frame_lost++;
+        return 1;
     }
     uint32_t gap=now-fs_last_valid_tick;
     if(fs_seen&&gap>fs_sbus_diag.max_valid_gap_ms)fs_sbus_diag.max_valid_gap_ms=gap;
     if(fs_seen&&gap>RC_TIMEOUT_MS){++fs_fault_generation;fs_sbus_diag.timeouts++;}
     fs_to_rc(frame);
-    for(unsigned i=6;i<10;i++)if(fs_rc_ctrl[TEMP].channel[i]<0){
+    for(unsigned i=6;i<8;i++)if(fs_rc_ctrl[TEMP].channel[i]<0){
         fs_sbus_diag.invalid_switches++;++fs_fault_generation;fs_fault=1;return 0;
     }
-    if(fs_switch_is_down(fs_rc_ctrl[TEMP].rc.switch_right_2)){
+    if(fs_switch_is_up(fs_rc_ctrl[TEMP].rc.switch_left_2)){
         ++fs_fault_generation;fs_sbus_diag.estop_frames++;
     }
     fs_last_valid_tick=now;fs_seen=1;fs_fault=0;fs_sbus_diag.valid_frames++;

@@ -86,10 +86,10 @@ static inline bool rc_can_push(RemoteCanReceiver *r,uint16_t id,unsigned dlc,con
     /* Include time spent assembling/queuing the group in source age. */
     uint32_t age=(uint32_t)s.age_ms+(uint32_t)(now-r->group_ms);
     r->received_ms=now;r->sample.age_ms=age>65535u?65535u:(uint16_t)age;r->accepted++;
-    if(!(s.flags&RC_CAN_ONLINE)||(s.flags&RC_CAN_ESTOP)||s.switches[3]==2||age>RC_CAN_TIMEOUT_MS){rc_can_fault(r);return true;}
+    if(!(s.flags&RC_CAN_ONLINE)||(s.flags&RC_CAN_ESTOP)||s.switches[1]==0||age>RC_CAN_TIMEOUT_MS){rc_can_fault(r);return true;}
     r->valid=1;
-    bool nav=s.switches[0]==1&&s.switches[1]==1;
-    if(!nav){r->armed=0;r->off_seen=1;}else if(r->off_seen){r->armed=1;}
+    bool nav=(s.switches[0]==1)&&(s.switches[1]==1||s.switches[1]==2);
+    r->armed=nav?1:0;r->off_seen=1;
     return true;
 }
 #endif

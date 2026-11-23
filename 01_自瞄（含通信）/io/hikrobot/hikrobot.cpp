@@ -51,6 +51,12 @@ void HikRobot::read(cv::Mat & img, std::chrono::steady_clock::time_point & times
   timestamp = data.timestamp;
 }
 
+CameraStats HikRobot::stats() const
+{
+  return {captured_frames_.load(std::memory_order_relaxed),
+          sdk_frame_gaps_.load(std::memory_order_relaxed)};
+}
+
 void HikRobot::capture_start()
 {
   capturing_ = false;
@@ -87,7 +93,14 @@ void HikRobot::capture_start()
   set_enum_value("GainAuto", MV_GAIN_MODE_OFF);
   set_float_value("ExposureTime", exposure_us_);
   set_float_value("Gain", gain_);
-  MV_CC_SetFrameRate(handle_, 150);
+  ret = MV_CC_SetFrameRate(handle_, 150);
+  if (ret != MV_OK) tools::logger()->warn("MV_CC_SetFrameRate(150) failed: {:#x}", ret);
+  for (const char * name : {"ExposureTime", "Gain", "AcquisitionFrameRate", "ResultingFrameRate"}) {
+    MVCC_FLOATVALUE value{};
+    if (MV_CC_GetFloatValue(handle_, name, &value) == MV_OK)
+      tools::logger()->info("[Camera actual] {}={} (min={}, max={})", name,
+                            value.fCurValue, value.fMin, value.fMax);
+  }
 
   ret = MV_CC_StartGrabbing(handle_);
   if (ret != MV_OK) {
@@ -102,6 +115,8 @@ void HikRobot::capture_start()
 
     MV_FRAME_OUT raw;
     MV_CC_PIXEL_CONVERT_PARAM cvt_param;
+    unsigned int previous_frame = 0;
+    bool have_previous_frame = false;
 
     while (!capture_quit_) {
       std::this_thread::sleep_for(1ms);
@@ -116,6 +131,14 @@ void HikRobot::capture_start()
       }
 
       auto timestamp = std::chrono::steady_clock::now();
+      if (have_previous_frame) {
+        const unsigned int delta = raw.stFrameInfo.nFrameNum - previous_frame;
+        // Large backwards jumps indicate a counter reset, not missing image frames.
+        if (delta > 1 && delta < 1000000)
+          sdk_frame_gaps_.fetch_add(delta - 1, std::memory_order_relaxed);
+      }
+      previous_frame = raw.stFrameInfo.nFrameNum;
+      have_previous_frame = true;
       cv::Mat img(cv::Size(raw.stFrameInfo.nWidth, raw.stFrameInfo.nHeight), CV_8U, raw.pBufAddr);
 
       cvt_param.nWidth = raw.stFrameInfo.nWidth;
@@ -142,6 +165,7 @@ void HikRobot::capture_start()
       img = dst_image;
 
       queue_.push({img, timestamp});
+      captured_frames_.fetch_add(1, std::memory_order_relaxed);
 
       ret = MV_CC_FreeImageBuffer(handle_, &raw);
       if (ret != MV_OK) {

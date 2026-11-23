@@ -28,7 +28,7 @@
  * 电脑可稍后手动启动视觉；连续收到有效命令300ms后才允许电机工作。
  */
 #ifndef GIMBAL_AUTO_AIM_ON_BOOT
-#define GIMBAL_AUTO_AIM_ON_BOOT 1
+#define GIMBAL_AUTO_AIM_ON_BOOT 0
 #endif
 #ifndef GIMBAL_AUTO_AIM_SETTLE_MS
 #define GIMBAL_AUTO_AIM_SETTLE_MS 300u
@@ -40,7 +40,7 @@
 /* [USB_SP 上电自瞄 新增 结束] */
 /* 原文件头说MID但实际分支是UP；默认按实际UP。0=上、1=中、2=下，可集中修改。 */
 #ifndef GIMBAL_VISION_SWITCH_POSITION
-#define GIMBAL_VISION_SWITCH_POSITION 0
+#define GIMBAL_VISION_SWITCH_POSITION 1
 #endif
 #if (GIMBAL_VISION_ENABLE != 0 && GIMBAL_VISION_ENABLE != 1) || \
     GIMBAL_VISION_SWITCH_POSITION < 0 || GIMBAL_VISION_SWITCH_POSITION > 2
@@ -48,6 +48,8 @@
 #endif
 /* 保留原遥控每5ms的0.001度/摇杆计数，在CMD统一转换为rad。 */
 #define GIMBAL_REMOTE_DEG_PER_COUNT 0.001f
+#define GIMBAL_REMOTE_YAW_DEG_PER_COUNT (-0.0007f)
+#define GIMBAL_REMOTE_PITCH_DEG_PER_COUNT (-0.0003f)
 /* Final actuator output signs, NOT target-only motor_reverse_flag. */
 #define GIMBAL_YAW_OUTPUT_SIGN 1
 #define GIMBAL_PITCH_OUTPUT_SIGN 1
@@ -177,8 +179,12 @@
  * 从0.9°/s提到7.4°/s，但快跟随中出现粘滑式爆发：挣脱瞬间多出约0.9Nm(静1.5-动0.6)
  * 全部用于加速，0.1秒即冲到50~70°/s，过冲9~12°后参考反号再冲一次。
  * 故回退到0.85(满速0.65Nm，合计1.55Nm)：仍高于起动门槛，但爆发幅度减小。
- * 若又变慢就回1.0；若仍抖则问题在阻尼(速度环Kp)而非前馈。0=关闭。 */
-#define GIMBAL_PITCH_SPEED_FF_NM 0.85f
+ * 若又变慢就回1.0；若仍抖则问题在阻尼(速度环Kp)而非前馈。0=关闭。
+ * 【2026-11-22 润滑后重测】用总力矩上下对称分离(不是扣前馈后的PI半差)：
+ * 真实动摩擦=总力矩半差约0.5Nm，与润滑前0.43相当——润滑改善的是静摩擦/粘滑，
+ * 动摩擦未明显下降。0.85在实测速度(~20°/s)给约0.38~0.49Nm，略偏大，
+ * 0.65试后用户反馈偏慢，回退到0.75(0.65与0.85之间折中)，重力前馈暂不动。 */
+#define GIMBAL_PITCH_SPEED_FF_NM 0.75f
 #define GIMBAL_ANGLE_SPEED_LIMIT (500.0f * GIMBAL_RAD_PER_DEG)
 #define GIMBAL_OUTPUT_LIMIT 20000.0f
 /* DM-J4310 pitch, MIT torque-only transport. Match the motor's saved ranges.
@@ -207,10 +213,10 @@
  * AUTO_AIM_ON_BOOT=0 keeps the remote/manual coexistence path on the original
  * PID implementation. Set this switch to 0 for a same-gain algorithm rollback. */
 #ifndef GIMBAL_TRACKING_SPEED_PI_ENABLE
-#define GIMBAL_TRACKING_SPEED_PI_ENABLE (GIMBAL_AUTO_AIM_ON_BOOT && GIMBAL_VISION_ENABLE)
+#define GIMBAL_TRACKING_SPEED_PI_ENABLE 1
 #endif
-#if (GIMBAL_TRACKING_SPEED_PI_ENABLE != 0 && GIMBAL_TRACKING_SPEED_PI_ENABLE != 1) || \
-    (GIMBAL_TRACKING_SPEED_PI_ENABLE && !GIMBAL_AUTO_AIM_ON_BOOT)
+#if (GIMBAL_TRACKING_SPEED_PI_ENABLE != 0 && GIMBAL_TRACKING_SPEED_PI_ENABLE != 1)
+/* tracking_v1 speed PI enabled for both manual and vision modes */
 #error tracking_v1 speed PI requires the autonomous commissioning path.
 #endif
 /* Use the command watchdog's existing time budget; never integrate a long
