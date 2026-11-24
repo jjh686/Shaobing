@@ -329,7 +329,7 @@ ROS_DOMAIN_ID=93 ROS_LOCALHOST_ONLY=1 python3 '06_决策/test/navigation_closed_
 
 赛用电脑或 WSL 需要已构建的本包、Gazebo Fortress、`ros_gz_bridge` 和 Nav2 Humble。测试从 3V3 二维栅格生成地面和碰撞体，使用无载荷的差速测试底盘。底盘定位取自 Gazebo 模型真实位姿，运动指令由 Nav2 规划器和控制器经仿真桥发送。相机和雷达 TF 由离线车模及模拟关节状态发布。
 
-在仓库根目录运行。请选择空闲的 ROS 域，脚本会隔离 Gazebo 传输并无窗口运行。
+在仓库根目录运行。请选择空闲的 ROS 域，脚本会隔离 Gazebo 传输。加 `--gui` 可边跑边看。WSLg 的窗口使用带 Mesa 兼容设置的 Ogre 2，该设置仅作用于窗口进程。测试通过后保留窗口，关闭窗口或在启动终端按 Ctrl+C 可退出。省略 `--gui` 时无窗口运行。
 
 ```bash
 source '06_决策/scripts/local_env.sh' &&
@@ -337,6 +337,26 @@ ROS_DOMAIN_ID=105 ROS_LOCALHOST_ONLY=1 python3 '06_决策/test/navigation_gazebo
 ```
 
 验收输出包含两条 `PASS`。第一条检查相机、雷达与 `map` 相连，且模拟关节转动只改变相机相对底盘的 TF。第二条记录底盘的实际位移、决策定位中断后取消目标的停车位移，以及定位恢复后到达目标的误差。此测试使用合成裁判数据、简化场景和示例车模参数。
+
+### 手动修改 Gazebo 场景
+
+复制一份 [场景模板](test/gazebo_scenario.example.yaml)。`--scenario` 自带 Gazebo 窗口，仿真会运行到关窗或按 Ctrl+C。用 VS Code 打开这份副本，保存后会自动读取，终端会打印 `Decision` 和 `Navigation` 的变化。
+
+```bash
+cp -n '06_决策/test/gazebo_scenario.example.yaml' "$HOME/rm-gazebo-scenario.yaml"
+source '06_决策/scripts/local_env.sh' &&
+ROS_DOMAIN_ID=105 ROS_LOCALHOST_ONLY=1 \
+  python3 -u '06_决策/test/navigation_gazebo.py' --scenario "$HOME/rm-gazebo-scenario.yaml"
+```
+
+| 场景设置 | 预期现象 |
+| --- | --- |
+| `phase: waiting` | 等待开局，显示 `WaitGame` |
+| `phase: running`、`hp: 400`、`max_hp: 400`、`localization: true` | 移向约 5 米外的练习巡逻点，显示 `Patrol` |
+| 开局后把 `hp` 改为 `80` | 切到补给点，显示 `Resupply` |
+| 开局后把 `localization` 改为 `false` | 定位数据超时后显示 `LocalizationLost`。正在执行的目标会被撤销 |
+
+血量在低血阈值以上时可能继续恢复，默认回到 80% 才退出恢复状态。暂停或中断测试后，重新把 `phase` 改成 `waiting` 可开始下一轮。场景文件只提供本车血量、赛况和决策侧定位状态。
 
 已编写断言：本车门控和 HP 滞回、八种团队低血组合、队友滞回/最大血量、死亡/虚弱/未知、位置防堆叠、持守与交接、岗位漏项/争夺中不离岗、地形/路线硬过滤、风险预算/非法数值、无图等待与全低血不排队。`freshness_test.cpp` 检查重复来源时间、暂停、未来/乱序时间及超时边界。
 

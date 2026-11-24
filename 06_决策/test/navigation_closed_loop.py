@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from collections import deque
 from contextlib import ExitStack, contextmanager
 from pathlib import Path
 
@@ -51,10 +52,11 @@ def executable(package, name):
     return str(Path(get_package_prefix(package)) / 'lib' / package / name)
 
 
-def write_tasks(path):
+def write_tasks(path, *, patrol=('start_marker', *START)):
+    patrol_id, patrol_x, patrol_y = patrol
     path.write_text(yaml.safe_dump({'map_frame': 'map', 'objectives': [
         {'id': 'red_supply', 'kind': 'recovery', 'x': TARGET[0], 'y': TARGET[1], 'risk': 0.1},
-        {'id': 'start_marker', 'kind': 'patrol', 'x': START[0], 'y': START[1], 'risk': 0.1},
+        {'id': patrol_id, 'kind': 'patrol', 'x': patrol_x, 'y': patrol_y, 'risk': 0.1},
         {'id': 'blocked', 'kind': 'patrol', 'x': -6.15, 'y': 4.15, 'risk': 0.1},
     ]}), encoding='utf-8')
 
@@ -85,14 +87,15 @@ class Harness(Node):
     def __init__(self, *, mock_motion=True):
         super().__init__('rm_closed_loop_check')
         self.clock = self.get_clock()
-        self.status = []
-        self.intents = []
+        self.status = deque(maxlen=1024)
+        self.intents = deque(maxlen=1024)
         self.evidence = None
         self.verified_targets = set()
         self.pose = None
         self.canceled = False
         self.send_pose = True
         self.phase = 0
+        self.hp, self.max_hp = 80, 400
         self.tf = TransformBroadcaster(self)
         self.raw = self.create_publisher(UInt8MultiArray, DECISION + '/referee_bytes', 10)
         self.create_subscription(String, DECISION + '/navigation_status',
@@ -144,7 +147,7 @@ class Harness(Node):
             game = bytes([(self.phase << 4) | 4]) + struct.pack('<HQ', 280, 0)
             robot = bytearray(17)
             robot[0] = 7
-            struct.pack_into('<HHHHHfB', robot, 2, 80, 400, 30, 260, 100, 25.0, 7)
+            struct.pack_into('<HHHHHfB', robot, 2, self.hp, self.max_hp, 30, 260, 100, 25.0, 7)
             stream = referee_frame(0x0001, game) + referee_frame(0x0201, robot)
             self.raw.publish(UInt8MultiArray(data=list(stream)))
 

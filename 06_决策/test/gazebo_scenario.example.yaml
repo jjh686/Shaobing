@@ -1,0 +1,6 @@
+# 离线 Gazebo 手动场景。修改并保存后，正在运行的场景会自动读取。
+phase: waiting       # waiting：未开局，running：已开局
+hp: 400              # 本车当前血量
+max_hp: 400          # 本车血量上限
+localization: true   # false：中断决策侧定位输入
+patrol: [0.0, 0.0]   # 练习巡逻点 [x, y]，地图中心；修改后需重启场景

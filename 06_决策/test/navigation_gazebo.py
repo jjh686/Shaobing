@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise the decision-to-Nav2 path with an unarmed Gazebo Fortress test base."""
 
+import argparse
 import math
 import os
 import shutil
@@ -16,7 +17,7 @@ import xacro
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from geometry_msgs.msg import TransformStamped
-from rclpy.executors import SingleThreadedExecutor
+from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.parameter import Parameter
 from rclpy.qos import qos_profile_sensor_data
 from rclpy.time import Time
@@ -35,6 +36,8 @@ DRIVE = '/model/' + MODEL
 WORLD_TOPICS = '/world/' + WORLD
 DECISION_TF = DECISION + '/decision_tf'
 ROUTE_NS = DECISION + '/route'
+SCENARIO_PATROL = ('practice_patrol', 0.0, 0.0)
+SCENARIO_PHASES = {'waiting': 3, 'running': 4}
 
 
 class GazeboHarness(Harness):
@@ -185,11 +188,90 @@ def exercise(executor, harness, children):
           f'after restoring TF, Nav2 succeeded with {goal_error:.3f} m world-pose error.')
 
 
-def run(executor, harness, folder, cleanup):
+def gazebo_gui_command():
+    command = ['ign', 'gazebo', '-g', '--render-engine-gui']
+    if os.environ.get('WSL_DISTRO_NAME') and os.environ.get('WAYLAND_DISPLAY'):
+        # Restrict the Mesa workaround to the GUI process. The physics server keeps its environment.
+        return ['env', 'MESA_EXTENSION_OVERRIDE=+GL_ARB_copy_image', *command, 'ogre2']
+    return [*command, 'ogre']
+
+
+def read_scenario(path):
+    scenario = yaml.safe_load(path.read_text(encoding='utf-8'))
+    required = {'phase', 'hp', 'max_hp', 'localization'}
+    if not isinstance(scenario, dict) or not required <= scenario.keys() or set(scenario) - required - {'patrol'}:
+        raise ValueError('Expected phase, hp, max_hp, localization and optional patrol in the scenario file.')
+    phase = scenario['phase']
+    hp, max_hp = scenario['hp'], scenario['max_hp']
+    if not isinstance(phase, str) or phase not in SCENARIO_PHASES:
+        raise ValueError('phase must be waiting or running.')
+    if type(hp) is not int or type(max_hp) is not int or not 0 <= hp <= max_hp <= 65535 or not max_hp:
+        raise ValueError('Expected integer HP with 0 <= hp <= max_hp and 1 <= max_hp <= 65535.')
+    if type(scenario['localization']) is not bool:
+        raise ValueError('localization must be true or false.')
+    patrol = scenario.get('patrol')
+    if patrol is not None:
+        if (not isinstance(patrol, list) or len(patrol) != 2
+                or any(type(value) not in (int, float) or not math.isfinite(value) for value in patrol)):
+            raise ValueError('patrol must be [x, y] with two finite numbers.')
+        scenario['patrol'] = [float(patrol[0]), float(patrol[1])]
+    return scenario
+
+
+def follow_scenario(executor, harness, children, gui, path):
+    harness.phase = SCENARIO_PHASES['waiting']
+    wait_until(executor, lambda: any(msg.mode == 'WaitGame' for msg in harness.intents),
+               'decision receiving the initial waiting state', children, timeout=30)
+    wait_until(executor, lambda: {'red_supply', SCENARIO_PATROL[0]} <= harness.verified_targets,
+               'verification of both manual scenario routes', children, timeout=45)
+    print(f'Manual scenario ready. Edit and save {path}. Close Gazebo or press Ctrl+C to stop.')
+    previous = error = intent = status = None
+    previous_patrol = None
+    next_read = 0.0
+    while rclpy.ok() and gui.poll() is None:
+        executor.spin_once(timeout_sec=0.1)
+        if any(child.poll() is not None for child in children if child is not gui):
+            raise RuntimeError('A scenario process exited.')
+        now = time.monotonic()
+        if now >= next_read:
+            next_read = now + 0.25
+            try:
+                scenario = read_scenario(path)
+            except (OSError, ValueError, yaml.YAMLError) as exc:
+                if str(exc) != error:
+                    error = str(exc)
+                    print(f'Scenario input ignored: {error}')
+            else:
+                live = {key: value for key, value in scenario.items() if key != 'patrol'}
+                patrol = scenario.get('patrol', list(SCENARIO_PATROL[1:]))
+                if live != previous:
+                    harness.hp, harness.max_hp = live['hp'], live['max_hp']
+                    harness.phase = SCENARIO_PHASES[live['phase']]
+                    harness.feed_decision_tf = live['localization']
+                    previous = live
+                    print(f'Scenario: {live}')
+                if previous_patrol is not None and patrol != previous_patrol:
+                    print('Patrol point changed; restart the scenario to apply it.')
+                previous_patrol = patrol
+                error = None
+        if harness.intents:
+            msg = harness.intents[-1]
+            result = (msg.mode, msg.target or '-', msg.reason)
+            if result != intent:
+                intent = result
+                print(f'Decision: {intent[0]}  target={intent[1]}  reason={intent[2]}')
+        if harness.status and harness.status[-1] != status:
+            status = harness.status[-1]
+            print(f'Navigation: {status}')
+
+
+def run(executor, harness, folder, cleanup, show_gui, scenario):
     children = []
 
     def start(label, command):
-        children.append(cleanup.enter_context(process(command, folder / (label + '.log'))))
+        child = cleanup.enter_context(process(command, folder / (label + '.log')))
+        children.append(child)
+        return child
 
     def node(package, program, *args, label=None):
         start(label or program, [executable(package, program), '--ros-args', *args])
@@ -198,7 +280,11 @@ def run(executor, harness, folder, cleanup):
     world = folder / 'offline_3v3.sdf'
     write_world(map_path, world, START)
     tasks = folder / 'tasks.yaml'
-    write_tasks(tasks)
+    if scenario is None:
+        write_tasks(tasks)
+    else:
+        patrol = read_scenario(scenario).get('patrol', SCENARIO_PATROL[1:])
+        write_tasks(tasks, patrol=(SCENARIO_PATROL[0], *patrol))
     robot = SOURCE / 'robot_description' / 'sentry_preview.urdf.xacro'
     model_params = folder / 'preview_model.yaml'
     model_params.write_text(yaml.safe_dump({'robot_state_publisher': {'ros__parameters': {
@@ -208,6 +294,7 @@ def run(executor, harness, folder, cleanup):
     sim = ('-p', 'use_sim_time:=true')
     ns = ('-r', '__ns:=' + DECISION)
     start('gazebo', ['ign', 'gazebo', '-s', '-r', str(world)])
+    gui = start('gazebo_gui', gazebo_gui_command()) if show_gui else None
     start('gz_bridge', [executable('ros_gz_bridge', 'parameter_bridge'),
                         DRIVE + '/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist',
                         DRIVE + '/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry',
@@ -236,14 +323,34 @@ def run(executor, harness, folder, cleanup):
     node('rm2027_decision', 'intent_nav_bridge.py', *ns, *sim,
          '-p', 'execute_navigation:=true', '-p', f'tasks_file:={tasks}',
          '-p', 'navigation_action:=/navigate_to_pose')
-    exercise(executor, harness, children)
+    try:
+        if scenario is not None:
+            follow_scenario(executor, harness, children, gui, scenario)
+            return
+        exercise(executor, harness, children)
+        if gui is not None:
+            print('Gazebo is ready for inspection. Close the window or press Ctrl+C to stop.')
+            while rclpy.ok() and gui.poll() is None:
+                executor.spin_once(timeout_sec=0.2)
+    except (ExternalShutdownException, KeyboardInterrupt):
+        if gui is None:
+            raise
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--gui', action='store_true', help='show Gazebo and keep the window open after the test')
+    parser.add_argument('--scenario', type=Path, help='open Gazebo with a live-editable scenario YAML file')
+    args = parser.parse_args()
     if os.environ.get('ROS_LOCALHOST_ONLY') != '1' or not os.environ.get('ROS_DOMAIN_ID'):
         raise SystemExit('Set ROS_LOCALHOST_ONLY=1 and an unused ROS_DOMAIN_ID.')
     if not shutil.which('ign'):
         raise SystemExit('Gazebo Fortress (ign gazebo) is required.')
+    if args.scenario is not None:
+        try:
+            read_scenario(args.scenario)
+        except (OSError, ValueError, yaml.YAMLError) as exc:
+            parser.error(str(exc))
     os.environ['IGN_PARTITION'] = 'rm_offline_' + uuid.uuid4().hex
     rclpy.init()
     harness = GazeboHarness()
@@ -251,7 +358,7 @@ def main():
     executor.add_node(harness)
     try:
         with tempfile.TemporaryDirectory(prefix='rm-gazebo-check-') as scratch, ExitStack() as cleanup:
-            run(executor, harness, Path(scratch), cleanup)
+            run(executor, harness, Path(scratch), cleanup, args.gui or args.scenario is not None, args.scenario)
     finally:
         executor.shutdown()
         harness.destroy_node()
