@@ -1,10 +1,10 @@
-/* [ET08A 8通道适配] 对齐 basic_framework 遥控器通道方案, 保留 05_云台 rad 单位与 SP 视觉接口:
+/* [ET08A 8通道适配] 对齐 basic_framework 实车验证方案, 保留 05_云台 rad 单位与 SP 视觉接口:
  *   CH1(rocker_r_)  -> 底盘 vy (右水平, 底盘板处理)
  *   CH2(rocker_r1)  -> 底盘 vx (右竖直, 底盘板处理)
  *   CH3(rocker_l1)  -> 云台 pitch (左竖直)
  *   CH4(rocker_l_)  -> 云台 yaw (左水平)
- *   CH5(knob_l)     -> 旋钮 LD 调速 (底盘速度倍率 & 拨盘射频)
- *   CH6(knob_r)     -> 两段开关 SA (上停火 / 下开火)
+ *   CH5(knob_l)     -> 旋钮 LD (底盘调速, 底盘板处理)
+ *   CH6(knob_r)     -> 旋钮 RD 发射油门 (最左 5% 死区停火, 往右旋开启摩擦轮分档转速 + 拨盘射频 0~9 发/秒)
  *   CH7(channel[6]) -> 三段开关 SB: 下(2)=遥控 / 中(1)=视觉 / 上(0)=键鼠(无效)
  *   CH8(channel[7]) -> 三段开关 SC: 上(0)=急停(离上档直接动) / 中(1)=NO_FOLLOW / 下(2)=小陀螺
  */
@@ -26,10 +26,31 @@ static Gimbal_Ctrl_Cmd_s command;
 #if !GIMBAL_AUTO_AIM_ON_BOOT
 /* 0=零力, 1=摇杆遥控, 2=视觉自瞄, 3=视觉无目标保持 */
 static uint8_t previous_source;
-/* SA(CH6) 下档开火阈值: raw_sbus > 1424 (等价于 basic_framework 的 (raw-1024) > 400) */
-#define ET08A_SA_FIRE_RAW_THRESHOLD  1424
+/* CH6(RD 旋钮) 射频上限: 满旋钮时的发射速率(发/秒), 对齐 basic_framework 实车验证值 */
+#define ET08A_SHOOT_RATE_MAX         9.0f
 /* 离线容忍: 40 × 5ms = 200ms, 过滤偶发单帧 SBUS 丢包 */
 #define ET08A_RC_OFFLINE_TOL_FRAMES  40u
+
+/**
+ * @brief RD 旋钮比例(0~1) → 摩擦轮转速档(承载在 bullet_speed 枚举上, 带 4% 滞回)
+ * @note  档位→转速映射见 shoot.c:
+ *          BULLET_SPEED_NONE → 2000 / SMALL_AMU_15 → 3000 / SMALL_AMU_18 → 6000 / SMALL_AMU_30 → 10000
+ */
+static Bullet_Speed_e FrictionLevelFromRatio(float r)
+{
+    static const Bullet_Speed_e map[4] = {
+        BULLET_SPEED_NONE, SMALL_AMU_15, SMALL_AMU_18, SMALL_AMU_30};
+    static const float up[3]   = {0.05f, 0.40f, 0.75f}; /* 升档阈值 */
+    static const float down[3] = {0.03f, 0.36f, 0.70f}; /* 降档阈值(滞回) */
+    static uint8_t lv = 0;
+
+    if (lv < 3 && r >= up[lv])
+        lv++;
+    else if (lv > 0 && r < down[lv - 1])
+        lv--;
+
+    return map[lv];
+}
 #endif
 
 void RobotCMDInit(void)
@@ -82,7 +103,7 @@ void RobotCMDTask(void)
         .friction_mode = FRICTION_OFF,
         .load_mode = LOAD_STOP,
         .lid_mode = LID_CLOSE,
-        .bullet_speed = SMALL_AMU_18,
+        .bullet_speed = BULLET_SPEED_NONE,
         .shoot_rate = 0.0f,
     };
 
@@ -156,6 +177,7 @@ void RobotCMDTask(void)
         shoot.shoot_mode = SHOOT_OFF;
         shoot.friction_mode = FRICTION_OFF;
         shoot.load_mode = LOAD_STOP;
+        shoot.bullet_speed = BULLET_SPEED_NONE;
         shoot.shoot_rate = 0.0f;
     }
     else if (sb == FS_RC_SW_DOWN)
@@ -169,26 +191,30 @@ void RobotCMDTask(void)
             ApplyRemoteTarget(rc, &state, dt_scale, sc);
         }
 
-        /* CH5(LD) 调速倍率 0.0~1.0, CH6(SA) 上停火 / 下开火 */
-        float ld = (float)(rc->rc.knob_l + 240) - 1024.0f;
-        if (ld < -660.0f) ld = -660.0f;
-        if (ld >  660.0f) ld =  660.0f;
-        float speed_scale = (ld + 660.0f) / 1320.0f;
-        int sa_fire = ((rc->rc.knob_r + 240) > ET08A_SA_FIRE_RAW_THRESHOLD);
+        /* CH6(RD 旋钮) 当发射总油门(对齐 basic_framework 实测):
+         * remote_control.c 存的是 raw-240, 还原到 raw-1024 域: 最左 +670, 最右 -671
+         * fire_ratio: 0(最左 5% 死区停火) ~ 1(最右满油门 9 发/秒 + 最高档摩擦轮) */
+        float kr = (float)(rc->rc.knob_r + 240) - 1024.0f;
+        if (kr >  670.0f) kr =  670.0f;
+        if (kr < -671.0f) kr = -671.0f;
 
-        shoot.shoot_mode = SHOOT_ON;
-        if (sa_fire)
+        float fire_ratio = (670.0f - kr) / 1341.0f;
+        if (fire_ratio < 0.05f)
+            fire_ratio = 0.0f;
+
+        shoot.shoot_mode   = SHOOT_ON;
+        shoot.bullet_speed = FrictionLevelFromRatio(fire_ratio);
+        if (fire_ratio > 0.0f)
         {
             shoot.friction_mode = FRICTION_ON;
-            shoot.load_mode = LOAD_BURSTFIRE;
-            shoot.bullet_speed = SMALL_AMU_18;
-            shoot.shoot_rate = 15.0f * speed_scale;
+            shoot.load_mode     = LOAD_BURSTFIRE;
+            shoot.shoot_rate    = ET08A_SHOOT_RATE_MAX * fire_ratio;
         }
         else
         {
             shoot.friction_mode = FRICTION_OFF;
-            shoot.load_mode = LOAD_STOP;
-            shoot.shoot_rate = 0.0f;
+            shoot.load_mode     = LOAD_STOP;
+            shoot.shoot_rate    = 0.0f;
         }
     }
     else if (sb == FS_RC_SW_MID)
@@ -217,6 +243,7 @@ void RobotCMDTask(void)
         shoot.shoot_mode = SHOOT_ON;
         shoot.friction_mode = FRICTION_OFF;
         shoot.load_mode = LOAD_STOP;
+        shoot.bullet_speed = BULLET_SPEED_NONE;
         shoot.shoot_rate = 0.0f;
     }
     else
@@ -226,6 +253,7 @@ void RobotCMDTask(void)
         shoot.shoot_mode = SHOOT_OFF;
         shoot.friction_mode = FRICTION_OFF;
         shoot.load_mode = LOAD_STOP;
+        shoot.bullet_speed = BULLET_SPEED_NONE;
         shoot.shoot_rate = 0.0f;
     }
 

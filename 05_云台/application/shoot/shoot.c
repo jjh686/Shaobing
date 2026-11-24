@@ -19,11 +19,11 @@ static Shoot_Upload_Data_s shoot_feedback_data; // 回传给cmd的发射状态
 // dwt定时,计算冷却用
 static float hibernate_time = 0, dead_time = 0;
 
-/* ---------------- 拨盘卡弹检测 (移植自 basic_framework) ----------------
+/* ---------------- 拨盘卡弹检测 (移植自 basic_framework 实测验证版) ----------------
  * 判定用「speed 低 + Output 高 + 持续 250ms」, 过滤瞬时挤压
  */
 #define LOADER_STALL_SPEED      1500.0f     /* aps, 低于此视为没在转 */
-#define LOADER_STALL_OUT        4000.0f     /* 电流指令, 高于此视为硬顶 */
+#define LOADER_STALL_OUT        6000.0f     /* 电流指令, 高于此视为硬顶 */
 #define LOADER_STALL_MS         250.0f      /* 持续多久判定卡弹 */
 #define LOADER_REVERSE_MS       300.0f      /* 反转退弹时长 */
 #define LOADER_REVERSE_SPEED  (-6000.0f)    /* 反转速度 aps */
@@ -83,23 +83,23 @@ static void ShootUpdateFeedback(void)
 
 void ShootInit()
 {
-    // 左摩擦轮 (云台 CAN2, ID 1)
+    // 左摩擦轮 (云台 CAN2, ID 1, 对齐 basic_framework 实测参数)
     Motor_Init_Config_s friction_config = {
         .can_init_config = {
             .can_handle = &hcan2,
         },
         .controller_param_init_config = {
             .speed_PID = {
-                .Kp = 0, // 20 (待按实车摩擦轮参数填入)
-                .Ki = 0, // 1
+                .Kp = 20.0f,
+                .Ki = 1.0f,
                 .Kd = 0,
                 .Improve = PID_Integral_Limit,
                 .IntegralLimit = 10000,
                 .MaxOut = 15000,
             },
             .current_PID = {
-                .Kp = 0, // 0.7
-                .Ki = 0, // 0.1
+                .Kp = 0.7f,
+                .Ki = 0.1f,
                 .Kd = 0,
                 .Improve = PID_Integral_Limit,
                 .IntegralLimit = 10000,
@@ -136,12 +136,12 @@ void ShootInit()
                 .MaxOut = 200,
             },
             .speed_PID = {
-                .Kp = 3,                // 3, 临界误差 1667, 正常工作落在线性区
+                .Kp = 3,                // 3, 正常工作落在线性区
                 .Ki = 0.3,              // 0.3, 补稳态误差
                 .Kd = 0,
                 .Improve = PID_Integral_Limit,
-                .IntegralLimit = 1000,
-                .MaxOut = 5000,         // 5A (C610 满量程 ±10000 = ±10A)
+                .IntegralLimit = 2000,
+                .MaxOut = 7000,         // 7A (C610 满量程 ±10000 = ±10A)
                 .Output_LPF_RC = 0.05f, // 50ms 滤波, 平滑输出
             },
             .current_PID = {
@@ -150,7 +150,7 @@ void ShootInit()
                 .Kd = 0,
                 .Improve = PID_Integral_Limit,
                 .IntegralLimit = 5000,
-                .MaxOut = 5000,
+                .MaxOut = 7000,         // 与 speed_PID.MaxOut 同步为 7A
             },
         },
         .controller_setting_init_config = {
@@ -292,9 +292,13 @@ static uint8_t LoaderJamHandler(void)
 /* 机器人发射机构控制核心任务 */
 void ShootTask()
 {
+    static uint8_t fric_ready   = 0;
+    static uint8_t fric_was_on  = 0;
+    static float   fric_wait_ms = 0.0f;
+
     SubGetMessage(shoot_sub, &shoot_cmd_recv);
 
-    /* 紧急停止优先于卡弹退弹, 确保急停档绝对不转 */
+    /* 紧急停止优先于卡弹退弹, 确保急停档绝对不转并重置摩擦轮就绪门槛 */
     if (shoot_cmd_recv.shoot_mode == SHOOT_OFF)
     {
         DJIMotorStop(friction_l);
@@ -305,6 +309,9 @@ void ShootTask()
         DJIMotorSetRef(loader, 0.0f);
         loader_state    = LOADER_NORMAL;
         loader_stall_ms = 0.0f;
+        fric_ready      = 0;
+        fric_was_on     = 0;
+        fric_wait_ms    = 0.0f;
         ShootUpdateFeedback();
         return;
     }
@@ -327,6 +334,85 @@ void ShootTask()
     ShootMotorEnable(friction_r);
     ShootMotorEnable(loader);
 
+    /* ===== 1. 摩擦轮分档设速 (对齐 basic_framework 实测值) ===== */
+    if (shoot_cmd_recv.friction_mode == FRICTION_ON)
+    {
+        switch (shoot_cmd_recv.bullet_speed)
+        {
+        case SMALL_AMU_15:
+            DJIMotorSetRef(friction_l, 3000);
+            DJIMotorSetRef(friction_r, 3000);
+            break;
+        case SMALL_AMU_18:
+            DJIMotorSetRef(friction_l, 6000);
+            DJIMotorSetRef(friction_r, 6000);
+            break;
+        case SMALL_AMU_30:
+            DJIMotorSetRef(friction_l, 10000);
+            DJIMotorSetRef(friction_r, 10000);
+            break;
+        default:
+            DJIMotorSetRef(friction_l, 2000);
+            DJIMotorSetRef(friction_r, 2000);
+            break;
+        }
+    }
+    else
+    {
+        DJIMotorSetRef(friction_l, 0);
+        DJIMotorSetRef(friction_r, 0);
+    }
+
+    /* ===== 2. 摩擦轮就绪门槛: 刚起转未达目标 70% 前暂不拨弹 (1000ms 超时放行) ===== */
+    if (shoot_cmd_recv.friction_mode == FRICTION_ON)
+    {
+        float tgt = friction_l->motor_controller.pid_ref;
+
+        if (!fric_was_on)
+        {
+            fric_ready   = 0;
+            fric_wait_ms = 0.0f;
+        }
+        fric_was_on = 1;
+
+        if (!fric_ready)
+        {
+            float v_l = fabsf(friction_l->measure.speed_aps);
+            float v_r = fabsf(friction_r->measure.speed_aps);
+            float v   = (v_l < v_r) ? v_l : v_r;
+
+            if (tgt != 0.0f && v > 0.7f * fabsf(tgt))
+            {
+                fric_ready = 1;
+            }
+            else
+            {
+                fric_wait_ms += 5.0f; /* ShootTask 周期 5ms */
+                if (fric_wait_ms > 1000.0f)
+                {
+                    fric_ready = 1;
+                    LOGWARNING("[SHOOT] friction not ready %.0fms, force release", fric_wait_ms);
+                }
+            }
+        }
+    }
+    else
+    {
+        fric_ready   = 0;
+        fric_was_on  = 0;
+        fric_wait_ms = 0.0f;
+    }
+
+    if (!fric_ready &&
+        shoot_cmd_recv.load_mode != LOAD_STOP &&
+        shoot_cmd_recv.load_mode != LOAD_REVERSE)
+    {
+        DJIMotorSetRef(loader, 0.0f);
+        ShootUpdateFeedback();
+        return;
+    }
+
+    /* ===== 3. 拨盘控制 ===== */
     switch (shoot_cmd_recv.load_mode)
     {
     case LOAD_STOP:
@@ -358,34 +444,6 @@ void ShootTask()
         DJIMotorOuterLoop(loader, SPEED_LOOP);
         DJIMotorSetRef(loader, 0.0f);
         break;
-    }
-
-    if (shoot_cmd_recv.friction_mode == FRICTION_ON)
-    {
-        switch (shoot_cmd_recv.bullet_speed)
-        {
-        case SMALL_AMU_15:
-            DJIMotorSetRef(friction_l, 0);
-            DJIMotorSetRef(friction_r, 0);
-            break;
-        case SMALL_AMU_18:
-            DJIMotorSetRef(friction_l, 0);
-            DJIMotorSetRef(friction_r, 0);
-            break;
-        case SMALL_AMU_30:
-            DJIMotorSetRef(friction_l, 0);
-            DJIMotorSetRef(friction_r, 0);
-            break;
-        default:
-            DJIMotorSetRef(friction_l, 30000);
-            DJIMotorSetRef(friction_r, 30000);
-            break;
-        }
-    }
-    else
-    {
-        DJIMotorSetRef(friction_l, 0);
-        DJIMotorSetRef(friction_r, 0);
     }
 
     (void)hibernate_time;
