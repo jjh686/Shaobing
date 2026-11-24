@@ -51,6 +51,14 @@ def executable(package, name):
     return str(Path(get_package_prefix(package)) / 'lib' / package / name)
 
 
+def write_tasks(path):
+    path.write_text(yaml.safe_dump({'map_frame': 'map', 'objectives': [
+        {'id': 'red_supply', 'kind': 'recovery', 'x': TARGET[0], 'y': TARGET[1], 'risk': 0.1},
+        {'id': 'start_marker', 'kind': 'patrol', 'x': START[0], 'y': START[1], 'risk': 0.1},
+        {'id': 'blocked', 'kind': 'patrol', 'x': -6.15, 'y': 4.15, 'risk': 0.1},
+    ]}), encoding='utf-8')
+
+
 @contextmanager
 def process(command, log_path):
     with log_path.open('w+', encoding='utf-8') as log:
@@ -74,7 +82,7 @@ def process(command, log_path):
 
 
 class Harness(Node):
-    def __init__(self):
+    def __init__(self, *, mock_motion=True):
         super().__init__('rm_closed_loop_check')
         self.clock = self.get_clock()
         self.status = []
@@ -92,14 +100,24 @@ class Harness(Node):
         self.create_subscription(NavigationEvidence, DECISION + '/navigation_evidence',
                                  self.on_evidence, qos_profile_sensor_data)
         self.create_subscription(DecisionIntent, DECISION + '/intent', self.intents.append, 10)
-        self.motion = ActionServer(self, NavigateToPose, ACTION, self.on_goal,
-                                   callback_group=ReentrantCallbackGroup(),
-                                   cancel_callback=lambda _: CancelResponse.ACCEPT)
+        self.motion = None
+        if mock_motion:
+            self.motion = ActionServer(self, NavigateToPose, ACTION, self.on_goal,
+                                       callback_group=ReentrantCallbackGroup(),
+                                       cancel_callback=lambda _: CancelResponse.ACCEPT)
         self.create_timer(0.05, self.inputs)
 
     def on_evidence(self, message):
         self.evidence = message
         self.verified_targets.update(point.id for point in message.objectives if point.route_verified)
+
+    def routes_verified(self):
+        evidence = self.evidence
+        if evidence is None or not evidence.localization_valid or not evidence.objectives_valid:
+            return False
+        points = {point.id: point for point in evidence.objectives if point.route_verified}
+        return ('red_supply' in points and not points['red_supply'].self_present
+                and 'start_marker' in points and points['start_marker'].self_present)
 
     def on_goal(self, handle):
         self.pose = handle.request.pose
@@ -154,11 +172,7 @@ def main():
             temp = Path(scratch)
             map_path = SOURCE / 'maps' / 'offline' / 'red_map.yaml'
             tasks_path = temp / 'tasks.yaml'
-            tasks_path.write_text(yaml.safe_dump({'map_frame': 'map', 'objectives': [
-                {'id': 'red_supply', 'kind': 'recovery', 'x': TARGET[0], 'y': TARGET[1], 'risk': 0.1},
-                {'id': 'start_marker', 'kind': 'patrol', 'x': START[0], 'y': START[1], 'risk': 0.1},
-                {'id': 'blocked', 'kind': 'patrol', 'x': -6.15, 'y': 4.15, 'risk': 0.1},
-            ]}), encoding='utf-8')
+            write_tasks(tasks_path)
             params_path = temp / 'planner.yaml'
             nav2_share = Path(get_package_share_directory('nav2_bringup'))
             defaults = yaml.safe_load((nav2_share / 'params' / 'nav2_params.yaml').read_text())
@@ -196,15 +210,7 @@ def main():
                   '-p', 'execute_navigation:=true', '-p', f'tasks_file:={tasks_path}',
                   '-p', f'navigation_action:={ACTION}')
 
-            def routes_verified():
-                evidence = harness.evidence
-                if evidence is None or not evidence.localization_valid or not evidence.objectives_valid:
-                    return False
-                points = {point.id: point for point in evidence.objectives if point.route_verified}
-                return ('red_supply' in points and not points['red_supply'].self_present
-                        and 'start_marker' in points and points['start_marker'].self_present)
-
-            wait_until(executor, routes_verified, 'locally verified Navfn route', children, timeout=35)
+            wait_until(executor, harness.routes_verified, 'locally verified Navfn route', children, timeout=35)
             harness.phase = 3
             wait_until(executor, lambda: any(m.mode == 'WaitGame' for m in harness.intents),
                        'decision waiting for match', children)

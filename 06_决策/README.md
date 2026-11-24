@@ -100,6 +100,7 @@ TF + 规划 + 地图 → 导航证据 ────┘                           
 | [policy_test.cpp](test/policy_test.cpp) · [freshness_test.cpp](test/freshness_test.cpp) | 分别验证策略输出和时间有效性。 |
 | [referee_rx_test.py](test/referee_rx_test.py) · [vision_feedback_test.py](test/vision_feedback_test.py) | 分别验证裁判字段解析和视觉状态输入。 |
 | [navigation_closed_loop.py](test/navigation_closed_loop.py) | 用离线 3V3 栅格、真实 Navfn 规划器和模拟运动服务验证目标收发及取消。 |
+| [navigation_gazebo.py](test/navigation_gazebo.py) · [gazebo_world_fixture.py](test/gazebo_world_fixture.py) | 从同一栅格生成 Gazebo 碰撞场景，验证真实 Nav2 控制器驱动仿真底盘、取消后停止，以及模拟关节和传感器 TF。 |
 | [docs/rules/](docs/rules/) · [docs/reviews/](docs/reviews/) | 比赛手册与协议原件，以及 2026-11-21 审查的脚本、日志和结果。历史脚本对应当时的仓库与环境，当前回归入口见 [test/](test/)。 |
 
 ## 来源与范围
@@ -323,6 +324,19 @@ ros2 interface show rm2027_decision/msg/DecisionState
 ```bash
 ROS_DOMAIN_ID=93 ROS_LOCALHOST_ONLY=1 python3 '06_决策/test/navigation_closed_loop.py'
 ```
+
+### Gazebo 导航闭环
+
+赛用电脑或 WSL 需要已构建的本包、Gazebo Fortress、`ros_gz_bridge` 和 Nav2 Humble。测试从 3V3 二维栅格生成地面和碰撞体，使用无载荷的差速测试底盘。底盘定位取自 Gazebo 模型真实位姿，运动指令由 Nav2 规划器和控制器经仿真桥发送。相机和雷达 TF 由离线车模及模拟关节状态发布。
+
+在仓库根目录运行。请选择空闲的 ROS 域，脚本会隔离 Gazebo 传输并无窗口运行。
+
+```bash
+source '06_决策/scripts/local_env.sh' &&
+ROS_DOMAIN_ID=105 ROS_LOCALHOST_ONLY=1 python3 '06_决策/test/navigation_gazebo.py'
+```
+
+验收输出包含两条 `PASS`。第一条检查相机、雷达与 `map` 相连，且模拟关节转动只改变相机相对底盘的 TF。第二条记录底盘的实际位移、决策定位中断后取消目标的停车位移，以及定位恢复后到达目标的误差。此测试使用合成裁判数据、简化场景和示例车模参数。
 
 已编写断言：本车门控和 HP 滞回、八种团队低血组合、队友滞回/最大血量、死亡/虚弱/未知、位置防堆叠、持守与交接、岗位漏项/争夺中不离岗、地形/路线硬过滤、风险预算/非法数值、无图等待与全低血不排队。`freshness_test.cpp` 检查重复来源时间、暂停、未来/乱序时间及超时边界。
 
