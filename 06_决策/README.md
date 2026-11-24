@@ -2,7 +2,105 @@
 
 版本 0.3.0。默认用于状态和导航目标预览，实车输入与场地数据待验收。本文与代码由 AI 协助编写，待队伍复核。
 
-详细的车辆约束、八种血量组合、补位条件和未解决情境见 [团队决策需求](团队决策需求.md)。本版替换了“只看自身低血，否则找第一个占点或默认巡逻”的旧策略。
+详细的车辆约束、八种血量组合、补位条件和未解决情境见 [团队决策需求](docs/团队决策需求.md)。本版替换了“只看自身低血，否则找第一个占点或默认巡逻”的旧策略。
+
+## 目录与代码职责
+
+目录组织参考北极熊的决策包。行为树、启动入口、节点源码和参数分别存放。裁判与视觉输入、导航桥接按职责分目录，规则原件和审查记录归入文档。[北极熊决策包目录](https://github.com/SMBU-PolarBear-Robotics-Team/pb2025_sentry_behavior)
+
+```text
+06_决策/
+├── behavior_trees/               行为树编排
+│   └── intents.xml
+├── launch/                       ROS 2 启动入口
+│   ├── intents.launch.py         单独启动决策树
+│   ├── rm_11_13.launch.py        接入已有导航的联调入口
+│   └── sentry_bringup.launch.py   上位机联调总启动
+├── src/                          C++ 节点实现
+│   └── decision_node.cpp
+├── include/rm2027_decision/       C++ 策略与时间检查
+│   ├── policy.hpp
+│   └── freshness.hpp
+├── scripts/
+│   ├── adapters/                 输入适配
+│   │   ├── referee_rx.py
+│   │   ├── referee_state_adapter.py
+│   │   └── vision_feedback.py
+│   ├── navigation/               导航证据与目标桥接
+│   │   ├── navigation_evidence.py
+│   │   └── intent_nav_bridge.py
+│   └── local_env.sh              Ubuntu 构建与运行环境
+├── msg/                          ROS 2 消息
+│   ├── DecisionState.msg
+│   ├── DecisionIntent.msg
+│   ├── NavigationEvidence.msg
+│   ├── TacticalObjective.msg
+│   └── TeammateState.msg
+├── config/                       策略参数与实车点位
+│   ├── decision.yaml
+│   └── approved_tasks.yaml
+├── maps/                         场地 CAD 和离线地图
+│   └── offline/
+├── robot_description/             离线车模及其几何参数
+├── test/                         单元测试和离线导航联调
+├── docs/                         需求、规则原件与历史审查
+│   ├── rules/
+│   ├── reviews/20261121/
+│   ├── 团队决策需求.md
+│   └── 决策代码与规则审查-20261121.md
+├── CMakeLists.txt                 编译、生成消息、安装和注册测试
+└── package.xml                   ROS 2 包名、版本与依赖
+```
+
+### 启动入口
+
+| 文件 | 作用 |
+| --- | --- |
+| [intents.launch.py](launch/intents.launch.py) | 只启动行为树节点。可回放已有的 `DecisionState`，查看同一批输入会得到什么结果。 |
+| [rm_11_13.launch.py](launch/rm_11_13.launch.py) | 启动状态适配、决策树和导航桥。导航证据与 Nav2 由配套的导航进程提供。 |
+| [sentry_bringup.launch.py](launch/sentry_bringup.launch.py) | 在以上节点之外启动导航证据节点。根据参数接入已有导航或启动本队实时导航，也可加载预览车模和启动录包。 |
+| [local_env.sh](scripts/local_env.sh) | 加载 ROS Humble、BehaviorTree.CPP v4 以及本包已构建的安装环境。 |
+
+构建后仍使用 `ros2 launch rm2027_decision` 加上对应启动文件名。源码的行为树路径为 `behavior_trees/intents.xml`，安装目录也保留此前的 `trees/intents.xml` 供已有的 `tree_file` 配置使用。
+
+### 运行代码
+
+| 文件 | 输入、处理与输出 |
+| --- | --- |
+| [referee_rx.py](scripts/adapters/referee_rx.py) | 接收原始字节，检查帧头、长度和 CRC，解码本包已支持的裁判字段，并维护本车生命状态。 |
+| [vision_feedback.py](scripts/adapters/vision_feedback.py) | 接收本机视觉状态，解析跟踪状态和时间，过滤无效或过期的数据。 |
+| [referee_state_adapter.py](scripts/adapters/referee_state_adapter.py) | 把裁判数据、导航证据和视觉状态汇总为 `DecisionState`，并保留各输入的时间和有效性。 |
+| [decision_node.cpp](src/decision_node.cpp) | 订阅 `DecisionState`，注册并运行行为树节点，发布 `DecisionIntent`。状态变化时记录模式、目标和原因。 |
+| [intents.xml](behavior_trees/intents.xml) | 按顺序读取状态、调用策略、发布结果。具体判断由 C++ 策略提供。 |
+| [policy.hpp](include/rm2027_decision/policy.hpp) | 根据输入的有效性、当前模式和可用任务决定输出，保存需要跨轮比较的状态。 |
+| [freshness.hpp](include/rm2027_decision/freshness.hpp) | 检查原始输入的时间。收到同一条旧数据时维持原始时间，供决策节点判断超时。 |
+| [navigation_evidence.py](scripts/navigation/navigation_evidence.py) | 根据 TF 确认定位，通过 Nav2 规划服务和约束栅格检查路线，再发布可供决策使用的 `NavigationEvidence`。 |
+| [intent_nav_bridge.py](scripts/navigation/intent_nav_bridge.py) | 根据点位表和最新证据核对 `DecisionIntent`，默认预览目标。启用执行后通过 Nav2 Action 发目标，负责状态回报和必要的撤销。 |
+
+运行时的数据关系如下。视觉状态随合并消息提供给联调观察。导航闭环从路线证据开始，经过选点，再回到 Nav2 执行。
+
+```text
+裁判字节 → referee_rx.py ───────┐
+视觉状态 → vision_feedback.py ─┼→ referee_state_adapter.py → DecisionState
+TF + 规划 + 地图 → 导航证据 ────┘                           ↓
+                         DecisionIntent ← 行为树 ← decision_node.cpp
+                               ↓
+                         intent_nav_bridge.py → Nav2
+```
+
+### 参数、资源与测试
+
+| 文件或目录 | 作用 |
+| --- | --- |
+| [msg/](msg/) | 决策输入、输出及证据的五个 ROS 2 消息，字段职责见[状态与地图契约](#状态与地图契约)。 |
+| [decision.yaml](config/decision.yaml) | 赛项、地图坐标系、输入超时和策略阈值。 |
+| [approved_tasks.yaml](config/approved_tasks.yaml) | 经场地核对后填写的实车点位表。 |
+| [maps/](maps/) | 场地 STEP 原件。离线的 `red_map.yaml` 定义栅格坐标与分辨率，`red_map.pgm` 是栅格图，`red_tasks.yaml` 是配套示例点位。 |
+| [robot_description/](robot_description/) | `sentry_preview.urdf.xacro` 描述离线车模，`offline_geometry.yaml` 存放模型尺寸和安装参数。 |
+| [policy_test.cpp](test/policy_test.cpp) · [freshness_test.cpp](test/freshness_test.cpp) | 分别验证策略输出和时间有效性。 |
+| [referee_rx_test.py](test/referee_rx_test.py) · [vision_feedback_test.py](test/vision_feedback_test.py) | 分别验证裁判字段解析和视觉状态输入。 |
+| [navigation_closed_loop.py](test/navigation_closed_loop.py) | 用离线 3V3 栅格、真实 Navfn 规划器和模拟运动服务验证目标收发及取消。 |
+| [docs/rules/](docs/rules/) · [docs/reviews/](docs/reviews/) | 比赛手册与协议原件，以及 2026-11-21 审查的脚本、日志和结果。历史脚本对应当时的仓库与环境，当前回归入口见 [test/](test/)。 |
 
 ## 来源与范围
 
@@ -10,7 +108,7 @@
 
 父工程基线为 `fzsd_xky` 提交 `6c65a992b0bb029f9cd83db6e6d6136f92af6e75`。本包借鉴其架构组织与持守、恢复设计。
 
-规则及协议原件见 [race rule text](race%20rule%20text/)。本包依据 2027 联盟赛比赛规则 V1.0.0 和 2027 通信协议 V1.0.0。
+规则及协议原件见 [docs/rules](docs/rules/)。本包依据 2027 联盟赛比赛规则 V1.0.0 和 2027 通信协议 V1.0.0。
 
 - 官方串口使用 0xA5、两字节命令码；北极熊私有协议使用 0x5A、一字节 ID。两层须分别解码映射，私有 0x0D Buff 不等于官方 0x020D。
 - 2027 的 HP、场地事件、伤害、RFID 与部分字段发生变化；0x020D 姿态反馈和 0x0120 指令在 2026 最终版已存在。协议中存在某功能不代表适用于 RMUL 哨兵。
@@ -63,15 +161,11 @@
 
 这些措施限制本模块缓存和陈旧状态使用，不构成 Gazebo 图形进程内存泄漏的修复结论。
 
-## 节点与执行链路
+## 执行与异常处理
 
-| 构成 | 职责 |
-| --- | --- |
-| `scripts/referee_rx.py`、`referee_state_adapter.py` | 校验和解码裁判帧，结合本车定位、路线和队友观察生成 `DecisionState`。配置 UART 后只读接收，断开清除旧状态并重试。 |
-| `src/decision_node.cpp`、`trees/intents.xml` | 校验各来源时间，通过行为树读取状态、选择并发布 `DecisionIntent`。 |
-| `include/rm2027_decision/policy.hpp` | 定义恢复、守点、补位、掩护、占点及巡逻的优先顺序。 |
-| `scripts/intent_nav_bridge.py`、`config/approved_tasks.yaml` | 校验获批点位和最新路线，预览目标，或在显式启用后发送本车 Nav2 Action。失败按退避最多尝试三次，证据失效撤销目标，等待终态期间不发送下一目标。 |
-| `02_导航（含通信）` 的 Nav2 与 MotionGate | Nav2 负责规划和速度指令。live 模式由 MotionGate 检查传感器、姿态、手动使能及任务心跳，再经车内底盘通信执行。 |
+裁判适配器配置 UART 后只读接收，断开时清除旧状态并重试。导航桥接检查目标与最新路线，失败时按退避间隔最多尝试三次。证据失效会撤销当前目标，等待 Nav2 返回终态后才会发新目标。
+
+Nav2 负责规划和速度输出。live 模式由导航包的 MotionGate 检查传感器、姿态、手动使能和任务心跳，再经车内底盘通信执行。
 
 整合入口默认 `enabled:=false`、`execute_navigation:=false`，采用 `fixed_map`，Action 为 `/red_standard_robot1/navigate_to_pose`。当前 live 入口对应 `navigation_backend:=live` 和 `/navigate_to_pose`，需由 02 的启动入口选择 `goal_owner:=decision`。此模式禁用自带探索器，MotionGate 仅接收决策节点的活动心跳，保留原手动使能与底盘保护。测试中不启用实车执行。
 
@@ -232,4 +326,4 @@ ROS_DOMAIN_ID=93 ROS_LOCALHOST_ONLY=1 python3 '06_决策/test/navigation_closed_
 
 已编写断言：本车门控和 HP 滞回、八种团队低血组合、队友滞回/最大血量、死亡/虚弱/未知、位置防堆叠、持守与交接、岗位漏项/争夺中不离岗、地形/路线硬过滤、风险预算/非法数值、无图等待与全低血不排队。`freshness_test.cpp` 检查重复来源时间、暂停、未来/乱序时间及超时边界。
 
-原始审查记录保存在 [docs](docs/) 和 [review](review/)。实际裁判串口、真实 Nav2、场地禁区、长时间联合运行和实车停车仍待验收。控制度、阶段余时与中央区激活当前用于状态观察，尚未参与目标排序。裁判帧中的控制归属与激活标志不能给出双方完整占领进度。
+原始审查记录保存在 [docs/reviews/20261121](docs/reviews/20261121/)。实际裁判串口、实车 Nav2 执行、场地禁区、长时间联合运行和实车停车仍待验收。控制度、阶段余时与中央区激活当前用于状态观察，尚未参与目标排序。裁判帧中的控制归属与激活标志不能给出双方完整占领进度。

@@ -129,7 +129,7 @@ def setup(context):
         'referee_uart': referee,
         'vision_status': value('vision_status'),
         'tasks_file': tasks,
-        'tree_file': value('tree_file') or str(share / 'trees' / 'intents.xml'),
+        'tree_file': value('tree_file') or str(share / 'behavior_trees' / 'intents.xml'),
         'navigation_backend': 'live' if live else 'fixed_map',
         'navigation_action': prefix + '/navigate_to_pose',
     }))

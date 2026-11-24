@@ -31,7 +31,7 @@ from std_msgs.msg import String, UInt8MultiArray
 from tf2_ros import TransformBroadcaster
 
 SOURCE = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(SOURCE / 'scripts'))
+sys.path.insert(0, str(SOURCE / 'scripts' / 'adapters'))
 from referee_rx import crc
 
 
@@ -191,7 +191,7 @@ def main():
                   '-p', 'vision_status:=false')
             start('rm2027_decision', 'rm2027_tree', *namespace,
                   '--params-file', str(SOURCE / 'config' / 'decision.yaml'),
-                  '-p', 'enabled:=true', '-p', f'tree_file:={SOURCE / "trees" / "intents.xml"}')
+                  '-p', 'enabled:=true', '-p', f'tree_file:={SOURCE / "behavior_trees" / "intents.xml"}')
             start('rm2027_decision', 'intent_nav_bridge.py', *namespace,
                   '-p', 'execute_navigation:=true', '-p', f'tasks_file:={tasks_path}',
                   '-p', f'navigation_action:={ACTION}')

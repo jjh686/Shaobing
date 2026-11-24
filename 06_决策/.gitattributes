@@ -1,3 +1,4 @@
 # Python entry points must remain executable after a Windows checkout is copied to Linux.
-scripts/*.py text eol=lf
+scripts/**/*.py text eol=lf
+scripts/*.sh text eol=lf
 maps/*.stp binary

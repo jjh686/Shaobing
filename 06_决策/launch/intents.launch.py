@@ -22,6 +22,6 @@ def generate_launch_description():
                  'profile': arg('profile'),
                  'enabled': ParameterValue(arg('enabled'), value_type=bool),
                  'use_sim_time': ParameterValue(arg('use_sim_time'), value_type=bool),
-                 'tree_file': os.path.join(share, 'trees', 'intents.xml'),
+                 'tree_file': os.path.join(share, 'behavior_trees', 'intents.xml'),
              }]),
     ])

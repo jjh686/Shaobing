@@ -39,12 +39,17 @@ if(BUILD_TESTING)
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/vision_feedback_test.py")
 endif()
 install(TARGETS rm2027_tree DESTINATION lib/${PROJECT_NAME})
-install(PROGRAMS scripts/referee_state_adapter.py scripts/intent_nav_bridge.py
-  scripts/navigation_evidence.py
+install(PROGRAMS
+  scripts/adapters/referee_state_adapter.py
+  scripts/navigation/intent_nav_bridge.py
+  scripts/navigation/navigation_evidence.py
   DESTINATION lib/${PROJECT_NAME})
-install(FILES scripts/referee_rx.py scripts/vision_feedback.py DESTINATION lib/${PROJECT_NAME})
-install(DIRECTORY launch config trees robot_description maps/offline DESTINATION share/${PROJECT_NAME}
+install(FILES scripts/adapters/referee_rx.py scripts/adapters/vision_feedback.py
+  DESTINATION lib/${PROJECT_NAME})
+install(DIRECTORY launch config behavior_trees robot_description maps/offline DESTINATION share/${PROJECT_NAME}
   PATTERN "*.pyc" EXCLUDE)
+# Preserve the installed path used by existing tree_file overrides.
+install(FILES behavior_trees/intents.xml DESTINATION share/${PROJECT_NAME}/trees)
 install(DIRECTORY include/ DESTINATION include)
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()

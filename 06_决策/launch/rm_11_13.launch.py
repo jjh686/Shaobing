@@ -61,7 +61,7 @@ def generate_launch_description():
         DeclareLaunchArgument('referee_uart', default_value=''),
         DeclareLaunchArgument('robot_id', default_value='0', choices=['0', '7', '107']),
         DeclareLaunchArgument('vision_status', default_value='true', choices=['true', 'false']),
-        DeclareLaunchArgument('tree_file', default_value=os.path.join(share, 'trees', 'intents.xml')),
+        DeclareLaunchArgument('tree_file', default_value=os.path.join(share, 'behavior_trees', 'intents.xml')),
         DeclareLaunchArgument('tasks_file', default_value=os.path.join(share, 'config', 'approved_tasks.yaml')),
         DeclareLaunchArgument('navigation_backend', default_value='fixed_map', choices=['fixed_map', 'live']),
         DeclareLaunchArgument('navigation_action', default_value=''),

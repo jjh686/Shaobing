@@ -39,12 +39,13 @@
 | 中文分类 | 目录 | 内容 |
 | --- | --- | --- |
 | 整车联调启动 | [`launch/`](06_决策/launch/) | 总启动、决策预览及 ROS 2 节点编排 |
-| 行为树 | [`trees/`](06_决策/trees/) | XML 定义读取状态、选择任务和发布意图的流程 |
+| 行为树 | [`behavior_trees/`](06_决策/behavior_trees/) | XML 定义读取状态、选择任务和发布意图的流程 |
 | 决策节点与规则 | [`src/`](06_决策/src/)、[`include/`](06_决策/include/) | C++ 节点和任务优先级，具体规则见 `policy.hpp` |
-| 消息与接口脚本 | [`msg/`](06_决策/msg/)、[`scripts/`](06_决策/scripts/) | 决策输入输出消息、裁判数据接收、路线证据及 Nav2 桥接 |
+| 消息与输入适配 | [`msg/`](06_决策/msg/)、[`scripts/adapters/`](06_决策/scripts/adapters/) | 决策消息、裁判与视觉状态接收 |
+| 导航接口 | [`scripts/navigation/`](06_决策/scripts/navigation/) | 路线证据及 Nav2 桥接 |
 | 参数与任务点 | [`config/`](06_决策/config/) | 决策阈值和实车批准任务点位 |
 | 车模与地图 | [`robot_description/`](06_决策/robot_description/)、[`maps/`](06_决策/maps/) | 离线车模、场地 CAD、离线地图与示例点位 |
-| 文档、规则与审查 | [`docs/`](06_决策/docs/)、[`race rule text/`](06_决策/race%20rule%20text/)、[`review/`](06_决策/review/) | 工程说明、比赛规则及协议 PDF、历史审查 |
+| 文档、规则与审查 | [`docs/`](06_决策/docs/)、[`docs/rules/`](06_决策/docs/rules/)、[`docs/reviews/`](06_决策/docs/reviews/) | 工程说明、比赛规则及协议 PDF、历史审查 |
 | 测试 | [`test/`](06_决策/test/) | 策略和导航联调测试 |
 
 ### 05 云台电控
@@ -76,8 +77,8 @@
 ## 决策代码查阅顺序
 
 1. 从 [sentry_bringup.launch.py](06_决策/launch/sentry_bringup.launch.py) 查看启动了哪些节点。
-2. 看 [intents.xml](06_决策/trees/intents.xml) 怎样读取状态、调用策略和发布意图，再到 [policy.hpp](06_决策/include/rm2027_decision/policy.hpp) 查具体的判断顺序。
-3. 到 [intent_nav_bridge.py](06_决策/scripts/intent_nav_bridge.py) 查看目标如何送给 Nav2、何时撤销。
+2. 看 [intents.xml](06_决策/behavior_trees/intents.xml) 怎样读取状态、调用策略和发布意图，再到 [policy.hpp](06_决策/include/rm2027_decision/policy.hpp) 查具体的判断顺序。
+3. 到 [intent_nav_bridge.py](06_决策/scripts/navigation/intent_nav_bridge.py) 查看目标如何送给 Nav2、何时撤销。
 4. 用 [联调录包与回放说明](06_决策/README.md#联调录包与回放) 将一次运行的输入、意图和导航状态对应起来。
 
 ## 北极熊上位机目录参考
