@@ -70,8 +70,8 @@
 #define GIMBAL_PITCH_MIN_DEG (-30.5f)
 #define GIMBAL_PITCH_MAX_DEG 30.5f
 /* Separate normal soft limits from fault thresholds (IMU horizontal zero). */
-#define GIMBAL_PITCH_HARD_MIN_DEG (-33.0f)
-#define GIMBAL_PITCH_HARD_MAX_DEG 33.0f
+#define GIMBAL_PITCH_HARD_MIN_DEG (-39.0f)
+#define GIMBAL_PITCH_HARD_MAX_DEG 42.0f
 #define GIMBAL_VISION_MAX_ERROR_DEG 5.0f
 #define GIMBAL_RAD_PER_DEG 0.01745329251994329577f
 /* tracking_v1: explicit units; numerical gains remain the original baseline.
