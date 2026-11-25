@@ -79,18 +79,18 @@ static void ApplyRemoteTarget(const FS_RC_ctrl_t *rc, const GimbalState *s, floa
 {
     command.yaw += GIMBAL_REMOTE_YAW_DEG_PER_COUNT * GIMBAL_RAD_PER_DEG * (float)rc->rc.rocker_l_ * dt_scale;
     command.pitch += GIMBAL_REMOTE_PITCH_DEG_PER_COUNT * GIMBAL_RAD_PER_DEG * (float)rc->rc.rocker_l1 * dt_scale;
-    float yaw_encoder, pitch_encoder;
+    float yaw_encoder, pitch_imu_limited;
+    float pitch_imu_deg = s->pose.pitch / GIMBAL_RAD_PER_DEG;
     if (GimbalEncoderTarget(command.yaw, s->pose.yaw, s->yaw_mechanical_deg,
             GIMBAL_YAW_POSE_TO_ENCODER_SIGN, GIMBAL_YAW_MIN_DEG, GIMBAL_YAW_MAX_DEG,
             GIMBAL_VISION_MAX_ERROR_DEG, &yaw_encoder) &&
-        GimbalEncoderTarget(command.pitch, s->pose.pitch, s->pitch_mechanical_deg,
-            GIMBAL_PITCH_POSE_TO_ENCODER_SIGN, GIMBAL_PITCH_MIN_DEG, GIMBAL_PITCH_MAX_DEG,
-            GIMBAL_VISION_MAX_ERROR_DEG, &pitch_encoder))
+        GimbalEncoderTarget(command.pitch, s->pose.pitch, pitch_imu_deg,
+            1.0f, GIMBAL_PITCH_MIN_DEG, GIMBAL_PITCH_MAX_DEG,
+            GIMBAL_VISION_MAX_ERROR_DEG, &pitch_imu_limited))
     {
         command.yaw = s->yaw_continuous + (yaw_encoder - s->yaw_mechanical_deg) *
             GIMBAL_YAW_POSE_TO_ENCODER_SIGN * GIMBAL_RAD_PER_DEG;
-        command.pitch = s->pose.pitch + (pitch_encoder - s->pitch_mechanical_deg) *
-            GIMBAL_PITCH_POSE_TO_ENCODER_SIGN * GIMBAL_RAD_PER_DEG;
+        command.pitch = pitch_imu_limited * GIMBAL_RAD_PER_DEG;
         command.gimbal_mode = (sc == FS_RC_SW_DOWN) ? GIMBAL_GYRO_MODE : GIMBAL_FREE_MODE;
     }
 }

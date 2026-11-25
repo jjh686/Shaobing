@@ -90,20 +90,20 @@ void ShootInit()
         },
         .controller_param_init_config = {
             .speed_PID = {
-                .Kp = 20.0f,
-                .Ki = 1.0f,
+                .Kp = 5.0f,
+                .Ki = 0.3f,
                 .Kd = 0,
                 .Improve = PID_Integral_Limit,
-                .IntegralLimit = 10000,
-                .MaxOut = 15000,
+                .IntegralLimit = 4000,
+                .MaxOut = 10000,
             },
             .current_PID = {
                 .Kp = 0.7f,
                 .Ki = 0.1f,
                 .Kd = 0,
                 .Improve = PID_Integral_Limit,
-                .IntegralLimit = 10000,
-                .MaxOut = 15000,
+                .IntegralLimit = 5000,
+                .MaxOut = 10000,
             },
         },
         .controller_setting_init_config = {
@@ -292,9 +292,11 @@ static uint8_t LoaderJamHandler(void)
 /* 机器人发射机构控制核心任务 */
 void ShootTask()
 {
-    static uint8_t fric_ready   = 0;
-    static uint8_t fric_was_on  = 0;
-    static float   fric_wait_ms = 0.0f;
+    static uint8_t fric_ready    = 0;
+    static uint8_t fric_was_on   = 0;
+    static float   fric_wait_ms  = 0.0f;
+    static float   fric_ref_ramp = 0.0f;
+    const float    FRIC_RAMP_STEP = 100.0f; /* 5ms 每周期步进 100 aps (= 20000 aps/s, 10000档 0.5s 起满) */
 
     SubGetMessage(shoot_sub, &shoot_cmd_recv);
 
@@ -312,6 +314,7 @@ void ShootTask()
         fric_ready      = 0;
         fric_was_on     = 0;
         fric_wait_ms    = 0.0f;
+        fric_ref_ramp   = 0.0f;
         ShootUpdateFeedback();
         return;
     }
@@ -334,39 +337,47 @@ void ShootTask()
     ShootMotorEnable(friction_r);
     ShootMotorEnable(loader);
 
-    /* ===== 1. 摩擦轮分档设速 (对齐 basic_framework 实测值) ===== */
+    /* ===== 1. 摩擦轮分档设速 + 软启动/减速斜坡 (对齐 basic_framework 实测值) ===== */
+    float fric_target = 0.0f;
     if (shoot_cmd_recv.friction_mode == FRICTION_ON)
     {
         switch (shoot_cmd_recv.bullet_speed)
         {
         case SMALL_AMU_15:
-            DJIMotorSetRef(friction_l, 3000);
-            DJIMotorSetRef(friction_r, 3000);
+            fric_target = 3000.0f;
             break;
         case SMALL_AMU_18:
-            DJIMotorSetRef(friction_l, 6000);
-            DJIMotorSetRef(friction_r, 6000);
+            fric_target = 6000.0f;
             break;
         case SMALL_AMU_30:
-            DJIMotorSetRef(friction_l, 10000);
-            DJIMotorSetRef(friction_r, 10000);
+            fric_target = 10000.0f;
             break;
         default:
-            DJIMotorSetRef(friction_l, 2000);
-            DJIMotorSetRef(friction_r, 2000);
+            fric_target = 2000.0f;
             break;
         }
     }
-    else
+
+    if (fric_ref_ramp < fric_target)
     {
-        DJIMotorSetRef(friction_l, 0);
-        DJIMotorSetRef(friction_r, 0);
+        fric_ref_ramp += FRIC_RAMP_STEP;
+        if (fric_ref_ramp > fric_target)
+            fric_ref_ramp = fric_target;
+    }
+    else if (fric_ref_ramp > fric_target)
+    {
+        fric_ref_ramp -= FRIC_RAMP_STEP;
+        if (fric_ref_ramp < fric_target)
+            fric_ref_ramp = fric_target;
     }
 
-    /* ===== 2. 摩擦轮就绪门槛: 刚起转未达目标 70% 前暂不拨弹 (1000ms 超时放行) ===== */
+    DJIMotorSetRef(friction_l, fric_ref_ramp);
+    DJIMotorSetRef(friction_r, fric_ref_ramp);
+
+    /* ===== 2. 摩擦轮就绪门槛: 刚起转未达目标 70% 前暂不拨弹 (1500ms 超时放行) ===== */
     if (shoot_cmd_recv.friction_mode == FRICTION_ON)
     {
-        float tgt = friction_l->motor_controller.pid_ref;
+        float tgt = fric_target;
 
         if (!fric_was_on)
         {
@@ -388,7 +399,7 @@ void ShootTask()
             else
             {
                 fric_wait_ms += 5.0f; /* ShootTask 周期 5ms */
-                if (fric_wait_ms > 1000.0f)
+                if (fric_wait_ms > 1500.0f)
                 {
                     fric_ready = 1;
                     LOGWARNING("[SHOOT] friction not ready %.0fms, force release", fric_wait_ms);

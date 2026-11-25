@@ -99,11 +99,12 @@ static float GimbalSpeedUpdate(void *context, PIDInstance *pid,
     uint32_t mask = __get_PRIMASK();
     __disable_irq();
     float mechanical_deg = *axis->mechanical_angle - *axis->startup_angle;
+    float pitch_imu_deg = pitch_feedback / GIMBAL_RAD_PER_DEG;
     __set_PRIMASK(mask);
 #if GIMBAL_PITCH_MOTION_LIMIT_ENABLE
     if (axis == &pitch_speed_axis) {
         ref_rad_s = GimbalPitchSpeedReference(&pitch_assist, ref_rad_s,
-            pitch_motor->motor_controller.angle_PID.Err, mechanical_deg, dt_s);
+            pitch_motor->motor_controller.angle_PID.Err, pitch_imu_deg, dt_s);
     }
 #endif
     float output = (pid->Kd == 0.0f && pid->DeadBand == 0.0f)
@@ -256,9 +257,11 @@ void GimbalGetState(GimbalState *out)
     if (pitch_motor && pitch_motor->feedback_seen)
         out->pitch_mechanical_deg=pitch_motor->measure.total_angle-pitch_motor->startup_angle;
     __set_PRIMASK(mask);
+    float pitch_imu_deg = out->pose.pitch / GIMBAL_RAD_PER_DEG;
     if (!isfinite(out->yaw_mechanical_deg) || !isfinite(out->pitch_mechanical_deg) ||
+        !isfinite(pitch_imu_deg) ||
         out->yaw_mechanical_deg<GIMBAL_YAW_MIN_DEG-1 || out->yaw_mechanical_deg>GIMBAL_YAW_MAX_DEG+1 ||
-        out->pitch_mechanical_deg<GIMBAL_PITCH_HARD_MIN_DEG || out->pitch_mechanical_deg>GIMBAL_PITCH_HARD_MAX_DEG)
+        (out->pose_valid && (pitch_imu_deg<GIMBAL_PITCH_HARD_MIN_DEG || pitch_imu_deg>GIMBAL_PITCH_HARD_MAX_DEG)))
         out->motors_ready=0;
 }
 void GimbalInit(void)
@@ -321,7 +324,7 @@ void GimbalInit(void)
         .max_speed_rad_s=GIMBAL_PITCH_SPEED_LIMIT_RAD_S,
         .accel_rad_s2=GIMBAL_PITCH_ACCEL_RAD_S2, .brake_rad_s2=GIMBAL_PITCH_BRAKE_RAD_S2,
         .min_deg=GIMBAL_PITCH_MIN_DEG, .max_deg=GIMBAL_PITCH_MAX_DEG,
-        .pose_to_encoder_sign=GIMBAL_PITCH_POSE_TO_ENCODER_SIGN,
+        .pose_to_encoder_sign=1.0f, /* IMU horizontal zero */
         .max_dt_s=GIMBAL_SPEED_PI_MAX_DT_S,
         .gravity_cos_nm=GIMBAL_PITCH_GRAVITY_COS_NM, .gravity_sin_nm=GIMBAL_PITCH_GRAVITY_SIN_NM,
         .gravity_zero_rad=GIMBAL_PITCH_GRAVITY_ZERO_RAD, .gravity_ramp_nm_s=GIMBAL_PITCH_GRAVITY_RAMP_NM_S,
@@ -378,15 +381,16 @@ void GimbalTask(void)
     int enabled=GIMBAL_INSTALLATION_CONFIRMED && s.pose_valid && s.motors_ready && !s.driver_fault &&
         (command.gimbal_mode==GIMBAL_FREE_MODE || command.gimbal_mode==GIMBAL_GYRO_MODE || command.gimbal_mode==GIMBAL_VISION_MODE);
     if (enabled) {
-        /* Encoder is only a mechanical-envelope monitor. Inner loop stays IMU. */
+        /* Yaw keeps startup-relative encoder envelope; Pitch uses IMU absolute horizontal zero. */
+        float pitch_imu_deg=s.pose.pitch/GIMBAL_RAD_PER_DEG;
         enabled=GimbalEncoderTarget(command.yaw,s.pose.yaw,s.yaw_mechanical_deg,
             GIMBAL_YAW_POSE_TO_ENCODER_SIGN,GIMBAL_YAW_MIN_DEG,GIMBAL_YAW_MAX_DEG,
             GIMBAL_VISION_MAX_ERROR_DEG,&yaw_limited) &&
-            GimbalEncoderTarget(command.pitch,s.pose.pitch,s.pitch_mechanical_deg,
-            GIMBAL_PITCH_POSE_TO_ENCODER_SIGN,GIMBAL_PITCH_MIN_DEG,GIMBAL_PITCH_MAX_DEG,
+            GimbalEncoderTarget(command.pitch,s.pose.pitch,pitch_imu_deg,
+            1.0f,GIMBAL_PITCH_MIN_DEG,GIMBAL_PITCH_MAX_DEG,
             GIMBAL_VISION_MAX_ERROR_DEG,&pitch_limited);
         yaw_ref=s.yaw_continuous+(yaw_limited-s.yaw_mechanical_deg)*GIMBAL_YAW_POSE_TO_ENCODER_SIGN*GIMBAL_RAD_PER_DEG;
-        pitch_ref=s.pose.pitch+(pitch_limited-s.pitch_mechanical_deg)*GIMBAL_PITCH_POSE_TO_ENCODER_SIGN*GIMBAL_RAD_PER_DEG;
+        pitch_ref=pitch_limited*GIMBAL_RAD_PER_DEG;
 /* [USB_SP 修改 07 结束] */
     }
 /* [USB_SP 修改 08 开始] IMU统一rad/rad/s双环、连续yaw、安装转换、启动相对机械包络、运动门控和驱动故障恢复。 */

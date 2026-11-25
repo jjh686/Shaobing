@@ -184,14 +184,23 @@ static void ResetControllers(DM4310PitchInstance *m, uint32_t request)
     PIDClear(&m->motor_controller.current_PID);
 }
 
+static float PitchImuDeg(const Motor_Controller_s *c)
+{
+    return (c && c->other_angle_feedback_ptr)
+        ? (*c->other_angle_feedback_ptr / GIMBAL_RAD_PER_DEG)
+        : NAN;
+}
+
 /* Caller holds the IRQ mask while sampling ISR-owned feedback and timestamps. */
 static int InputsHealthy(const DM4310PitchInstance *m, uint32_t now)
 {
     const Motor_Controller_s *c = &m->motor_controller;
     const Motor_Control_Setting_s *s = &m->motor_settings;
     float mechanical_deg = m->measure.total_angle-m->startup_angle;
+    float pitch_imu_deg = PitchImuDeg(c);
     return m->feedback_seen && m->measure.state <= 1u && isfinite(mechanical_deg) &&
-        mechanical_deg >= GIMBAL_PITCH_HARD_MIN_DEG && mechanical_deg <= GIMBAL_PITCH_HARD_MAX_DEG &&
+        isfinite(pitch_imu_deg) &&
+        pitch_imu_deg >= GIMBAL_PITCH_HARD_MIN_DEG && pitch_imu_deg <= GIMBAL_PITCH_HARD_MAX_DEG &&
         (uint32_t)(now - m->last_feedback_tick) <= GIMBAL_MOTOR_TIMEOUT_MS &&
         (!m->external_feedback_tick ||
          (uint32_t)(now - *m->external_feedback_tick) <= m->external_feedback_timeout_ms) &&
@@ -254,8 +263,8 @@ void DM4310PitchControl(void)
                 reason |= DM_PITCH_GATE_IMU_STALE;
             if (m->command_timeout_ms && (uint32_t)(now-command_tick) > m->command_timeout_ms)
                 reason |= DM_PITCH_GATE_COMMAND_STALE;
-            float mechanical = m->measure.total_angle-m->startup_angle;
-            if (!isfinite(mechanical) || mechanical < GIMBAL_PITCH_HARD_MIN_DEG || mechanical > GIMBAL_PITCH_HARD_MAX_DEG)
+            float pitch_imu_deg = PitchImuDeg(c);
+            if (!isfinite(pitch_imu_deg) || pitch_imu_deg < GIMBAL_PITCH_HARD_MIN_DEG || pitch_imu_deg > GIMBAL_PITCH_HARD_MAX_DEG)
                 reason |= DM_PITCH_GATE_HARD_LIMIT;
             m->fault_reason_flags = reason;
         }
@@ -313,9 +322,9 @@ void DM4310PitchControl(void)
         (uint32_t)(now-m->last_command_tick) > m->command_timeout_ms)
         gates |= DM_PITCH_GATE_COMMAND_STALE;
     if (m->measure.state != 1u) gates |= DM_PITCH_GATE_NOT_ENABLED;
-    float mechanical_now = m->measure.total_angle-m->startup_angle;
-    if (!isfinite(mechanical_now) || mechanical_now < GIMBAL_PITCH_HARD_MIN_DEG ||
-        mechanical_now > GIMBAL_PITCH_HARD_MAX_DEG) gates |= DM_PITCH_GATE_HARD_LIMIT;
+    float pitch_imu_now = PitchImuDeg(c);
+    if (!isfinite(pitch_imu_now) || pitch_imu_now < GIMBAL_PITCH_HARD_MIN_DEG ||
+        pitch_imu_now > GIMBAL_PITCH_HARD_MAX_DEG) gates |= DM_PITCH_GATE_HARD_LIMIT;
     if (request != m->speed_reset_request) gates |= DM_PITCH_GATE_RESET_PENDING;
     if (!healthy || !final_healthy || !isfinite(m->requested_torque_nm)) gates |= DM_PITCH_GATE_INVALID;
     if (isfinite(m->requested_torque_nm) &&
@@ -330,14 +339,13 @@ void DM4310PitchControl(void)
         torque = 0;
     else {
         m->hardware_running_seen = 1;
-        float mechanical = m->measure.total_angle-m->startup_angle;
         float output_sign = s->feedback_reverse_flag == FEEDBACK_DIRECTION_REVERSE ? -1.0f : 1.0f;
-        float encoder_effort = torque*output_sign*GIMBAL_PITCH_POSE_TO_ENCODER_SIGN;
+        float pose_effort = torque*output_sign;
         /* Last check applies to TOTAL torque, including CURRENT_FEEDFORWARD.
-         * At a soft edge, permit inward torque; outside the hard envelope the
-         * existing unhealthy gate above stops the motor. */
-        if ((mechanical >= GIMBAL_PITCH_MAX_DEG && encoder_effort > 0) ||
-            (mechanical <= GIMBAL_PITCH_MIN_DEG && encoder_effort < 0)) {
+         * At a soft edge (IMU horizontal zero), permit inward torque; outside the
+         * hard envelope the existing unhealthy gate above stops the motor. */
+        if ((pitch_imu_now >= GIMBAL_PITCH_MAX_DEG && pose_effort > 0) ||
+            (pitch_imu_now <= GIMBAL_PITCH_MIN_DEG && pose_effort < 0)) {
             torque = 0;
             gates |= DM_PITCH_GATE_ENVELOPE;
         }

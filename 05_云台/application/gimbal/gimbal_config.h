@@ -49,7 +49,7 @@
 /* 保留原遥控每5ms的0.001度/摇杆计数，在CMD统一转换为rad。 */
 #define GIMBAL_REMOTE_DEG_PER_COUNT 0.001f
 #define GIMBAL_REMOTE_YAW_DEG_PER_COUNT (-0.0007f)
-#define GIMBAL_REMOTE_PITCH_DEG_PER_COUNT (-0.0003f)
+#define GIMBAL_REMOTE_PITCH_DEG_PER_COUNT (-0.0005f)
 /* Final actuator output signs, NOT target-only motor_reverse_flag. */
 #define GIMBAL_YAW_OUTPUT_SIGN 1
 #define GIMBAL_PITCH_OUTPUT_SIGN 1
@@ -67,12 +67,11 @@
  * Pitch仍为±20：上下是硬机械止挡，不能按Yaw放大。 */
 #define GIMBAL_YAW_MIN_DEG (-360.0f)
 #define GIMBAL_YAW_MAX_DEG 360.0f
-#define GIMBAL_PITCH_MIN_DEG (-20.0f)
-#define GIMBAL_PITCH_MAX_DEG 20.0f
-/* Separate normal soft limits from fault thresholds. Defaults preserve the
- * former min-1/max+1 fault envelope; calibrate against the real assembly. */
-#define GIMBAL_PITCH_HARD_MIN_DEG (-21.0f)
-#define GIMBAL_PITCH_HARD_MAX_DEG 21.0f
+#define GIMBAL_PITCH_MIN_DEG (-30.5f)
+#define GIMBAL_PITCH_MAX_DEG 30.5f
+/* Separate normal soft limits from fault thresholds (IMU horizontal zero). */
+#define GIMBAL_PITCH_HARD_MIN_DEG (-33.0f)
+#define GIMBAL_PITCH_HARD_MAX_DEG 33.0f
 #define GIMBAL_VISION_MAX_ERROR_DEG 5.0f
 #define GIMBAL_RAD_PER_DEG 0.01745329251994329577f
 /* tracking_v1: explicit units; numerical gains remain the original baseline.
@@ -122,12 +121,12 @@
 /* Pitch-only conservative oscillation test. Limits are reference planning
  * assumptions, not measured physical capability. Lower BRAKE means earlier
  * slowing, not less available braking torque. Kp remains 25. */
-#define GIMBAL_PITCH_SPEED_LIMIT_RAD_S (45.0f * GIMBAL_RAD_PER_DEG)
+#define GIMBAL_PITCH_SPEED_LIMIT_RAD_S (75.0f * GIMBAL_RAD_PER_DEG)
 /* 720°/s²只缩短参考速度从0爬到上限的时间(到34.6°/s约48ms)，使速度误差更早
  * 建立、P项更早出力，即改善"反应"而不提高巡航速度。参考仍被制动上限
  * Bound()截断，MAX_SPEED/BRAKE未改，终端sqrt(2*a*d)曲线与落点精度不变。 */
 #define GIMBAL_PITCH_ACCEL_RAD_S2 (720.0f * GIMBAL_RAD_PER_DEG)
-#define GIMBAL_PITCH_BRAKE_RAD_S2 (120.0f * GIMBAL_RAD_PER_DEG)
+#define GIMBAL_PITCH_BRAKE_RAD_S2 (180.0f * GIMBAL_RAD_PER_DEG)
 #define GIMBAL_PITCH_MOTION_LIMIT_ENABLE 1
 /* Signed canonical-pitch Nm: A*cos(pitch-zero)+B*sin(pitch-zero)，θ用IMU俯仰角(rad)。
  * 本平台实测负载近似"与角度无关的常值"，不是随sinθ增大的重力矩，所以只填A、B=0。
