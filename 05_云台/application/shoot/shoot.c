@@ -114,11 +114,11 @@ void ShootInit()
             .motor_reverse_flag = MOTOR_DIRECTION_NORMAL,
         },
         .motor_type = M3508};
-    friction_config.can_init_config.tx_id = 1;
+    friction_config.can_init_config.tx_id = 2;
     friction_l = DJIMotorInit(&friction_config);
 
     // 右摩擦轮 (云台 CAN2, ID 2, 反向)
-    friction_config.can_init_config.tx_id = 2;
+    friction_config.can_init_config.tx_id = 1;
     friction_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
     friction_r = DJIMotorInit(&friction_config);
 
@@ -292,15 +292,12 @@ static uint8_t LoaderJamHandler(void)
 /* 机器人发射机构控制核心任务 */
 void ShootTask()
 {
-    static uint8_t fric_ready    = 0;
-    static uint8_t fric_was_on   = 0;
-    static float   fric_wait_ms  = 0.0f;
     static float   fric_ref_ramp = 0.0f;
     const float    FRIC_RAMP_STEP = 100.0f; /* 5ms 每周期步进 100 aps (= 20000 aps/s, 10000档 0.5s 起满) */
 
     SubGetMessage(shoot_sub, &shoot_cmd_recv);
 
-    /* 紧急停止优先于卡弹退弹, 确保急停档绝对不转并重置摩擦轮就绪门槛 */
+    /* 紧急停止优先于卡弹退弹, 确保急停档绝对不转并重置斜坡 */
     if (shoot_cmd_recv.shoot_mode == SHOOT_OFF)
     {
         DJIMotorStop(friction_l);
@@ -311,9 +308,6 @@ void ShootTask()
         DJIMotorSetRef(loader, 0.0f);
         loader_state    = LOADER_NORMAL;
         loader_stall_ms = 0.0f;
-        fric_ready      = 0;
-        fric_was_on     = 0;
-        fric_wait_ms    = 0.0f;
         fric_ref_ramp   = 0.0f;
         ShootUpdateFeedback();
         return;
@@ -374,56 +368,7 @@ void ShootTask()
     DJIMotorSetRef(friction_l, fric_ref_ramp);
     DJIMotorSetRef(friction_r, fric_ref_ramp);
 
-    /* ===== 2. 摩擦轮就绪门槛: 刚起转未达目标 70% 前暂不拨弹 (1500ms 超时放行) ===== */
-    if (shoot_cmd_recv.friction_mode == FRICTION_ON)
-    {
-        float tgt = fric_target;
-
-        if (!fric_was_on)
-        {
-            fric_ready   = 0;
-            fric_wait_ms = 0.0f;
-        }
-        fric_was_on = 1;
-
-        if (!fric_ready)
-        {
-            float v_l = fabsf(friction_l->measure.speed_aps);
-            float v_r = fabsf(friction_r->measure.speed_aps);
-            float v   = (v_l < v_r) ? v_l : v_r;
-
-            if (tgt != 0.0f && v > 0.7f * fabsf(tgt))
-            {
-                fric_ready = 1;
-            }
-            else
-            {
-                fric_wait_ms += 5.0f; /* ShootTask 周期 5ms */
-                if (fric_wait_ms > 1500.0f)
-                {
-                    fric_ready = 1;
-                    LOGWARNING("[SHOOT] friction not ready %.0fms, force release", fric_wait_ms);
-                }
-            }
-        }
-    }
-    else
-    {
-        fric_ready   = 0;
-        fric_was_on  = 0;
-        fric_wait_ms = 0.0f;
-    }
-
-    if (!fric_ready &&
-        shoot_cmd_recv.load_mode != LOAD_STOP &&
-        shoot_cmd_recv.load_mode != LOAD_REVERSE)
-    {
-        DJIMotorSetRef(loader, 0.0f);
-        ShootUpdateFeedback();
-        return;
-    }
-
-    /* ===== 3. 拨盘控制 ===== */
+    /* ===== 2. 拨盘控制 ===== */
     switch (shoot_cmd_recv.load_mode)
     {
     case LOAD_STOP:
