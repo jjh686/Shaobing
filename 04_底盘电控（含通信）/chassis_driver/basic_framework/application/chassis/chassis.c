@@ -373,9 +373,26 @@ void ChassisTask()
     case CHASSIS_NO_FOLLOW: // 底盘维持全向机动,wz由cmd层决定(手动为0,自动导航为vision_recv_data->wz)
         // chassis_cmd_recv.wz = 0;
         break;
-    case CHASSIS_FOLLOW_GIMBAL_YAW: // 跟随云台,不单独设置pid,以误差角度平方为速度输出
-        chassis_cmd_recv.wz = -1.5f * chassis_cmd_recv.offset_angle * fabsf(chassis_cmd_recv.offset_angle);
+    case CHASSIS_FOLLOW_GIMBAL_YAW: // 跟随云台(死区 + 线性P + 限幅, 防微晃与大偏角猛甩)
+    {
+        const float deadband = 2.0f;    /* ±2° 内静止不转 */
+        const float kp       = 22.0f;   /* 22 × 30° = 660 -> 约 60°/s 跟随 */
+        const float max_wz   = 1500.0f; /* 上限约 150°/s */
+        float err     = chassis_cmd_recv.offset_angle;
+        float abs_err = fabsf(err);
+        if (abs_err <= deadband)
+        {
+            chassis_cmd_recv.wz = 0.0f;
+        }
+        else
+        {
+            float wz_mag = kp * (abs_err - deadband);
+            if (wz_mag > max_wz) wz_mag = max_wz;
+            /* offset_angle > 0 表示云台偏左(CCW), 需底盘左转(CCW)追上; CHASSIS_COMM_WZ_SIGN(-1) 映射 CCW -> 负 wz */
+            chassis_cmd_recv.wz = CHASSIS_COMM_WZ_SIGN * ((err > 0.0f) ? wz_mag : -wz_mag);
+        }
         break;
+    }
     case CHASSIS_ROTATE: // 自旋, 幅值随 LD 倍率变化, 方向来自命令符号
     {
         /* 满倍率 2000 aps; 最低保 200 防止自旋过慢观察不到 */
@@ -391,8 +408,10 @@ void ChassisTask()
     // 根据云台和底盘的角度offset将控制量映射到底盘坐标系上
     // 底盘逆时针旋转为角度正方向;云台命令的方向以云台指向的方向为x,采用右手系(x指向正北时y在正东)
     static float sin_theta, cos_theta;
-    cos_theta = arm_cos_f32(chassis_cmd_recv.offset_angle * DEGREE_2_RAD);
-    sin_theta = arm_sin_f32(chassis_cmd_recv.offset_angle * DEGREE_2_RAD);
+    /* CHASSIS_COMM_VY_SIGN(-1) 表示底盘 vy 右为正, 将云台系(vx前, vy右)旋到底盘系需用 -offset_angle */
+    float theta = CHASSIS_COMM_VY_SIGN * chassis_cmd_recv.offset_angle * DEGREE_2_RAD;
+    cos_theta = arm_cos_f32(theta);
+    sin_theta = arm_sin_f32(theta);
     chassis_vx = chassis_cmd_recv.vx * cos_theta - chassis_cmd_recv.vy * sin_theta;
     chassis_vy = chassis_cmd_recv.vx * sin_theta + chassis_cmd_recv.vy * cos_theta;
 

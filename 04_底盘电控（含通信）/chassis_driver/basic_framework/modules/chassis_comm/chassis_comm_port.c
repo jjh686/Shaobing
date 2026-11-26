@@ -1,9 +1,49 @@
 #include "chassis_comm_port.h"
 #include "chassis_comm.h"
 #include "chassis_comm_config.h"
+#include "robot_def.h"
 #include "nav_can_hal.h"
 #include "remote_can.h"
 #include <string.h>
+
+/* 旁听 CAN2 上云台 Yaw GM6020(ID=1 -> 反馈帧 0x205)编码器, 计算底盘相对云台偏角 offset_angle */
+#define CHASSIS_YAW_GM6020_RX_ID   0x205u
+#define CHASSIS_YAW_ECD_TIMEOUT_MS 100u
+volatile uint16_t chassis_yaw_ecd_raw;
+volatile uint32_t chassis_yaw_ecd_frames;
+volatile float    chassis_yaw_offset_deg;
+static volatile uint32_t chassis_yaw_ecd_tick;
+static volatile uint8_t  chassis_yaw_ecd_seen;
+
+static void receive_yaw_ecd(CANInstance *can)
+{
+    if (can->rx_len < 2u) return;
+    chassis_yaw_ecd_raw = (uint16_t)(((uint16_t)can->rx_buff[0] << 8) | can->rx_buff[1]);
+    chassis_yaw_ecd_tick = HAL_GetTick();
+    chassis_yaw_ecd_seen = 1u;
+    chassis_yaw_ecd_frames++;
+}
+
+static float read_yaw_offset_deg(uint32_t now)
+{
+    uint32_t irq = __get_PRIMASK();
+    __disable_irq();
+    uint8_t  seen = chassis_yaw_ecd_seen;
+    uint16_t ecd  = chassis_yaw_ecd_raw;
+    uint32_t tick = chassis_yaw_ecd_tick;
+    __set_PRIMASK(irq);
+    if (!seen || (uint32_t)(now - tick) > CHASSIS_YAW_ECD_TIMEOUT_MS)
+    {
+        chassis_yaw_offset_deg = 0.0f;
+        return 0.0f;
+    }
+    int32_t diff = (int32_t)ecd - (int32_t)YAW_CHASSIS_ALIGN_ECD;
+    if (diff >  4096) diff -= 8192;
+    if (diff < -4096) diff += 8192;
+    float deg = (float)diff * (360.0f / 8192.0f);
+    chassis_yaw_offset_deg = deg;
+    return deg;
+}
 
 typedef struct {
     uint8_t bytes[8];
@@ -121,6 +161,17 @@ void ChassisCommPortInit(void)
         };
         CANRegister(&config);
     }
+    /* 只读旁听云台 Yaw GM6020(0x205), 独立走 FIFO1 与板间多帧协议 FIFO0 隔离 */
+    {
+        CAN_Init_Config_s yaw_snoop = {
+            .can_handle = &CHASSIS_COMM_CAN_HANDLE,
+            .rx_fifo_policy = CAN_RX_FIFO_POLICY_FIFO1,
+            .tx_id = 0,
+            .rx_id = CHASSIS_YAW_GM6020_RX_ID,
+            .can_module_callback = receive_yaw_ecd,
+        };
+        CANRegister(&yaw_snoop);
+    }
     CANEnableDiagnostics(&CHASSIS_COMM_CAN_HANDLE);
 }
 
@@ -204,20 +255,22 @@ void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
     const int speed_buff = (int)(speed_scale * 100.0f);
 
     if (sb == 2u) {
-        /* CH7(SB) 下档: 遥控器手动控制 (按 basic_framework 实际代码: CH2->vx, CH1->vy) */
+        /* CH7(SB) 下档: 遥控器手动控制 (CH2->vx, CH1->vy, 0x205->offset_angle) */
         int16_t ch_vx = remote.sample.axes[1]; /* CH2 rocker_r1 */
         int16_t ch_vy = remote.sample.axes[0]; /* CH1 rocker_r_ */
         if (ch_vx > -40 && ch_vx < 40) ch_vx = 0;
         if (ch_vy > -40 && ch_vy < 40) ch_vy = 0;
         command->vx = 35.0f * speed_scale * (float)ch_vx;
         command->vy = 35.0f * speed_scale * (float)ch_vy;
-        command->offset_angle = 0.0f;
+        command->offset_angle = read_yaw_offset_deg(cmd_now);
         command->chassis_speed_buff = speed_buff;
         if (sc == 2u) {
+            /* SC 下档: 底盘小陀螺 + 云台世界系自稳 (带 offset_angle 平移解耦) */
             command->chassis_mode = CHASSIS_ROTATE;
             command->wz = (float)spin_dir;
         } else {
-            command->chassis_mode = CHASSIS_NO_FOLLOW;
+            /* SC 中档: 底盘跟随云台旋转 */
+            command->chassis_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
             command->wz = 0.0f;
         }
         return;

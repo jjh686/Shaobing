@@ -73,11 +73,12 @@
 #define GIMBAL_PITCH_HARD_MIN_DEG (-39.0f)
 #define GIMBAL_PITCH_HARD_MAX_DEG 42.0f
 #define GIMBAL_VISION_MAX_ERROR_DEG 5.0f
+#define GIMBAL_YAW_REMOTE_MAX_ERROR_DEG 60.0f
 #define GIMBAL_RAD_PER_DEG 0.01745329251994329577f
 /* tracking_v1: explicit units; numerical gains remain the original baseline.
  * The reference robot uses different time/output conventions: do NOT copy its
  * PID numbers here. These gains have NOT been tuned for this mechanism. */
-#define GIMBAL_YAW_ANGLE_KP 8.0f
+#define GIMBAL_YAW_ANGLE_KP 20.0f
 #define GIMBAL_PITCH_ANGLE_KP 25.0f /* User-confirmed commissioning baseline. */
 /* 0.2°：死区内 PIDCalculate 输出0(controller.c:202)，用于止住"目标停住后
  * 位置环继续给60~100°/s修正"造成的到点回摆。0.1°时零点附近仍会反推一次。
@@ -85,13 +86,9 @@
  * 注意该宏也被 GIMBAL_PITCH_REVERSAL_REF_RAD_S 借用，但pitch的
  * reset_i_on_ref_reversal=0，该阈值不生效，pitch不受影响。 */
 #define GIMBAL_YAW_ANGLE_DEADBAND_RAD (0.2f * GIMBAL_RAD_PER_DEG)
-/* 200*1 = 200 command/(rad/s)。原50太小：满误差(约8.7rad/s)只给435 counts(1.5%)，
- * 推不动GM6020且起步要靠积分爬(约3654 counts/s)，实测有0.3秒反应延迟、两个方向
- * 都跟不上(实际速度只有指令的0.6~2%)。200时起步延迟消失、跟随正常，实测比120
- * 更跟手，故最终定在200。代价是目标停住时会冲过头回摆两下——那属于位置环
- * (gimbal.c:316的Kp=200)缺少阻尼，不要再回退速度环来压制。
- * 若出现高频嗡嗡则退160。 */
-#define GIMBAL_YAW_SPEED_KP 200.0f /* CAN command / (rad/s) */
+/* Yaw 强内环 + 合理外环配置（配合关闭 reset_i_on_ref_reversal 及反电动势前馈，
+ * 解决高速小陀螺自稳被底盘拖偏与积分清零塌陷）。 */
+#define GIMBAL_YAW_SPEED_KP 1600.0f /* CAN command / (rad/s) */
 /* Dedicated controller currently implements PI (speed Kd must remain 0).
  * 900*0.0005 = 0.45 Nm/(rad/s)。历史：500时起步要等积分爬约5秒；2500消除了
  * 该延迟，但实机运动时出现高频抖动——速度反馈pitch_speed取IMU陀螺原始角速度，
@@ -100,17 +97,19 @@
  * 抖动减轻，故本轮停在900。800 试过，与900差别不明显，回900以保持与上一版
  * 板内固件一致，便于单独验证重力前馈这一项。提速不要再靠抬Kp。 */
 #define GIMBAL_PITCH_SPEED_KP 900.0f
-/* 420 = 3000/2500*350，使Yaw与Pitch达到各自的I上限所需时间相同。 */
-#define GIMBAL_YAW_SPEED_KI 420.0f
+/* 提高 Yaw 速度环积分速率与上限，覆盖高速小陀螺下反电动势 + 滑环阻力需求。 */
+#define GIMBAL_YAW_SPEED_KI 1500.0f
 /* Single-parameter follow-up: Ki=200 reduced oscillation but the user reports
  * frequent missed/late pitch motion. Use 500 to build support 2.5x faster at
  * the same speed error; retain the speed/braking limits and 1 Nm I capacity.
  * Physical tracking/stability and gravity remain uncalibrated. */
 #define GIMBAL_PITCH_SPEED_KI 500.0f
-/* limit on I output, NOT error sum. 稳态巡航时P项接近0，全靠I出力，
- * 原3000/2500只能维持约200°/s；提高后可覆盖外环500°/s。
- * 只影响最终可用力矩，不改变积分爬升速率，因此不增加起步延迟。 */
-#define GIMBAL_YAW_SPEED_I_LIMIT 6000.0f
+/* limit on I output, NOT error sum. 提高到 12000 覆盖高速小陀螺稳态反电动势 + 滑环阻力。 */
+#define GIMBAL_YAW_SPEED_I_LIMIT 12000.0f
+/* GM6020 反电动势前馈 (CAN counts / (deg/s)): 理论 Ke 约 15.6, 取保守值 10.0
+ * 保证严格无源稳定，零滞后抵消高速小陀螺约 65% 反电动势。 */
+#define GIMBAL_YAW_BEMF_FF_PER_APS 10.0f
+#define GIMBAL_YAW_BEMF_FF_MAX 8000.0f
 /* 1200*0.0005 = 0.60 Nm。重力由下面的前馈接管后，本值决定"抵消重力后还剩多少
  * 机动余量"：P在5°截断下最多贡献0.30Nm，所以总余量=0.30+本值。
  * 实测600(=0.30Nm)时：16°处重力0.57Nm，P+I仅0.61Nm，净力矩0.04Nm，

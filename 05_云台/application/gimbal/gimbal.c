@@ -110,21 +110,11 @@ static float GimbalSpeedUpdate(void *context, PIDInstance *pid,
     float output = (pid->Kd == 0.0f && pid->DeadBand == 0.0f)
         ? GimbalSpeedPiStep(pi, measure_rad_s, ref_rad_s, dt_s) : NAN;
 
-    /* Limiting the angle target alone cannot prevent a retained I term from
-     * pushing outward at a zero speed reference. Enforce the SAME startup
-     * encoder envelope at the motor rate. Positive controller output means
-     * positive pose; the existing pose->encoder sign maps that to mechanics.
-     * The final configured actuator sign is still applied only by the driver. */
+    /* Yaw uses a slip ring with no mechanical stop; keep only NaN safety here.
+     * Pitch limits are enforced via IMU absolute angle in GimbalPitchSpeedReference
+     * and dm4310_pitch.c. */
     if (!isfinite(mechanical_deg)) {
         output = NAN;
-    } else if (axis != &pitch_speed_axis && isfinite(output)) {
-        float encoder_effort = output * axis->pose_to_encoder_sign;
-        if ((mechanical_deg >= axis->max_deg && encoder_effort > 0.0f) ||
-            (mechanical_deg <= axis->min_deg && encoder_effort < 0.0f)) {
-            GimbalSpeedPiReset(pi, 0);
-            output = 0.0f;
-            if (axis->envelope_block_count < UINT32_MAX) ++axis->envelope_block_count;
-        }
     }
 
     pid->dt = dt_s;
@@ -154,6 +144,12 @@ static float GimbalSpeedUpdate(void *context, PIDInstance *pid,
             pitch_motor->motor_controller.angle_PID.Measure,
             pitch_motor->motor_controller.angle_PID.Err, measure_rad_s, dt_s);
         output += (ff_nm+compensation)/GIMBAL_PITCH_DM_NM_PER_COMMAND;
+    } else if (axis == &yaw_speed_axis && isfinite(output)) {
+        float bemf_ff = GIMBAL_YAW_BEMF_FF_PER_APS * yaw_motor->measure.speed_aps;
+        if (isfinite(bemf_ff)) {
+            bemf_ff = fminf(fmaxf(bemf_ff, -GIMBAL_YAW_BEMF_FF_MAX), GIMBAL_YAW_BEMF_FF_MAX);
+            output = fminf(fmaxf(output + bemf_ff, -GIMBAL_OUTPUT_LIMIT), GIMBAL_OUTPUT_LIMIT);
+        }
     }
     return output;
 }
@@ -260,7 +256,6 @@ void GimbalGetState(GimbalState *out)
     float pitch_imu_deg = out->pose.pitch / GIMBAL_RAD_PER_DEG;
     if (!isfinite(out->yaw_mechanical_deg) || !isfinite(out->pitch_mechanical_deg) ||
         !isfinite(pitch_imu_deg) ||
-        out->yaw_mechanical_deg<GIMBAL_YAW_MIN_DEG-1 || out->yaw_mechanical_deg>GIMBAL_YAW_MAX_DEG+1 ||
         (out->pose_valid && (pitch_imu_deg<GIMBAL_PITCH_HARD_MIN_DEG || pitch_imu_deg>GIMBAL_PITCH_HARD_MAX_DEG)))
         out->motors_ready=0;
 }
@@ -317,7 +312,7 @@ void GimbalInit(void)
  * 历史：120 试过，接近目标速度指令小了(1°→120°/s)，但远处跟随变慢，已回退。
  * 宏 GIMBAL_YAW_ANGLE_KP(8) 未被修改，
  * 因此 GIMBAL_YAW_REVERSAL_REF_RAD_S 仍按 8 计算，不随本覆盖联动。 */
-	yaw_motor->motor_controller.angle_PID.Kp = 200.0f;
+    /* Yaw/Pitch outer gains come directly from GIMBAL_YAW_ANGLE_KP / GIMBAL_PITCH_ANGLE_KP. */
     /* Pitch gain comes only from GIMBAL_PITCH_ANGLE_KP (baseline 25). */
 #if GIMBAL_TRACKING_SPEED_PI_ENABLE
     const GimbalPitchAssistConfig assist_config = {
@@ -339,7 +334,7 @@ void GimbalInit(void)
     if (!GimbalPitchAssistInit(&pitch_assist, &assist_config)) pitch_motor->fault_latched=1;
     if (!GimbalConfigureSpeedPi(&yaw_motor->motor_controller, &yaw_speed_axis,
         &yaw_motor->measure.total_angle, &yaw_motor->startup_angle,
-        1, GIMBAL_YAW_REVERSAL_REF_RAD_S, GIMBAL_YAW_POSE_TO_ENCODER_SIGN,
+        0, GIMBAL_YAW_REVERSAL_REF_RAD_S, GIMBAL_YAW_POSE_TO_ENCODER_SIGN,
         GIMBAL_YAW_MIN_DEG, GIMBAL_YAW_MAX_DEG)) yaw_motor->fault_latched=1;
     if (!GimbalConfigureSpeedPi(&pitch_motor->motor_controller, &pitch_speed_axis,
         &pitch_motor->measure.total_angle, &pitch_motor->startup_angle,
@@ -377,19 +372,23 @@ void GimbalTask(void)
 #endif
     Gimbal_Ctrl_Cmd_s command={0};SubGetMessage(gimbal_sub,&command);
     GimbalState s;GimbalGetState(&s);
-    float yaw_ref=0,pitch_ref=0,yaw_limited=0,pitch_limited=0;
+    float yaw_ref=0,pitch_ref=0,pitch_limited=0;
     int enabled=GIMBAL_INSTALLATION_CONFIRMED && s.pose_valid && s.motors_ready && !s.driver_fault &&
         (command.gimbal_mode==GIMBAL_FREE_MODE || command.gimbal_mode==GIMBAL_GYRO_MODE || command.gimbal_mode==GIMBAL_VISION_MODE);
     if (enabled) {
-        /* Yaw keeps startup-relative encoder envelope; Pitch uses IMU absolute horizontal zero. */
+        /* Yaw uses slip-ring continuous IMU world heading (no ±360° encoder cap);
+         * Pitch uses IMU absolute horizontal zero [-30.5°, +30.5°]. */
+        float yaw_err=GimbalWrapRad(command.yaw-s.pose.yaw);
+        const float max_yaw_err=((command.gimbal_mode==GIMBAL_VISION_MODE)
+            ? GIMBAL_VISION_MAX_ERROR_DEG
+            : GIMBAL_YAW_REMOTE_MAX_ERROR_DEG)*GIMBAL_RAD_PER_DEG;
+        yaw_err=fminf(fmaxf(yaw_err,-max_yaw_err),max_yaw_err);
         float pitch_imu_deg=s.pose.pitch/GIMBAL_RAD_PER_DEG;
-        enabled=GimbalEncoderTarget(command.yaw,s.pose.yaw,s.yaw_mechanical_deg,
-            GIMBAL_YAW_POSE_TO_ENCODER_SIGN,GIMBAL_YAW_MIN_DEG,GIMBAL_YAW_MAX_DEG,
-            GIMBAL_VISION_MAX_ERROR_DEG,&yaw_limited) &&
+        enabled=isfinite(yaw_err) &&
             GimbalEncoderTarget(command.pitch,s.pose.pitch,pitch_imu_deg,
             1.0f,GIMBAL_PITCH_MIN_DEG,GIMBAL_PITCH_MAX_DEG,
             GIMBAL_VISION_MAX_ERROR_DEG,&pitch_limited);
-        yaw_ref=s.yaw_continuous+(yaw_limited-s.yaw_mechanical_deg)*GIMBAL_YAW_POSE_TO_ENCODER_SIGN*GIMBAL_RAD_PER_DEG;
+        yaw_ref=s.yaw_continuous+yaw_err;
         pitch_ref=pitch_limited*GIMBAL_RAD_PER_DEG;
 /* [USB_SP 修改 07 结束] */
     }
