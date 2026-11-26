@@ -378,8 +378,8 @@ void ChassisTask()
         break;
     case CHASSIS_ROTATE: // 自旋, 幅值随 LD 倍率变化, 方向来自命令符号
     {
-        /* 满倍率 1000 aps; 最低保 200 防止自旋过慢观察不到 */
-        float amp = 1000.0f * ((float)chassis_cmd_recv.chassis_speed_buff * 0.01f);
+        /* 满倍率 2000 aps; 最低保 200 防止自旋过慢观察不到 */
+        float amp = 2000.0f * ((float)chassis_cmd_recv.chassis_speed_buff * 0.01f);
         if (amp < 400.0f) amp = 400.0f;
         chassis_cmd_recv.wz = (chassis_cmd_recv.wz < 0.0f) ? -amp : amp;
         break;

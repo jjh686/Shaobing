@@ -209,8 +209,8 @@ void ChassisCommPortCommand(Chassis_Ctrl_Cmd_s *command, int motors_online)
         int16_t ch_vy = remote.sample.axes[0]; /* CH1 rocker_r_ */
         if (ch_vx > -40 && ch_vx < 40) ch_vx = 0;
         if (ch_vy > -40 && ch_vy < 40) ch_vy = 0;
-        command->vx = 15.0f * speed_scale * (float)ch_vx;
-        command->vy = 15.0f * speed_scale * (float)ch_vy;
+        command->vx = 35.0f * speed_scale * (float)ch_vx;
+        command->vy = 35.0f * speed_scale * (float)ch_vy;
         command->offset_angle = 0.0f;
         command->chassis_speed_buff = speed_buff;
         if (sc == 2u) {

@@ -1,9 +1,10 @@
 {
     "memory-view.trackDebuggers": [
-        "ozone"
+        "ozone",
+        "orbit"
     ],
     "mcu-debug.rtos-views.trackDebuggers": [
         "ozone"
     ],
-    "emberprobe.sampleFrequencyHz": 30
+
 }
