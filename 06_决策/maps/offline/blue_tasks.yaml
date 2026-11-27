@@ -1,0 +1,6 @@
+# Synthetic blue-side preview points. 180-degree symmetry of the red offline sample.
+# Origin is the field centre. For offline tests only. Do not copy into approved_tasks.yaml.
+map_frame: map
+objectives:
+  - {id: blue_supply, kind: recovery, x: 4.75, y: -3.0, yaw: 3.1415926535, risk: 0.1}
+  - {id: central_zone, kind: zone, x: 0.0, y: 0.0, yaw: 0.0, risk: 0.2}

@@ -3,7 +3,7 @@
   <BehaviorTree ID="RM2027Intents">
     <Sequence name="OnboardTaskLoop">
       <ReadState name="ReadNormalizedState" state="{normalized_state}"/>
-      <!-- Policy::evaluate 在 policy.hpp 中按优先级判定，并维护补给和守点的历史状态。
+      <!-- Policy::evaluate 在 policy.hpp 中按优先级判定，并维护补给和守点的历史状态。增加：双方控制度与余时排序、红蓝补给点过滤、队友相对位置补位、复杂血量情形。
            WaitState / WaitGame / LocalizationLost 等待有效输入、开赛或定位。
            WaitPlan 等待可执行方案。Resupply / Hold / Cover / Capture / Patrol 表达明确任务。 -->
       <SelectIntent name="Evaluate2027TaskPriority" state="{normalized_state}" intent="{task_intent}"/>

@@ -3,6 +3,7 @@
 #undef NDEBUG
 #endif
 #include <cassert>
+#include <cstdio>
 #include <limits>
 #include <string>
 
@@ -51,6 +52,10 @@ State ready()
 
 void assert_stopped(const Intent & intent, Mode expected)
 {
+  if (intent.mode != expected) {
+    fprintf(stderr, "assert_stopped got %s reason=%s target=%s, expected %s\n",
+      mode_name(intent.mode), intent.reason.c_str(), intent.target.c_str(), mode_name(expected));
+  }
   assert(intent.mode == expected);
   assert(intent.target.empty());
   assert(!intent.fire_allowed);
@@ -240,12 +245,12 @@ void test_team_matrix_and_hysteresis()
   assert(p.evaluate(s).team_situation.find("heavy=healthy") != std::string::npos);
   s.heavy.hp = 0; s.heavy.life_state_valid = false;
   out = p.evaluate(s);
-  assert(out.team_situation.find("heavy=unknown") != std::string::npos);
+  assert(out.team_situation.find("heavy=dead") != std::string::npos);
   s.heavy.life_state_valid = true;
   out = p.evaluate(s);
   assert(out.team_situation.find("heavy=dead") != std::string::npos);
   s.heavy.hp = 100; s.heavy.life_state_valid = false;
-  assert(p.evaluate(s).team_situation.find("heavy=unknown") != std::string::npos);
+  assert(p.evaluate(s).team_situation.find("heavy=alive") != std::string::npos);
   s.heavy.life_state_valid = true; s.heavy.weakened = true;
   assert(p.evaluate(s).team_situation.find("heavy=weakened") != std::string::npos);
   s.heavy.health_fresh = false;
@@ -377,6 +382,74 @@ void test_routes_risk_and_no_map()
     }
   }
 }
+
+void test_control_side_and_relative_cover()
+{
+  Policy p(Config{Profile::Rmul3v3});
+  auto s = ready();
+  s.objectives = {objective("first_neutral", ObjectiveKind::Zone, 1),
+    objective("central_zone", ObjectiveKind::Zone, 1), objective("enemy", ObjectiveKind::Zone, 3)};
+  auto out = p.evaluate(s);
+  assert(out.mode == Mode::Capture && out.target == "first_neutral");
+  assert(out.vision_mode_request == "track");
+  s.control_fresh = true;
+  s.ally_control = 10;
+  s.enemy_control = 40;
+  out = p.evaluate(s);
+  assert(out.mode == Mode::Capture && out.target == "central_zone");
+  s.central_activation_fresh = true;
+  s.central_enemy_active = true;
+  s.objectives[1].owner = 3;
+  out = p.evaluate(s);
+  assert(out.mode == Mode::Capture && out.target == "central_zone");
+
+  s = ready();
+  s.team_color = 2;
+  auto red = objective("red_supply", ObjectiveKind::Recovery);
+  auto blue = objective("blue_supply", ObjectiveKind::Recovery);
+  blue.risk = .2;
+  s.hp = 100;
+  s.objectives = {red, blue};
+  out = p.evaluate(s);
+  assert(out.mode == Mode::Resupply && out.target == "blue_supply");
+  assert(out.vision_mode_request == "idle");
+  s.team_color = 1;
+  out = p.evaluate(s);
+  assert(out.target == "red_supply");
+
+  s = ready();
+  auto zone = objective("post", ObjectiveKind::Zone, 2);
+  zone.maintain_required = true;
+  zone.x = 1; zone.y = 1;
+  s.objectives = {zone};
+  assert_stopped(p.evaluate(s), Mode::WaitPlan);
+  s.heavy.position_fresh = s.infantry.position_fresh = true;
+  s.heavy.x = s.heavy.y = 8;
+  s.infantry.x = s.infantry.y = 9;
+  out = p.evaluate(s);
+  assert(out.mode == Mode::Cover && out.target == "post");
+
+  s = ready();
+  s.heavy = teammate(80, 400);
+  s.heavy.position_fresh = true;
+  s.heavy.x = 2; s.heavy.y = 2;
+  auto near = objective("near_ally", ObjectiveKind::Defence);
+  near.withdrawal_support = true;
+  near.x = 3.2; near.y = 3.1;
+  auto far = objective("far_ally", ObjectiveKind::Defence);
+  far.withdrawal_support = true;
+  far.x = 20; far.y = 20;
+  s.objectives.push_back(far);
+  s.objectives.push_back(near);
+  out = p.evaluate(s);
+  assert(out.mode == Mode::Cover && out.target == "near_ally");
+  assert(out.team_situation.find("partial|") == 0);
+
+  s = ready();
+  s.hurt_fresh = true;
+  out = p.evaluate(s);
+  assert(out.mode == Mode::Patrol && out.vision_mode_request == "alert");
+}
 }  // namespace
 
 int main()
@@ -404,6 +477,7 @@ int main()
   test_hold_handover_and_missing_guard();
   test_coverage_and_occupancy();
   test_routes_risk_and_no_map();
+  test_control_side_and_relative_cover();
   assert(std::string(mode_name(Mode::Resupply)) == "Resupply");
   assert(std::string(mode_name(static_cast<Mode>(99))) == "Unknown");
   return 0;

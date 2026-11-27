@@ -303,6 +303,9 @@ class NavigationEvidenceNode(Node):
         if now <= 0:
             return
         msg = NavigationEvidence()
+        # heavy/infantry stay unset: this stack has no onboard teammate localizer.
+        # Do not fill them from 0x0301, radar, or official 0x020B (the referee
+        # adapter already fuses 0x020B when onboard observations are missing).
         msg.header.frame_id, msg.header.stamp = self.frame, clock_now.to_msg()
         if pose is not None:
             msg.localization_valid = True

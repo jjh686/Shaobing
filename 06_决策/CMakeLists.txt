@@ -18,7 +18,7 @@ rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} rosidl_type
 
 add_executable(rm2027_tree src/decision_node.cpp)
 target_include_directories(rm2027_tree PRIVATE include)
-ament_target_dependencies(rm2027_tree rclcpp rcl_interfaces behaviortree_cpp)
+ament_target_dependencies(rm2027_tree rclcpp rcl_interfaces std_msgs behaviortree_cpp)
 target_link_libraries(rm2027_tree "${cpp_typesupport_target}")
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(rm2027_tree PRIVATE -Wall -Wextra -Wpedantic)
@@ -37,12 +37,15 @@ if(BUILD_TESTING)
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/referee_rx_test.py")
   add_test(NAME rm2027_vision_feedback
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/vision_feedback_test.py")
+  add_test(NAME rm2027_sentry_bringup
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/sentry_bringup_test.py")
 endif()
 install(TARGETS rm2027_tree DESTINATION lib/${PROJECT_NAME})
 install(PROGRAMS
   scripts/adapters/referee_state_adapter.py
   scripts/navigation/intent_nav_bridge.py
   scripts/navigation/navigation_evidence.py
+  scripts/run_sentry_bringup.sh
   DESTINATION lib/${PROJECT_NAME})
 install(FILES scripts/adapters/referee_rx.py scripts/adapters/vision_feedback.py
   DESTINATION lib/${PROJECT_NAME})

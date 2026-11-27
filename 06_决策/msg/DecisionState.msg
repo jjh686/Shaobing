@@ -79,3 +79,16 @@ bool free_revive_available
 uint8 posture
 bool posture_powered
 # These posture fields are feedback only; this version never commands posture.
+
+# Team color is inferred from official robot_id: 7 red, 107 blue. 0 means unknown.
+uint8 TEAM_UNKNOWN=0
+uint8 TEAM_RED=1
+uint8 TEAM_BLUE=2
+uint8 team_color
+
+# Latest official 0x0206 hit event. Valid only while the event is still fresh.
+bool hurt_valid
+builtin_interfaces/Time hurt_stamp
+uint8 hurt_armor_id
+uint8 hurt_reason
+uint16 hurt_sequence

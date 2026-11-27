@@ -62,6 +62,13 @@ struct State
   Teammate heavy, infantry;
   bool objectives_fresh = false;
   std::vector<Objective> objectives;
+  // 0 unknown, 1 red (robot_id 7), 2 blue (robot_id 107). Never a match-side lock in config.
+  unsigned team_color = 0;
+  bool control_fresh = false;
+  unsigned ally_control = 0, enemy_control = 0, stage_remaining_s = 0;
+  bool central_activation_fresh = false, central_ally_active = false, central_enemy_active = false;
+  bool hurt_fresh = false;
+  unsigned hurt_armor_id = 0, hurt_reason = 0;
 };
 
 struct Intent
@@ -71,6 +78,8 @@ struct Intent
   bool fire_allowed = false, free_revive_requested = false;
   std::string team_situation{};
   bool coverage_requested = false;
+  // Advisory only: idle, search, track or alert. Not a gimbal or MCU command.
+  std::string vision_mode_request{};
 };
 
 inline const char * mode_name(Mode mode)
@@ -127,6 +136,7 @@ public:
           valid_hp(state.hp, state.max_hp) && state.hp > 0 &&
           state.hp / state.max_hp < config_.low_hp_ratio);
         out.coverage_requested = coverage;
+        out.vision_mode_request = vision_mode(mode, fire, state.hurt_fresh);
         return out;
       };
     // 首先确认决策使能、比赛状态、本车生命状态和定位。
@@ -238,25 +248,41 @@ public:
     // 岗位空缺需要明确证据，并确认没有队友已经在位。
     for (const auto & goal : state.objectives) {
       if (allowed(goal, config_.max_task_risk) && goal.kind == ObjectiveKind::Zone && goal.owner == 2 &&
-        goal.maintain_required && !released(state, goal) && goal.vacancy_confirmed &&
+        goal.maintain_required && !released(state, goal) &&
+        (goal.vacancy_confirmed || positions_confirm_empty(state, goal)) &&
         !teammate_present(state, goal))
       {
         return emit(Mode::Cover, "confirmed_allied_guard_vacancy", goal.id, fire_allowed);
       }
     }
     if (recovering_ally(heavy) || recovering_ally(infantry)) {
+      const Objective * near = cover_near_teammate(state,
+        recovering_ally(heavy) ? state.heavy : state.infantry,
+        recovering_ally(heavy) ? heavy : infantry);
+      if (near) return emit(Mode::Cover, "cover_near_recovering_ally", near->id, fire_allowed);
       const Objective * best = choose(state, ObjectiveKind::Defence, config_.max_task_risk, true);
-      if (best) return emit(Mode::Cover, "ally_withdrawal_support", best->id, fire_allowed);
+      if (best) return emit(Mode::Cover, recovering_ally(heavy) && recovering_ally(infantry) ?
+          "allies_down_withdrawal_support" : "ally_withdrawal_support", best->id, fire_allowed);
     }
-    // 队友状态不明或两人均未恢复时，只考虑低风险中立区。
-    const bool cautious = heavy == Health::Unknown || infantry == Health::Unknown ||
-      (heavy != Health::Healthy && infantry != Health::Healthy);
-    for (const auto & goal : state.objectives) {
-      if (goal.kind != ObjectiveKind::Zone || !allowed(goal, cautious ? config_.cautious_capture_risk : config_.max_task_risk) ||
-        teammate_present(state, goal)) continue;
-      if (goal.owner == 1 || (goal.owner == 3 && !cautious)) {
-        return emit(Mode::Capture, goal.owner == 1 ? "eligible_neutral_ground_zone" :
-          "eligible_enemy_ground_zone", goal.id, fire_allowed);
+    // 队友状态不明或尚未恢复时保守占点；两人均确认阵亡或虚弱时哨兵改为承担进攻。
+    const bool team_unknown = heavy == Health::Unknown || infantry == Health::Unknown;
+    const bool both_out = !team_unknown &&
+      (heavy == Health::Dead || heavy == Health::Weakened) &&
+      (infantry == Health::Dead || infantry == Health::Weakened);
+    const bool sole_fighter = both_out;
+    const bool losing = state.control_fresh && state.ally_control < state.enemy_control;
+    const bool winning = state.control_fresh && state.ally_control > state.enemy_control;
+    const bool time_closing = state.stage_remaining_s > 0 && state.stage_remaining_s <= 30;
+    const bool cautious = team_unknown ||
+      (heavy != Health::Healthy && infantry != Health::Healthy && !both_out);
+    const double capture_budget = cautious ? config_.cautious_capture_risk : config_.max_task_risk;
+    const bool prefer_attack = !cautious && !(winning && time_closing);
+    if (!(winning && time_closing && !losing)) {
+      if (const Objective * best = choose_capture(state, capture_budget, prefer_attack,
+            losing || sole_fighter || (state.central_activation_fresh &&
+              (state.central_enemy_active || !state.central_ally_active))))
+      {
+        return emit(Mode::Capture, capture_reason(*best, losing, sole_fighter), best->id, fire_allowed);
       }
     }
     if (!pending_maintenance) {
@@ -268,7 +294,7 @@ public:
   }
 
 private:
-  enum class Health { Unknown, Healthy, Low, Recovering, Dead, Weakened };
+  enum class Health { Unknown, Healthy, Low, Recovering, Dead, Weakened, Alive };
   struct AllyProgress {
     bool seen = false, recovering = false;
     Health status = Health::Unknown;
@@ -279,12 +305,16 @@ private:
   }
   Health health(const Teammate & robot, AllyProgress & progress)
   {
-    if (!robot.health_fresh || !robot.life_state_valid || !valid_hp(robot.hp, robot.max_hp)) {
+    if (!robot.health_fresh || !std::isfinite(robot.hp) || robot.hp < 0) {
       return progress.status = Health::Unknown;
     }
+    // Official 0x0003 HP 0 means the robot is absent, penalized or eliminated.
     if (robot.hp == 0) {
       progress.seen = progress.recovering = true;
       return progress.status = Health::Dead;
+    }
+    if (!robot.life_state_valid || !valid_hp(robot.hp, robot.max_hp)) {
+      return progress.status = Health::Alive;
     }
     if (robot.weakened) {
       progress.seen = progress.recovering = true;
@@ -311,6 +341,7 @@ private:
       case Health::Recovering: return "recovering";
       case Health::Dead: return "dead";
       case Health::Weakened: return "weakened";
+      case Health::Alive: return "alive";
       default: return "unknown";
     }
   }
@@ -354,12 +385,97 @@ private:
   {
     return goal.handover_confirmed && teammate_present(state, goal, true);
   }
+  static bool opponent_supply(const State & state, const Objective & goal)
+  {
+    return goal.kind == ObjectiveKind::Recovery &&
+      ((state.team_color == 1 && goal.id == "blue_supply") ||
+       (state.team_color == 2 && goal.id == "red_supply"));
+  }
+  bool positions_confirm_empty(const State & state, const Objective & goal) const
+  {
+    // Only when BOTH teammates have fresh coordinates. Missing one pose is not vacancy.
+    return state.heavy.position_fresh && state.infantry.position_fresh &&
+      !teammate_present(state, goal);
+  }
+  const Objective * cover_near_teammate(const State & state, const Teammate & robot,
+    Health status) const
+  {
+    if (!recovering_ally(status) || !robot.position_fresh ||
+      !std::isfinite(robot.x) || !std::isfinite(robot.y))
+    {
+      return nullptr;
+    }
+    const Objective * best = nullptr;
+    double best_range = 0;
+    for (const auto & goal : state.objectives) {
+      const bool usable = (goal.kind == ObjectiveKind::Defence && goal.withdrawal_support) ||
+        (goal.kind == ObjectiveKind::Zone && (goal.owner == 1 || goal.owner == 2));
+      if (!usable || !allowed(goal, config_.max_task_risk) || opponent_supply(state, goal)) continue;
+      const double range = std::hypot(robot.x - goal.x, robot.y - goal.y);
+      // 队友已经站在该点时，不再把它当成要去补位的目标。
+      if (range <= goal.radius) continue;
+      if (!best || range < best_range) { best = &goal; best_range = range; }
+    }
+    return best;
+  }
+  static const char * capture_reason(const Objective & goal, bool losing, bool sole_fighter)
+  {
+    if (goal.id == "central_zone") return losing || sole_fighter ?
+      "press_central_zone" : "eligible_central_zone";
+    if (goal.owner == 3) return losing || sole_fighter ?
+      "press_enemy_ground_zone" : "eligible_enemy_ground_zone";
+    return "eligible_neutral_ground_zone";
+  }
+  const Objective * choose_capture(const State & state, double budget, bool prefer_attack,
+    bool press_central)
+  {
+    // Without fresh control scores, keep the original first-eligible-in-list rule.
+    if (!state.control_fresh) {
+      for (const auto & goal : state.objectives) {
+        if (goal.kind != ObjectiveKind::Zone || !allowed(goal, budget) ||
+          teammate_present(state, goal) || opponent_supply(state, goal)) continue;
+        if (goal.owner == 1 || (goal.owner == 3 && prefer_attack)) return &goal;
+      }
+      return nullptr;
+    }
+    const Objective * best = nullptr;
+    int best_rank = -1;
+    for (const auto & goal : state.objectives) {
+      if (goal.kind != ObjectiveKind::Zone || !allowed(goal, budget) ||
+        teammate_present(state, goal) || opponent_supply(state, goal)) continue;
+      if (!(goal.owner == 1 || (goal.owner == 3 && prefer_attack))) continue;
+      int rank = 0;
+      if (press_central && goal.id == "central_zone") rank += 5;
+      else if (goal.id == "central_zone") rank += 3;
+      if (prefer_attack && goal.owner == 3) rank += 2;
+      if (goal.owner == 1) rank += 1;
+      if (!best || rank > best_rank || (rank == best_rank && (goal.risk < best->risk ||
+        (goal.risk == best->risk && goal.travel_time_s < best->travel_time_s))))
+      {
+        best = &goal; best_rank = rank;
+      }
+    }
+    return best;
+  }
+  static const char * vision_mode(Mode mode, bool fire, bool hurt)
+  {
+    if (hurt) return "alert";
+    switch (mode) {
+      case Mode::Capture:
+      case Mode::Hold:
+      case Mode::Cover:
+      case Mode::Patrol:
+        return fire ? "track" : "search";
+      default:
+        return "idle";
+    }
+  }
   static const Objective * choose(const State & state, ObjectiveKind kind, double budget,
     bool require_support = false)
   {
     const Objective * best = nullptr;
     for (const auto & goal : state.objectives) {
-      if (goal.kind != kind || !allowed(goal, budget) ||
+      if (goal.kind != kind || !allowed(goal, budget) || opponent_supply(state, goal) ||
         (require_support && !goal.withdrawal_support)) continue;
       if (!best || goal.risk < best->risk ||
         (goal.risk == best->risk && goal.travel_time_s < best->travel_time_s))

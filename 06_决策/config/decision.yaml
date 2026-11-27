@@ -1,3 +1,5 @@
+# 3V3 哨兵状态决策参数。红蓝双方通用：owner/任务都按己方与对方解释，不在这里锁定红方。
+# 软件约定地图原点在场地中心。离线 red_/blue_ 样例只供预览，不得写入 approved_tasks.yaml。
 /**:
   ros__parameters:
     profile: rmul_3v3  # Confirmed: RMUL 2027 3V3; execution remains disabled.

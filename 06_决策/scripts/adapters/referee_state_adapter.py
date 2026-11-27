@@ -13,7 +13,7 @@ from rclpy.time import Time
 from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import UInt8MultiArray
 
-from referee_rx import OwnLife, Receiver, decode
+from referee_rx import OwnLife, Receiver, decode, prefer_observed_position, teammate_map_xy
 from rm2027_decision.msg import DecisionState, NavigationEvidence, TacticalObjective
 from vision_feedback import FRESHNESS_NS, VISION_PORT, VisionReceiver
 
@@ -124,7 +124,7 @@ class Adapter(Node):
             data = decode(command, payload)
             game = self.recent(0x0001, stamp.nanoseconds, 2.0)
             if command == 0x0201:
-                robot_id, hp, max_hp, _ = data
+                robot_id, hp, max_hp, _ = data[:4]
                 previous_robot = self.sources.get(0x0201)
                 if robot_id not in (7, 107) or (self.robot_id and self.robot_id != robot_id):
                     self.reset_referee()
@@ -145,7 +145,7 @@ class Adapter(Node):
                 phase = data[:2]
                 previous_phase = game[0][:2] if game else None
                 if previous_phase != phase:
-                    for expired in (0x0003, 0x0101, 0x0209):
+                    for expired in (0x0003, 0x0101, 0x0202, 0x0206, 0x0208, 0x0209, 0x020B):
                         self.sources.pop(expired, None)
                 if previous_phase != phase and (previous_phase, phase) != ((4, 3), (4, 4)):
                     self.sources.pop(0x0201, None)
@@ -169,17 +169,39 @@ class Adapter(Node):
     def fill_teammates(self, out, now):
         health = self.recent(0x0003, now, 1.2)
         observations = self.active_evidence()
+        # 0x020B is 1 Hz; keep a slightly longer window than onboard observations.
+        referee_pose = self.recent(0x020B, now, 2.0)
         for index, (name, ally) in enumerate((('heavy', out.heavy), ('infantry', out.infantry))):
+            use_four = False
             if health:
-                ally.hp = health[0][index]
+                # 3V3 通常只有 3 号步兵；若 3 号为 0 而 4 号有血，则改用 4 号。
+                use_four = name == 'infantry' and len(health[0]) > 5 and health[0][1] == 0 and health[0][5] > 0
+                if use_four:
+                    ally.hp = health[0][5]
+                else:
+                    ally.hp = health[0][index]
                 ally.health_stamp = health[1]
+                ally.health_valid = True
+                if ally.hp == 0:
+                    ally.life_state_valid, ally.weakened = True, False
+            observed = None
+            if observations is not None:
+                source = getattr(observations, name)
+                if (source.position_valid and self.evidence_is_recent(source.position_stamp, observations, now, 1)
+                        and math.isfinite(source.x) and math.isfinite(source.y)):
+                    observed = (source.x, source.y, source.position_stamp)
+            referee = None
+            if referee_pose is not None:
+                mapped = teammate_map_xy(referee_pose[0], name, use_four)
+                if mapped is not None:
+                    referee = (mapped[0], mapped[1], referee_pose[1])
+            chosen = prefer_observed_position(observed, referee)
+            if chosen is not None:
+                ally.x, ally.y = chosen[0], chosen[1]
+                ally.position_stamp, ally.position_valid = chosen[2], True
             if observations is None:
                 continue
             source = getattr(observations, name)
-            if (source.position_valid and self.evidence_is_recent(source.position_stamp, observations, now, 1)
-                    and math.isfinite(source.x) and math.isfinite(source.y)):
-                ally.x, ally.y = source.x, source.y
-                ally.position_stamp, ally.position_valid = source.position_stamp, True
             # 队友的最大血量和生命状态由本车观测确认。
             life_matches = (ally.hp == 0) == (source.hp == 0) and (ally.hp > 0 or not source.weakened)
             if (health and source.health_valid and source.life_state_valid and source.max_hp > 0
@@ -266,6 +288,23 @@ class Adapter(Node):
         self.uart_retry_at = now + self.uart_retry_delay
         self.uart_retry_delay = min(5.0, 2 * self.uart_retry_delay)
 
+    def fill_combat(self, out, now, robot):
+        # 热量、弹量和受击来自 0x0202 / 0x0208 / 0x0206，热量上限来自 0x0201。
+        heat = self.recent(0x0202, now, 0.75)
+        ammo = self.recent(0x0208, now, 0.75)
+        if robot and heat and ammo and len(robot[0]) > 4:
+            out.heat = heat[0][1]
+            out.heat_limit = robot[0][4]
+            out.ammunition = ammo[0][0]
+            stamps = (robot[1], heat[1], ammo[1])
+            out.ammunition_stamp = min(stamps, key=self.stamp_ns)
+            out.ammunition_valid = True
+        hurt = self.recent(0x0206, now, 1.0)
+        if hurt:
+            out.hurt_armor_id, out.hurt_reason, out.hurt_sequence = hurt[0][:3]
+            out.hurt_stamp = hurt[1]
+            out.hurt_valid = True
+
     def fill_game(self, out, now):
         game = self.recent(0x0001, now, 2.0)
         if game is None:
@@ -323,11 +362,19 @@ class Adapter(Node):
         self.fill_game(out, now)
         robot = self.recent(0x0201, now, 0.75)
         if robot:
-            (_, out.hp, out.max_hp, chassis_power), out.robot_stamp, _ = robot
+            status, out.robot_stamp, _ = robot
+            _, out.hp, out.max_hp, chassis_power = status[:4]
             out.robot_valid = True
             out.life_state_valid = self.life.known
             out.weakened = self.life.weakened
             out.manual_override = not chassis_power and out.hp > 0
+            if self.robot_id in (7, 107):
+                out.team_color = DecisionState.TEAM_RED if self.robot_id == 7 else DecisionState.TEAM_BLUE
+            elif status[0] in (7, 107):
+                out.team_color = DecisionState.TEAM_RED if status[0] == 7 else DecisionState.TEAM_BLUE
+            if len(status) > 5:
+                out.shooter_enabled = bool(status[5]) and out.hp > 0 and out.life_state_valid
+        self.fill_combat(out, now, robot)
         self.fill_teammates(out, now)
         self.fill_evidence(out, now)
         self.pub.publish(out)

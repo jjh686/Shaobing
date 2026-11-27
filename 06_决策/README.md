@@ -58,7 +58,8 @@
 | --- | --- |
 | [intents.launch.py](launch/intents.launch.py) | 只启动行为树节点。可回放已有的 `DecisionState`，查看同一批输入会得到什么结果。 |
 | [rm_11_13.launch.py](launch/rm_11_13.launch.py) | 启动状态适配、决策树和导航桥。导航证据与 Nav2 由配套的导航进程提供。 |
-| [sentry_bringup.launch.py](launch/sentry_bringup.launch.py) | 在以上节点之外启动导航证据节点。根据参数接入已有导航或启动本队实时导航，也可加载预览车模和启动录包。 |
+| [sentry_bringup.launch.py](launch/sentry_bringup.launch.py) | 决策总启动文件。启动状态适配、行为树、导航桥和路线证据；`mode:=live` 时拉起本队实时导航且 `goal_owner` 固定为 decision；`start_vision:=true` 时拉起当前自瞄入口。也可加载预览车模和启动录包。 |
+| [run_sentry_bringup.sh](scripts/run_sentry_bringup.sh) | 推荐的一条命令总入口。加载导航与决策环境后启动上述 launch，默认 `mode:=live`、`start_vision:=true`，`connect_chassis` 与 `execute_navigation` 保持关闭。 |
 | [local_env.sh](scripts/local_env.sh) | 加载 ROS Humble、BehaviorTree.CPP v4 以及本包已构建的安装环境。 |
 
 构建后仍使用 `ros2 launch rm2027_decision` 加上对应启动文件名。源码的行为树路径为 `behavior_trees/intents.xml`，安装目录也保留此前的 `trees/intents.xml` 供已有的 `tree_file` 配置使用。
@@ -95,7 +96,7 @@ TF + 规划 + 地图 → 导航证据 ────┘                           
 | [msg/](msg/) | 决策输入、输出及证据的五个 ROS 2 消息，字段职责见[状态与地图契约](#状态与地图契约)。 |
 | [decision.yaml](config/decision.yaml) | 赛项、地图坐标系、输入超时和策略阈值。 |
 | [approved_tasks.yaml](config/approved_tasks.yaml) | 经场地核对后填写的实车点位表。 |
-| [maps/](maps/) | 场地 STEP 原件。离线的 `red_map.yaml` 定义栅格坐标与分辨率，`red_map.pgm` 是栅格图，`red_tasks.yaml` 是配套示例点位。 |
+| [maps/](maps/) | 场地 STEP 原件。离线 `red_map` / `blue_map` 及对应 `*_tasks.yaml` 是按规则尺寸做的红蓝预览样例，原点在场地中心，不能当作已批准实车点位。 |
 | [robot_description/](robot_description/) | `sentry_preview.urdf.xacro` 描述离线车模，`offline_geometry.yaml` 存放模型尺寸和安装参数。 |
 | [policy_test.cpp](test/policy_test.cpp) · [freshness_test.cpp](test/freshness_test.cpp) | 分别验证策略输出和时间有效性。 |
 | [referee_rx_test.py](test/referee_rx_test.py) · [vision_feedback_test.py](test/vision_feedback_test.py) | 分别验证裁判字段解析和视觉状态输入。 |
@@ -140,7 +141,7 @@ TF + 规划 + 地图 → 导航证据 ────┘                           
 ## 状态与地图契约
 
 - `NavigationEvidence.msg`：定位有效性、路线和任务证据，以及可选的本车队友观察。
-- `DecisionState.msg`：本车状态、两台队友观察、候选任务与分组时间。阶段剩余秒数来自 `0x0001`，双方控制度来自 `0x0003`，中央区双方激活标志来自 `0x0101`。控制度与激活各有独立时间戳和有效标志。更新接口后应重新构建引用该消息的节点。
+- `DecisionState.msg`：本车状态、两台队友观察、候选任务与分组时间。阶段剩余秒数来自 `0x0001`，双方控制度来自 `0x0003`，中央区双方激活标志来自 `0x0101`。热量、热量上限和允许发弹量分别来自 `0x0202`、`0x0201` 和 `0x0208`，受击事件来自 `0x0206`。控制度在有效时会参与占点排序。`team_color` 由本车官方编号推断（7 红、107 蓝），策略按己方/对方工作，不锁定红方。更新接口后应重新构建引用该消息的节点。
 - `TeammateState.msg`：HP/最大 HP/规则状态及其时间；XY 位置及其独立时间。
 - `TacticalObjective.msg`：任务 ID、用途、坐标、地形、路线验证、风险、控制归属、维护/空缺/交接证据。
 - `DecisionIntent.msg`：模式、目标 ID、原因、射击许可、团队状态和本机补位提示。提示不等于已通知/命令队友。
@@ -170,19 +171,19 @@ Nav2 负责规划和速度输出。live 模式由导航包的 MotionGate 检查�
 
 整合入口默认 `enabled:=false`、`execute_navigation:=false`，采用 `fixed_map`，Action 为 `/red_standard_robot1/navigate_to_pose`。当前 live 入口对应 `navigation_backend:=live` 和 `/navigate_to_pose`，需由 02 的启动入口选择 `goal_owner:=decision`。此模式禁用自带探索器，MotionGate 仅接收决策节点的活动心跳，保留原手动使能与底盘保护。测试中不启用实车执行。
 
-赛场点位、禁行区、经核验的路线证据发布端、雷达外参和真实裁判数据接线仍需实车验收。官方协议的 `0x020B` 不能直接作为 RMUL 队友定位来源。本车可以基于可靠的本地观察补充，缺少证据时保留未知。
+赛场点位、禁行区、经核验的路线证据发布端、雷达外参和真实裁判数据接线仍需实车验收。队友坐标优先使用本车导航证据中的观测；没有观测时使用已换到场地中心系的官方 `0x020B`（1 Hz）。不要用 `0x0301`、雷达或只表示本车位姿的 `0x0203` 充当队友坐标。缺少坐标时不得把岗位写成空岗。
 
 ### 3V3 场地底图
 
 [RMUL2027_3V3_V1.0.0.stp](maps/RMUL2027_3V3_V1.0.0.stp) 是用于标注的场地 CAD 原件，长度单位为毫米，地面坐标在模型的 X–Z 平面。补给和控制区等区域按联盟赛比赛规则手册 §3.2 标注。将场地几何投影到二维后，还需与实测雷达地图的原点和朝向对齐，才能确定 ROS `map` 帧下的点位及禁区。完成标定后将目标写入 `config/approved_tasks.yaml`，并为 Nav2 生成对应的禁区地图。
 
-[离线红方地图](maps/offline/red_map.yaml) 和 [离线点位](maps/offline/red_tasks.yaml) 可用于没有实体场地时的预览和栅格规划测试。坐标取自规则手册图 3-5、图 3-6 的简化俯视布局，中心为原点，X 向图右，Y 向图上，单位为米。栅格分辨率为 0.05 m。高地及隧道所占区域、工作台、蓝方补给区和场地外部均标为占用。离线样例用于软件验证，默认装车点位表仍须使用实际场地坐标。
+[离线红方地图](maps/offline/red_map.yaml) 和 [离线蓝方地图](maps/offline/blue_map.yaml) 及各自点位，可用于没有实体场地时的预览和栅格规划测试。坐标取自规则手册图 3-5、图 3-6 的简化俯视布局，中心为原点，X 向图右，Y 向图上，单位为米。蓝方预览由红方样例绕原点旋转 180 度得到。栅格分辨率为 0.05 m。这些样例只用于软件验证，不要写入 `config/approved_tasks.yaml` 当作已批准实车点位。
 
 决策发送的是车内导航目标。裁判系统的 `0x0120` 属于另一条链路，本包的 UART 不发送上行帧。当前仓库底盘源码的周期上报与实车烧录版本需单独核对。
 
 ### 自瞄状态接入
 
-在同一台 Ubuntu 小电脑上重编译自瞄的 `auto_aim_test` 以及本决策包。自瞄的 `scripts/run_live_usb_sp.sh` 会启用状态输出，通过本机 UDP `127.0.0.1:9871` 发送跟踪状态和原始帧时间。决策整合入口默认接收，并在 `/decision2027/state` 和 `/decision2027/intent` 中显示 `vision_status`。
+在同一台 Ubuntu 小电脑上重编译自瞄的 `auto_aim_test` 以及本决策包。推荐用 [总入口脚本](scripts/run_sentry_bringup.sh) 让决策与自瞄一起启动；也可在 `sentry_bringup.launch.py` 中设 `start_vision:=true`。自瞄仍走当前实际入口 `scripts/run_live_usb_sp.sh`（`auto_aim_test` + `configs/live_usb_sp.yaml`），默认 `--usb=true --decision-status=true`，通过本机 UDP `127.0.0.1:9871` 发送跟踪状态和原始帧时间，并订阅 `/decision2027/vision_mode_request`。决策整合入口默认接收，并在 `/decision2027/state` 和 `/decision2027/intent` 中显示 `vision_status`。仅识别预览（`vision_usb:=false` / `--preview`）不发送跟踪状态，因为现有自瞄约定状态输出需要相机和 USB 回传。
 
 | 值 | 跟踪状态 |
 | --- | --- |
@@ -203,9 +204,20 @@ ros2 topic echo /decision2027/intent --field vision_status
 
 ## 整车启动与导航反馈
 
-`sentry_bringup.launch.py` 统一启动状态接收、BehaviorTree.CPP 行为树、导航桥和路线证据节点。行为树从 `DecisionState` 选任务 ID，桥接器校验点位后把目标交给 Nav2。独立启动的视觉模块通过本机 UDP 提供观测状态。策略优先级在 `policy.hpp`，XML 组织状态读取、选点和发布。
+一条主启动由 `scripts/run_sentry_bringup.sh` 调用 `sentry_bringup.launch.py`，同时拉起：状态接收与行为树、导航证据与导航桥、本队实时导航（`goal_owner` 固定为 decision）、以及当前自瞄入口。行为树从 `DecisionState` 选任务 ID，桥接器校验点位后把目标交给 Nav2。自瞄通过本机 UDP 回传跟踪状态，并订阅 `/decision2027/vision_mode_request`。策略优先级在 `policy.hpp`，XML 组织状态读取、选点和发布。
 
-总启动的组织方式参考 [北极熊上位机](https://github.com/SMBU-PolarBear-Robotics-Team/pb2025_sentry_ws#24-running)。车模和录包也沿用它的模块化做法，参数与话题对应本队工程。
+总启动的组织方式参考 [北极熊哨兵 ROS 工作空间](https://github.com/SMBU-PolarBear-Robotics-Team/pb2025_sentry_ws#24-running) 的 `bringup.launch.py`。车模和录包也沿用它的模块化做法，参数与话题对应本队工程。不要把北极熊仓库写入本仓。
+
+```bash
+source '06_决策/scripts/local_env.sh'   # 若尚未构建决策包，先按下文 Ubuntu 构建
+bash '06_决策/scripts/run_sentry_bringup.sh'
+```
+
+等价的 launch 写法（需先 `source 02_导航（含通信）/scripts/local_env.sh` 与决策安装环境）是 `ros2 launch rm2027_decision sentry_bringup.launch.py mode:=live start_vision:=true`。未传路径时，launch 会从 `RM_NAV_ROOT` / `RM_NAV_RUNTIME` 补齐。直接调用 launch 时 `start_vision` 默认关闭，以免仿真或离线预览误开相机；总入口脚本默认打开视觉。
+
+默认 `connect_chassis:=false`、`execute_navigation:=false`。要连底盘必须显式给出可用的 `serial_port`，并设 `connect_chassis:=true`。裁判串口用单独的 `referee_uart`，不得与底盘口共用。打开实车执行还需要已核对的 `keepout_map`、`protected_map_confirmed:=true`、本车 `robot_id`（7 或 107）和物理裁判串口。当前安装参数尚未确认，因此不应把 `execute_navigation` 改成默认打开。
+
+`mode:=live` 会调用 `validate_mounting`。若 `live_mounting.yaml` 中 `configured`、`fixed_gimbal`、`footprint_confirmed` 未全部为 true，或平移/RPY 仍为空，实时导航会拒绝启动，整个 `mode:=live` 总启动随之失败。本启动不会改写 `live_mounting.yaml`。此时可用 `bash 06_决策/scripts/run_sentry_bringup.sh mode:=external` 只拉起决策和自瞄，不启动实时导航。不要把未确认的安装当作已标定。独立脚本 `02_导航（含通信）/scripts/run_live_exploration.sh` 的默认 `goal_owner` 仍是 exploration，总启动不会改它。
 
 ### 仿真或已有导航进程
 
@@ -215,7 +227,7 @@ ros2 topic echo /decision2027/intent --field vision_status
 decision_share=$(ros2 pkg prefix --share rm2027_decision)
 ros2 launch rm2027_decision sentry_bringup.launch.py use_sim_time:=true \
   nav_namespace:=red_standard_robot1 base_frame:=gimbal_yaw_fake \
-  tasks_file:="$decision_share/offline/red_tasks.yaml"
+  start_vision:=false tasks_file:="$decision_share/offline/red_tasks.yaml"
 ```
 
 离线点位与本包离线 3V3 地图配套。将经核对的禁区栅格通过 `route_map_topic` 提供给证据节点，再设 `protected_map_confirmed:=true`。证据节点默认请求导航命名空间下的 `decision_route/compute_path_to_pose`。可用 `planner_action` 指定独立规划服务，避免与正在执行目标的 Nav2 互相抢占。通过 `tf_topic` 和 `tf_static_topic` 对齐仿真话题。若没有模型发布器，可用 `robot_urdf` 加载本队 URDF。
@@ -228,18 +240,18 @@ ros2 topic echo /decision2027/navigation_status
 
 ### 实车实时导航入口
 
-先构建 `02_导航` 的 `rm_live_nav`。在仓库根目录加载导航和决策安装环境，再指定本队安装参数。
+先构建 `02_导航` 的 `rm_live_nav`。推荐直接使用上面的总入口脚本。若要手动传路径，在仓库根目录加载导航和决策安装环境后执行：
 
 ```bash
 source '02_导航（含通信）/scripts/local_env.sh'
 source ~/rm2027_decision_ws/install/local_setup.bash
-ros2 launch rm2027_decision sentry_bringup.launch.py mode:=live \
+ros2 launch rm2027_decision sentry_bringup.launch.py mode:=live start_vision:=true \
   source_root:="$RM_NAV_RUNTIME/source" runtime:="$RM_NAV_RUNTIME" \
   mounting_config:="$RM_NAV_RUNTIME/source/local/live_mounting.yaml" \
   output_dir:="$RM_NAV_ROOT/local/maps/$(date +%Y%m%d_%H%M%S)"
 ```
 
-此入口选择 `goal_owner:=decision`，由 `06_决策` 统一选点。雷达启动前需要核对网络地址。默认只预览，底盘 USB 和裁判串口均关闭。执行前需配置本车 `robot_id`、独立的 `referee_uart`、`serial_port`、实测点位和 `keepout_map`，再显式设置 `connect_chassis`、`protected_map_confirmed`、`execute_navigation`。底盘和运动门控仍沿用原使能流程。
+此入口选择 `goal_owner:=decision`，由 `06_决策` 统一选点，并同时启动当前自瞄入口。雷达启动前需要核对网络地址。默认只预览，底盘 USB 和裁判串口均关闭。执行前需配置本车 `robot_id`、独立的 `referee_uart`、`serial_port`、实测点位和 `keepout_map`，再显式设置 `connect_chassis`、`protected_map_confirmed`、`execute_navigation`。底盘和运动门控仍沿用原使能流程。
 
 `keepout_map` 使用 Nav2 栅格地图 YAML，标注不可通行区域、边界和实车尺寸所需余量。实时 SLAM 以本次启动位姿建立原点，每次启动须核对地图原点和车头方向。各批准任务点需填写 `risk`，风险未评估的点不会形成可执行证据。Nav2 重规划与证据节点使用同一份禁区图，证据节点还会检查路径周围是否留出车体所需空间。
 
@@ -360,4 +372,4 @@ ROS_DOMAIN_ID=105 ROS_LOCALHOST_ONLY=1 \
 
 已编写断言：本车门控和 HP 滞回、八种团队低血组合、队友滞回/最大血量、死亡/虚弱/未知、位置防堆叠、持守与交接、岗位漏项/争夺中不离岗、地形/路线硬过滤、风险预算/非法数值、无图等待与全低血不排队。`freshness_test.cpp` 检查重复来源时间、暂停、未来/乱序时间及超时边界。
 
-原始审查记录保存在 [docs/reviews/20261121](docs/reviews/20261121/)。实际裁判串口、实车 Nav2 执行、场地禁区、长时间联合运行和实车停车仍待验收。控制度、阶段余时与中央区激活当前用于状态观察，尚未参与目标排序。裁判帧中的控制归属与激活标志不能给出双方完整占领进度。
+原始审查记录保存在 [docs/reviews/20261121](docs/reviews/20261121/)。实际裁判串口、实车 Nav2 执行、场地禁区、长时间联合运行和实车停车仍待验收。控制度和阶段余时在数据有效时会参与占点排序；裁判帧中的控制归属与激活标志仍然不能给出双方完整占领进度。队友坐标优先使用本车观测，没有观测时使用已换系的 `0x020B`；不能用 `0x0301`、雷达或 `0x0203` 冒充。缺少坐标时不会假装已经看到队友，更不会把岗位写成空岗。总启动打开视觉时，自瞄订阅 `/decision2027/vision_mode_request`；有效跟踪时只有自瞄可动云台，这是软件接口接线，不是实车联跑验收。

@@ -13,3 +13,5 @@ uint8 vision_status
 # It sends no order to the human-controlled heavy or infantry robot.
 # Permission/request outputs are advisory. Execution requires a separate arbiter.
 # free_revive_requested is a LEVEL, not an incrementing request/cost counter.
+# Advisory only: idle, search, track or alert. This is not a gimbal or MCU command.
+string vision_mode_request

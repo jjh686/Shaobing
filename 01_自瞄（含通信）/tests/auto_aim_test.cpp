@@ -27,6 +27,10 @@
 #include "tools/plotter.hpp"
 #include "tools/runtime_stats.hpp"
 #include "tools/vision_status.hpp"
+#include "tools/decision_mode.hpp"
+#ifdef SP_VISION_HAS_DECISION_MODE
+#include "io/ros2/decision_mode_listener.hpp"
+#endif
 
 const std::string keys =
   "{help h usage ? |                   | 输出命令行参数说明 }"
@@ -291,6 +295,20 @@ int main(int argc, char * argv[]) try
   auto_aim::Target last_target;
   io::Command last_command{};
   double last_t = -1;
+  bool scan_active = false;
+  float scan_center_yaw = 0, scan_center_pitch = 0;
+  std::chrono::steady_clock::time_point scan_t0{};
+#ifdef SP_VISION_HAS_DECISION_MODE
+  std::unique_ptr<io::DecisionModeListener> mode_listener;
+  if (usb_mode && !usb_check) {
+    try {
+      mode_listener = std::make_unique<io::DecisionModeListener>();
+      tools::logger()->info("Subscribed to {}", io::DecisionModeListener::kTopic);
+    } catch (const std::exception & error) {
+      tools::logger()->warn("Decision mode listener unavailable: {}", error.what());
+    }
+  }
+#endif
   // [USB_SP 新增 开始] 姿态丢失或模式变化后清除旧跟踪结果。
   bool previous_pose_ok = false;
   uint64_t previous_epoch = 0;
@@ -430,11 +448,38 @@ int main(int argc, char * argv[]) try
         preview_plan, camera_mode, preview_bullet_speed, detected_count, targets.size(), tracking_color);
       // [USB_SP 新增 开始] 每帧更新目标，独立串口线程100Hz发送并按图像时间超时。
       if (usb) {
+        // Single submit site: auto-aim keeps the gimbal while tracking is valid;
+        // search/alert may scan only after that lock is gone. Firmware mode must already be 1.
+#ifdef SP_VISION_HAS_DECISION_MODE
+        if (mode_listener) mode_listener->spin_some();
+        const auto decision_mode = mode_listener ? mode_listener->mode() : tools::VisionMode::Track;
+#else
+        const auto decision_mode = tools::VisionMode::Track;
+#endif
+        const auto tracker_state = pose_ok ? tracker.state() : "unavailable";
+        const bool command_enabled = board_feedback && board_feedback->mode == 1;
+        const auto ruling = tools::arbitrate_gimbal(
+          tracker_state, command_enabled, preview_plan.control, decision_mode);
         io::VisionToGimbal tx{};
-        if (board_feedback && board_feedback->mode == 1 && preview_plan.control) {
+        if (ruling.send_auto_aim) {
+          scan_active = false;
           tx.mode = 1; tx.yaw = preview_plan.yaw; tx.yaw_vel = preview_plan.yaw_vel;
           tx.yaw_acc = preview_plan.yaw_acc; tx.pitch = preview_plan.pitch;
           tx.pitch_vel = preview_plan.pitch_vel; tx.pitch_acc = preview_plan.pitch_acc;
+        } else if (ruling.send_scan) {
+          if (!scan_active) {
+            scan_center_yaw = board_feedback->state.yaw;
+            scan_center_pitch = board_feedback->state.pitch;
+            scan_t0 = timestamp;
+            scan_active = true;
+          }
+          const auto scan = tools::scan_command(
+            scan_center_yaw, scan_center_pitch, tools::delta_time(timestamp, scan_t0),
+            decision_mode == tools::VisionMode::Alert);
+          tx.mode = 1; tx.yaw = scan.yaw; tx.yaw_vel = scan.yaw_vel; tx.yaw_acc = scan.yaw_acc;
+          tx.pitch = scan.pitch; tx.pitch_vel = scan.pitch_vel; tx.pitch_acc = scan.pitch_acc;
+        } else {
+          scan_active = false;
         }
         usb->submit(tx, timestamp, board_feedback ? board_feedback->epoch : 0);
         const auto stats = usb->stats();

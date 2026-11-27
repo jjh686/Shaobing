@@ -1,4 +1,6 @@
-# Synthetic reference points in red_map.yaml, for preview and offline tests only.
+# Synthetic red-side preview points for red_map.yaml. Origin is the field centre.
+# For offline tests only. Do not copy into config/approved_tasks.yaml as live points.
+# Blue-side preview is maps/offline/blue_tasks.yaml. Policy skips the opponent supply by id.
 map_frame: map
 objectives:
   - {id: red_supply, kind: recovery, x: -4.75, y: 3.0, yaw: 0.0, risk: 0.1}
