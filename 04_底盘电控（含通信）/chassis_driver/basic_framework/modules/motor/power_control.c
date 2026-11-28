@@ -280,36 +280,45 @@ void PowerControl()
     }
     if (initial_total_power > chassis_max_power)
     {
-        float ratio = chassis_max_power / initial_total_power; // 根据允许的最大功率进行放缩
+        /* 全车统一力矩缩放系数 k ∈ [0,1]: 解 (Σ K1*τ^2)*k^2 + (Σ Pc*Tc*ω*τ)*k + Σ(K2*ω^2+const) - Pmax = 0
+         * 相比单轮独立缩放，严格保持四轮力矩比例不变，避免起步超功率时某两轮抢走额度把另两轮压成 0/NaN */
+        float sum_a = 0.0f;
+        float sum_b = 0.0f;
+        float sum_c = -chassis_max_power;
         for (uint8_t i = 0; i < idx; i++)
         {
-            motor = dji_motor_instance[i];
-            measure = &motor->measure;
-            pid_measure = measure->speed_aps / 6.0f; // 电机的速度单位是度每秒,转换为rpm
-            initial_give_power[i] *= ratio;
-            if (initial_give_power[i] < 0) // 功率小于零，表明依靠发电减速，因此不算入功率统计
+            if (initial_give_power[i] < 0.0f)
             {
                 continue;
             }
-            float a = K1[i];
-            float b = TORQUE_COEF * POWER_COEF * pid_measure;
-            float c = K2[i] * pid_measure * pid_measure - initial_give_power[i] + constant[i];
-            if (power_control_out[i] > 0)
-            {
-                power_control_out[i] = (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
-                if (power_control_out[i] > 15000)
-                {
-                    power_control_out[i] = 15000;
-                }
-            }
-            else
-            {
-                power_control_out[i] = (-b - sqrt(b * b - 4 * a * c)) / (2 * a);
-                if (power_control_out[i] < -15000)
-                {
-                    power_control_out[i] = -15000;
-                }
-            }
+            const float speed_rpm = dji_motor_instance[i]->measure.speed_aps / RPM_2_ANGLE_PER_SEC;
+            const float tau = initial_torque[i];
+            sum_a += K1[i] * tau * tau;
+            sum_b += TORQUE_COEF * POWER_COEF * speed_rpm * tau;
+            sum_c += K2[i] * speed_rpm * speed_rpm + constant[i];
+        }
+
+        float k = 1.0f;
+        if (sum_a > 1e-12f)
+        {
+            float disc = sum_b * sum_b - 4.0f * sum_a * sum_c;
+            if (disc < 0.0f) disc = 0.0f;
+            k = (-sum_b + sqrtf(disc)) / (2.0f * sum_a);
+        }
+        else
+        {
+            k = 0.0f;
+        }
+        if (k < 0.0f) k = 0.0f;
+        if (k > 1.0f) k = 1.0f;
+
+        for (uint8_t i = 0; i < idx; i++)
+        {
+            power_control_out[i] *= k;
+            if (power_control_out[i] > 15000.0f)
+                power_control_out[i] = 15000.0f;
+            else if (power_control_out[i] < -15000.0f)
+                power_control_out[i] = -15000.0f;
         }
     }
 

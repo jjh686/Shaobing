@@ -29,8 +29,9 @@
 #define HALF_WHEEL_BASE (WHEEL_BASE / 2.0f)     // 半轴距
 #define HALF_TRACK_WIDTH (TRACK_WIDTH / 2.0f)   // 半轮距
 #define PERIMETER_WHEEL (RADIUS_WHEEL * 2 * PI) // 轮子周长
-/* 参考值斜坡限速, 防止指令阶跃导致电流打满 */
-#define VT_SLEW_APS_PER_S 50000.0f   // 200Hz 下每周期 500 aps
+/* 分离加速/减速斜坡: 起步加速限在全向轮地面抓地力内(约1.0m/s²)防挠胎甩尾, 松杆减速保持干脆 */
+#define VT_ACCEL_SLEW_APS_PER_S 18000.0f // 200Hz 下每周期 90 aps
+#define VT_DECEL_SLEW_APS_PER_S 45000.0f // 200Hz 下每周期 225 aps
 
 
 /* 底盘应用包含的模块和信息存储,底盘是单例模式,因此不需要为底盘建立单独的结构体 */
@@ -64,14 +65,6 @@ static float vt_lf, vt_rf, vt_lb, vt_rb;                  // 底盘速度解算�
 
 static float vt_cmd_lf, vt_cmd_rf, vt_cmd_lb, vt_cmd_rb;  // 斜坡限速后的实际下发值
 
-static float slew_limit(float target, float current, float max_step)
-{
-    float d = target - current;
-    if (d > max_step)  return current + max_step;
-    if (d < -max_step) return current - max_step;
-    return target;
-}
-
 /* ---------------- 调试镜像变量 ----------------
  * 仅为方便调试器/波形观察而存在, 不参与任何控制逻辑.
  * 电机实例在堆上, 路径形如 chassis.c::motor_lf->measure.speed_aps 又长又不便输入,
@@ -95,10 +88,10 @@ void ChassisInit()
         .can_init_config.can_handle = &hcan1,
         .controller_param_init_config = {
             .speed_PID = {
-                .Kp = 3.0f, 
-                .Ki = 0.3f,   
-                .Kd = 0,   
-                .IntegralLimit = 700,
+                .Kp = 2.8f,
+                .Ki = 0.5f,
+                .Kd = 0,
+                .IntegralLimit = 2000,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
                 .MaxOut = 15000,
             },
@@ -262,13 +255,33 @@ static void LimitChassisOutput()
         return;
     }
 
-    /* 参考值斜坡限速: 防止 ref 阶跃(摇杆瞬断/离线/急停)导致电流打满 */
-    const float max_step = VT_SLEW_APS_PER_S * 0.005f;   // 200Hz → 5ms
-
-    vt_cmd_lf = slew_limit(vt_lf, vt_cmd_lf, max_step);
-    vt_cmd_rf = slew_limit(vt_rf, vt_cmd_rf, max_step);
-    vt_cmd_lb = slew_limit(vt_lb, vt_cmd_lb, max_step);
-    vt_cmd_rb = slew_limit(vt_rb, vt_cmd_rb, max_step);
+    /* 四轮等比例同步斜坡限速: 加速走抓地安全斜坡防挠胎甩尾, 减速/刹车走快斜坡 */
+    const float d_lf = vt_lf - vt_cmd_lf;
+    const float d_rf = vt_rf - vt_cmd_rf;
+    const float d_lb = vt_lb - vt_cmd_lb;
+    const float d_rb = vt_rb - vt_cmd_rb;
+    const float accel_dot = vt_cmd_lf * d_lf + vt_cmd_rf * d_rf + vt_cmd_lb * d_lb + vt_cmd_rb * d_rb;
+    const float slew_rate = (accel_dot < 0.0f) ? VT_DECEL_SLEW_APS_PER_S : VT_ACCEL_SLEW_APS_PER_S;
+    const float max_step  = slew_rate * 0.005f;   // 200Hz → 5ms
+    float max_d = fabsf(d_lf);
+    if (fabsf(d_rf) > max_d) max_d = fabsf(d_rf);
+    if (fabsf(d_lb) > max_d) max_d = fabsf(d_lb);
+    if (fabsf(d_rb) > max_d) max_d = fabsf(d_rb);
+    if (max_d > max_step && max_d > 1e-6f)
+    {
+        const float scale = max_step / max_d;
+        vt_cmd_lf += d_lf * scale;
+        vt_cmd_rf += d_rf * scale;
+        vt_cmd_lb += d_lb * scale;
+        vt_cmd_rb += d_rb * scale;
+    }
+    else
+    {
+        vt_cmd_lf = vt_lf;
+        vt_cmd_rf = vt_rf;
+        vt_cmd_lb = vt_lb;
+        vt_cmd_rb = vt_rb;
+    }
 
     /* 参考值为 0 时清积分 + 停电机, 彻底消除零速抖动 */
     if (fabsf(vt_cmd_lf) < 1.0f) { motor_lf->motor_controller.speed_PID.Iout = 0.0f; DJIMotorStop(motor_lf); }
@@ -348,9 +361,9 @@ void ChassisTask()
     chassis_cmd_recv.chassis_mode = CHASSIS_NO_FOLLOW; // 避免落到 ZERO_FORCE 分支停电机
 #endif
 
-    // 未接裁判系统时 chassis_power_limit 为 0,会把功率缩放成 0 导致底盘不动
+    // 未接裁判系统时 chassis_power_limit 为 0,会把功率缩放成 0 导致底盘不动; 兜底给 100W
     float power_limit = referee_data->GameRobotState.chassis_power_limit;
-    SetPowerLimit(power_limit > 1.0f ? power_limit : 60.0f);
+    SetPowerLimit(power_limit > 1.0f ? power_limit : 100.0f);
 
     if (chassis_cmd_recv.chassis_mode == CHASSIS_ZERO_FORCE)
     { // 如果出现重要模块离线或遥控器设置为急停,让电机停止
@@ -377,36 +390,58 @@ void ChassisTask()
     case CHASSIS_NO_FOLLOW: // 底盘维持全向机动,wz由cmd层决定(手动为0,自动导航为vision_recv_data->wz)
         // chassis_cmd_recv.wz = 0;
         break;
-    case CHASSIS_FOLLOW_GIMBAL_YAW: // 跟随云台(滞回死区 + 最小起步转速 + 限幅, 防死区边缘蹭轮抖动)
+    case CHASSIS_FOLLOW_GIMBAL_YAW: // 跟随云台(移动中连续紧锁车头, 静止时滞回防抖)
     {
-        const float enter_deg = 3.5f;   /* 偏角超过 ±3.5° 启动跟随 */
-        const float exit_deg  = 1.5f;   /* 追进 ±1.5° 立即停转并关闭四轮 */
-        const float kp        = 22.0f;  /* 22 × 30° = 660 -> 约 60°/s 跟随 */
-        const float min_wz    = 160.0f; /* 约 9°/s 保底转速, 顺滑克服地面静摩擦进入停转区 */
-        const float max_wz    = 1500.0f;/* 上限约 150°/s */
+        const float max_wz  = 1500.0f; /* 上限约 150°/s */
         float err     = chassis_cmd_recv.offset_angle;
         float abs_err = fabsf(err);
-        if (!follow_active)
+        const int moving = (fabsf(chassis_cmd_recv.vx) > 100.0f) || (fabsf(chassis_cmd_recv.vy) > 100.0f);
+        if (moving)
         {
-            if (abs_err > enter_deg)
-                follow_active = 1u;
-        }
-        else if (abs_err <= exit_deg)
-        {
+            /* 移动中四轮已克服静摩擦: 用 0.5° 小死区 + 连续高增益及时按住起步偏角 */
             follow_active = 0u;
-        }
-
-        if (!follow_active)
-        {
-            chassis_cmd_recv.wz = 0.0f;
+            const float move_deadband = 0.5f;
+            const float move_kp       = 35.0f;
+            if (abs_err <= move_deadband)
+            {
+                chassis_cmd_recv.wz = 0.0f;
+            }
+            else
+            {
+                float wz_mag = move_kp * (abs_err - move_deadband);
+                if (wz_mag > max_wz) wz_mag = max_wz;
+                chassis_cmd_recv.wz = CHASSIS_COMM_WZ_SIGN * ((err > 0.0f) ? wz_mag : -wz_mag);
+            }
         }
         else
         {
-            float wz_mag = kp * abs_err;
-            if (wz_mag < min_wz) wz_mag = min_wz;
-            if (wz_mag > max_wz) wz_mag = max_wz;
-            /* offset_angle > 0 表示云台偏左(CCW), 需底盘左转(CCW)追上; CHASSIS_COMM_WZ_SIGN(-1) 映射 CCW -> 负 wz */
-            chassis_cmd_recv.wz = CHASSIS_COMM_WZ_SIGN * ((err > 0.0f) ? wz_mag : -wz_mag);
+            /* 原地静止: 滞回死区 + 最小起步转速, 防死区边缘蹭轮抖动 */
+            const float enter_deg = 3.5f;   /* 偏角超过 ±3.5° 启动跟随 */
+            const float exit_deg  = 1.5f;   /* 追进 ±1.5° 立即停转并关闭四轮 */
+            const float kp        = 22.0f;  /* 22 × 30° = 660 -> 约 60°/s 跟随 */
+            const float min_wz    = 160.0f; /* 约 9°/s 保底转速, 顺滑克服地面静摩擦进入停转区 */
+            if (!follow_active)
+            {
+                if (abs_err > enter_deg)
+                    follow_active = 1u;
+            }
+            else if (abs_err <= exit_deg)
+            {
+                follow_active = 0u;
+            }
+
+            if (!follow_active)
+            {
+                chassis_cmd_recv.wz = 0.0f;
+            }
+            else
+            {
+                float wz_mag = kp * abs_err;
+                if (wz_mag < min_wz) wz_mag = min_wz;
+                if (wz_mag > max_wz) wz_mag = max_wz;
+                /* offset_angle > 0 表示云台偏左(CCW), 需底盘左转(CCW)追上; CHASSIS_COMM_WZ_SIGN(-1) 映射 CCW -> 负 wz */
+                chassis_cmd_recv.wz = CHASSIS_COMM_WZ_SIGN * ((err > 0.0f) ? wz_mag : -wz_mag);
+            }
         }
         break;
     }
